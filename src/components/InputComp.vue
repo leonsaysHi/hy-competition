@@ -24,7 +24,7 @@
 import { computed } from 'vue'
 interface IProps {
   modelValue: string
-  type?: 'text' | 'number' | 'email' | 'file' | 'select' | 'textarea'
+  type?: 'text' | 'number' | 'email' | 'file' | 'date' | 'datetime-local' | 'color'
   label?: string | undefined
   placeholder?: string
   readonly?: boolean

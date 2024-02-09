@@ -47,8 +47,8 @@ watch(
 const handleSubmit = async (ev: Event) => {
   ev.preventDefault()
   const row = data.value as Team
-  const { title } = row
-  if (teams.value.findIndex(r => r.title.toLowerCase() === title.toLowerCase()) > -1) {
+  const { id, title } = row
+  if (teams.value.findIndex(r => (!id || r.id !== id) && r.title.toLowerCase() === title.toLowerCase()) > -1) {
     errors.value.title = 'This team already exists'
   } else {
     delete errors.value.title

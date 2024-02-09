@@ -5,11 +5,14 @@ import type { CompetitionId } from './competitions'
 export type PlayerId = string
 
 // data
-export interface Player {
-  id: string
+export interface PlayerDoc {
   fname: string
   lname: string
+  cedula: string
   birthdate: string
+}
+export interface Player extends PlayerDoc {
+  id: string
 }
 
 // computed data

@@ -14,7 +14,7 @@
             <div class="modal-header pb-0" :class="headerClass">
               <slot
                 name="header"
-                v-bind="{ hide, okTitle, cancelTitle }"
+                v-bind="{ hide }"
                 :handle-cancel="handleCancel"
                 :handle-ok="handleOk"
               >
@@ -36,21 +36,15 @@
           <div class="modal-body" :class="bodyClass">
             <slot
               v-bind="{
-                hide,
-                okTitle,
-                okClass,
-                cancelTitle,
-                cancelClass
+                hide
               }"
-              :handle-cancel="handleCancel"
-              :handle-ok="handleOk"
             />
           </div>
           <template v-if="!hideFooter">
             <div class="modal-footer" :class="footerClass">
               <slot
                 name="footer"
-                v-bind="{ hide, okTitle, cancelTitle }"
+                v-bind="{ hide, okTitle, cancelTitle, okVariant, okDisabled, cancelVariant, cancelDisabled }"
                 :handle-cancel="handleCancel"
                 :handle-ok="handleOk"
               >
@@ -60,7 +54,8 @@
                     v-bind="{
                       hide,
                       cancelTitle,
-                      cancelClass
+                      cancelDisabled,
+                      cancelVariant
                     }"
                   >
                     <ButtonComp
@@ -77,7 +72,8 @@
                   v-bind="{
                     hide,
                     okTitle,
-                    okClass
+                    okVariant,
+                    okDisabled
                   }"
                 >
                   <ButtonComp
@@ -129,9 +125,9 @@ interface IProps {
   hideClose?: boolean
   cancelTitle?: string
   cancelDisabled?: boolean
-  cancelVariant?: string
+  cancelVariant?: "link" | "light" | "primary" | "secondary" | "outline-primary" | "outline-secondary" | "danger" | "warning" | "success" | undefined
   okTitle?: string
-  okVariant?: string
+  okVariant?: "link" | "light" | "primary" | "secondary" | "outline-primary" | "outline-secondary" | "danger" | "warning" | "success" | undefined
   okDisabled?: boolean
   headerClass?: string
   bodyClass?: string
