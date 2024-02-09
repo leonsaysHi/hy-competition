@@ -15,7 +15,7 @@
       @keyup.enter="handleEnterKey"
     />
     <div class="invalid-feedback">
-        {{ invalidFeedback }}
+      {{ invalidFeedback }}
     </div>
   </div>
 </template>

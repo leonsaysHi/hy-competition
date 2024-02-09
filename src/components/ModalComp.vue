@@ -44,7 +44,15 @@
             <div class="modal-footer" :class="footerClass">
               <slot
                 name="footer"
-                v-bind="{ hide, okTitle, cancelTitle, okVariant, okDisabled, cancelVariant, cancelDisabled }"
+                v-bind="{
+                  hide,
+                  okTitle,
+                  cancelTitle,
+                  okVariant,
+                  okDisabled,
+                  cancelVariant,
+                  cancelDisabled
+                }"
                 :handle-cancel="handleCancel"
                 :handle-ok="handleOk"
               >
@@ -76,11 +84,7 @@
                     okDisabled
                   }"
                 >
-                  <ButtonComp
-                    :variant="okVariant"
-                    :disabled="okDisabled"
-                    @click="handleOk"
-                  >
+                  <ButtonComp :variant="okVariant" :disabled="okDisabled" @click="handleOk">
                     {{ okTitle }}
                   </ButtonComp>
                 </slot>
@@ -111,7 +115,7 @@ myModalComponent.value?.show() | myModalComponent.value?.hide()
 
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { Modal } from 'bootstrap'
-import ButtonComp from './ButtonComp.vue';
+import ButtonComp from './ButtonComp.vue'
 
 interface IProps {
   isCentered?: boolean
@@ -125,9 +129,29 @@ interface IProps {
   hideClose?: boolean
   cancelTitle?: string
   cancelDisabled?: boolean
-  cancelVariant?: "link" | "light" | "primary" | "secondary" | "outline-primary" | "outline-secondary" | "danger" | "warning" | "success" | undefined
+  cancelVariant?:
+    | 'link'
+    | 'light'
+    | 'primary'
+    | 'secondary'
+    | 'outline-primary'
+    | 'outline-secondary'
+    | 'danger'
+    | 'warning'
+    | 'success'
+    | undefined
   okTitle?: string
-  okVariant?: "link" | "light" | "primary" | "secondary" | "outline-primary" | "outline-secondary" | "danger" | "warning" | "success" | undefined
+  okVariant?:
+    | 'link'
+    | 'light'
+    | 'primary'
+    | 'secondary'
+    | 'outline-primary'
+    | 'outline-secondary'
+    | 'danger'
+    | 'warning'
+    | 'success'
+    | undefined
   okDisabled?: boolean
   headerClass?: string
   bodyClass?: string

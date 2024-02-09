@@ -30,7 +30,7 @@ const fields: TableField[] = [
 // Create / Edit
 const editPlayer = ref<undefined | Player | null>(null)
 const editModal = ref<typeof ModalComp>()
-  const handleCreate = () => {
+const handleCreate = () => {
   editPlayer.value = undefined
   editModal.value?.show()
 }
@@ -56,7 +56,6 @@ const handleDelete = () => {
   deleteTeam.value = null
   deleteModal.value?.hide()
 }
-
 </script>
 <template>
   <div>
@@ -66,24 +65,20 @@ const handleDelete = () => {
       <ButtonComp variant="primary" @click="handleCreate">Create</ButtonComp>
     </div>
     <TableComp :fields="fields" :items="players">
-      <template #name="{ item }">
-        {{ item.fname }} {{ item.lname }}
-      </template>
+      <template #name="{ item }"> {{ item.fname }} {{ item.lname }} </template>
       <template #actions="{ item }">
         <div class="d-flex justify-content-end gap-1">
           <ButtonComp variant="light" size="sm" @click="() => handleEdit(item)">Edit</ButtonComp>
-          <ButtonComp variant="danger" size="sm" @click="() => handleConfirmDelete(item)">Delete</ButtonComp>
-        </div> </template
-      >
+          <ButtonComp variant="danger" size="sm" @click="() => handleConfirmDelete(item)"
+            >Delete</ButtonComp
+          >
+        </div>
+      </template>
     </TableComp>
     <ModalComp ref="editModal" title="Edit team" hide-footer>
       <PlayerForm :row="editPlayer" @done="handleEditDone" />
     </ModalComp>
-    <ModalComp 
-    ref="deleteModal" 
-    title="Delete team"
-    ok-variant="danger" 
-    @ok="handleDelete">
+    <ModalComp ref="deleteModal" title="Delete team" ok-variant="danger" @ok="handleDelete">
       Sure?
     </ModalComp>
   </div>

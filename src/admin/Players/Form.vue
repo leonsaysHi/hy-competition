@@ -13,49 +13,51 @@ const props = withDefaults(defineProps<IProps>(), {
 })
 
 type PlayerForm = {
-    id: string | undefined
-    fname: string
-    lname: string
-    identification: string
-    dob: string
-    foto: string
+  id: string | undefined
+  fname: string
+  lname: string
+  identification: string
+  dob: string
+  foto: string
 }
 const dataDefault = {
-    id: undefined,
-    fname: '',
-    lname: '',
-    identification: '',
-    foto: '',
-    dob: '',
+  id: undefined,
+  fname: '',
+  lname: '',
+  identification: '',
+  foto: '',
+  dob: ''
 }
 const data = ref<PlayerForm>({
-    ...dataDefault
+  ...dataDefault
 })
 
 const emit = defineEmits(['done'])
 const { writeRows: writePlayers } = usePlayers()
 
-const errors: Ref<{ [key: string]: undefined | string }> = ref({
-})
+const errors: Ref<{ [key: string]: undefined | string }> = ref({})
 const players = inject('players') as Ref<Player[]>
 
 watch(
-    () => props.row,
-    (player) => {
-      if (player?.id) {
-        data.value = { ...dataDefault, ...player }
-      }
-      else if (player === undefined) {
-        data.value = { ...dataDefault }
-      }
+  () => props.row,
+  (player) => {
+    if (player?.id) {
+      data.value = { ...dataDefault, ...player }
+    } else if (player === undefined) {
+      data.value = { ...dataDefault }
     }
+  }
 )
 const handleSubmit = async (ev: Event) => {
   ev.preventDefault()
   console.log(data.value)
   const row = data.value as Player
   const { id, identification } = row
-  if (players.value.findIndex(r => (!id || r.id !== id) && r.identification.toLowerCase() === identification.toLowerCase()) > -1) {
+  if (
+    players.value.findIndex(
+      (r) => (!id || r.id !== id) && r.identification.toLowerCase() === identification.toLowerCase()
+    ) > -1
+  ) {
     errors.value.identification = 'This player already exists'
   } else {
     delete errors.value.identification
@@ -68,31 +70,17 @@ const handleCancel = () => emit('done')
 <template>
   <form @submit="handleSubmit">
     <p class="small text-muted">{{ data.id || 'n/a' }}</p>
-    <InputComp 
-        v-model="data.fname" 
-        type="text" 
-        label="First name" 
-        required 
+    <InputComp v-model="data.fname" type="text" label="First name" required />
+    <InputComp v-model="data.lname" type="text" label="Last name" required />
+    <InputComp
+      v-model="data.identification"
+      type="text"
+      label="Identification"
+      :invalidFeedback="errors.identification"
+      :isInvalid="Boolean(errors.identification)"
+      required
     />
-    <InputComp 
-        v-model="data.lname" 
-        type="text" 
-        label="Last name" 
-        required 
-    />
-    <InputComp 
-        v-model="data.identification" 
-        type="text" 
-        label="Identification" 
-        :invalidFeedback="errors.identification" 
-        :isInvalid="Boolean(errors.identification)" 
-        required 
-    />
-    <InputComp 
-        v-model="data.dob" 
-        type="date" 
-        label="Dob"
-    />
+    <InputComp v-model="data.dob" type="date" label="Dob" />
     <div class="d-flex justify-content-end gap-2">
       <ButtonComp variant="light" @click="handleCancel">Cancel</ButtonComp>
       <ButtonComp variant="primary" type="submit">Save</ButtonComp>

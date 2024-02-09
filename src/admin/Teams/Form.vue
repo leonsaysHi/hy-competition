@@ -13,42 +13,44 @@ const props = withDefaults(defineProps<IProps>(), {
 })
 
 type TeamForm = {
-    id: string | undefined
-    title: string
-    logo: string
+  id: string | undefined
+  title: string
+  logo: string
 }
 const dataDefault = {
-    id: undefined,
-    title: '',
-    logo: '',
+  id: undefined,
+  title: '',
+  logo: ''
 }
 const data = ref<TeamForm>({
-    ...dataDefault
+  ...dataDefault
 })
 
 const emit = defineEmits(['done'])
 const { writeRows: writeTeams } = useTeams()
 
-const errors: Ref<{ [key: string]: undefined | string }> = ref({
-})
+const errors: Ref<{ [key: string]: undefined | string }> = ref({})
 const teams = inject('teams') as Ref<Team[]>
 
 watch(
-    () => props.row,
-    (team) => {
-      if (team?.id) {
-        data.value = { ...dataDefault, ...team }
-      }
-      else if (team === undefined) {
-        data.value = { ...dataDefault }
-      }
+  () => props.row,
+  (team) => {
+    if (team?.id) {
+      data.value = { ...dataDefault, ...team }
+    } else if (team === undefined) {
+      data.value = { ...dataDefault }
     }
+  }
 )
 const handleSubmit = async (ev: Event) => {
   ev.preventDefault()
   const row = data.value as Team
   const { id, title } = row
-  if (teams.value.findIndex(r => (!id || r.id !== id) && r.title.toLowerCase() === title.toLowerCase()) > -1) {
+  if (
+    teams.value.findIndex(
+      (r) => (!id || r.id !== id) && r.title.toLowerCase() === title.toLowerCase()
+    ) > -1
+  ) {
     errors.value.title = 'This team already exists'
   } else {
     delete errors.value.title
@@ -61,13 +63,13 @@ const handleCancel = () => emit('done')
 <template>
   <form @submit="handleSubmit">
     <p class="small text-muted">{{ data.id || 'n/a' }}</p>
-    <InputComp 
-        v-model="data.title" 
-        type="text" 
-        label="Name" 
-        :invalidFeedback="errors.title" 
-        :isInvalid="Boolean(errors.title)" 
-        required 
+    <InputComp
+      v-model="data.title"
+      type="text"
+      label="Name"
+      :invalidFeedback="errors.title"
+      :isInvalid="Boolean(errors.title)"
+      required
     />
     <div class="d-flex justify-content-end gap-2">
       <ButtonComp variant="light" @click="handleCancel">Cancel</ButtonComp>
