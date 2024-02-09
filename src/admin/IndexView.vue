@@ -1,14 +1,18 @@
 <script lang="ts" setup>
 import { RouterLink, RouterView } from 'vue-router'
-import { computed, provide } from 'vue'
+import { computed, provide, type Ref } from 'vue'
 import useTeams from '@/composable/useTeams'
 import usePlayers from '@/composable/usePlayers'
-const { getRows: getTeams } = useTeams()
+import { TeamsKey, PlayersKey } from '@/types/symbols'
+import type { Player } from '@/types/players'
+import type { Team } from '@/types/teams'
+
+const { getAdminRows: getTeams } = useTeams()
 const { getRows: getPlayers } = usePlayers()
-const teams = getTeams()
-const players = getPlayers()
-provide('teams', teams)
-provide('players', players)
+const teams = getTeams() as Ref<Team[] | undefined>
+const players = getPlayers() as Ref<Player[] | undefined>
+provide(TeamsKey, teams)
+provide(PlayersKey, players)
 const isBusy = computed(() => {
   return !Array.isArray(teams.value) || !Array.isArray(players.value)
 })

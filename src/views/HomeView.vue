@@ -1,6 +1,10 @@
 <script lang="ts" setup>
-import { useActiveCompetitions } from '@/stores/competitions'
-const rows = useActiveCompetitions()
+import useCompetitions from '@/composable/useCompetitions'
+import type { Competition } from '@/types/competitions'
+import { type Ref } from 'vue'
+
+const { getRows: getCompetitions } = useCompetitions()
+const rows = getCompetitions() as Ref<Competition[] | undefined>
 </script>
 <template>
   <div>

@@ -8,8 +8,8 @@ export type PlayerId = string
 export interface PlayerDoc {
   fname: string
   lname: string
-  cedula: string
-  birthdate: string
+  identification: string
+  dob: string
 }
 export interface Player extends PlayerDoc {
   id: string

@@ -30,8 +30,8 @@ export interface CompetitionTeam {
   sponsor: string
   roster: PlayerId[]
 }
-export interface Competition {
-  id: string
+
+export interface CompetitionDoc {
   title: string
   date: string
   sport: CompetitionSport
@@ -40,6 +40,9 @@ export interface Competition {
   teams: { [key: TeamId]: CompetitionTeam[] }
   awards: Awards[]
   isActive: boolean
+}
+export interface Competition extends CompetitionDoc {
+  id: string
 }
 
 // computed data

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { Player } from '@/types/players'
+import { PlayersKey } from '@/types/symbols'
 import { ref, inject, watch } from 'vue'
 import type { Ref } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
@@ -36,7 +37,7 @@ const emit = defineEmits(['done'])
 const { writeRows: writePlayers } = usePlayers()
 
 const errors: Ref<{ [key: string]: undefined | string }> = ref({})
-const players = inject('players') as Ref<Player[]>
+const players = inject(PlayersKey)
 
 watch(
   () => props.row,
@@ -50,7 +51,6 @@ watch(
 )
 const handleSubmit = async (ev: Event) => {
   ev.preventDefault()
-  console.log(data.value)
   const row = data.value as Player
   const { id, identification } = row
   if (

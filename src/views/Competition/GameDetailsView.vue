@@ -1,18 +1,23 @@
 <script lang="ts" setup>
-import { useGameDetails } from '@/stores/games'
+import { GamesKey } from '@/types/symbols'
+import type { Game } from '@/types/games'
+import type { Ref } from 'vue'
+import { inject, computed } from 'vue'
+const games = inject(GamesKey) as Ref<Game[]>
+
 import { useRoute } from 'vue-router'
+
 const route = useRoute()
-const { gameId, competitionId } = route.params
-const row = useGameDetails(competitionId as string, gameId as string)
+const { gameId } = route.params
+const row = computed(() => games.value.find(r => r.id === gameId))
+
 </script>
 <template>
   <div>
-    <h1>Competition game home</h1>
+    <h1>Game home</h1>
     <p>Single competition game details</p>
     <p>
-      Game infos, Teams info, teams ranking, Game datas: game infos, team infos, competition
-      standing, boxscores.
+      {{ row }}
     </p>
-    <p>{{ row }}</p>
   </div>
 </template>

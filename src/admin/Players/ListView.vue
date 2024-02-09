@@ -3,12 +3,13 @@ import type { TableField, TableItem } from '@/types/comp-table'
 import type { Player } from '@/types/players'
 import TableComp from '@/components/TableComp.vue'
 import { ref, inject } from 'vue'
+import { PlayersKey } from '@/types/symbols'
 import ButtonComp from '@/components/ButtonComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
 import PlayerForm from './Form.vue'
 import usePlayers from '@/composable/usePlayers'
 
-const players = inject('players') as TableItem[]
+const players = inject(PlayersKey)
 const fields: TableField[] = [
   {
     key: 'name',

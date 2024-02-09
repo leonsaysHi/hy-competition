@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { Team } from '@/types/teams'
+import { TeamsKey } from '@/types/symbols'
 import { ref, inject, watch } from 'vue'
 import type { Ref } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
@@ -16,11 +17,13 @@ type TeamForm = {
   id: string | undefined
   title: string
   logo: string
+  color: string
 }
 const dataDefault = {
   id: undefined,
   title: '',
-  logo: ''
+  logo: '',
+  color: ''
 }
 const data = ref<TeamForm>({
   ...dataDefault
@@ -30,7 +33,7 @@ const emit = defineEmits(['done'])
 const { writeRows: writeTeams } = useTeams()
 
 const errors: Ref<{ [key: string]: undefined | string }> = ref({})
-const teams = inject('teams') as Ref<Team[]>
+const teams = inject(TeamsKey)
 
 watch(
   () => props.row,
@@ -65,12 +68,12 @@ const handleCancel = () => emit('done')
     <p class="small text-muted">{{ data.id || 'n/a' }}</p>
     <InputComp
       v-model="data.title"
-      type="text"
       label="Name"
       :invalidFeedback="errors.title"
       :isInvalid="Boolean(errors.title)"
       required
     />
+    <InputComp v-model="data.color" type="color" label="Color" />
     <div class="d-flex justify-content-end gap-2">
       <ButtonComp variant="light" @click="handleCancel">Cancel</ButtonComp>
       <ButtonComp variant="primary" type="submit">Save</ButtonComp>

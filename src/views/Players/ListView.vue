@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { inject } from 'vue'
-const players = inject('players')
+import { PlayersKey } from '@/types/symbols'
+const players = inject(PlayersKey)
 </script>
 <template>
   <div>

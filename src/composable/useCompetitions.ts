@@ -5,14 +5,15 @@ import {
   type DocumentData,
   type SnapshotOptions
 } from 'firebase/firestore'
-import { teamsColl } from '@/firebase-firestore.js'
-import type { Team } from '@/types/teams'
+import { competitionsColl } from '@/firebase-firestore.js'
+import type { Competition, CompetitionId } from '@/types/competitions'
 
 import { createGlobalState } from '@vueuse/core'
 import { useFirestore } from '@vueuse/firebase/useFirestore'
+import type { Ref } from 'vue'
 
 const converter = {
-  toFirestore: (row: Team): DocumentData => {
+  toFirestore: (row: Competition): DocumentData => {
     const payload = {
       ...row
     }
@@ -26,20 +27,20 @@ const converter = {
     }
   }
 }
-const collection = teamsColl.withConverter(converter)
+const collection = competitionsColl.withConverter(converter)
 
-export default function useTeams() {
-  const getAdminRows = createGlobalState(() => useFirestore(collection))
+export default function useCompetitions() {
   const getRows = createGlobalState(() => useFirestore(collection))
+  const getRow = (competitionId: CompetitionId) => useFirestore(doc(collection, competitionId), null)
   const { writeDocs, deleteDocs } = useFirestoreAdmin()
   const writeRows = (rows: any[]) => writeDocs(rows, collection)
-  const deleteRows = async (rows: Team[]) => {
-    return deleteDocs(rows.map((row: Team) => doc(collection, row.id)))
+  const deleteRows = async (rows: Competition[]) => {
+    return deleteDocs(rows.map((row: Competition) => doc(collection, row.id)))
   }
 
   return {
-    getAdminRows,
     getRows,
+    getRow,
     writeRows,
     deleteRows
   }
