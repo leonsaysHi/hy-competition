@@ -1,0 +1,75 @@
+Organization
+
+Player
+id 
+games: [
+    gameId: [
+        ...GameBoxScore // duplicated from game
+    ]
+]
+*sumup: [
+    adverages: ...PlayerAdverages
+]
+...
+
+Team
+id
+games[
+    gameId: [
+        ...GameBoxScore // duplicated from game
+    ]
+]
+...
+
+Game
+id
+competitionId 
+date
+teams: [ ]
+boxscore: [
+    teamId: [
+        playerId: ...GameBoxScore
+    ]
+]
+result: [ 
+    periods [
+        teamId: score 
+    ]
+    final: [
+        teamId: score 
+    ] | null
+]
+...
+
+Competition
+id
+name 
+date 
+sport
+category
+teams: [ teamId ],
+format: [
+    type: 'league' | 'groups' | 'playoffs'
+    games: [ 
+        gameId
+    ] 
+]
+*sumup: [
+    standing
+    adverages: [
+        playerId: ...PlayerAdverages
+    ]
+]
+links
+note
+...
+
+
+TODO: 
+Create Players
+Create Teams
+Create Competition
+Create Games
+Competition format > new games
+
+
