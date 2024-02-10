@@ -7,5 +7,6 @@ import type { Team } from '@/types/teams'
 
 export const PlayersKey = Symbol() as InjectionKey<Ref<Player[] | undefined>>
 export const TeamsKey = Symbol() as InjectionKey<Ref<Team[] | undefined>>
+export const CompetitionsKey = Symbol() as InjectionKey<Ref<Competition[] | undefined>>
 export const CompetitionKey = Symbol() as InjectionKey<Ref<Competition | undefined>>
 export const GamesKey = Symbol() as InjectionKey<Ref<Game[] | undefined>>

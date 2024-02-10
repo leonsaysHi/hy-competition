@@ -30,8 +30,10 @@ const converter = {
 const collection = competitionsColl.withConverter(converter)
 
 export default function useCompetitions() {
+  const getAdminRows = createGlobalState(() => useFirestore(collection))
   const getRows = createGlobalState(() => useFirestore(collection))
-  const getRow = (competitionId: CompetitionId) => useFirestore(doc(collection, competitionId), null)
+  const getRow = (competitionId: CompetitionId) =>
+    useFirestore(doc(collection, competitionId), null)
   const { writeDocs, deleteDocs } = useFirestoreAdmin()
   const writeRows = (rows: any[]) => writeDocs(rows, collection)
   const deleteRows = async (rows: Competition[]) => {
@@ -39,6 +41,7 @@ export default function useCompetitions() {
   }
 
   return {
+    getAdminRows,
     getRows,
     getRow,
     writeRows,

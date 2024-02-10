@@ -3,18 +3,27 @@ import { RouterLink, RouterView } from 'vue-router'
 import { computed, provide, type Ref } from 'vue'
 import useTeams from '@/composable/useTeams'
 import usePlayers from '@/composable/usePlayers'
-import { TeamsKey, PlayersKey } from '@/types/symbols'
+import useCompetitions from '@/composable/useCompetitions'
+import { TeamsKey, PlayersKey, CompetitionsKey } from '@/types/symbols'
 import type { Player } from '@/types/players'
 import type { Team } from '@/types/teams'
+import type { Competition } from '@/types/competitions'
 
 const { getAdminRows: getTeams } = useTeams()
 const { getRows: getPlayers } = usePlayers()
+const { getAdminRows: getCompetitions } = useCompetitions()
 const teams = getTeams() as Ref<Team[] | undefined>
 const players = getPlayers() as Ref<Player[] | undefined>
+const competitions = getCompetitions() as Ref<Competition[] | undefined>
 provide(TeamsKey, teams)
 provide(PlayersKey, players)
+provide(CompetitionsKey, competitions)
 const isBusy = computed(() => {
-  return !Array.isArray(teams.value) || !Array.isArray(players.value)
+  return (
+    !Array.isArray(teams.value) ||
+    !Array.isArray(players.value) ||
+    !Array.isArray(competitions.value)
+  )
 })
 </script>
 <template>

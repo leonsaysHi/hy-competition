@@ -9,8 +9,7 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const { gameId } = route.params
-const row = computed(() => games.value.find(r => r.id === gameId))
-
+const row = computed(() => games.value.find((r) => r.id === gameId))
 </script>
 <template>
   <div>

@@ -13,7 +13,9 @@ const { competitionId } = route.params
 
 const { getRow: getCompetitionDetails } = useCompetitions()
 const { getCompetitionRows: getCompetitionGames } = useGames()
-const competition = getCompetitionDetails(competitionId as CompetitionId) as Ref<Competition | undefined>
+const competition = getCompetitionDetails(competitionId as CompetitionId) as Ref<
+  Competition | undefined
+>
 const games = getCompetitionGames(competitionId as CompetitionId) as Ref<Game[] | undefined>
 provide(CompetitionKey, competition)
 provide(GamesKey, games)

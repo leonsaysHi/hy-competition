@@ -99,6 +99,11 @@ const router = createRouter({
           path: 'teams',
           name: 'admin-players',
           component: () => import('../admin/Players/ListView.vue')
+        },
+        {
+          path: 'competition/:competitionId',
+          name: 'admin-competition',
+          component: () => import('../admin/Competition/DetailsView.vue')
         }
       ]
     }

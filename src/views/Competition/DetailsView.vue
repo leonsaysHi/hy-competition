@@ -11,9 +11,10 @@ const games = inject(GamesKey)
     <p>
       {{ row }}
     </p>
-    <ul class="list-unstyled">
+    <h5>Games</h5>
+    <ul class="list-group list-group-flush">
       <template v-for="game in games" :key="game.id">
-        <li>
+        <li class="list-group-item">
           <RouterLink
             :to="{
               name: 'competition-game',
