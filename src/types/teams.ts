@@ -1,5 +1,3 @@
-import type { GameId, Game } from './games'
-import type { CompetitionTeamComputed, CompetitionTeamRankComputed } from './competitions'
 import type { PlayerId } from './players'
 
 export type TeamId = string
@@ -11,14 +9,26 @@ export interface TeamDoc {
   logo?: string
 }
 export interface Team extends TeamDoc {
-  id: string
+  id: TeamId
+}
+
+//data
+export interface CompetitionTeamDoc {
+  sponsor: string
+  roster: PlayerId[]
+}
+// front
+export interface CompetitionTeam extends CompetitionTeamDoc {
+  id: TeamId
 }
 
 // computed data
-export interface TeamCompetition extends CompetitionTeamComputed {
-  stand: CompetitionTeamRankComputed
-}
-export interface TeamComputed extends Team {
-  games: { [key: GameId]: Game } // on game update
-  competitions: TeamCompetition[] // on competition update
+export interface CompetitionTeamComputed {
+  id: TeamId
+  sponsor: string
+  team: Team
+  gp: number
+  wins: number
+  pos: number
+  last3: boolean[]
 }

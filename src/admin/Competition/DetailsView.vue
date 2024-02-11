@@ -1,72 +1,51 @@
 <script lang="ts" setup>
+import { ref, inject, computed } from 'vue'
+import type CompetitionClass from '@/models/Competition'
 import type { TableField, TableItem } from '@/types/comp-table'
 import TableComp from '@/components/TableComp.vue'
 import ButtonComp from '@/components/ButtonComp.vue'
-import { CompetitionsKey, TeamsKey } from '@/types/symbols'
-import useGames from '@/composable/useGames'
-import type { Competition, CompetitionId } from '@/types/competitions'
-import type { Game } from '@/types/games'
-import type { Ref } from 'vue'
-import { inject, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { TeamsKey } from '@/types/symbols'
 
-const competitions = inject(CompetitionsKey)
-const teams = inject(TeamsKey)
-const route = useRoute()
-const { competitionId } = route.params
-
-const { getCompetitionRows: getCompetitionGames } = useGames()
-const row = competitions.value.find(r => r.id === competitionId) as Competition
-const games = getCompetitionGames(competitionId as CompetitionId) as Ref<Game[] | undefined>
-const computedGames = computed(() => {
-  return Array.isArray(games.value) ? games.value
-    .map((game: Game) => ({
-      ...game,
-      teams: game.teams.map((teamId):Team => {
-        return teams.value.find((t:Team) => t.id === teamId)
-      })
-    }))
-    : []
-})
-const fields: TableField[] = [
-  {
-    key: 'teams',
-    label: 'Teams'
-  },
-  {
-    key: 'datetime',
-    label: 'Date/Time'
-  },
-  {
-    key: 'actions',
-    label: ''
-  }
-]
-// Create / Edit
-const handleEdit = (row: TableItem) => {
-  console.log(row)
+interface IProps {
+  item?: CompetitionClass
 }
-const handleCreate = () => {}
+const props = withDefaults(defineProps<IProps>(), {
+  item: null
+})
+
+const teamsLib = inject(TeamsKey)
+const fields: TableField = [
+  { key: 'teams', label: 'Games' },
+  { key: 'actions', label: '' }
+]
+const showGameTeams = (item: TableItem) => {
+  return  item.teams
+    .map(teamId => {
+      return teamsLib.value.find(team => teamId === team.id)
+    })
+    .map(i => i.title)
+    .join(' | ')
+}
+
+// Create / Edit
+const editGame = ref<undefined | Game | null>(null)
+const handleEdit = (row: TableItem) => {
+  editGame.value = row as unknown as Game 
+}
 
 // Delete
+const deleteGame = ref<undefined | Game | null>(null)
 const handleConfirmDelete = (row: TableItem) => {
-  console.log(row)
+  deleteGame.value = row as unknown as Game
 }
 </script>
 <template>
   <div>
     <h1>Competition admin</h1>
-    <h5>{{  row.title }}</h5>
-    <p>{{ row }}</p>
-    <div class="d-flex align-items-bottom justify-content-between">
-      <p>All games list:</p>
-      <ButtonComp variant="primary" @click="handleCreate">Create</ButtonComp>
-    </div>
-    <TableComp :fields="fields" :items="computedGames">
-      <template #teams="{ item }"> {{ 
-        item.teams
-          .map(t => t.title)
-          .join(' &times; ') }} 
+    <h5>{{ item.row.title }}</h5>
+    <TableComp :fields="fields" :items="props.item.games">
+      <template #teams="{ item }">
+        {{ showGameTeams(item) }}
       </template>
       <template #actions="{ item }">
         <div class="d-flex justify-content-end gap-1">
@@ -79,3 +58,4 @@ const handleConfirmDelete = (row: TableItem) => {
     </TableComp>
   </div>
 </template>
+

@@ -23,20 +23,16 @@ const converter = {
     }
   }
 }
-const collection = gamesColl.withConverter(converter)
+const coll = gamesColl.withConverter(converter)
 export default function useCompetitions() {
-  const getCompetitionRows = (competitionId: CompetitionId) => {
-    const gamesQuery = query(collection, where('competitionId', '==', competitionId))
-    return useFirestore(gamesQuery)
-  }
+  
   const { writeDocs, deleteDocs } = useFirestoreAdmin()
-  const writeRows = (rows: any[]) => writeDocs(rows, collection)
+  const writeRows = (rows: any[]) => writeDocs(rows, coll)
   const deleteRows = async (rows: Game[]) => {
-    return deleteDocs(rows.map((row: Game) => doc(collection, row.id)))
+    return deleteDocs(rows.map((row: Game) => doc(coll, row.id)))
   }
 
   return {
-    getCompetitionRows,
     writeRows,
     deleteRows
   }

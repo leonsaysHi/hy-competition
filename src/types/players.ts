@@ -23,12 +23,11 @@ export interface PlayerAdverages extends Stats {
   gp: number
 }
 export interface PlayerAwards {
-  games: { [key: GameId]: Award }[]
-  competitions: { [key: CompetitionId]: Award }[]
+  games: { [key: GameId]: Award }
+  competitions: { [key: CompetitionId]: Award }
 }
-
-export interface PlayerComputed extends Player {
-  games: { [key: GameId]: PlayerBoxScore } // on game update
+// computed
+export interface CompetitionPlayerComputed extends Player {
   avg: PlayerAdverages // on game update
   awards: PlayerAwards // on game/competition update
 }

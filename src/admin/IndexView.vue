@@ -9,19 +9,19 @@ import type { Player } from '@/types/players'
 import type { Team } from '@/types/teams'
 import type { Competition } from '@/types/competitions'
 
-const { getAdminRows: getTeams } = useTeams()
+const { getRows: getTeams } = useTeams()
 const { getRows: getPlayers } = usePlayers()
 const { getAdminRows: getCompetitions } = useCompetitions()
-const teams = getTeams() as Ref<Team[] | undefined>
-const players = getPlayers() as Ref<Player[] | undefined>
+const teamsLib = getTeams() as Ref<Team[] | undefined>
+const playersLib = getPlayers() as Ref<Player[] | undefined>
 const competitions = getCompetitions() as Ref<Competition[] | undefined>
-provide(TeamsKey, teams)
-provide(PlayersKey, players)
+provide(TeamsKey, teamsLib)
+provide(PlayersKey, playersLib)
 provide(CompetitionsKey, competitions)
 const isBusy = computed(() => {
   return (
-    !Array.isArray(teams.value) ||
-    !Array.isArray(players.value) ||
+    !Array.isArray(teamsLib.value) ||
+    !Array.isArray(playersLib.value) ||
     !Array.isArray(competitions.value)
   )
 })

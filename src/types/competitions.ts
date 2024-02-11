@@ -1,7 +1,7 @@
 import type { Awards, Stats } from './stats'
-import type { TeamId, Team } from './teams'
-import type { PlayerId, Player } from './players'
-import type { GameId, Game } from './games'
+import type { TeamId, CompetitionTeamDoc, CompetitionTeamComputed } from './teams'
+import type { CompetitionPlayerComputed } from './players'
+import type { GameId, GameDoc } from './games'
 export type CompetitionId = string
 export type CompetitionSport = 'basketball'
 export type CompetitionCategorie =
@@ -26,45 +26,29 @@ export type CompetitionCategorie =
 export type CompetitionGender = 'm' | 'f' | 'mf'
 
 // data
-export interface CompetitionTeam {
-  sponsor: string
-  roster: PlayerId[]
-}
-
 export interface CompetitionDoc {
   title: string
   date: string
   sport: CompetitionSport
   category: CompetitionCategorie
   gender: CompetitionGender
-  teams: { [key: TeamId]: CompetitionTeam[] }
   awards: Awards[]
   isActive: boolean
+  teams: { [key: TeamId]: CompetitionTeamDoc } // collection
+  games: { [key: GameId]: GameDoc } // collection
+  // computed
+  teamsComputed: CompetitionTeamComputed[] // computed
+  playersComputed: CompetitionPlayerComputed[] // computed
 }
 export interface Competition extends CompetitionDoc {
   id: string
 }
 
 // computed data
-export interface CompetitionTeamComputed {
-  team: Team
-  roster: Player[]
-}
-export interface CompetitionTeamRankComputed extends Stats {
+
+export interface CompetitionTeamStandComputed extends Stats {
   gp: number
   wins: number
   pos: number
   last3: boolean | null[]
-}
-export interface CompetitionComputed {
-  id: CompetitionId
-  name: string
-  date: string
-  sport: CompetitionSport
-  category: CompetitionCategorie
-  gender: CompetitionGender
-  awards: Awards[]
-  teams: { [key: TeamId]: CompetitionTeamComputed[] } // on competition update
-  games: { [key: GameId]: Game[] } // on game update
-  stand: { [key: TeamId]: CompetitionTeamRankComputed } // on competition/game update
 }

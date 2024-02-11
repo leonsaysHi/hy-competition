@@ -102,8 +102,14 @@ const router = createRouter({
         },
         {
           path: 'competition/:competitionId',
-          name: 'admin-competition',
-          component: () => import('../admin/Competition/DetailsView.vue')
+          component: () => import('../admin/Competition/IndexView.vue'),
+          children: [
+            {
+              path: '',
+              name: 'admin-competition',
+              component: () => import('../admin/Competition/DetailsView.vue')
+            }
+          ]
         }
       ]
     }
