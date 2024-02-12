@@ -1,4 +1,4 @@
-import type { PlayerId } from './players'
+import type { CompetitionPlayer, CompetitionPlayerDoc, PlayerId } from './players'
 
 export type TeamId = string
 export type TeamRoster = PlayerId[]
@@ -15,11 +15,13 @@ export interface Team extends TeamDoc {
 //data
 export interface CompetitionTeamDoc {
   sponsor: string
-  roster: PlayerId[]
+  players: { [key: PlayerId]: CompetitionPlayerDoc } // collection
 }
 // front
-export interface CompetitionTeam extends CompetitionTeamDoc {
+export interface CompetitionTeam {
   id: TeamId
+  sponsor: string
+  players: CompetitionPlayer[]
 }
 
 // computed data

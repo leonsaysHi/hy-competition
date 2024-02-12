@@ -15,13 +15,13 @@ export default class CompetitionClass {
         row: Competition, 
         teams: CompetitionTeam[],
         games: Game[],
-        libs: { teams: Team[], players: Player[]} ,
+        libs: { teamsLib: Team[], playersLib: Player[]} ,
     ) {
         this.row = row
         this.games = games
         this.teams = teams
-        this.playersLib = libs.players
-        this.teamsLib = libs.teams
+        this.playersLib = libs.playersLib
+        this.teamsLib = libs.teamsLib
     }
 
     get teamsComputed(): CompetitionTeamComputed[] {

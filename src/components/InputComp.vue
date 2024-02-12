@@ -7,7 +7,7 @@
       v-model="model"
       :type="type"
       class="form-control"
-      :class="{ computedClass: true, 'is-invalid': isInvalid, 'is-valid': isValid }"
+      :class="{ [computedClass]: true, 'is-invalid': isInvalid, 'is-valid': isValid }"
       :placeholder="placeholder"
       :disabled="readonly || disabled"
       :required="required"
@@ -63,5 +63,3 @@ const handleEnterKey = () => {
   emit('on-enter-key')
 }
 </script>
-
-<style scoped lang="scss"></style>

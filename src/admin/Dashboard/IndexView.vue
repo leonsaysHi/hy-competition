@@ -14,7 +14,7 @@ const rows = inject(CompetitionsKey)
             <div class="card-body">
               <h5 class="card-title">{{ row.title }}</h5>
               <RouterLink
-                :to="{ name: 'admin-competition', params: { competitionId: row.id } }"
+                :to="{ name: 'admin-competition-home', params: { competitionId: row.id } }"
                 class="btn btn-primary"
                 >View</RouterLink
               >

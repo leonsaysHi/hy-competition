@@ -26,6 +26,12 @@ export interface PlayerAwards {
   games: { [key: GameId]: Award }
   competitions: { [key: CompetitionId]: Award }
 }
+export interface CompetitionPlayerDoc {
+  number: number
+}
+export interface CompetitionPlayer extends CompetitionPlayerDoc {
+  id: PlayerId
+}
 // computed
 export interface CompetitionPlayerComputed extends Player {
   avg: PlayerAdverages // on game update

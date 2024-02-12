@@ -106,8 +106,18 @@ const router = createRouter({
           children: [
             {
               path: '',
-              name: 'admin-competition',
-              component: () => import('../admin/Competition/DetailsView.vue')
+              name: 'admin-competition-home',
+              component: () => import('../admin/Competition/GamesView.vue')
+            },
+            {
+              path: 'configuration',
+              name: 'admin-competition-configuration',
+              component: () => import('../admin/Competition/Form.vue')
+            },
+            {
+              path: 'teams',
+              name: 'admin-competition-teams',
+              component: () => import('../admin/Competition/TeamsView.vue')
             }
           ]
         }
