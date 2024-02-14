@@ -14,15 +14,26 @@
       </template>
     </TableComp>
     <h5>Add player</h5>
-    <form ref="addPlayerForm" @submit="handleAddPlayer" class="d-flex align-items-end gap-2">
+    <form @submit="handleAddPlayer" class="d-flex align-items-end gap-2">
       <FieldComp label="Number">
         <InputComp v-model="addPlayer.number" placeholder="#" required />
       </FieldComp>
       <FieldComp label="Player" class="flex-grow-1">
-        <TypeaheadSelectComp v-model="addPlayer.id" :options="options" placeholder="Player" required />
+        <TypeaheadSelectComp
+          v-model="addPlayer.id"
+          :options="playersOptions"
+          placeholder="Player"
+          required
+        />
       </FieldComp>
       <div class="mb-3">
-        <ButtonComp variant="primary" type="submit" :disabled="!addPlayer.id">Add</ButtonComp>
+        <ButtonComp
+          variant="primary"
+          type="submit"
+          :disabled="!addPlayer.id || addPlayerIsBusy"
+          :is-busy="addPlayerIsBusy"
+          >Add</ButtonComp
+        >
       </div>
     </form>
     <ModalComp ref="editModal" title="Edit player" hide-footer>
@@ -39,35 +50,59 @@
         </form>
       </template>
     </ModalComp>
-    <ModalComp ref="deleteModal" title="Confirm removal" ok-variant="danger" @ok="handleRemove">
+    <ModalComp ref="deleteModal" title="Confirm removal" ok-title="Remove" ok-variant="danger">
       <p>
-        Sure to remove player <strong>{{ deletePlayer?.fname }} {{ deletePlayer?.lname }}</strong> from
-      team.</p>
+        Sure to remove player
+        <strong>{{ deletePlayer?.fname }} {{ deletePlayer?.lname }}</strong> from team.
+      </p>
+      <template #modal-ok="{ okTitle, okVariant, okDisabled }">
+        <ButtonComp
+          :variant="okVariant"
+          :disabled="okDisabled"
+          :isBusy="deletePlayerIsBusy"
+          @click="handleRemove"
+        >
+          {{ okTitle }}
+        </ButtonComp>
+      </template>
     </ModalComp>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, inject, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import TypeaheadSelectComp from '@/components/TypeaheadSelectComp.vue'
-import { PlayersLibKey } from '@/types/symbols'
+import { PlayersLibKey, CompetitionKey } from '@/types/symbols'
 import InputComp from '@/components/InputComp.vue'
 import FieldComp from '@/components/FieldComp.vue'
 import TableComp from '@/components/TableComp.vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import type { TableField, TableItem } from '@/types/comp-table'
-import type { CompetitionPlayer, Player, PlayerId } from '@/types/players'
+import type { CompetitionPlayer, CompetitionPlayerDoc, Player } from '@/types/players'
 import type { Option } from '@/types/comp-fields'
 import ModalComp from '@/components/ModalComp.vue'
+import useCompetitions from '@/composable/useCompetitions'
+import type { CompetitionTeam } from '@/types/teams'
 
+const competition = inject(CompetitionKey)
 const playersLib = inject(PlayersLibKey)
-interface IProps {
-  modelValue: CompetitionPlayer[]
-  options: Option[]
-}
-const props = withDefaults(defineProps<IProps>(), {
-  modelValue: () => [],
-  options: () => []
+
+const playersOptions = computed((): Option[] => {
+  const competitionOtherPlayers: PlayerId[] = competition?.value?.teams
+    ? competition?.value?.teams.reduce((acc: PlayerId[], team: CompetitionTeam) => {
+        return [...acc, ...team.players.map((player: CompetitionPlayer) => player.id)]
+      }, [])
+    : []
+  return playersLib?.value
+    ? playersLib?.value.map(
+        (row: Player): Option => ({
+          text: [row.fname, row.lname].join(' '),
+          value: row.id,
+          disabled: competitionOtherPlayers?.includes(row.id)
+        })
+      )
+    : []
 })
 
 const fields: TableField[] = [
@@ -89,62 +124,75 @@ const fields: TableField[] = [
   }
 ]
 
-const emit = defineEmits(['update:modelValue'])
-const model = computed({
-  get: (): CompetitionPlayer[] => props.modelValue,
-  set: (val: CompetitionPlayer[]) => emit('update:modelValue', val)
+const players = computed((): CompetitionPlayer[] => {
+  const team = competition?.value?.teams?.find(
+    (team: CompetitionTeam) => team.id === teamId
+  ) as CompetitionTeam
+  return team?.players
 })
-const playersItems = computed((): TableItem[] => {
-  return model.value.map((row: CompetitionPlayer) => {
-    const player: Player | undefined = playersLib?.value?.find((p) => row.id === p.id)
-    const { fname, lname, dob, identification } = player || {}
-    return {
-      fname,
-      lname,
-      dob,
-      identification,
-      ...row
-    } as TableItem
-  })
+const playersItems = computed(() => {
+  return players.value
+    ? players.value.map((row: CompetitionPlayer) => {
+        const player: Player | undefined = playersLib?.value?.find((p) => row.id === p.id)
+        const { fname, lname, dob, identification } = player || {}
+        return {
+          fname,
+          lname,
+          dob,
+          identification,
+          ...row
+        } as TableItem
+      })
+    : []
 })
 
+const route = useRoute()
+const { competitionId, teamId } = route.params
+const { addRowTeamPlayer: addPlayerDoc, deleteRowTeamPlayer: removePlayerDoc } = useCompetitions()
 // Add Player
-const addPlayerForm = ref<HTMLElement>()
-const addPlayer = ref<undefined | CompetitionPlayerDoc>({})
-const handleAddPlayer = (ev) => {
+const addPlayer = ref<CompetitionPlayer>({})
+const addPlayerIsBusy = ref(false)
+const handleAddPlayer = async (ev: Event) => {
   ev.preventDefault()
-  model.value.push({ ...addPlayer.value })
-  addPlayerForm.value.reset()
+  addPlayerIsBusy.value = true
+  await addPlayerDoc(competitionId, teamId, { ...addPlayer.value })
+  addPlayerIsBusy.value = false
+  addPlayer.value = {}
 }
 
 // Edit Player
 const editPlayer = ref<undefined | CompetitionPlayer>(undefined)
+const editPlayerIsBusy = ref(false)
 const editModal = ref<typeof ModalComp>()
 const handleEditPlayer = (item: TableItem) => {
-  editPlayer.value = item
-  editModal.value.show()
+  editPlayer.value = item as unknown as CompetitionPlayer
+  editModal.value?.show()
 }
-const handleSubmitPlayer = (ev, values: CompetitionPlayer) => {
+const handleSubmitPlayer = async (ev: Event) => {
   ev.preventDefault()
-  const { id, number } = editPlayer.value
-  const idx = model.value.findIndex((player: CompetitionPlayer) => player.id === id)
-  const newValue: CompetitionPlayer = {
-    ...model.value[idx],
+  editPlayerIsBusy.value = true
+  const { id, number }: CompetitionPlayer = editPlayer.value
+  const idx = players.value.findIndex((player: CompetitionPlayer) => player.id === id)
+  const payload = {
+    ...players.value[idx],
     number
-  }
-  model.value.splice(idx, 1, newValue)
-  editModal.value.hide()
+  } as CompetitionPlayer
+  await addPlayerDoc(competitionId, teamId, payload)
+  editPlayerIsBusy.value = false
+  editModal.value?.hide()
 }
 // Delete Player
 const deletePlayer = ref<undefined | CompetitionPlayer>(undefined)
+const deletePlayerIsBusy = ref(false)
 const deleteModal = ref<typeof ModalComp>()
 const handleConfirmDeletePlayer = (row: TableItem) => {
-  deletePlayer.value = row
+  deletePlayer.value = row as unknown as CompetitionPlayer
   deleteModal.value?.show()
 }
 const handleRemove = () => {
-  const idx = model.value.findIndex((row) => row.id === deletePlayer.value.id)
-  model.value.splice(idx, 1)
+  deletePlayerIsBusy.value = true
+  removePlayerDoc(competitionId, teamId, { ...deletePlayer.value })
+  deletePlayerIsBusy.value = false
   deleteModal.value?.hide()
 }
 </script>

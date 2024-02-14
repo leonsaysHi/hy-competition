@@ -16,6 +16,13 @@
       :disabled="disabled"
       @select="handleSelect"
     />
+    <div class="d-flex justify-content-center">
+      <InputComp
+        :value="selectedOption?.value || null"
+        :required="required"
+        class="visually-hidden"
+      />
+    </div>
   </template>
 </template>
 
@@ -30,12 +37,14 @@ interface IProps {
   options?: Option[]
   placeholder?: string
   disabled?: boolean
+  required?: boolean
   size?: 'lg' | 'md' | 'sm'
 }
 const props = withDefaults(defineProps<IProps>(), {
   options: (): Option[] => [],
   placeholder: '',
   disabled: false,
+  required: false,
   size: 'md'
 })
 const emit = defineEmits(['update:modelValue', 'select'])
@@ -49,7 +58,9 @@ const selectedOption = computed(() =>
 )
 const filteredOptions = computed(() => {
   return searchStr.value.length
-    ? props.options.filter((opt: Option) => opt.text.toLocaleLowerCase().includes(searchStr.value.toLocaleLowerCase()))
+    ? props.options.filter((opt: Option) =>
+        opt.text.toLocaleLowerCase().includes(searchStr.value.toLocaleLowerCase())
+      )
     : []
 })
 const handleSelect = (opt: Option) => {

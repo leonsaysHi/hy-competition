@@ -47,8 +47,40 @@ export default function useCompetitions() {
   const getRowGames = (competitionId: CompetitionId) =>
     useFirestore(gamesColl(competitionId), undefined)
 
-  const { deleteDocs } = useFirestoreAdmin()
+  const { writeDocs, deleteDocs } = useFirestoreAdmin()
 
+  const addRowTeam = async (competitionId: CompetitionId, row: CompetitionTeam) => {
+    const teamsCollRef = teamsColl(competitionId)
+    writeDocs([row], teamsCollRef)
+  }
+  const deleteRowTeam = async (competitionId: CompetitionId, row: CompetitionTeam) => {
+    const { id: teamId } = row
+    const teamsCollRef = teamsColl(competitionId)
+    const teamPlayersCollRef = teamPlayersColl(competitionId, teamId)
+    const docs = []
+    row.players.forEach((player: CompetitionPlayer) => {
+      docs.push(doc(teamPlayersCollRef, player.id))
+    })
+    docs.push(doc(teamsCollRef, teamId))
+    deleteDocs(docs)
+  }
+
+  const addRowTeamPlayer = async (
+    competitionId: CompetitionId,
+    teamId: TeamId,
+    row: CompetitionPlayer
+  ) => {
+    const teamPlayersCollRef = teamPlayersColl(competitionId, teamId)
+    writeDocs([row], teamPlayersCollRef)
+  }
+  const deleteRowTeamPlayer = async (
+    competitionId: CompetitionId,
+    teamId: TeamId,
+    row: CompetitionPlayer
+  ) => {
+    const teamPlayersCollRef = teamPlayersColl(competitionId, teamId)
+    deleteDocs([doc(teamPlayersCollRef, row.id)])
+  }
   const writeRow = async (competition: Competition) => {
     const {
       id,
@@ -102,13 +134,20 @@ export default function useCompetitions() {
   }
 
   return {
-    getAdminRows,
     getRows,
     getRow,
     getRowTeams,
     getRowGames,
     getRowTeamPlayers,
     writeRow,
+
+    // admin
+    getAdminRows,
+    addRowTeam,
+    addRowTeamPlayer,
+    deleteRowTeam,
+    deleteRowTeamPlayer,
+
     deleteDocs
   }
 }

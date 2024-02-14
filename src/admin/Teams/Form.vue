@@ -6,6 +6,7 @@ import type { Ref } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import InputComp from '@/components/InputComp.vue'
 import useTeams from '@/composable/useTeams'
+import FieldComp from '@/components/FieldComp.vue'
 interface IProps {
   row?: Team | undefined | null
 }
@@ -66,14 +67,17 @@ const handleCancel = () => emit('done')
 <template>
   <form @submit="handleSubmit">
     <p class="small text-muted">{{ data.id || 'n/a' }}</p>
-    <InputComp
-      v-model="data.title"
-      label="Name"
-      :invalidFeedback="errors.title"
-      :isInvalid="Boolean(errors.title)"
-      required
-    />
-    <InputComp v-model="data.color" type="color" label="Color" />
+    <FieldComp label="Name">
+      <InputComp
+        v-model="data.title"
+        :invalidFeedback="errors.title"
+        :isInvalid="Boolean(errors.title)"
+        required
+      />
+    </FieldComp>
+    <FieldComp label="Color">
+      <InputComp v-model="data.color" type="color" />
+    </FieldComp>
     <div class="d-flex justify-content-end gap-2">
       <ButtonComp variant="light" @click="handleCancel">Cancel</ButtonComp>
       <ButtonComp variant="primary" type="submit">Save</ButtonComp>
