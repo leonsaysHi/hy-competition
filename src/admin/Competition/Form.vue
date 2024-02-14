@@ -1,60 +1,89 @@
 <script lang="ts" setup>
-import type { Competition } from '@/types/competitions'
-import type { CompetitionTeam } from '@/types/teams'
-import { TeamsKey } from '@/types/symbols'
-import { ref, inject, watch } from 'vue'
-import type { Ref } from 'vue'
+import { ref, inject } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import InputComp from '@/components/InputComp.vue'
-import CompetitionTeams from './components/CompetitionTeams.vue'
+import { CompetitionKey } from '@/types/symbols'
+import FieldComp from '@/components/FieldComp.vue'
+import type {
+  CompetitionCategorie,
+  CompetitionGender,
+  CompetitionSport
+} from '@/types/competitions'
+import type { Option } from '@/types/comp-fields'
+import SelectComp from '@/components/SelectComp.vue'
+import CheckComp from '@/components/CheckComp.vue'
+import useCompetitions from '@/composable/useCompetitions'
 
-interface IProps {
-  item?: CompetitionClass
-}
-const props = withDefaults(defineProps<IProps>(), {
-  item: null
-})
+const { writeRow: writeCompetition } = useCompetitions()
+
+const item = inject(CompetitionKey)
+
+const sportsOptions: Option[] = [
+  {
+    text: 'Basketball 5x5',
+    value: 'basketball5x5'
+  }
+]
+const categoriesOptions: Option[] =
+  'U6|U8|U9|U10|U11|U12|U13|U14|U15|U16|U17|U18|Senior|+30|+35|+40|+45'.split('|').map((str) => ({
+    text: str,
+    value: str
+  }))
+const gendersOptions: Option[] = 'M|F|MF'.split('|').map((str) => ({
+  text: str,
+  value: str
+}))
 
 type CompetitionForm = {
   id: string | undefined
-  teams: CompetitionTeam[]
+  title: string
+  date: string
+  sport: CompetitionSport
+  category: CompetitionCategorie
+  gender: CompetitionGender
+  isActive: Boolean
 }
 const dataDefault = {
   id: undefined,
-  teams: [],
+  title: '',
+  date: '',
+  sport: sportsOptions[0].value,
+  gender: undefined,
+  category: undefined,
+  isActive: false
 }
 const data = ref<CompetitionForm>({
-  ...dataDefault
+  ...dataDefault,
+  ...item?.value
 })
-
-const emit = defineEmits(['done'])
-
-const errors: Ref<{ [key: string]: undefined | string }> = ref({})
-const teamsLib = inject(TeamsKey)
-
-watch(
-  () => props.item,
-  (competition) => {
-    if (competition?.id) {
-      data.value = { ...dataDefault, ...competition }
-    } else if (competition === undefined) {
-      data.value = { ...dataDefault }
-    }
-  }
-)
 
 const handleSubmit = async (ev: Event) => {
   ev.preventDefault()
-  
+  writeCompetition(data.value)
 }
-const handleCancel = () => emit('done')
 </script>
 <template>
   <form @submit="handleSubmit">
-    <InputComp v-model="data.title" label="Title" required />
-    <InputComp v-model="data.date" type="date" label="Date" />
+    <FieldComp label="Title">
+      <InputComp v-model="data.title" required />
+    </FieldComp>
+    <FieldComp label="is active" class="d-flex gap-3 justify-content-end">
+      <CheckComp v-model="data.isActive" switch></CheckComp>
+    </FieldComp>
+    <FieldComp label="Date">
+      <InputComp v-model="data.date" type="date" required />
+    </FieldComp>
+    <FieldComp label="Sport">
+      <SelectComp v-model="data.sport" :options="sportsOptions" disabled />
+    </FieldComp>
+    <FieldComp label="Gender">
+      <SelectComp v-model="data.gender" :options="gendersOptions" required />
+    </FieldComp>
+    <FieldComp label="Categorie">
+      <SelectComp v-model="data.category" :options="categoriesOptions" required />
+    </FieldComp>
+
     <div class="d-flex justify-content-end gap-2">
-      <ButtonComp variant="light" @click="handleCancel">Cancel</ButtonComp>
       <ButtonComp variant="primary" type="submit">Save</ButtonComp>
     </div>
   </form>

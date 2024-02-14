@@ -1,30 +1,24 @@
 <script lang="ts" setup>
 import { RouterLink, RouterView } from 'vue-router'
-import { computed, provide, type Ref } from 'vue'
+import { provide, type Ref } from 'vue'
 import useTeams from '@/composable/useTeams'
 import usePlayers from '@/composable/usePlayers'
 import useCompetitions from '@/composable/useCompetitions'
-import { TeamsKey, PlayersKey, CompetitionsKey } from '@/types/symbols'
+import { TeamsLibKey, PlayersLibKey, CompetitionsLibKey } from '@/types/symbols'
 import type { Player } from '@/types/players'
 import type { Team } from '@/types/teams'
 import type { Competition } from '@/types/competitions'
+import SpinnerComp from '@/components/SpinnerComp.vue'
 
 const { getRows: getTeams } = useTeams()
 const { getRows: getPlayers } = usePlayers()
 const { getAdminRows: getCompetitions } = useCompetitions()
 const teamsLib = getTeams() as Ref<Team[] | undefined>
 const playersLib = getPlayers() as Ref<Player[] | undefined>
-const competitions = getCompetitions() as Ref<Competition[] | undefined>
-provide(TeamsKey, teamsLib)
-provide(PlayersKey, playersLib)
-provide(CompetitionsKey, competitions)
-const isBusy = computed(() => {
-  return (
-    !Array.isArray(teamsLib.value) ||
-    !Array.isArray(playersLib.value) ||
-    !Array.isArray(competitions.value)
-  )
-})
+const competitionsLib = getCompetitions() as Ref<Competition[] | undefined>
+provide(TeamsLibKey, teamsLib)
+provide(PlayersLibKey, playersLib)
+provide(CompetitionsLibKey, competitionsLib)
 </script>
 <template>
   <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
@@ -46,9 +40,17 @@ const isBusy = computed(() => {
   </header>
   <main>
     <section class="py-5 container">
-      <template v-if="isBusy">...loading</template>
-      <template v-else>
+      <template v-if="teamsLib && playersLib && competitionsLib">
         <RouterView />
+      </template>
+      <template v-else>
+        <SpinnerComp />
+        <p>...Loading libraries</p>
+        <p>
+          Players: {{ playersLib ? 'Ok' : 'Loading...' }} <br />Teams:
+          {{ teamsLib ? 'Ok' : 'Loading...' }} <br />Competitions:
+          {{ competitionsLib ? 'Ok' : 'Loading...' }}
+        </p>
       </template>
     </section>
   </main>

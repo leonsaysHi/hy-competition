@@ -31,7 +31,7 @@ const converter = {
 const coll = teamsColl.withConverter(converter)
 
 export default function useTeams() {
-  const getRows = createGlobalState(() => useFirestore(coll))
+  const getRows = createGlobalState(() => useFirestore(coll, undefined))
   const { writeDocs, deleteDocs } = useFirestoreAdmin()
   const writeRows = (rows: any[]) => writeDocs(rows, coll)
   const deleteRows = async (rows: Team[]) => {

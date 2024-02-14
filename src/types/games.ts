@@ -17,4 +17,3 @@ export interface GameDoc {
 export interface Game extends GameDoc {
   id: GameId
 }
-

@@ -2,13 +2,13 @@
 import { provide, type Ref } from 'vue'
 import usePlayers from '@/composable/usePlayers'
 import type { Player } from '@/types/players'
-import { PlayersKey } from '@/types/symbols'
+import { PlayersLibKey } from '@/types/symbols'
 const { getRows: getPlayers } = usePlayers()
-const players = getPlayers() as Ref<Player[] | undefined>
-provide(PlayersKey, players)
+const playersLib = getPlayers() as Ref<Player[] | undefined>
+provide(PlayersLibKey, playersLib)
 </script>
 <template>
-  <template v-if="!Array.isArray(players)"> Loading players list... </template>
+  <template v-if="playersLib"> Loading players list... </template>
   <template v-else>
     <RouterView></RouterView>
   </template>

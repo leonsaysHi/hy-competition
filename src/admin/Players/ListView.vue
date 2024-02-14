@@ -3,13 +3,13 @@ import type { TableField, TableItem } from '@/types/comp-table'
 import type { Player } from '@/types/players'
 import TableComp from '@/components/TableComp.vue'
 import { ref, inject } from 'vue'
-import { PlayersKey } from '@/types/symbols'
+import { PlayersLibKey } from '@/types/symbols'
 import ButtonComp from '@/components/ButtonComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
 import PlayerForm from './Form.vue'
 import usePlayers from '@/composable/usePlayers'
 
-const players = inject(PlayersKey)
+const players = inject(PlayersLibKey)
 const fields: TableField[] = [
   {
     key: 'name',
@@ -76,10 +76,10 @@ const handleDelete = () => {
         </div>
       </template>
     </TableComp>
-    <ModalComp ref="editModal" title="Edit team" hide-footer>
+    <ModalComp ref="editModal" title="Edit player" hide-footer>
       <PlayerForm :row="editPlayer" @done="handleEditDone" />
     </ModalComp>
-    <ModalComp ref="deleteModal" title="Delete team" ok-variant="danger" @ok="handleDelete">
+    <ModalComp ref="deleteModal" title="Delete player" ok-variant="danger" @ok="handleDelete">
       Sure?
     </ModalComp>
   </div>

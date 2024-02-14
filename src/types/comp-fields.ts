@@ -1,3 +1,5 @@
-export type Option = { 
-  text: string, value: string 
+export type Option = {
+  text: string
+  value: string
+  disabled?: boolean
 }

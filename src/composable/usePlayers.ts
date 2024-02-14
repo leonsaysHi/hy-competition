@@ -29,7 +29,7 @@ const converter = {
 const collection = playersColl.withConverter(converter)
 
 export default function usePlayers() {
-  const getRows = createGlobalState(() => useFirestore(collection))
+  const getRows = createGlobalState(() => useFirestore(collection, undefined))
   const { writeDocs, deleteDocs } = useFirestoreAdmin()
   const writeRows = (rows: any[]) => writeDocs(rows, collection)
   const deleteRows = async (rows: Player[]) => {

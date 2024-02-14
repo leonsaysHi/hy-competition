@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { inject } from 'vue'
-import { CompetitionsKey } from '@/types/symbols'
-const rows = inject(CompetitionsKey)
+import { CompetitionsLibKey } from '@/types/symbols'
+const rows = inject(CompetitionsLibKey)
 </script>
 <template>
   <div>

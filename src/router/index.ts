@@ -102,22 +102,47 @@ const router = createRouter({
         },
         {
           path: 'competition/:competitionId',
+          name: 'admin-competition-home',
+          redirect: { name: 'admin-competition-games' },
           component: () => import('../admin/Competition/IndexView.vue'),
           children: [
             {
-              path: '',
-              name: 'admin-competition-home',
-              component: () => import('../admin/Competition/GamesView.vue')
-            },
-            {
-              path: 'configuration',
+              path: 'edit',
               name: 'admin-competition-configuration',
               component: () => import('../admin/Competition/Form.vue')
             },
+
+            {
+              path: 'games',
+              component: () => import('../admin/Competition/Games/IndexView.vue'),
+              children: [
+                {
+                  path: '',
+                  name: 'admin-competition-games',
+                  component: () => import('../admin/Competition/Games/ListView.vue')
+                },
+                {
+                  path: 'edit/:gameId',
+                  name: 'admin-competition-edit-game',
+                  component: () => import('../admin/Competition/Games/FormView.vue')
+                }
+              ]
+            },
             {
               path: 'teams',
-              name: 'admin-competition-teams',
-              component: () => import('../admin/Competition/TeamsView.vue')
+              component: () => import('../admin/Competition/Teams/IndexView.vue'),
+              children: [
+                {
+                  path: '',
+                  name: 'admin-competition-teams',
+                  component: () => import('../admin/Competition/Teams/ListView.vue')
+                },
+                {
+                  path: 'edit/:teamId',
+                  name: 'admin-competition-edit-team',
+                  component: () => import('../admin/Competition/Teams/FormView.vue')
+                }
+              ]
             }
           ]
         }

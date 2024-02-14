@@ -10,14 +10,22 @@
     />
     <div class="dropdown-menu" :class="{ show: options.length }">
       <template v-for="opt in options" :key="opt.value">
-        <li><a class="dropdown-item" @click="handleSelect(opt)">{{ opt.text }}</a></li>
+        <li>
+          <a
+            class="dropdown-item"
+            :class="{ disabled: opt.disabled }"
+            :aria-disabled="opt.disabled"
+            @click="handleSelect(opt)"
+            >{{ opt.text }}</a
+          >
+        </li>
       </template>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Option } from '@/types/comp-fields';
+import type { Option } from '@/types/comp-fields'
 import { computed } from 'vue'
 interface IProps {
   modelValue: string
@@ -27,10 +35,10 @@ interface IProps {
   size?: 'lg' | 'md' | 'sm'
 }
 const props = withDefaults(defineProps<IProps>(), {
-  options: ():Option[] => [],
+  options: (): Option[] => [],
   placeholder: '',
   disabled: false,
-  size: 'md',
+  size: 'md'
 })
 const emit = defineEmits(['update:modelValue', 'select'])
 const model = computed({

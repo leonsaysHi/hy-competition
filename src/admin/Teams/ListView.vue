@@ -3,13 +3,13 @@ import type { TableField, TableItem } from '@/types/comp-table'
 import type { Team } from '@/types/teams'
 import TableComp from '@/components/TableComp.vue'
 import { ref, inject } from 'vue'
-import { TeamsKey } from '@/types/symbols'
+import { TeamsLibKey } from '@/types/symbols'
 import ButtonComp from '@/components/ButtonComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
 import TeamForm from './Form.vue'
 import useTeams from '@/composable/useTeams'
 
-const teams = inject(TeamsKey)
+const teams = inject(TeamsLibKey)
 const fields: TableField[] = [
   {
     key: 'title',

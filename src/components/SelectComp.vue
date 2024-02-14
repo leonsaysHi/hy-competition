@@ -1,22 +1,28 @@
 <template>
-  <input
+  <select
     v-model="model"
-    :type="type"
-    class="form-control"
+    class="form-select"
     :class="{ [computedClass]: true, 'is-invalid': isInvalid, 'is-valid': isValid }"
     :placeholder="placeholder"
     :disabled="readonly || disabled"
     :required="required"
-    @input="emit('input')"
-    @keyup.enter="handleEnterKey"
-  />
+    @change="handleChange"
+  >
+    <template v-if="placeholder">
+      <option>{{ placeholder }}</option>
+    </template>
+    <template v-for="opt in options" :key="opt.value">
+      <option :value="opt.value">{{ opt.text }}</option>
+    </template>
+  </select>
 </template>
 
 <script setup lang="ts">
+import type { Option } from '@/types/comp-fields'
 import { computed } from 'vue'
 interface IProps {
-  modelValue: string
-  type?: 'text' | 'number' | 'email' | 'file' | 'date' | 'datetime-local' | 'color'
+  modelValue: string | undefined
+  options: Option[]
   placeholder?: string
   readonly?: boolean
   required?: boolean
@@ -26,8 +32,8 @@ interface IProps {
   isInvalid?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
-  type: 'text',
-  placeholder: '',
+  placeholder: 'Select...',
+  options: () => [],
   readonly: false,
   required: false,
   disabled: false,
@@ -35,7 +41,7 @@ const props = withDefaults(defineProps<IProps>(), {
   isValid: false,
   isInvalid: false
 })
-const emit = defineEmits(['update:modelValue', 'input', 'validate', 'on-enter-key'])
+const emit = defineEmits(['update:modelValue', 'change', 'validate'])
 const model = computed({
   get: () => props.modelValue,
   set: (val) => emit('update:modelValue', val)
@@ -47,7 +53,7 @@ const computedClass = computed(() => {
   }
   return result.map((str) => `btn-${str}`).join(' ')
 })
-const handleEnterKey = () => {
-  emit('on-enter-key')
+const handleChange = () => {
+  emit('change', model.value)
 }
 </script>

@@ -9,6 +9,7 @@
     :required="required"
     @input="emit('input')"
     @keyup.enter="handleEnterKey"
+    @blur="handleBlur"
   />
 </template>
 
@@ -35,7 +36,7 @@ const props = withDefaults(defineProps<IProps>(), {
   isValid: false,
   isInvalid: false
 })
-const emit = defineEmits(['update:modelValue', 'input', 'validate', 'on-enter-key'])
+const emit = defineEmits(['update:modelValue', 'input', 'validate', 'enter-key', 'blur'])
 const model = computed({
   get: () => props.modelValue,
   set: (val) => emit('update:modelValue', val)
@@ -48,6 +49,9 @@ const computedClass = computed(() => {
   return result.map((str) => `btn-${str}`).join(' ')
 })
 const handleEnterKey = () => {
-  emit('on-enter-key')
+  emit('enter-key', model.value)
+}
+const handleBlur = () => {
+  emit('blur', model.value)
 }
 </script>

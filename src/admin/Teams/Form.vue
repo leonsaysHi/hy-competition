@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { Team } from '@/types/teams'
-import { TeamsKey } from '@/types/symbols'
+import { TeamsLibKey } from '@/types/symbols'
 import { ref, inject, watch } from 'vue'
 import type { Ref } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
@@ -33,7 +33,7 @@ const emit = defineEmits(['done'])
 const { writeRows: writeTeams } = useTeams()
 
 const errors: Ref<{ [key: string]: undefined | string }> = ref({})
-const teams = inject(TeamsKey)
+const teams = inject(TeamsLibKey)
 
 watch(
   () => props.row,

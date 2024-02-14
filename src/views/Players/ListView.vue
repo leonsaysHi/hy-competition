@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { inject } from 'vue'
-import { PlayersKey } from '@/types/symbols'
-const players = inject(PlayersKey)
+import { PlayersLibKey } from '@/types/symbols'
+const playersLib = inject(PlayersLibKey)
 </script>
 <template>
   <div>
@@ -9,7 +9,7 @@ const players = inject(PlayersKey)
     <p>All players list</p>
     <p>Infos, awards</p>
     <ul class="list-unstyled">
-      <template v-for="row in players" :key="row.id">
+      <template v-for="row in playersLib" :key="row.id">
         <li>
           <RouterLink :to="{ name: 'player', params: { playerId: row.id } }"
             >{{ row.fname }}{{ row.lname }}</RouterLink

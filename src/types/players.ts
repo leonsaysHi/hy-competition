@@ -27,7 +27,7 @@ export interface PlayerAwards {
   competitions: { [key: CompetitionId]: Award }
 }
 export interface CompetitionPlayerDoc {
-  number: number
+  number: string
 }
 export interface CompetitionPlayer extends CompetitionPlayerDoc {
   id: PlayerId

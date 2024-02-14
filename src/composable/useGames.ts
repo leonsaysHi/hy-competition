@@ -25,7 +25,6 @@ const converter = {
 }
 const coll = gamesColl.withConverter(converter)
 export default function useCompetitions() {
-  
   const { writeDocs, deleteDocs } = useFirestoreAdmin()
   const writeRows = (rows: any[]) => writeDocs(rows, coll)
   const deleteRows = async (rows: Game[]) => {

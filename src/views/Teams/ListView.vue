@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { inject } from 'vue'
-import { TeamsKey } from '@/types/symbols'
-const teams = inject(TeamsKey)
+import { TeamsLibKey } from '@/types/symbols'
+const teamsLib = inject(TeamsLibKey)
 </script>
 <template>
   <div>
@@ -9,7 +9,7 @@ const teams = inject(TeamsKey)
     <p>All teams list:</p>
     <p>Infos, current competitions, gp/wins, top3 rankings</p>
     <ul class="list-unstyled">
-      <template v-for="row in teams" :key="row.id">
+      <template v-for="row in teamsLib" :key="row.id">
         <li>
           <RouterLink :to="{ name: 'team', params: { teamId: row.id } }">{{
             row.title
