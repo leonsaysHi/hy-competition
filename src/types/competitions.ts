@@ -1,7 +1,6 @@
 import type { Awards, Stats } from './stats'
-import type { TeamId, CompetitionTeamDoc, CompetitionTeamComputed, CompetitionTeam } from './teams'
-import type { CompetitionPlayerComputed } from './players'
-import type { GameId, GameDoc, Game } from './games'
+import type { CompetitionTeam } from './teams'
+import type { Game } from './games'
 export type CompetitionId = string
 export type CompetitionSport = 'basketball'
 export type CompetitionCategorie =

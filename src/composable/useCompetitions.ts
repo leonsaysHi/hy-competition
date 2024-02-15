@@ -49,6 +49,18 @@ export default function useCompetitions() {
 
   const { writeDocs, deleteDocs } = useFirestoreAdmin()
 
+  const addRowGame = async (competitionId: CompetitionId, row: Game) => {
+    const gamesCollRef = gamesColl(competitionId)
+    writeDocs([row], gamesCollRef)
+  }
+  const deleteRowGame = async (competitionId: CompetitionId, row: Game) => {
+    const { id: gameId } = row
+    const gamesCollRef = gamesColl(competitionId)
+    const docs = []
+    docs.push(doc(gamesCollRef, gameId))
+    deleteDocs(docs)
+  }
+
   const addRowTeam = async (competitionId: CompetitionId, row: CompetitionTeam) => {
     const teamsCollRef = teamsColl(competitionId)
     writeDocs([row], teamsCollRef)
@@ -147,6 +159,9 @@ export default function useCompetitions() {
     addRowTeamPlayer,
     deleteRowTeam,
     deleteRowTeamPlayer,
+
+    addRowGame,
+    deleteRowGame,
 
     deleteDocs
   }

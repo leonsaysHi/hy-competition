@@ -8,20 +8,22 @@
     </div>
   </template>
   <template v-else>
-    <TypeaheadComp
-      v-model="searchStr"
-      :options="filteredOptions"
-      :placeholder="placeholder"
-      :size="size"
-      :disabled="disabled"
-      @select="handleSelect"
-    />
-    <div class="d-flex justify-content-center">
-      <InputComp
-        :value="selectedOption?.value || null"
-        :required="required"
-        class="visually-hidden"
+    <div>
+      <TypeaheadComp
+        v-model="searchStr"
+        :options="filteredOptions"
+        :placeholder="placeholder"
+        :size="size"
+        :disabled="disabled"
+        @select="handleSelect"
       />
+      <div class="d-flex justify-content-center">
+        <InputComp
+          :value="selectedOption?.value || null"
+          :required="required"
+          class="visually-hidden"
+        />
+      </div>
     </div>
   </template>
 </template>

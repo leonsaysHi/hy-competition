@@ -42,15 +42,20 @@ const addTeamsOptions = computed((): Option[] => {
 })
 
 // Add team
-const addTeam = ref<CompetitionTeam>({})
+const getDefaultTeam = (): CompetitionTeam => ({
+  id: '',
+  sponsor: '',
+  players: []
+})
+const addTeam = ref<CompetitionTeam>(getDefaultTeam())
 const handleAddTeam = async (ev: Event) => {
   ev.preventDefault()
   await addCompetitionTeamDoc(item?.value.id, { ...addTeam.value })
-  addTeam.value = {}
+  addTeam.value = getDefaultTeam()
 }
 
 // Delete team
-const deleteTeam = ref<undefined | CompetitionTeam | null>(null)
+const deleteTeam = ref<undefined | CompetitionTeam>()
 const deletePlayerIsBusy = ref(false)
 const deleteModal = ref<typeof ModalComp>()
 const handleConfirmDeleteTeam = (row: TableItem) => {

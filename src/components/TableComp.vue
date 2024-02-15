@@ -34,11 +34,9 @@
         <tr>
           <template v-for="({ key }, hIdx) in fields" :key="hIdx">
             <td>
-              <div>
-                <slot :name="key" v-bind="{ items, item }">
-                  {{ item[key] }}
-                </slot>
-              </div>
+              <slot :name="key" v-bind="{ key, items, item }" :value="item[key]">
+                {{ item[key] }}
+              </slot>
             </td>
           </template>
         </tr>

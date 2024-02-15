@@ -35,17 +35,20 @@ const props = withDefaults(defineProps<IProps>(), {
   isValid: false,
   isInvalid: false
 })
-const emit = defineEmits(['update:modelValue', 'input', 'validate', 'on-enter-key'])
+const emit = defineEmits(['update:modelValue', 'input', 'validate', 'on-enter-key', 'update'])
 const model = computed({
   get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val)
+  set: (val) => {
+    emit('update:modelValue', val)
+    emit('update', val)
+  }
 })
 const computedClass = computed(() => {
   const result = []
   if (props.size !== 'md') {
-    result.push(props.size)
+    result.push(`form-control-${props.size}`)
   }
-  return result.map((str) => `btn-${str}`).join(' ')
+  return result.join(' ')
 })
 const handleEnterKey = () => {
   emit('on-enter-key')

@@ -8,11 +8,15 @@ export interface Awards {
 
 export interface Stats {
   pts: number
-  rbd: number
+  reb: number
   ast: number
   stl: number
   blk: number
   to: number
   pf: number
   m3pts: number
+}
+
+export interface PlayerBoxScore extends Stats {
+  dnp: boolean
 }

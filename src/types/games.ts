@@ -1,19 +1,21 @@
-import type { Awards } from './stats'
-import type { PlayerId, PlayerBoxScore } from './players'
+import type { Awards, PlayerBoxScore } from './stats'
+import type { PlayerId } from './players'
 import type { TeamId } from './teams'
 
 export type GameId = string
 
-// data
-export type GamePeriodScore = { [key: TeamId]: number }[]
+
+export type GameBoxScore = { [key: PlayerId]: PlayerBoxScore }
+export type GameScores = { [key: TeamId]: number[] }
+
 export interface GameDoc {
-  date: string
+  datetime: string
   teams: TeamId[]
-  scores?: GamePeriodScore[]
-  boxscore: { [key: PlayerId]: PlayerBoxScore }
+  scores: GameScores
+  boxscore: GameBoxScore
   awards: Awards[]
 }
-// front
+
 export interface Game extends GameDoc {
   id: GameId
 }
