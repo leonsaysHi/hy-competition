@@ -2,14 +2,13 @@
 import type { TableField, TableItem } from '@/types/comp-table'
 import type { Team } from '@/types/teams'
 import TableComp from '@/components/TableComp.vue'
-import { ref, inject } from 'vue'
-import { TeamsLibKey } from '@/types/symbols'
+import { ref } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
 import TeamForm from './Form.vue'
-import useTeams from '@/composable/useTeams'
+import useTeamsLib from '@/composable/useTeamsLib'
 
-const teams = inject(TeamsLibKey)
+const { rows: teams, deleteRows: deleteTeams } = useTeamsLib()
 const fields: TableField[] = [
   {
     key: 'title',
@@ -38,7 +37,6 @@ const handleEditDone = () => {
 }
 
 // Delete
-const { deleteRows: deleteTeams } = useTeams()
 const deleteTeam = ref<Team | null>(null)
 const deleteModal = ref<typeof ModalComp>()
 const handleConfirmDelete = (row: TableItem) => {
@@ -77,3 +75,4 @@ const handleDelete = () => {
     </ModalComp>
   </div>
 </template>
+@/composable/useTeamsLib

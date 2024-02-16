@@ -1,6 +1,6 @@
 <template>
   <template v-for="(teamId, idx) in game.teams" :key="teamId">
-    <h5>{{ teamId }}</h5>
+    <div>{{ teamId }}</div>
     <TableComp :items="items[idx]" :fields="fields" small>
       <template #id="{ value }"><div class="lh-1">{{ getPlayerName(value) }}</div></template>
       <template #pts="{ key, item }">
@@ -30,7 +30,6 @@
       <template #dnp="{ key, item }">
         <CheckComp v-model="model[item.id][key]" :value="false" :uncheck-value="true" switch></CheckComp>
       </template>
-
     </TableComp>
   </template>
 
@@ -40,7 +39,7 @@
 import { computed, inject } from 'vue'
 import type { Game, GameBoxScore } from '@/types/games'
 import TableComp from '@/components/TableComp.vue'
-import { CompetitionKey, PlayersLibKey } from '@/types/symbols'
+import { CompetitionKey } from '@/types/symbols'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import type { CompetitionPlayer, Player, PlayerId } from '@/types/players';
 import type { TableItem } from '@/types/comp-table'
@@ -48,11 +47,14 @@ import { useRoute } from 'vue-router'
 import InputComp from '@/components/InputComp.vue'
 import CheckComp from '@/components/CheckComp.vue'
 
+import usePlayersLib from '@/composable/usePlayersLib'
+
 const route = useRoute()
 const { gameId } = route.params
 
 const competition = inject(CompetitionKey)
-const playersLib = inject(PlayersLibKey)
+const { rows: playersLib } = usePlayersLib()
+
 const game: Game = competition?.value?.games?.find((game: Game) => game.id === gameId) || {} as Game
 
 interface IProps {

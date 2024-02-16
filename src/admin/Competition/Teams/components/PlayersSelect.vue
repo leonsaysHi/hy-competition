@@ -73,7 +73,9 @@
 import { ref, inject, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import TypeaheadSelectComp from '@/components/TypeaheadSelectComp.vue'
-import { PlayersLibKey, CompetitionKey } from '@/types/symbols'
+import { CompetitionKey } from '@/types/symbols'
+
+import usePlayersLib from '@/composable/usePlayersLib'
 import InputComp from '@/components/InputComp.vue'
 import FieldComp from '@/components/FieldComp.vue'
 import TableComp from '@/components/TableComp.vue'
@@ -86,7 +88,7 @@ import useCompetitions from '@/composable/useCompetitions'
 import type { CompetitionTeam } from '@/types/teams'
 
 const competition = inject(CompetitionKey)
-const playersLib = inject(PlayersLibKey)
+const { rows: playersLib } = usePlayersLib()
 
 const playersOptions = computed((): Option[] => {
   const competitionOtherPlayers: PlayerId[] = competition?.value?.teams

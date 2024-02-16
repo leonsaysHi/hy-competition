@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import { inject } from 'vue'
-import { PlayersLibKey } from '@/types/symbols'
-const playersLib = inject(PlayersLibKey)
+import usePlayersLib from '@/composable/usePlayersLib'
+const { rows: playersLib } = usePlayersLib()
 </script>
 <template>
   <div>

@@ -1,16 +1,13 @@
 <script lang="ts" setup>
-import useTeams from '@/composable/useTeams'
-import type { Team } from '@/types/teams'
-import { TeamsLibKey } from '@/types/symbols'
-import { provide, type Ref } from 'vue'
+import SpinnerComp from '@/components/SpinnerComp.vue';
+import useTeamsLib from '@/composable/useTeamsLib'
 
-const { getRows: getTeams } = useTeams()
-const teamsLib = getTeams() as Ref<Team[] | undefined>
-provide(TeamsLibKey, teamsLib)
+const { isReady } = useTeamsLib()
 </script>
 <template>
-  <template v-if="!teamsLib"> Loading teams list... </template>
+  <template v-if="!isReady"><SpinnerComp /></template>
   <template v-else>
     <RouterView></RouterView>
   </template>
 </template>
+@/composable/useTeamsLib

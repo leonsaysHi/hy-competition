@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { inject } from 'vue'
-import { TeamsLibKey } from '@/types/symbols'
-const teamsLib = inject(TeamsLibKey)
+import useTeamsLib from '@/composable/useTeamsLib'
+const { rows: teamsLib } = useTeamsLib()
+
 </script>
 <template>
   <div>

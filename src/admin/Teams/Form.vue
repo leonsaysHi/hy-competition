@@ -1,11 +1,10 @@
 <script lang="ts" setup>
 import type { Team } from '@/types/teams'
-import { TeamsLibKey } from '@/types/symbols'
-import { ref, inject, watch } from 'vue'
+import { ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import InputComp from '@/components/InputComp.vue'
-import useTeams from '@/composable/useTeams'
+import useTeamsLib from '@/composable/useTeamsLib'
 import FieldComp from '@/components/FieldComp.vue'
 interface IProps {
   row?: Team | undefined | null
@@ -31,10 +30,9 @@ const data = ref<TeamForm>({
 })
 
 const emit = defineEmits(['done'])
-const { writeRows: writeTeams } = useTeams()
+const { rows: teams, writeRows: writeTeams } = useTeamsLib()
 
 const errors: Ref<{ [key: string]: undefined | string }> = ref({})
-const teams = inject(TeamsLibKey)
 
 watch(
   () => props.row,
@@ -84,4 +82,3 @@ const handleCancel = () => emit('done')
     </div>
   </form>
 </template>
-@/composable/useTeams

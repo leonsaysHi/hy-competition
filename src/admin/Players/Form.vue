@@ -1,11 +1,10 @@
 <script lang="ts" setup>
 import type { Player } from '@/types/players'
-import { PlayersLibKey } from '@/types/symbols'
-import { ref, inject, watch } from 'vue'
+import { ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import InputComp from '@/components/InputComp.vue'
-import usePlayers from '@/composable/usePlayers'
+import usePlayersLib from '@/composable/usePlayersLib'
 import FieldComp from '@/components/FieldComp.vue'
 interface IProps {
   row?: Player | undefined | null
@@ -35,10 +34,9 @@ const data = ref<PlayerForm>({
 })
 
 const emit = defineEmits(['done'])
-const { writeRows: writePlayers } = usePlayers()
+const { players: rows, writeRows: writePlayers } = usePlayersLib()
 
 const errors: Ref<{ [key: string]: undefined | string }> = ref({})
-const players = inject(PlayersLibKey)
 
 watch(
   () => props.row,

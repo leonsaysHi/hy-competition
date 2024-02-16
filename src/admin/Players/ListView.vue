@@ -2,14 +2,14 @@
 import type { TableField, TableItem } from '@/types/comp-table'
 import type { Player } from '@/types/players'
 import TableComp from '@/components/TableComp.vue'
-import { ref, inject } from 'vue'
-import { PlayersLibKey } from '@/types/symbols'
+import { ref } from 'vue'
+
+import usePlayersLib from '@/composable/usePlayersLib'
 import ButtonComp from '@/components/ButtonComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
 import PlayerForm from './Form.vue'
-import usePlayers from '@/composable/usePlayers'
 
-const players = inject(PlayersLibKey)
+const { rows: players, deleteRows: deletePlayers } = usePlayersLib()
 const fields: TableField[] = [
   {
     key: 'name',
@@ -45,7 +45,6 @@ const handleEditDone = () => {
 }
 
 // Delete
-const { deleteRows: deletePlayers } = usePlayers()
 const deleteTeam = ref<Player | null>(null)
 const deleteModal = ref<typeof ModalComp>()
 const handleConfirmDelete = (row: TableItem) => {

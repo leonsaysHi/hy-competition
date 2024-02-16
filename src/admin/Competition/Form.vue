@@ -88,4 +88,3 @@ const handleSubmit = async (ev: Event) => {
     </div>
   </form>
 </template>
-@/composable/useTeams

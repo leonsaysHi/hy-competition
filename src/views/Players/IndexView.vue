@@ -1,14 +1,10 @@
 <script lang="ts" setup>
-import { provide, type Ref } from 'vue'
-import usePlayers from '@/composable/usePlayers'
-import type { Player } from '@/types/players'
-import { PlayersLibKey } from '@/types/symbols'
-const { getRows: getPlayers } = usePlayers()
-const playersLib = getPlayers() as Ref<Player[] | undefined>
-provide(PlayersLibKey, playersLib)
+import SpinnerComp from '@/components/SpinnerComp.vue';
+import usePlayersLib from '@/composable/usePlayersLib'
+const { isReady } = usePlayersLib()
 </script>
 <template>
-  <template v-if="playersLib"> Loading players list... </template>
+  <template v-if="!isReady"><SpinnerComp /></template>
   <template v-else>
     <RouterView></RouterView>
   </template>

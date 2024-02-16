@@ -1,23 +1,17 @@
 <script lang="ts" setup>
 import { RouterLink, RouterView } from 'vue-router'
 import { provide, type Ref } from 'vue'
-import useTeams from '@/composable/useTeams'
-import usePlayers from '@/composable/usePlayers'
+import useTeamsLib from '@/composable/useTeamsLib'
+import usePlayersLib from '@/composable/usePlayersLib'
 import useCompetitions from '@/composable/useCompetitions'
-import { TeamsLibKey, PlayersLibKey, CompetitionsLibKey } from '@/types/symbols'
-import type { Player } from '@/types/players'
-import type { Team } from '@/types/teams'
+import { CompetitionsLibKey } from '@/types/symbols'
 import type { Competition } from '@/types/competitions'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 
-const { getRows: getTeams } = useTeams()
-const { getRows: getPlayers } = usePlayers()
+const { isReady: isTeamsLibReady  } = useTeamsLib()
+const { isReady: isPlayersLibReady } = usePlayersLib()
 const { getAdminRows: getCompetitions } = useCompetitions()
-const teamsLib = getTeams() as Ref<Team[] | undefined>
-const playersLib = getPlayers() as Ref<Player[] | undefined>
 const competitionsLib = getCompetitions() as Ref<Competition[] | undefined>
-provide(TeamsLibKey, teamsLib)
-provide(PlayersLibKey, playersLib)
 provide(CompetitionsLibKey, competitionsLib)
 </script>
 <template>
@@ -40,15 +34,15 @@ provide(CompetitionsLibKey, competitionsLib)
   </header>
   <main>
     <section class="py-5 container">
-      <template v-if="teamsLib && playersLib && competitionsLib">
+      <template v-if="isTeamsLibReady && isPlayersLibReady && competitionsLib">
         <RouterView />
       </template>
       <template v-else>
         <SpinnerComp />
         <p>...Loading libraries</p>
         <p>
-          Players: {{ playersLib ? 'Ok' : 'Loading...' }} <br />Teams:
-          {{ teamsLib ? 'Ok' : 'Loading...' }} <br />Competitions:
+          Players: {{ isPlayersLibReady ? 'Ok' : 'Loading...' }} <br />Teams:
+          {{ isTeamsLibReady ? 'Ok' : 'Loading...' }} <br />Competitions:
           {{ competitionsLib ? 'Ok' : 'Loading...' }}
         </p>
       </template>

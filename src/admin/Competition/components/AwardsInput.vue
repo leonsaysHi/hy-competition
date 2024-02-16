@@ -30,11 +30,12 @@ import type { CompetitionTeam } from '@/types/teams'
 import type { Award, Awards } from '@/types/stats'
 import type { Option } from '@/types/comp-fields'
 import ButtonComp from '@/components/ButtonComp.vue'
-import type { findAncestor } from 'typescript'
+
 import FieldComp from '@/components/FieldComp.vue'
 import TypeaheadSelectComp from '@/components/TypeaheadSelectComp.vue'
 import SelectComp from '@/components/SelectComp.vue'
-import { PlayersLibKey, CompetitionKey } from '@/types/symbols'
+import usePlayersLib from '@/composable/usePlayersLib'
+import { CompetitionKey } from '@/types/symbols'
 
 interface IProps {
   modelValue: Awards[]
@@ -52,7 +53,8 @@ const getDefaultData = (): FormData => ({
 })
 const data = ref(getDefaultData())
 const competition = inject(CompetitionKey)
-const playersLib = inject(PlayersLibKey)
+
+const { rows: playersLib } = usePlayersLib()
 
 const awards: { [key: Award]: string } = {
   mvp: 'MVP',
