@@ -58,7 +58,7 @@ const computedCompetition: Ref<Competition | undefined> = computed((): Competiti
 })
 
 const providedCompetition: Ref<Competition> = computed(
-  (): Competition => computedCompetition.value as Competition || ({} as Competition)
+  (): Competition => (computedCompetition.value as Competition) || ({} as Competition)
 )
 provide(CompetitionKey, providedCompetition)
 </script>

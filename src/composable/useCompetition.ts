@@ -25,60 +25,62 @@ const teamPlayersColl = (competitionId: CompetitionId, teamId: TeamId) =>
 const gamesColl = (competitionId: CompetitionId) =>
   collection(coll, `/${competitionId}/${gamesName}`).withConverter(competitionConverter)
 
-  const { writeDocs, deleteDocs } = useFirestoreAdmin()
+const { writeDocs, deleteDocs } = useFirestoreAdmin()
 
 export default function useCompetition(competitionId: CompetitionId) {
-
   const gamesCollRef = gamesColl(competitionId)
   const teamsCollRef = teamsColl(competitionId)
-  
+
   const games = useFirestore(gamesColl(competitionId), undefined) as Ref<Game[] | undefined>
-  const teams = useFirestore(teamsColl(competitionId), undefined) as Ref<CompetitionTeam[] | undefined>
+  const teams = useFirestore(teamsColl(competitionId), undefined) as Ref<
+    CompetitionTeam[] | undefined
+  >
+  const playersLists = ref<{ [key: TeamId]: CompetitionPlayer[] }>({})
 
-
-  const playersLists = ref<{ [key: TeamId]: Ref<{ [key: TeamId]: CompetitionPlayer[] }> }>({})
   watch(
     () => teams.value,
     (value) => {
-        if (value) {
-            value.forEach((team: CompetitionTeam) => {
-                const teamId = team.id
-                if (!playersLists.value[teamId]) {
-                    playersLists.value[teamId] = useFirestore(teamPlayersColl(competitionId, team.id), undefined)
-                }
-            })
-        }
+      if (Array.isArray(value) && !Object.keys(playersLists.value).length) {
+        value.forEach((team: CompetitionTeam) => {
+          const teamId = team.id
+          if (!playersLists.value[teamId]) {
+            playersLists.value[teamId] = useFirestore(
+              teamPlayersColl(competitionId, team.id),
+              undefined
+            )
+          }
+        })
+      }
     }
   )
 
   const { isReady: isLibReady, get: getCompetitionRow } = useCompetitionsLib()
 
   const row: Ref<Competition | undefined> = computed(() => {
-    if (!(
-        isLibReady.value &&
-        games.value &&
-        teams.value && 
-        Object.values(playersLists.value).every(t => Array.isArray(t))
-    )) {
+    if (
+      !isLibReady.value ||
+      !Array.isArray(teams.value) ||
+      !Array.isArray(games.value) ||
+      !Object.values(playersLists.value).every(Boolean)
+    ) {
       return undefined
     }
-
     const competitionRow = getCompetitionRow(competitionId)
     return {
-      ...competitionRow as Competition,
+      ...(competitionRow as Competition),
       teams: teams.value?.map((team: CompetitionTeam) => {
         return {
           ...team,
-          players: playersLists.value?.[team.id]?.value
+          players: playersLists.value?.[team.id] as CompetitionPlayer[]
         }
       }),
-      games: games?.value || []
+      games: games?.value
     } as Competition
   })
   const isReady = computed(() => row.value)
 
   // Admin game
-  const addGame = async (row: Game) => {  
+  const addGame = async (row: Game) => {
     writeDocs([row], gamesCollRef)
   }
   const deleteGame = async (row: Game) => {
@@ -181,6 +183,6 @@ export default function useCompetition(competitionId: CompetitionId) {
     addTeam,
     addTeamPlayer,
     deleteTeam,
-    deleteTeamPlayer,
+    deleteTeamPlayer
   }
 }

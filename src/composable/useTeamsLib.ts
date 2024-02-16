@@ -7,7 +7,6 @@ import {
 } from 'firebase/firestore'
 import { teamsColl } from '@/firebase-firestore.js'
 import type { Team, TeamId } from '@/types/teams'
-import { createGlobalState } from '@vueuse/core'
 import { useFirestore } from '@vueuse/firebase/useFirestore'
 import { computed } from 'vue'
 import type { Ref } from 'vue'
@@ -30,10 +29,9 @@ const converter = {
 const coll = teamsColl.withConverter(converter)
 
 export default function useTeams() {
-  const rows: Ref<Team[] | undefined> = createGlobalState(() => useFirestore(coll, undefined))() as Ref<Team[] | undefined>
+  const rows: Ref<Team[] | undefined> = useFirestore(coll, undefined) as Ref<Team[] | undefined>
   const isReady = computed(() => Array.isArray(rows.value))
-  const get = (teamId: TeamId): Team => rows.value?.find(r => r.id === teamId) || {} as Team
-
+  const get = (teamId: TeamId): Team => rows.value?.find((r) => r.id === teamId) || ({} as Team)
 
   const { writeDocs, deleteDocs } = useFirestoreAdmin()
   const writeRows = (rows: any[]) => writeDocs(rows, coll)
@@ -48,6 +46,6 @@ export default function useTeams() {
 
     //admin
     writeRows,
-    deleteRows,
+    deleteRows
   }
 }

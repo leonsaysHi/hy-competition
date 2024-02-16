@@ -8,7 +8,7 @@ import { CompetitionsLibKey } from '@/types/symbols'
 import type { Competition } from '@/types/competitions'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 
-const { isReady: isTeamsLibReady  } = useTeamsLib()
+const { isReady: isTeamsLibReady } = useTeamsLib()
 const { isReady: isPlayersLibReady } = usePlayersLib()
 const { getAdminRows: getCompetitions } = useCompetitions()
 const competitionsLib = getCompetitions() as Ref<Competition[] | undefined>

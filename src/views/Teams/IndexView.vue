@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import SpinnerComp from '@/components/SpinnerComp.vue';
+import SpinnerComp from '@/components/SpinnerComp.vue'
 import useTeamsLib from '@/composable/useTeamsLib'
 
 const { isReady } = useTeamsLib()

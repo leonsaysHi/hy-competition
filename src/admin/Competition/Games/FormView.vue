@@ -36,7 +36,7 @@ const getDefaultGame = (): Game => ({
   boxscore: {},
   awards: []
 })
-const getDefaultStats = ():PlayerBoxScore => ({
+const getDefaultStats = (): PlayerBoxScore => ({
   pts: 0,
   reb: 0,
   ast: 0,
@@ -45,7 +45,7 @@ const getDefaultStats = ():PlayerBoxScore => ({
   to: 0,
   pf: 0,
   m3pts: 0,
-  dnp: false,
+  dnp: false
 })
 const game: Game =
   competition?.value?.games?.find((game: Game) => game.id === gameId) || getDefaultGame()
@@ -61,21 +61,21 @@ const data = ref({
     {}
   ),
   // build boxscore from players:
-  boxscore: Object.values(game.teams)
-  .reduce(
-    (boxscore: GameBoxScore, teamId: TeamId) => {
+  boxscore: Object.values(game.teams).reduce((boxscore: GameBoxScore, teamId: TeamId) => {
+    const team: CompetitionTeam =
+      competition?.value?.teams?.find((t: CompetitionTeam) => t.id === teamId) ||
+      ({} as CompetitionTeam)
+    const players: PlayerId[] =
+      team.players.map((player: CompetitionPlayer): PlayerId => player.id) || []
 
-      const team: CompetitionTeam = competition?.value?.teams?.find((t:CompetitionTeam) => t.id === teamId) || {} as CompetitionTeam
-      const players: PlayerId[] = team.players.map((player: CompetitionPlayer):PlayerId => player.id) || []
-
-      players.forEach((playerId: PlayerId) => {
-        boxscore[playerId] = {
-          ...getDefaultStats(),
-          ...(game.boxscore[playerId] || {}),
-        }
-      })
-      return boxscore
-    }, {})
+    players.forEach((playerId: PlayerId) => {
+      boxscore[playerId] = {
+        ...getDefaultStats(),
+        ...(game.boxscore[playerId] || {})
+      }
+    })
+    return boxscore
+  }, {})
 })
 
 const isGameBusy = ref(false)

@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import useTeamsLib from '@/composable/useTeamsLib'
 const { rows: teamsLib } = useTeamsLib()
-
 </script>
 <template>
   <div>

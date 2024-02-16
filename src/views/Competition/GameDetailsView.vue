@@ -1,22 +1,25 @@
 <script lang="ts" setup>
-import { GamesKey } from '@/types/symbols'
-import type { Game } from '@/types/games'
-import type { Ref } from 'vue'
-import { inject, computed } from 'vue'
-const games = inject(GamesKey) as Ref<Game[]>
-
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import useCompetition from '@/composable/useCompetition'
+import SpinnerComp from '@/components/SpinnerComp.vue'
 
 const route = useRoute()
-const { gameId } = route.params
-const row = computed(() => games.value.find((r) => r.id === gameId))
+const { competitionId, gameId } = route.params
+
+const { isReady, row: competition } = useCompetition(competitionId)
+const row = computed(() => competition.value?.games?.find((game) => game.id === gameId))
 </script>
 <template>
   <div>
     <h1>Game home</h1>
-    <p>Single competition game details</p>
-    <p>
-      {{ row }}
-    </p>
+    <template v-if="!isReady">
+      <SpinnerComp />
+    </template>
+    <template v-else>
+      <p>
+        {{ row }}
+      </p>
+    </template>
   </div>
 </template>

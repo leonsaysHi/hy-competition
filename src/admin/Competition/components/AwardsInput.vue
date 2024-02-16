@@ -1,7 +1,9 @@
 <template>
   <div>
     <template v-for="(award, playerId) in model" :key="idx">
-      <h6 class="d-flex gap-3">{{ getPlayer(playerId) }}<span class="badge bg-warning">{{ awards[award] }}</span></h6>
+      <h6 class="d-flex gap-3">
+        {{ getPlayer(playerId) }}<span class="badge bg-warning">{{ awards[award] }}</span>
+      </h6>
     </template>
     <form class="d-flex align-items-end gap-3" @submit="handleAddAward">
       <FieldComp label="Add award:" class="flex-grow-1">
@@ -15,13 +17,14 @@
           required
         />
       </FieldComp>
-      
+
       <FieldComp>
         <ButtonComp variant="primary" type="submit">Add</ButtonComp>
       </FieldComp>
     </form>
   </div>
-</template>, toValue
+</template>
+, toValue
 
 <script setup lang="ts">
 import { ref, computed, inject } from 'vue'
@@ -62,30 +65,29 @@ const awards: { [key: Award]: string } = {
 }
 const awardsOptions = computed((): Option[] => {
   const awardsList: Award[] = Object.keys(awards)
-  return awardsList
-    .map((val: Award): Option => ({
+  return awardsList.map(
+    (val: Award): Option => ({
       text: awards[val],
       value: val
-    }))
+    })
+  )
 })
 const playersOptions = computed((): Option[] => {
-  const competitionPlayersList: PlayerId[] = competition.value.teams.reduce((list, team: CompetitionTeam) => {
-    return [
-      ...list,
-      ...team.players.map((player: CompetitionPlayer) => player.id)
-    ]
-  }, [])
-  const playersList: Player[] = competitionPlayersList
-    .map(
-      (playerId: PlayerId): Player => playersLib?.value.find((row) => row.id === playerId)
-    )
-  return playersList
-    .map(
-      (player: Player): Option => ({
-        text: `${player.fname} ${player.lname}`,
-        value: player.id
-      })
-    )
+  const competitionPlayersList: PlayerId[] = competition.value.teams.reduce(
+    (list, team: CompetitionTeam) => {
+      return [...list, ...team.players.map((player: CompetitionPlayer) => player.id)]
+    },
+    []
+  )
+  const playersList: Player[] = competitionPlayersList.map(
+    (playerId: PlayerId): Player => playersLib?.value.find((row) => row.id === playerId)
+  )
+  return playersList.map(
+    (player: Player): Option => ({
+      text: `${player.fname} ${player.lname}`,
+      value: player.id
+    })
+  )
 })
 
 const getPlayer = (playerId) => playersOptions.value.find((opt) => opt.value === playerId).text

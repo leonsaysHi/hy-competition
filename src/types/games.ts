@@ -4,7 +4,6 @@ import type { TeamId } from './teams'
 
 export type GameId = string
 
-
 export type GameBoxScore = { [key: PlayerId]: PlayerBoxScore }
 export type GameScores = { [key: TeamId]: number[] }
 

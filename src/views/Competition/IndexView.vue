@@ -11,7 +11,7 @@ const { isReady } = useCompetition(competitionId)
 <template>
   <template v-if="!isReady">
     <SpinnerComp />
-    </template>
+  </template>
   <template v-else>
     <RouterView></RouterView>
   </template>
