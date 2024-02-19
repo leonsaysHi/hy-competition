@@ -88,59 +88,59 @@ const router = createRouter({
         {
           path: '',
           name: 'admin',
-          component: () => import('../admin/Dashboard/IndexView.vue')
+          component: () => import('../admin/dashboard/IndexView.vue')
         },
         {
           path: 'players',
           name: 'admin-teams',
-          component: () => import('../admin/Teams/ListView.vue')
+          component: () => import('../admin/teams/ListView.vue')
         },
         {
           path: 'teams',
           name: 'admin-players',
-          component: () => import('../admin/Players/ListView.vue')
+          component: () => import('../admin/players/ListView.vue')
         },
         {
           path: 'competition/:competitionId',
           name: 'admin-competition-home',
           redirect: { name: 'admin-competition-games' },
-          component: () => import('../admin/Competition/IndexView.vue'),
+          component: () => import('../admin/competition/IndexView.vue'),
           children: [
             {
               path: 'edit',
               name: 'admin-competition-configuration',
-              component: () => import('../admin/Competition/Form.vue')
+              component: () => import('../admin/competition/FormView.vue')
             },
 
             {
               path: 'games',
-              component: () => import('../admin/Competition/Games/IndexView.vue'),
+              component: () => import('../admin/competition/games/IndexView.vue'),
               children: [
                 {
                   path: '',
                   name: 'admin-competition-games',
-                  component: () => import('../admin/Competition/Games/ListView.vue')
+                  component: () => import('../admin/competition/games/ListView.vue')
                 },
                 {
                   path: 'edit/:gameId',
                   name: 'admin-competition-edit-game',
-                  component: () => import('../admin/Competition/Games/FormView.vue')
+                  component: () => import('../admin/competition/games/FormView.vue')
                 }
               ]
             },
             {
               path: 'teams',
-              component: () => import('../admin/Competition/Teams/IndexView.vue'),
+              component: () => import('../admin/competition/teams/IndexView.vue'),
               children: [
                 {
                   path: '',
                   name: 'admin-competition-teams',
-                  component: () => import('../admin/Competition/Teams/ListView.vue')
+                  component: () => import('../admin/competition/teams/ListView.vue')
                 },
                 {
                   path: 'edit/:teamId',
                   name: 'admin-competition-edit-team',
-                  component: () => import('../admin/Competition/Teams/FormView.vue')
+                  component: () => import('../admin/competition/teams/FormView.vue')
                 }
               ]
             }

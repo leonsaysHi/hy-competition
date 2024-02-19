@@ -6,9 +6,12 @@ import { ref } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
 import TeamForm from './Form.vue'
+import useLibs from '@/composable/useLibs'
 import useTeamsLib from '@/composable/useTeamsLib'
+import SpinnerComp from '@/components/SpinnerComp.vue'
 
-const { rows: teams, deleteRows: deleteTeams } = useTeamsLib()
+const { isReady, teamsRows: rows } = useLibs()
+const { deleteRows } = useTeamsLib()
 const fields: TableField[] = [
   {
     key: 'title',
@@ -45,7 +48,7 @@ const handleConfirmDelete = (row: TableItem) => {
   deleteModal.value?.show()
 }
 const handleDelete = () => {
-  deleteTeams([deleteTeam.value as Team])
+  deleteRows([deleteTeam.value as Team])
   deleteTeam.value = null
   deleteModal.value?.hide()
 }
@@ -53,26 +56,31 @@ const handleDelete = () => {
 <template>
   <div>
     <h1>Teams admin</h1>
-    <div class="d-flex align-items-bottom justify-content-between">
-      <p>All teams list:</p>
-      <ButtonComp variant="primary" @click="handleCreate">Create</ButtonComp>
-    </div>
-    <TableComp :fields="fields" :items="teams">
-      <template #actions="{ item }">
-        <div class="d-flex justify-content-end gap-1">
-          <ButtonComp variant="light" size="sm" @click="() => handleEdit(item)">Edit</ButtonComp>
-          <ButtonComp variant="danger" size="sm" @click="() => handleConfirmDelete(item)"
-            >Delete</ButtonComp
-          >
-        </div>
-      </template>
-    </TableComp>
-    <ModalComp ref="editModal" title="Edit team" hide-footer>
-      <TeamForm :row="editTeam" @done="handleEditDone" />
-    </ModalComp>
-    <ModalComp ref="deleteModal" title="Delete team" ok-variant="danger" @ok="handleDelete">
-      Sure?
-    </ModalComp>
+    <template v-if="!isReady || !rows">
+      <SpinnerComp />
+    </template>
+    <template v-else>
+      <div class="d-flex align-items-bottom justify-content-between">
+        <p>All teams list:</p>
+        <ButtonComp variant="primary" @click="handleCreate">Create</ButtonComp>
+      </div>
+      <TableComp :fields="fields" :items="rows">
+        <template #actions="{ item }">
+          <div class="d-flex justify-content-end gap-1">
+            <ButtonComp variant="light" size="sm" @click="() => handleEdit(item)">Edit</ButtonComp>
+            <ButtonComp variant="danger" size="sm" @click="() => handleConfirmDelete(item)"
+              >Delete</ButtonComp
+            >
+          </div>
+        </template>
+      </TableComp>
+      <ModalComp ref="editModal" title="Edit team" hide-footer>
+        <TeamForm :row="editTeam" @done="handleEditDone" />
+      </ModalComp>
+      <ModalComp ref="deleteModal" title="Delete team" ok-variant="danger" @ok="handleDelete">
+        Sure?
+      </ModalComp>
+    </template>
   </div>
 </template>
 @/composable/useTeamsLib

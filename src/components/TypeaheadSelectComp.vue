@@ -18,11 +18,7 @@
         @select="handleSelect"
       />
       <div class="d-flex justify-content-center">
-        <InputComp
-          :value="selectedOption?.value || null"
-          :required="required"
-          class="visually-hidden"
-        />
+        <InputComp v-model="hiddenValue" :required="required" class="visually-hidden" />
       </div>
     </div>
   </template>
@@ -54,6 +50,10 @@ const searchStr = ref('')
 const model = computed({
   get: () => props.modelValue,
   set: (val) => emit('update:modelValue', val)
+})
+const hiddenValue = computed({
+  get: () => model.value || '',
+  set: () => {}
 })
 const selectedOption = computed(() =>
   model.value ? props.options.find((opt) => opt.value === model.value) : undefined

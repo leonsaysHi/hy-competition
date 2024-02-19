@@ -1,48 +1,28 @@
 <script lang="ts" setup>
-import type { Team, CompetitionTeam, TeamId } from '@/types/teams'
-import { TeamsLibKey, CompetitionKey } from '@/types/symbols'
-import { inject, computed } from 'vue'
 import PlayersSelect from './components/PlayersSelect.vue'
+import TeamForm from '@/admin/competition/forms/TeamForm.vue'
+import useLibs from '@/composable/useLibs'
+import useCompetition from '@/composable/useCompetition'
+import SpinnerComp from '@/components/SpinnerComp.vue'
 import { useRoute } from 'vue-router'
-import FieldComp from '@/components/FieldComp.vue'
-import InputComp from '@/components/InputComp.vue'
-
 const route = useRoute()
-const { teamId } = route.params
+const { competitionId, teamId } = route.params
+const { isReady: isLibsReady, getTeam } = useLibs()
 
-const competition = inject(CompetitionKey)
-const teamsLib = inject(TeamsLibKey)
+const { isReady } = useCompetition(competitionId)
 
-type FormData = {
-  id: TeamId | undefined
-  sponsor: string | undefined
-}
-const dataDefault: FormData = {
-  id: undefined,
-  sponsor: undefined
-}
-
-const data = ref({
-  ...dataDefault,
-  ...(competition?.value?.teams.find((team: CompetitionTeam) => team.id === teamId) as FormData)
-})
-
-const selectedTeam = computed((): Team | undefined => {
-  return data.value?.id ? teamsLib?.value?.find((row: Team) => row.id === data.value.id) : undefined
-})
-
-const handleSave = (ev: Event) => {
+const handleSubmit = (ev: Event) => {
   ev.preventDefault()
 }
 </script>
 <template>
   <h5>Edit</h5>
-  <h4 class="mb-0">{{ selectedTeam?.title }}</h4>
-  <p class="small text-muted">{{ data.id }}</p>
-  <form @submit="handleSave">
-    <FieldComp label="Sponsor">
-      <InputComp />
-    </FieldComp>
-  </form>
-  <PlayersSelect label="Players" />
+  <template v-if="!isLibsReady || !isReady">
+    <SpinnerComp />
+  </template>
+  <template v-else>
+    <h4 class="mb-0">{{ getTeam(teamId)?.title }}</h4>
+    <TeamForm :value="data" @submit="handleSubmit" />
+    <PlayersSelect label="Players" />
+  </template>
 </template>

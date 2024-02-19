@@ -1,8 +1,8 @@
 <template>
   <div>
-    <template v-for="(award, playerId) in model" :key="idx">
+    <template v-for="(award, playerId) in model" :key="playerId">
       <h6 class="d-flex gap-3">
-        {{ getPlayer(playerId) }}<span class="badge bg-warning">{{ awards[award] }}</span>
+        {{ getPlayerName(playerId) }}<span class="badge bg-warning">{{ awards[award] }}</span>
       </h6>
     </template>
     <form class="d-flex align-items-end gap-3" @submit="handleAddAward">
@@ -24,11 +24,10 @@
     </form>
   </div>
 </template>
-, toValue
 
 <script setup lang="ts">
-import { ref, computed, inject } from 'vue'
-import type { PlayerId, Player, CompetitionPlayer } from '@/types/players'
+import { ref, computed } from 'vue'
+import type { PlayerId, CompetitionPlayer } from '@/types/players'
 import type { CompetitionTeam } from '@/types/teams'
 import type { Award, Awards } from '@/types/stats'
 import type { Option } from '@/types/comp-fields'
@@ -37,11 +36,12 @@ import ButtonComp from '@/components/ButtonComp.vue'
 import FieldComp from '@/components/FieldComp.vue'
 import TypeaheadSelectComp from '@/components/TypeaheadSelectComp.vue'
 import SelectComp from '@/components/SelectComp.vue'
-import usePlayersLib from '@/composable/usePlayersLib'
-import { CompetitionKey } from '@/types/symbols'
+import useLibs from '@/composable/useLibs'
+import useCompetition from '@/composable/useCompetition'
+import { useRoute } from 'vue-router'
 
 interface IProps {
-  modelValue: Awards[]
+  modelValue: Awards
 }
 const props = withDefaults(defineProps<IProps>(), {})
 
@@ -50,14 +50,16 @@ type FormData = {
   award: Award | undefined
 }
 
+const route = useRoute()
+const { competitionId } = route.params
+
 const getDefaultData = (): FormData => ({
   playerId: undefined,
   award: undefined
 })
 const data = ref(getDefaultData())
-const competition = inject(CompetitionKey)
-
-const { rows: playersLib } = usePlayersLib()
+const { row: competition } = useCompetition(competitionId)
+const { getPlayerName } = useLibs()
 
 const awards: { [key: Award]: string } = {
   mvp: 'MVP',
@@ -73,24 +75,18 @@ const awardsOptions = computed((): Option[] => {
   )
 })
 const playersOptions = computed((): Option[] => {
-  const competitionPlayersList: PlayerId[] = competition.value.teams.reduce(
-    (list, team: CompetitionTeam) => {
+  const competitionPlayersList: PlayerId[] =
+    competition?.value?.teams?.reduce((list, team: CompetitionTeam) => {
       return [...list, ...team.players.map((player: CompetitionPlayer) => player.id)]
-    },
-    []
-  )
-  const playersList: Player[] = competitionPlayersList.map(
-    (playerId: PlayerId): Player => playersLib?.value.find((row) => row.id === playerId)
-  )
-  return playersList.map(
-    (player: Player): Option => ({
-      text: `${player.fname} ${player.lname}`,
-      value: player.id
+    }, []) || []
+  return competitionPlayersList.map(
+    (playerId: PlayerId): Option => ({
+      text: getPlayerName(playerId),
+      value: playerId
     })
   )
 })
 
-const getPlayer = (playerId) => playersOptions.value.find((opt) => opt.value === playerId).text
 const emit = defineEmits(['update:modelValue', 'input'])
 const model = computed({
   get: (): Awards => props.modelValue,

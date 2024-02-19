@@ -1,18 +1,14 @@
 <script lang="ts" setup>
 import { RouterLink, RouterView } from 'vue-router'
-import { provide, type Ref } from 'vue'
-import useTeamsLib from '@/composable/useTeamsLib'
-import usePlayersLib from '@/composable/usePlayersLib'
-import useCompetitions from '@/composable/useCompetitions'
-import { CompetitionsLibKey } from '@/types/symbols'
-import type { Competition } from '@/types/competitions'
+import useLibs from '@/composable/useLibs'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 
-const { isReady: isTeamsLibReady } = useTeamsLib()
-const { isReady: isPlayersLibReady } = usePlayersLib()
-const { getAdminRows: getCompetitions } = useCompetitions()
-const competitionsLib = getCompetitions() as Ref<Competition[] | undefined>
-provide(CompetitionsLibKey, competitionsLib)
+const {
+  isReady: isLibsReady,
+  isPlayersLibReady,
+  isCompetitionsLibReady,
+  isTeamsLibReady
+} = useLibs()
 </script>
 <template>
   <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
@@ -34,7 +30,7 @@ provide(CompetitionsLibKey, competitionsLib)
   </header>
   <main>
     <section class="py-5 container">
-      <template v-if="isTeamsLibReady && isPlayersLibReady && competitionsLib">
+      <template v-if="isLibsReady">
         <RouterView />
       </template>
       <template v-else>
@@ -43,7 +39,7 @@ provide(CompetitionsLibKey, competitionsLib)
         <p>
           Players: {{ isPlayersLibReady ? 'Ok' : 'Loading...' }} <br />Teams:
           {{ isTeamsLibReady ? 'Ok' : 'Loading...' }} <br />Competitions:
-          {{ competitionsLib ? 'Ok' : 'Loading...' }}
+          {{ isCompetitionsLibReady ? 'Ok' : 'Loading...' }}
         </p>
       </template>
     </section>

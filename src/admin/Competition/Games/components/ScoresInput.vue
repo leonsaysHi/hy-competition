@@ -30,7 +30,7 @@
         </div>
         <div>
           <InputComp
-            v-model="model[teamId][periodIdx]"
+            v-model.number="model[teamId][periodIdx]"
             type="number"
             @update="(v) => handleInput(teamId, periodIdx, v)"
           />
@@ -67,9 +67,11 @@ const getTotal = (arr: number[]) => {
   return arr.reduce((tot, n) => tot + n, 0)
 }
 const getPeriodsArray = computed(() => {
-  return model.value[Object.keys(model.value)[0]].map((score, idx) =>
-    idx < 4 ? `Q${idx + 1}` : `OT${idx - 3}`
-  )
+  return Object.keys(model.value).length
+    ? model.value[Object.keys(model.value)[0]].map((score, idx) =>
+        idx < 4 ? `Q${idx + 1}` : `OT${idx - 3}`
+      )
+    : []
 })
 const handleInput = (teamId, idx, val) => {
   const newValue = { ...model.value }

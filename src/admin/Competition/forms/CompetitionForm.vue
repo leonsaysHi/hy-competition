@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import { ref, inject } from 'vue'
+import { ref } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import InputComp from '@/components/InputComp.vue'
-import { CompetitionKey } from '@/types/symbols'
 import FieldComp from '@/components/FieldComp.vue'
 import type {
   CompetitionCategorie,
@@ -12,11 +11,6 @@ import type {
 import type { Option } from '@/types/comp-fields'
 import SelectComp from '@/components/SelectComp.vue'
 import CheckComp from '@/components/CheckComp.vue'
-import useCompetitions from '@/composable/useCompetitions'
-
-const { writeRow: writeCompetition } = useCompetitions()
-
-const item = inject(CompetitionKey)
 
 const sportsOptions: Option[] = [
   {
@@ -34,32 +28,38 @@ const gendersOptions: Option[] = 'M|F|MF'.split('|').map((str) => ({
   value: str
 }))
 
-type CompetitionForm = {
-  id: string | undefined
-  title: string
-  date: string
-  sport: CompetitionSport
-  category: CompetitionCategorie
-  gender: CompetitionGender
-  isActive: Boolean
+interface IProps {
+  value: FormData
+  isBusy?: boolean
 }
-const dataDefault = {
-  id: undefined,
-  title: '',
-  date: '',
-  sport: sportsOptions[0].value,
-  gender: undefined,
-  category: undefined,
-  isActive: false
-}
-const data = ref<CompetitionForm>({
-  ...dataDefault,
-  ...item?.value
+const props = withDefaults(defineProps<IProps>(), {
+  isBusy: false
 })
 
-const handleSubmit = async (ev: Event) => {
+type FormData = {
+  title?: string
+  date?: string
+  sport?: CompetitionSport
+  category?: CompetitionCategorie
+  gender?: CompetitionGender
+  isActive?: Boolean
+}
+const data = ref<FormData>({
+  title: '',
+  date: '',
+  sport: '',
+  gender: '',
+  category: '',
+  isActive: '',
+
+  ...props.value
+})
+
+const emit = defineEmits(['submit'])
+
+const handleSubmit = (ev: Event) => {
   ev.preventDefault()
-  writeCompetition(data.value)
+  emit('submit', data.value)
 }
 </script>
 <template>
@@ -84,7 +84,9 @@ const handleSubmit = async (ev: Event) => {
     </FieldComp>
 
     <div class="d-flex justify-content-end gap-2">
-      <ButtonComp variant="primary" type="submit">Save</ButtonComp>
+      <ButtonComp variant="primary" type="submit" :disabled="isBusy" :isBusy="isBusy"
+        >Save</ButtonComp
+      >
     </div>
   </form>
 </template>

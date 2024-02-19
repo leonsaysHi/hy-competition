@@ -11,6 +11,7 @@ export default function useCompetitionsLib() {
   const rows: Ref<Competition[] | undefined> = useFirestore(coll, undefined) as Ref<
     Competition[] | undefined
   >
+
   const isReady = computed(() => Array.isArray(rows.value))
   const get = (competitionId: CompetitionId) =>
     rows.value?.find((row: Competition) => row.id === competitionId)

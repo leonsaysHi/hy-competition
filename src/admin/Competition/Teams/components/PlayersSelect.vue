@@ -1,94 +1,75 @@
 <template>
   <div class="mb-3">
-    <TableComp :fields="fields" :items="playersItems">
-      <template #id="{ item }"> {{ item.fname }} {{ item.lname }} </template>
-      <template #actions="{ item }">
-        <div class="d-flex justify-content-end gap-1">
-          <ButtonComp variant="light" size="sm" @click="() => handleEditPlayer(item)"
-            >Edit</ButtonComp
-          >
-          <ButtonComp variant="danger" size="sm" @click="() => handleConfirmDeletePlayer(item)"
-            >Remove</ButtonComp
-          >
-        </div>
-      </template>
-    </TableComp>
-    <h5>Add player</h5>
-    <form @submit="handleAddPlayer" class="d-flex align-items-end gap-2">
-      <FieldComp label="Number">
-        <InputComp v-model="addPlayer.number" placeholder="#" required />
-      </FieldComp>
-      <FieldComp label="Player" class="flex-grow-1">
-        <TypeaheadSelectComp
-          v-model="addPlayer.id"
-          :options="playersOptions"
-          placeholder="Player"
-          required
-        />
-      </FieldComp>
-      <div class="mb-3">
-        <ButtonComp
-          variant="primary"
-          type="submit"
-          :disabled="!addPlayer.id || addPlayerIsBusy"
-          :is-busy="addPlayerIsBusy"
-          >Add</ButtonComp
-        >
-      </div>
-    </form>
-    <ModalComp ref="editModal" title="Edit player" hide-footer>
-      <template v-if="editPlayer">
-        <form @submit="handleSubmitPlayer">
-          <h5>{{ editPlayer.fname }} {{ editPlayer.lname }}</h5>
-          <FieldComp label="Number">
-            <InputComp v-model="editPlayer.number" :options="teamsOptions" />
-          </FieldComp>
-          <div class="d-flex justify-content-end gap-2">
-            <ButtonComp variant="light" @click="editModal.hide">Cancel</ButtonComp>
-            <ButtonComp variant="primary" type="submit">Save</ButtonComp>
+    <template v-if="!isLibsReady">
+      <SpinnerComp />
+    </template>
+    <template v-else>
+      <TableComp :fields="fields" :items="playersItems">
+        <template #id="{ item }"> {{ item.fname }} {{ item.lname }} </template>
+        <template #actions="{ item }">
+          <div class="d-flex justify-content-end gap-1">
+            <ButtonComp variant="light" size="sm" @click="() => handleEditPlayer(item)"
+              >Edit</ButtonComp
+            >
+            <ButtonComp variant="danger" size="sm" @click="() => handleConfirmDeletePlayer(item)"
+              >Remove</ButtonComp
+            >
           </div>
-        </form>
-      </template>
-    </ModalComp>
-    <ModalComp ref="deleteModal" title="Confirm removal" ok-title="Remove" ok-variant="danger">
-      <p>
-        Sure to remove player
-        <strong>{{ deletePlayer?.fname }} {{ deletePlayer?.lname }}</strong> from team.
-      </p>
-      <template #modal-ok="{ okTitle, okVariant, okDisabled }">
-        <ButtonComp
-          :variant="okVariant"
-          :disabled="okDisabled"
-          :isBusy="deletePlayerIsBusy"
-          @click="handleRemove"
-        >
-          {{ okTitle }}
-        </ButtonComp>
-      </template>
-    </ModalComp>
+        </template>
+      </TableComp>
+      <h5>Add player</h5>
+      <AddTeamPlayerForm :playersOptions="playersOptions" @submit="handleAddPlayer" />
+      <ModalComp ref="editModal" title="Edit player" hide-footer>
+        <template v-if="editPlayer">
+          <TeamPlayerForm :value="editPlayer" :player="editPlayer" @submit="handleSubmitPlayer" />
+        </template>
+      </ModalComp>
+      <ModalComp ref="deleteModal" title="Confirm removal" ok-title="Remove" ok-variant="danger">
+        <p>
+          Sure to remove player
+          <strong>{{ deletePlayer?.fname }} {{ deletePlayer?.lname }}</strong> from team.
+        </p>
+        <template #modal-ok="{ okTitle, okVariant, okDisabled }">
+          <ButtonComp
+            :variant="okVariant"
+            :disabled="okDisabled"
+            :isBusy="deletePlayerIsBusy"
+            @click="handleRemove"
+          >
+            {{ okTitle }}
+          </ButtonComp>
+        </template>
+      </ModalComp>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, inject, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import TypeaheadSelectComp from '@/components/TypeaheadSelectComp.vue'
-import { CompetitionKey } from '@/types/symbols'
+import { ref, computed } from 'vue'
 
-import usePlayersLib from '@/composable/usePlayersLib'
-import InputComp from '@/components/InputComp.vue'
-import FieldComp from '@/components/FieldComp.vue'
+import AddTeamPlayerForm from '@/admin/competition/forms/AddTeamPlayerForm.vue'
+import TeamPlayerForm from '@/admin/competition/forms/TeamPlayerForm.vue'
 import TableComp from '@/components/TableComp.vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import type { TableField, TableItem } from '@/types/comp-table'
-import type { CompetitionPlayer, CompetitionPlayerDoc, Player } from '@/types/players'
+import type { CompetitionPlayer, Player, PlayerId } from '@/types/players'
 import type { Option } from '@/types/comp-fields'
 import ModalComp from '@/components/ModalComp.vue'
-import useCompetitions from '@/composable/useCompetitions'
 import type { CompetitionTeam } from '@/types/teams'
 
-const competition = inject(CompetitionKey)
-const { rows: playersLib } = usePlayersLib()
+import useLibs from '@/composable/useLibs'
+import useCompetition from '@/composable/useCompetition'
+import SpinnerComp from '@/components/SpinnerComp.vue'
+import { useRoute } from 'vue-router'
+const route = useRoute()
+const { competitionId, teamId } = route.params
+const { isReady: isLibsReady, playersRows: playersLib, getPlayer } = useLibs()
+
+const {
+  row: competition,
+  addTeamPlayer: addPlayerDoc,
+  deleteTeamPlayer: removePlayerDoc
+} = useCompetition(competitionId)
 
 const playersOptions = computed((): Option[] => {
   const competitionOtherPlayers: PlayerId[] = competition?.value?.teams
@@ -135,7 +116,7 @@ const players = computed((): CompetitionPlayer[] => {
 const playersItems = computed(() => {
   return players.value
     ? players.value.map((row: CompetitionPlayer) => {
-        const player: Player | undefined = playersLib?.value?.find((p) => row.id === p.id)
+        const player: Player | undefined = getPlayer(row.id)
         const { fname, lname, dob, identification } = player || {}
         return {
           fname,
@@ -148,39 +129,26 @@ const playersItems = computed(() => {
     : []
 })
 
-const route = useRoute()
-const { competitionId, teamId } = route.params
-const { addRowTeamPlayer: addPlayerDoc, deleteRowTeamPlayer: removePlayerDoc } = useCompetitions()
 // Add Player
-const addPlayer = ref<CompetitionPlayer>({})
-const addPlayerIsBusy = ref(false)
-const handleAddPlayer = async (ev: Event) => {
-  ev.preventDefault()
-  addPlayerIsBusy.value = true
-  await addPlayerDoc(competitionId, teamId, { ...addPlayer.value })
-  addPlayerIsBusy.value = false
-  addPlayer.value = {}
+const handleAddPlayer = async (data) => {
+  await addPlayerDoc(competitionId, teamId, { ...data })
 }
 
 // Edit Player
 const editPlayer = ref<undefined | CompetitionPlayer>(undefined)
-const editPlayerIsBusy = ref(false)
 const editModal = ref<typeof ModalComp>()
 const handleEditPlayer = (item: TableItem) => {
   editPlayer.value = item as unknown as CompetitionPlayer
   editModal.value?.show()
 }
-const handleSubmitPlayer = async (ev: Event) => {
-  ev.preventDefault()
-  editPlayerIsBusy.value = true
-  const { id, number }: CompetitionPlayer = editPlayer.value
+const handleSubmitPlayer = async (data: CompetitionPlayer) => {
+  const { id, number }: CompetitionPlayer = data
   const idx = players.value.findIndex((player: CompetitionPlayer) => player.id === id)
   const payload = {
     ...players.value[idx],
     number
   } as CompetitionPlayer
   await addPlayerDoc(competitionId, teamId, payload)
-  editPlayerIsBusy.value = false
   editModal.value?.hide()
 }
 // Delete Player

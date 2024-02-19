@@ -29,7 +29,10 @@ export default function usePlayersLib() {
   const isReady = computed(() => Array.isArray(rows.value))
   const get = (playerId: PlayerId): Player =>
     rows.value?.find((r) => r.id === playerId) || ({} as Player)
-
+  const getName = (playerId: PlayerId): string => {
+    const player: Player = get(playerId)
+    return [player.fname, player.lname].filter(Boolean).join(' ')
+  }
   const { writeDocs, deleteDocs } = useFirestoreAdmin()
   const writeRows = (rows: any[]) => writeDocs(rows, coll)
   const deleteRows = async (rows: Player[]) => {
@@ -40,6 +43,8 @@ export default function usePlayersLib() {
     isReady,
     rows,
     get,
+    getName,
+
     // admin
     writeRows,
     deleteRows

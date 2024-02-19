@@ -7,9 +7,12 @@ import { ref } from 'vue'
 import usePlayersLib from '@/composable/usePlayersLib'
 import ButtonComp from '@/components/ButtonComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
+import SpinnerComp from '@/components/SpinnerComp.vue'
 import PlayerForm from './Form.vue'
+import useLibs from '@/composable/useLibs'
 
-const { rows: players, deleteRows: deletePlayers } = usePlayersLib()
+const { isReady, playersRows: rows } = useLibs()
+const { deleteRows: deletePlayers } = usePlayersLib()
 const fields: TableField[] = [
   {
     key: 'name',
@@ -60,26 +63,31 @@ const handleDelete = () => {
 <template>
   <div>
     <h1>Players admin</h1>
-    <div class="d-flex align-items-bottom justify-content-between">
-      <p>All players list:</p>
-      <ButtonComp variant="primary" @click="handleCreate">Create</ButtonComp>
-    </div>
-    <TableComp :fields="fields" :items="players">
-      <template #name="{ item }"> {{ item.fname }} {{ item.lname }} </template>
-      <template #actions="{ item }">
-        <div class="d-flex justify-content-end gap-1">
-          <ButtonComp variant="light" size="sm" @click="() => handleEdit(item)">Edit</ButtonComp>
-          <ButtonComp variant="danger" size="sm" @click="() => handleConfirmDelete(item)"
-            >Delete</ButtonComp
-          >
-        </div>
-      </template>
-    </TableComp>
-    <ModalComp ref="editModal" title="Edit player" hide-footer>
-      <PlayerForm :row="editPlayer" @done="handleEditDone" />
-    </ModalComp>
-    <ModalComp ref="deleteModal" title="Delete player" ok-variant="danger" @ok="handleDelete">
-      Sure?
-    </ModalComp>
+    <template v-if="!isReady || !rows">
+      <SpinnerComp />
+    </template>
+    <template v-else>
+      <div class="d-flex align-items-bottom justify-content-between">
+        <p>All players list:</p>
+        <ButtonComp variant="primary" @click="handleCreate">Create</ButtonComp>
+      </div>
+      <TableComp :fields="fields" :items="rows">
+        <template #name="{ item }"> {{ item.fname }} {{ item.lname }} </template>
+        <template #actions="{ item }">
+          <div class="d-flex justify-content-end gap-1">
+            <ButtonComp variant="light" size="sm" @click="() => handleEdit(item)">Edit</ButtonComp>
+            <ButtonComp variant="danger" size="sm" @click="() => handleConfirmDelete(item)"
+              >Delete</ButtonComp
+            >
+          </div>
+        </template>
+      </TableComp>
+      <ModalComp ref="editModal" title="Edit player" hide-footer>
+        <PlayerForm :row="editPlayer" @done="handleEditDone" />
+      </ModalComp>
+      <ModalComp ref="deleteModal" title="Delete player" ok-variant="danger" @ok="handleDelete">
+        Sure?
+      </ModalComp>
+    </template>
   </div>
 </template>

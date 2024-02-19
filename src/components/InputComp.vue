@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 interface IProps {
-  modelValue: string
+  modelValue: string | number
   type?: 'text' | 'number' | 'email' | 'file' | 'date' | 'datetime-local' | 'color' | 'hidden'
   placeholder?: string
   readonly?: boolean

@@ -1,6 +1,7 @@
 import type { Awards, Stats } from './stats'
-import type { CompetitionTeam } from './teams'
+import type { CompetitionTeam, Team, TeamId } from './teams'
 import type { Game } from './games'
+import type { Player, PlayerAdverages, PlayerAwards, PlayerId } from './players'
 export type CompetitionId = string
 export type CompetitionSport = 'basketball'
 export type CompetitionCategorie =
@@ -33,6 +34,7 @@ export interface CompetitionDoc {
   gender: CompetitionGender
   awards: Awards[]
   isActive: boolean
+  isOver: boolean
 }
 
 export interface Competition extends CompetitionDoc {
@@ -42,9 +44,17 @@ export interface Competition extends CompetitionDoc {
 }
 
 // computed data
-export interface CompetitionTeamStandComputed extends Stats {
+export interface CompetitionTeamComputed {
+  id: TeamId
+  sponsor: string
+  team: Team
   gp: number
   wins: number
   pos: number
-  last3: boolean | null[]
+  last3: boolean[]
+}
+export interface CompetitionPlayerComputed {
+  id: PlayerId
+  avg: PlayerAdverages // on game update
+  awards: PlayerAwards // on game/competition update
 }

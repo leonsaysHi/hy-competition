@@ -1,34 +1,38 @@
 <script lang="ts" setup>
-import { ref, inject, computed } from 'vue'
+import { ref, computed } from 'vue'
 import type { TableField, TableItem } from '@/types/comp-table'
 import ButtonComp from '@/components/ButtonComp.vue'
 import TableComp from '@/components/TableComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
 import TypeaheadSelectComp from '@/components/TypeaheadSelectComp.vue'
 import FieldComp from '@/components/FieldComp.vue'
-import { TeamsLibKey, CompetitionKey } from '@/types/symbols'
 import type { CompetitionTeam, Team, TeamId } from '@/types/teams'
 import type { Option } from '@/types/comp-fields'
-import useCompetitions from '@/composable/useCompetitions'
 
-const { addRowTeam: addCompetitionTeamDoc, deleteRowTeam: deleteCompetitionTeamDoc } =
-  useCompetitions()
+import useCompetition from '@/composable/useCompetition'
+import useLibs from '@/composable/useLibs'
+import SpinnerComp from '@/components/SpinnerComp.vue'
+import { useRoute } from 'vue-router'
+const route = useRoute()
+const { competitionId } = route.params
+const { isReady: isLibsReady, teamsRows: teamsLib, getTeam } = useLibs()
 
-const item = inject(CompetitionKey)
-const teamsLib = inject(TeamsLibKey)
+const {
+  isReady: isRowReady,
+  row,
+  addTeam: addCompetitionTeamDoc,
+  deleteTeam: deleteCompetitionTeamDoc
+} = useCompetition(competitionId)
 
 const fields: TableField[] = [
   { key: 'id', label: 'Teams' },
   { key: 'players', label: 'Players' },
   { key: 'actions', label: '' }
 ]
-const getTeam = (teamId: TeamId): Team | undefined => {
-  return teamsLib?.value?.find((team) => teamId === team.id)
-}
 
 const addTeamsOptions = computed((): Option[] => {
-  const competitionTeams: TeamId[] = item?.value?.teams
-    ? item?.value?.teams.map((team: CompetitionTeam) => team.id)
+  const competitionTeams: TeamId[] = row?.value?.teams
+    ? row?.value?.teams.map((team: CompetitionTeam) => team.id)
     : []
   return teamsLib?.value
     ? teamsLib?.value.map(
@@ -50,7 +54,7 @@ const getDefaultTeam = (): CompetitionTeam => ({
 const addTeam = ref<CompetitionTeam>(getDefaultTeam())
 const handleAddTeam = async (ev: Event) => {
   ev.preventDefault()
-  await addCompetitionTeamDoc(item?.value.id, { ...addTeam.value })
+  await addCompetitionTeamDoc(row?.value?.id, { ...addTeam.value })
   addTeam.value = getDefaultTeam()
 }
 
@@ -64,7 +68,7 @@ const handleConfirmDeleteTeam = (row: TableItem) => {
 }
 const handleRemove = async () => {
   deletePlayerIsBusy.value = true
-  await deleteCompetitionTeamDoc(item?.value.id, deleteTeam.value)
+  await deleteCompetitionTeamDoc(row?.value?.id, deleteTeam.value)
   deletePlayerIsBusy.value = false
   deleteModal.value?.hide()
 }
@@ -72,50 +76,55 @@ const handleRemove = async () => {
 <template>
   <div>
     <p>All Teams list:</p>
-    <TableComp :fields="fields" :items="item.teams">
-      <template #id="{ item }">
-        {{ getTeam(item.id).title }}
-      </template>
-      <template #players="{ item }">
-        {{ item.players.length }}
-      </template>
-      <template #actions="{ item }">
-        <div class="d-flex justify-content-end gap-1">
-          <RouterLink
-            class="btn btn-light btn-sm"
-            :to="{ name: 'admin-competition-edit-team', params: { teamId: item.id } }"
-            >Edit</RouterLink
-          >
-          <ButtonComp variant="danger" size="sm" @click="handleConfirmDeleteTeam(item)"
-            >Remove</ButtonComp
-          >
+    <template v-if="!isLibsReady || !isRowReady">
+      <SpinnerComp />
+    </template>
+    <template v-else>
+      <TableComp :fields="fields" :items="row?.teams">
+        <template #id="{ item }">
+          {{ getTeam(item.id).title }}
+        </template>
+        <template #players="{ item }">
+          {{ item.players.length }}
+        </template>
+        <template #actions="{ item }">
+          <div class="d-flex justify-content-end gap-1">
+            <RouterLink
+              class="btn btn-light btn-sm"
+              :to="{ name: 'admin-competition-edit-team', params: { teamId: item.id } }"
+              >Edit</RouterLink
+            >
+            <ButtonComp variant="danger" size="sm" @click="handleConfirmDeleteTeam(item)"
+              >Remove</ButtonComp
+            >
+          </div>
+        </template>
+      </TableComp>
+      <h5>Add team</h5>
+      <form @submit="handleAddTeam" class="d-flex align-items-end gap-2">
+        <FieldComp label="Team" class="flex-grow-1">
+          <TypeaheadSelectComp v-model="addTeam.id" :options="addTeamsOptions" required />
+        </FieldComp>
+        <div class="mb-3">
+          <ButtonComp variant="primary" type="submit">Add</ButtonComp>
         </div>
-      </template>
-    </TableComp>
-    <h5>Add team</h5>
-    <form @submit="handleAddTeam" class="d-flex align-items-end gap-2">
-      <FieldComp label="Team" class="flex-grow-1">
-        <TypeaheadSelectComp v-model="addTeam.id" :options="addTeamsOptions" required />
-      </FieldComp>
-      <div class="mb-3">
-        <ButtonComp variant="primary" type="submit">Add</ButtonComp>
-      </div>
-    </form>
-    <ModalComp ref="deleteModal" title="Confirm removal" ok-title="Remove" ok-variant="danger">
-      <p>
-        Sure to remove team
-        <strong>{{ getTeam(deleteTeam?.id)?.title }}</strong> from team.
-      </p>
-      <template #modal-ok="{ okTitle, okVariant, okDisabled }">
-        <ButtonComp
-          :variant="okVariant"
-          :disabled="okDisabled"
-          :isBusy="deletePlayerIsBusy"
-          @click="handleRemove"
-        >
-          {{ okTitle }}
-        </ButtonComp>
-      </template>
-    </ModalComp>
+      </form>
+      <ModalComp ref="deleteModal" title="Confirm removal" ok-title="Remove" ok-variant="danger">
+        <p>
+          Sure to remove team
+          <strong>{{ getTeam(deleteTeam?.id)?.title }}</strong> from team.
+        </p>
+        <template #modal-ok="{ okTitle, okVariant, okDisabled }">
+          <ButtonComp
+            :variant="okVariant"
+            :disabled="okDisabled"
+            :isBusy="deletePlayerIsBusy"
+            @click="handleRemove"
+          >
+            {{ okTitle }}
+          </ButtonComp>
+        </template>
+      </ModalComp>
+    </template>
   </div>
 </template>

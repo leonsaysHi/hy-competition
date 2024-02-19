@@ -23,14 +23,3 @@ export interface CompetitionTeam {
   sponsor: string
   players: CompetitionPlayer[]
 }
-
-// computed data
-export interface CompetitionTeamComputed {
-  id: TeamId
-  sponsor: string
-  team: Team
-  gp: number
-  wins: number
-  pos: number
-  last3: boolean[]
-}
