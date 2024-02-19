@@ -1,4 +1,4 @@
-import type { Stats, Award } from './stats'
+import type { Stats, AwardItem } from './stats'
 import type { GameId } from './games'
 import type { CompetitionId } from './competitions'
 
@@ -27,6 +27,6 @@ export interface PlayerAdverages extends Stats {
   gp: number
 }
 export interface PlayerAwards {
-  games: { [key: GameId]: Award }
-  competitions: { [key: CompetitionId]: Award }
+  games: { [key: GameId]: AwardItem[] }
+  competitions: { [key: CompetitionId]: AwardItem[] }
 }

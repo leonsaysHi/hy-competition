@@ -1,7 +1,7 @@
-import type { Awards, Stats } from './stats'
+import type { AwardItem } from './stats'
 import type { CompetitionTeam, Team, TeamId } from './teams'
 import type { Game } from './games'
-import type { Player, PlayerAdverages, PlayerAwards, PlayerId } from './players'
+import type { PlayerAdverages, PlayerAwards, PlayerId } from './players'
 export type CompetitionId = string
 export type CompetitionSport = 'basketball'
 export type CompetitionCategorie =
@@ -32,7 +32,7 @@ export interface CompetitionDoc {
   sport: CompetitionSport
   category: CompetitionCategorie
   gender: CompetitionGender
-  awards: Awards[]
+  awards: AwardItem[]
   isActive: boolean
   isOver: boolean
 }

@@ -8,7 +8,7 @@ import InputComp from '@/components/InputComp.vue'
 import ScoresInput from '@/admin/competition/games/components/ScoresInput.vue'
 import BoxScoreInput from '@/admin/competition/games/components/BoxScoreInput.vue'
 import AwardsInput from '@/admin/competition/components/AwardsInput.vue'
-import type { Awards, PlayerBoxScore } from '@/types/stats'
+import type { AwardItem, PlayerBoxScore } from '@/types/stats'
 
 interface IProps {
   value: FormData
@@ -26,7 +26,7 @@ type FormData = {
   datetime: string
   scores: GameScores
   boxscore: GameBoxScore
-  awards: Awards
+  awards: AwardItem[]
 }
 const getDefaultStats = (): PlayerBoxScore => ({
   pts: 0,

@@ -1,10 +1,10 @@
 import type { PlayerId } from './players'
 
 export type Award = 'mvp' | 'def'
-export interface Awards {
-  [key: PlayerId]: Award
+export interface AwardItem {
+  id: PlayerId
+  value: Award
 }
-;[]
 
 export interface Stats {
   pts: number

@@ -1,4 +1,4 @@
-import type { Awards, PlayerBoxScore } from './stats'
+import type { AwardItem, PlayerBoxScore } from './stats'
 import type { PlayerId } from './players'
 import type { TeamId } from './teams'
 
@@ -12,7 +12,7 @@ export interface GameDoc {
   teams: TeamId[]
   scores: GameScores
   boxscore: GameBoxScore
-  awards: Awards[]
+  awards: AwardItem[]
 }
 
 export interface Game extends GameDoc {

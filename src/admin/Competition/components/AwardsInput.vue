@@ -1,11 +1,13 @@
 <template>
   <div>
-    <template v-for="(award, playerId) in model" :key="playerId">
+    <template v-for="(award, idx) in model" :key="idx">
       <h6 class="d-flex gap-3">
-        {{ getPlayerName(playerId) }}<span class="badge bg-warning">{{ awards[award] }}</span>
+        <span>{{ getPlayerName(award.id) }}</span>
+        <span class="badge bg-warning">{{ awards[award.value] }}</span>
+        <ButtonComp variant="danger" class="btn-close" size="sm" @click="() => handleDelete(idx)"></ButtonComp>
       </h6>
     </template>
-    <form class="d-flex align-items-end gap-3" @submit="handleAddAward">
+    <form class="d-flex align-items-end gap-3" @submit="handleAdd">
       <FieldComp label="Add award:" class="flex-grow-1">
         <SelectComp v-model="data.award" :options="awardsOptions" placeholder="Award..." required />
       </FieldComp>
@@ -29,7 +31,7 @@
 import { ref, computed } from 'vue'
 import type { PlayerId, CompetitionPlayer } from '@/types/players'
 import type { CompetitionTeam } from '@/types/teams'
-import type { Award, Awards } from '@/types/stats'
+import type { Award, AwardItem } from '@/types/stats'
 import type { Option } from '@/types/comp-fields'
 import ButtonComp from '@/components/ButtonComp.vue'
 
@@ -41,7 +43,7 @@ import useCompetition from '@/composable/useCompetition'
 import { useRoute } from 'vue-router'
 
 interface IProps {
-  modelValue: Awards
+  modelValue: AwardItem[]
 }
 const props = withDefaults(defineProps<IProps>(), {})
 
@@ -66,17 +68,16 @@ const awards: { [key: Award]: string } = {
   def: 'Defensive player'
 }
 const awardsOptions = computed((): Option[] => {
-  const awardsList: Award[] = Object.keys(awards)
-  return awardsList.map(
-    (val: Award): Option => ({
-      text: awards[val],
-      value: val
+  return Object.keys(awards).map(
+    (value: Award) => ({
+      text: awards[value],
+      value
     })
   )
 })
 const playersOptions = computed((): Option[] => {
   const competitionPlayersList: PlayerId[] =
-    competition?.value?.teams?.reduce((list, team: CompetitionTeam) => {
+    competition?.value?.teams?.reduce((list: PlayerId[], team: CompetitionTeam) => {
       return [...list, ...team.players.map((player: CompetitionPlayer) => player.id)]
     }, []) || []
   return competitionPlayersList.map(
@@ -89,16 +90,23 @@ const playersOptions = computed((): Option[] => {
 
 const emit = defineEmits(['update:modelValue', 'input'])
 const model = computed({
-  get: (): Awards => props.modelValue,
-  set: (val: Awards) => emit('update:modelValue', val)
+  get: (): AwardItem[] => props.modelValue,
+  set: (val: AwardItem[]) => emit('update:modelValue', val)
 })
 
-const handleAddAward = (ev: Event) => {
+const handleDelete = (idx) => {
+  const newValue = model.value.slice()
+  newValue.splice(idx, 1)
+  model.value = newValue
+}
+const handleAdd = (ev: Event) => {
   ev.preventDefault()
-  model.value = {
-    ...model.value,
-    [data.value.playerId]: data.value.award
-  }
+  model.value.push(
+    { 
+      id: data.value.playerId,
+      value: data.value.award 
+    } as AwardItem
+  )
   data.value = getDefaultData()
 }
 </script>
