@@ -47,10 +47,10 @@ type FormData = {
 const data = ref<FormData>({
   title: '',
   date: '',
-  sport: '',
-  gender: '',
-  category: '',
-  isActive: '',
+  sport: sportsOptions[0].value,
+  gender: undefined,
+  category: undefined,
+  isActive: false,
 
   ...props.value
 })

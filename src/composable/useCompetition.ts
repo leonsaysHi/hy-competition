@@ -18,7 +18,7 @@ const coll = competitionsColl.withConverter(competitionConverter)
 
 const { writeDocs, deleteDocs } = useFirestoreAdmin()
 
-export default function useCompetition(competitionId: CompetitionId) {
+export default function useCompetition(competitionId: CompetitionId | undefined) {
   const { isReady: isLibsReady, getCompetition } = useLibs()
 
   const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`).withConverter(
@@ -125,13 +125,13 @@ export default function useCompetition(competitionId: CompetitionId) {
   }
   const writeRow = async (competition: Competition) => {
     const {
-      id,
-      games,
-      teams,
+      id = undefined,
+      // games,
+      teams = [],
       ...competitionDoc
     }: {
       id: CompetitionId
-      games: Game[]
+      // games: Game[]
       teams: CompetitionTeam[]
       competitionDoc: CompetitionDoc
     } = competition
@@ -139,17 +139,18 @@ export default function useCompetition(competitionId: CompetitionId) {
     const batch = writeBatch(db)
 
     // doc
-    const CompRef = id ? doc(coll, id) : doc(coll)
-    batch.set(CompRef, competitionDoc)
+    const compRef = id ? doc(coll, id) : doc(coll)
+    batch.set(compRef, competitionDoc)
 
     /*
-      // games
-      games.forEach((game: Game) => {
-        const { id, ...gameDoc}: { id: GameId, gameDoc: GameDoc } = game
-        const gameRef = id ? doc(gamesColl(CompRef.id), id) : doc(gamesColl(CompRef.id))
-        batch.set(gameRef, gameDoc)
-      })
-      */
+    // games
+    games.forEach((game: Game) => {
+      const { id, ...gameDoc}: { id: GameId, gameDoc: GameDoc } = game
+      const gameRef = id ? doc(gamesColl(CompRef.id), id) : doc(gamesColl(CompRef.id))
+      batch.set(gameRef, gameDoc)
+    })
+    */
+
     // teams
     teams.forEach((team: CompetitionTeam) => {
       const {
