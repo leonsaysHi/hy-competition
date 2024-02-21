@@ -30,7 +30,7 @@ const data = ref<TeamForm>({
 })
 
 const emit = defineEmits(['done'])
-const { rows: teams, writeRows: writeTeams } = useTeamsLib()
+const { rows, writeRows: writeTeams } = useTeamsLib()
 
 const errors: Ref<{ [key: string]: undefined | string }> = ref({})
 
@@ -49,8 +49,8 @@ const handleSubmit = async (ev: Event) => {
   const row = data.value as Team
   const { id, title } = row
   if (
-    teams.value.findIndex(
-      (r) => (!id || r.id !== id) && r.title.toLowerCase() === title.toLowerCase()
+    rows.value.findIndex(
+      (team:Team) => (!id || team.id !== id) && team.title.toLowerCase() === title.toLowerCase()
     ) > -1
   ) {
     errors.value.title = 'This team already exists'

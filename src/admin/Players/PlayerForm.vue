@@ -34,7 +34,7 @@ const data = ref<PlayerForm>({
 })
 
 const emit = defineEmits(['done'])
-const { players: rows, writeRows: writePlayers } = usePlayersLib()
+const { rows, writeRows: writePlayers } = usePlayersLib()
 
 const errors: Ref<{ [key: string]: undefined | string }> = ref({})
 
@@ -53,8 +53,8 @@ const handleSubmit = async (ev: Event) => {
   const row = data.value as Player
   const { id, identification } = row
   if (
-    players.value.findIndex(
-      (r) => (!id || r.id !== id) && r.identification.toLowerCase() === identification.toLowerCase()
+    rows.value.findIndex(
+      (player: Player) => (!id || player.id !== id) && player.identification.toLowerCase() === identification.toLowerCase()
     ) > -1
   ) {
     errors.value.identification = 'This player already exists'
