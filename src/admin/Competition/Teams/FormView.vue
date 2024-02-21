@@ -11,7 +11,7 @@ import { computed } from 'vue'
 const route = useRoute()
 const { competitionId, teamId } = route.params
 const { isReady: isLibsReady, getTeam } = useLibs()
-const { isReady, row, writeTeam: writeCompetitionTeam } = useCompetition(competitionId)
+const { isReady, row, writeTeamDoc: writeCompetitionTeam } = useCompetition(competitionId)
 
 const data = computed(() => {
   return row.value?.teams?.find((team: CompetitionTeam) => team.id === teamId)

@@ -25,6 +25,8 @@ export const competitionConverter = {
     const data = snapshot.data(options)!
     return {
       id: snapshot.id,
+      games: [],
+      teams: [],
       ...data,
       lastUpdate: data.lastUpdate ? dateFromFirestore(data.lastUpdate) : new Date()
     }
@@ -58,6 +60,7 @@ export const teamConverter = {
     const data = snapshot.data(options)!
     return {
       id: snapshot.id,
+      players: [],
       ...data
     }
   }

@@ -20,7 +20,7 @@ const { isReady: isLibsReady, teamsRows: teamsLib, getTeam } = useLibs()
 const {
   isReady: isRowReady,
   row,
-  writeTeam: addCompetitionTeam,
+  writeTeamDoc: addCompetitionTeam,
   deleteTeam: deleteCompetitionTeam
 } = useCompetition(competitionId)
 

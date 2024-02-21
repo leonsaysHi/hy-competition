@@ -67,8 +67,8 @@ const { isReady: isLibsReady, playersRows: playersLib, getPlayer } = useLibs()
 
 const {
   row: competition,
-  addTeamPlayer: addPlayerDoc,
-  deleteTeamPlayer: removePlayerDoc
+  writePlayer: addPlayer,
+  deletePlayer: removePlayer,
 } = useCompetition(competitionId)
 
 const playersOptions = computed((): Option[] => {
@@ -131,7 +131,7 @@ const playersItems = computed(() => {
 
 // Add Player
 const handleAddPlayer = async (data) => {
-  await addPlayerDoc(teamId, { ...data })
+  await addPlayer(teamId, { ...data })
 }
 
 // Edit Player
@@ -148,7 +148,7 @@ const handleSubmitPlayer = async (data: CompetitionPlayer) => {
     ...players.value[idx],
     number
   } as CompetitionPlayer
-  await addPlayerDoc(teamId, payload)
+  await addPlayer(teamId, payload)
   editModal.value?.hide()
 }
 // Delete Player
@@ -161,7 +161,7 @@ const handleConfirmDeletePlayer = (row: TableItem) => {
 }
 const handleRemove = () => {
   deletePlayerIsBusy.value = true
-  removePlayerDoc(teamId, { ...deletePlayer.value })
+  removePlayer(teamId, { ...deletePlayer.value })
   deletePlayerIsBusy.value = false
   deleteModal.value?.hide()
 }

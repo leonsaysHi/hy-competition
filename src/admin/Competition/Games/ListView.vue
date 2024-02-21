@@ -20,8 +20,8 @@ const { competitionId } = route.params
 const { isReady: isLibsReady, getTeam } = useLibs()
 const {
   row,
-  writeGame: addCompetitionGameDoc,
-  deleteGame: deleteCompetitionGameDoc
+  writeGame: addCompetitionGame,
+  deleteGame: deleteCompetitionGame
 } = useCompetition(competitionId)
 
 const gamesItems = computed(() => row?.value?.games || [])
@@ -46,7 +46,7 @@ const teamsOptions = computed((): Option[] => {
 
 // Add game
 const handleAddGame = async (data) => {
-  await addCompetitionGameDoc(data)
+  await addCompetitionGame(data)
 }
 
 // Delete game
@@ -57,7 +57,7 @@ const handleConfirmDeleteGame = (row: TableItem) => {
   deleteModal.value?.show()
 }
 const handleDelete = async () => {
-  await deleteCompetitionGameDoc({ ...deleteGame.value })
+  await deleteCompetitionGame({ ...deleteGame.value })
   deleteGame.value = undefined
   deleteModal.value?.hide()
 }
@@ -67,6 +67,9 @@ const handleDelete = async () => {
     <p>All games list:</p>
     <template v-if="!isLibsReady">
       <SpinnerComp />
+    </template>
+    <template v-if="row?.teams?.length < 2">
+      <p class="text-secondary">Add at least 2 teams into the competition.</p>
     </template>
     <template v-else>
       <TableComp :fields="fields" :items="gamesItems">

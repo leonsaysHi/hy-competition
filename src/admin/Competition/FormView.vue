@@ -7,14 +7,14 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const { competitionId } = route.params
-const { isReady, writeRow: writeCompetition, row } = useCompetition(competitionId)
+const { isReady, writeCompetitionDoc: addCompetition, row } = useCompetition(competitionId)
 
 const handleSubmit = async (values: CompetitionDoc) => {
   const payload = {
     id: competitionId || undefined,
     ...values
   }
-  await writeCompetition(payload, [])
+  await addCompetition(payload)
 }
 </script>
 <template>
