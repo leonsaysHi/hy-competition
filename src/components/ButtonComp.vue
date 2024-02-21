@@ -1,6 +1,11 @@
 <template>
-  <button :type="type" class="btn d-flex gap-3" :class="computedClass" :disabled="disabled">
-    <slot> </slot><template v-if="isBusy"><SpinnerComp size="sm" /></template>
+  <button
+    :type="type"
+    class="btn d-flex align-items-center gap-3"
+    :class="computedClass"
+    :disabled="disabled || isBusy"
+  >
+    <slot> </slot><template v-if="isBusy"><SpinnerComp variant="light" size="sm" /></template>
   </button>
 </template>
 

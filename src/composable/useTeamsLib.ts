@@ -13,7 +13,10 @@ export default function useTeams() {
   const rows: Ref<Team[] | undefined> = useFirestore(coll, undefined) as Ref<Team[] | undefined>
   const isReady = computed(() => Array.isArray(rows.value))
   const get = (teamId: TeamId): Team => rows.value?.find((r) => r.id === teamId) || ({} as Team)
-
+  const getName = (teamId: TeamId): string => {
+    const team: Team = get(teamId)
+    return team.title
+  }
   const { writeDocs, deleteDocs } = useFirestoreAdmin()
   const writeRows = (rows: any[]) => writeDocs(rows, coll)
   const deleteRows = async (rows: Team[]) => {
@@ -24,6 +27,7 @@ export default function useTeams() {
     rows,
     isReady,
     get,
+    getName,
 
     //admin
     writeRows,

@@ -68,6 +68,9 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
       games: games?.value
     } as Competition
   })
+  const getTeam = (teamId: TeamId): CompetitionTeam | undefined => {
+    return row.value?.teams?.find((team: CompetitionTeam) => team.id === teamId)
+  }
   const getPlayer = (playerId: PlayerId): CompetitionPlayer | undefined => {
     const team: CompetitionTeam | undefined = row.value?.teams?.find((team: CompetitionTeam) => {
       team.players.findIndex((player: CompetitionPlayer) => player.id === playerId) > -1
@@ -82,16 +85,16 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   const isReady = computed(() => Boolean(row.value))
 
   // Admin game
-  const writeGame = async (payload: Game):WriteBatch => {
+  const writeGame = async (payload: Game): WriteBatch => {
     const batch = writeGameBatch(payload)
     await batch.commit()
   }
   const writeGameBatch = (row: Game, batch: WriteBatch = writeBatch(db)) => {
-    const { 
-      id, 
+    const {
+      id,
       ...gameDoc
-    }: { 
-      id: GameId, 
+    }: {
+      id: GameId
       gameDoc: Game
     } = row
     const gameRef = id ? doc(gamesCollRef, id) : doc(gamesCollRef)
@@ -102,10 +105,10 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     const batch = deleteGameBatch(payload)
     await batch.commit()
   }
-  const deleteGameBatch = (row: Game, batch: WriteBatch = writeBatch(db)):WriteBatch => {
-    const { 
+  const deleteGameBatch = (row: Game, batch: WriteBatch = writeBatch(db)): WriteBatch => {
+    const {
       id
-    }: { 
+    }: {
       id: GameId
     } = row
     const gameRef = doc(gamesCollRef, id)
@@ -118,14 +121,18 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     const batch = writePlayerBatch(teamId, payload)
     await batch.commit()
   }
-  const writePlayerBatch = (teamId: TeamId, row: CompetitionPlayer, batch: WriteBatch = writeBatch(db)):WriteBatch => {
+  const writePlayerBatch = (
+    teamId: TeamId,
+    row: CompetitionPlayer,
+    batch: WriteBatch = writeBatch(db)
+  ): WriteBatch => {
     const playerCollRef = getPlayersColl(teamId)
-    const { 
-      id, 
+    const {
+      id,
       ...playerDoc
-    }: { 
-      id: PlayerId, 
-      playerDoc: CompetitionPlayer 
+    }: {
+      id: PlayerId
+      playerDoc: CompetitionPlayer
     } = row
     const playerRef = id ? doc(playerCollRef, id) : doc(playerCollRef)
     batch.set(playerRef, playerDoc)
@@ -135,11 +142,15 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     const batch = deletePlayerBatch(teamId, payload)
     await batch.commit()
   }
-  const deletePlayerBatch = (teamId: TeamId, row: CompetitionPlayer, batch: WriteBatch = writeBatch(db)):WriteBatch => {
+  const deletePlayerBatch = (
+    teamId: TeamId,
+    row: CompetitionPlayer,
+    batch: WriteBatch = writeBatch(db)
+  ): WriteBatch => {
     const playerCollRef = getPlayersColl(teamId)
-    const { 
+    const {
       id
-    }: { 
+    }: {
       id: PlayerId
     } = row
     const playerRef = doc(playerCollRef, id)
@@ -151,15 +162,15 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     const batch = writeTeamBatch(payload)
     await batch.commit()
   }
-  const writeTeamBatch = (row: CompetitionTeam, batch: WriteBatch = writeBatch(db)):WriteBatch => {
-    const { 
-      id, 
+  const writeTeamBatch = (row: CompetitionTeam, batch: WriteBatch = writeBatch(db)): WriteBatch => {
+    const {
+      id,
       players,
       ...teamDoc
-    }: { 
-      id: TeamId, 
-      players: CompetitionPlayer[],
-      teamDoc: CompetitionTeamDoc,
+    }: {
+      id: TeamId
+      players: CompetitionPlayer[]
+      teamDoc: CompetitionTeamDoc
     } = row
     const teamRef = id ? doc(teamsCollRef, id) : doc(teamsCollRef)
     batch.set(teamRef, teamDoc)
@@ -172,15 +183,18 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     const batch = writeTeamDocBatch(payload)
     await batch.commit()
   }
-  const writeTeamDocBatch = (row: CompetitionTeam, batch: WriteBatch = writeBatch(db)):WriteBatch => {
-    const { 
-      id, 
+  const writeTeamDocBatch = (
+    row: CompetitionTeam,
+    batch: WriteBatch = writeBatch(db)
+  ): WriteBatch => {
+    const {
+      id,
       players,
       ...teamDoc
-    }: { 
-      id: TeamId, 
-      players: CompetitionPlayer[],
-      teamDoc: CompetitionTeamDoc,
+    }: {
+      id: TeamId
+      players: CompetitionPlayer[]
+      teamDoc: CompetitionTeamDoc
     } = row
     const teamRef = id ? doc(teamsCollRef, id) : doc(teamsCollRef)
     batch.set(teamRef, teamDoc)
@@ -190,13 +204,16 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     const batch = deleteTeamBatch(payload)
     await batch.commit()
   }
-  const deleteTeamBatch = (row: CompetitionTeam, batch: WriteBatch = writeBatch(db)):WriteBatch => {
-    const { 
+  const deleteTeamBatch = (
+    row: CompetitionTeam,
+    batch: WriteBatch = writeBatch(db)
+  ): WriteBatch => {
+    const {
       id,
-      players,
-    }: { 
-      id: TeamId, 
-      players: CompetitionPlayer[],
+      players
+    }: {
+      id: TeamId
+      players: CompetitionPlayer[]
     } = row
     const teamRef = doc(teamsCollRef, id)
     players.forEach((row: CompetitionPlayer) => {
@@ -206,21 +223,24 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     return batch
   }
 
-  // Admin Competition Doc 
+  // Admin Competition Doc
   const writeCompetitionDoc = async (payload: Competition) => {
     const batch = writeCompetitionDocBatch(payload)
     await batch.commit()
   }
-  const writeCompetitionDocBatch = (row: CompetitionTeam, batch: WriteBatch = writeBatch(db)):WriteBatch => {
-    const { 
-      id, 
+  const writeCompetitionDocBatch = (
+    row: CompetitionTeam,
+    batch: WriteBatch = writeBatch(db)
+  ): WriteBatch => {
+    const {
+      id,
       games,
       teams,
       ...competitionDoc
     }: {
-      id: CompetitionId, 
-      games: Game[],
-      teams: CompetitionTeam[],
+      id: CompetitionId
+      games: Game[]
+      teams: CompetitionTeam[]
       competitionDoc: CompetitionDoc
     } = row
     const competitionRef = id ? doc(competitionsColl, id) : doc(competitionsColl)
@@ -231,16 +251,19 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     const batch = writeCompetitionBatch(payload)
     await batch.commit()
   }
-  const writeCompetitionBatch = (row: Competition, batch: WriteBatch = writeBatch(db)):WriteBatch => {
-    const { 
-      id, 
+  const writeCompetitionBatch = (
+    row: Competition,
+    batch: WriteBatch = writeBatch(db)
+  ): WriteBatch => {
+    const {
+      id,
       games,
       teams,
       ...competitionDoc
-    }: { 
-      id: CompetitionId, 
-      games: Game[],
-      teams: CompetitionTeam[],
+    }: {
+      id: CompetitionId
+      games: Game[]
+      teams: CompetitionTeam[]
       competitionDoc: CompetitionDoc
     } = row
     const competitionRef = id ? doc(competitionsColl, id) : doc(competitionsColl)
@@ -258,6 +281,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     isReady,
     row,
     getGame,
+    getTeam,
     getPlayer,
     getPlayerNumber,
 
@@ -274,6 +298,6 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     writeTeamDoc,
     writePlayer,
     deleteTeam,
-    deletePlayer,
+    deletePlayer
   }
 }

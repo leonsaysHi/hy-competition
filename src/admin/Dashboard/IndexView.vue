@@ -12,9 +12,9 @@ const { isReady, competitionsRows: rows } = useLibs()
 const { add } = useCompetitionsLib()
 
 const competitionsList = computed(() => {
-const result = Array.isArray(rows.value) ? rows.value.slice() : []
-result.sort((a: Competition, b: Competition) => compareAsc(a.lastUpdate, b.lastUpdate))
-return result
+  const result = Array.isArray(rows.value) ? rows.value.slice() : []
+  result.sort((a: Competition, b: Competition) => compareAsc(a.lastUpdate, b.lastUpdate))
+  return result
 })
 
 const addModal = ref<typeof ModalComp>()

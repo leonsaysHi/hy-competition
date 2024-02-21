@@ -30,10 +30,10 @@ const handleSubmit = (ev: Event) => {
 <template>
   <form @submit="handleSubmit">
     <FieldComp label="Sponsor">
-      <InputComp v-model="data.sponsor" />
+      <InputComp v-model="data.sponsor" placeholder="Sponsor..." :disabled="isBusy" />
     </FieldComp>
     <div class="d-flex justify-content-end gap-2">
-      <ButtonComp variant="primary" type="submit">Save</ButtonComp>
+      <ButtonComp variant="primary" type="submit" :is-busy="isBusy">Save</ButtonComp>
     </div>
   </form>
 </template>

@@ -15,7 +15,9 @@ export default function useCompetitionsLib() {
     Competition[] | undefined
   >
 
-  const isReady = computed(() => Array.isArray(rows.value))
+  const isReady = computed(() => {
+    return Array.isArray(rows.value)
+  })
   const get = (competitionId: CompetitionId) =>
     rows.value?.find((row: Competition) => row.id === competitionId)
 

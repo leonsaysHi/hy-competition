@@ -68,7 +68,7 @@ const { isReady: isLibsReady, playersRows: playersLib, getPlayer } = useLibs()
 const {
   row: competition,
   writePlayer: addPlayer,
-  deletePlayer: removePlayer,
+  deletePlayer: removePlayer
 } = useCompetition(competitionId)
 
 const playersOptions = computed((): Option[] => {

@@ -66,28 +66,30 @@ const handleSubmit = (ev: Event) => {
 <template>
   <form @submit="handleSubmit">
     <FieldComp label="Title">
-      <InputComp v-model="data.title" required />
+      <InputComp v-model="data.title" :disabled="isBusy" required />
     </FieldComp>
     <FieldComp label="is active" class="d-flex gap-3 justify-content-end">
-      <CheckComp v-model="data.isActive" switch></CheckComp>
+      <CheckComp v-model="data.isActive" :disabled="isBusy" switch></CheckComp>
     </FieldComp>
     <FieldComp label="Date">
-      <InputComp v-model="data.date" type="date" required />
+      <InputComp v-model="data.date" type="date" :disabled="isBusy" required />
     </FieldComp>
     <FieldComp label="Sport">
       <SelectComp v-model="data.sport" :options="sportsOptions" disabled />
     </FieldComp>
     <FieldComp label="Gender">
-      <SelectComp v-model="data.gender" :options="gendersOptions" required />
+      <SelectComp v-model="data.gender" :options="gendersOptions" :disabled="isBusy" required />
     </FieldComp>
     <FieldComp label="Categorie">
-      <SelectComp v-model="data.category" :options="categoriesOptions" required />
+      <SelectComp
+        v-model="data.category"
+        :options="categoriesOptions"
+        :disabled="isBusy"
+        required
+      />
     </FieldComp>
-
     <div class="d-flex justify-content-end gap-2">
-      <ButtonComp variant="primary" type="submit" :disabled="isBusy" :isBusy="isBusy"
-        >Save</ButtonComp
-      >
+      <ButtonComp variant="primary" type="submit" :is-busy="isBusy">Save</ButtonComp>
     </div>
   </form>
 </template>

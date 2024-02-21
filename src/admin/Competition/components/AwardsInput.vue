@@ -34,8 +34,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { PlayerId, CompetitionPlayer } from '@/types/players'
-import type { CompetitionTeam } from '@/types/teams'
+import type { PlayerId } from '@/types/players'
 import type { Award, AwardItem } from '@/types/stats'
 import type { Option } from '@/types/comp-fields'
 import ButtonComp from '@/components/ButtonComp.vue'
@@ -44,28 +43,25 @@ import FieldComp from '@/components/FieldComp.vue'
 import TypeaheadSelectComp from '@/components/TypeaheadSelectComp.vue'
 import SelectComp from '@/components/SelectComp.vue'
 import useLibs from '@/composable/useLibs'
-import useCompetition from '@/composable/useCompetition'
-import { useRoute } from 'vue-router'
 
 interface IProps {
   modelValue: AwardItem[]
+  playersOptions?: Option[]
 }
-const props = withDefaults(defineProps<IProps>(), {})
+const props = withDefaults(defineProps<IProps>(), {
+  playersOptions: () => ([])
+})
 
 type FormData = {
   playerId: PlayerId | undefined
   award: Award | undefined
 }
 
-const route = useRoute()
-const { competitionId } = route.params
-
 const getDefaultData = (): FormData => ({
   playerId: undefined,
   award: undefined
 })
 const data = ref(getDefaultData())
-const { row: competition } = useCompetition(competitionId)
 const { getPlayerName } = useLibs()
 
 const awards: { [key: Award]: string } = {
@@ -77,18 +73,6 @@ const awardsOptions = computed((): Option[] => {
     text: awards[value],
     value
   }))
-})
-const playersOptions = computed((): Option[] => {
-  const competitionPlayersList: PlayerId[] =
-    competition?.value?.teams?.reduce((list: PlayerId[], team: CompetitionTeam) => {
-      return [...list, ...team.players.map((player: CompetitionPlayer) => player.id)]
-    }, []) || []
-  return competitionPlayersList.map(
-    (playerId: PlayerId): Option => ({
-      text: getPlayerName(playerId),
-      value: playerId
-    })
-  )
 })
 
 const emit = defineEmits(['update:modelValue', 'input'])

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { GameBoxScore, GameScores } from '@/types/games'
+import type { Game, GameBoxScore, GameScores } from '@/types/games'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import { ref, computed } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
@@ -9,6 +9,17 @@ import ScoresInput from '@/admin/competition/games/components/ScoresInput.vue'
 import BoxScoreInput from '@/admin/competition/games/components/BoxScoreInput.vue'
 import AwardsInput from '@/admin/competition/components/AwardsInput.vue'
 import type { AwardItem, PlayerBoxScore } from '@/types/stats'
+import type { CompetitionPlayer, PlayerId } from '@/types/players'
+import useLibs from '@/composable/useLibs'
+import useCompetition from '@/composable/useCompetition'
+import { useRoute } from 'vue-router'
+
+
+const route = useRoute()
+const { competitionId } = route.params
+const { getTeam: getCompetitionTeam } = useCompetition(competitionId)
+
+const { getTeamName, getPlayerName } = useLibs()
 
 interface IProps {
   value: FormData
@@ -28,7 +39,16 @@ type FormData = {
   boxscore: GameBoxScore
   awards: AwardItem[]
 }
-const getDefaultStats = (): PlayerBoxScore => ({
+
+const getDefaultGame = (): Game => ({
+  id: '',
+  teams: [],
+  datetime: '',
+  scores: {},
+  boxscore: {},
+  awards: []
+})
+const getDefaultPlayerBoxScore = (): PlayerBoxScore => ({
   pts: 0,
   reb: 0,
   ast: 0,
@@ -41,16 +61,17 @@ const getDefaultStats = (): PlayerBoxScore => ({
 })
 
 const data = ref<FormData>({
-  id: '',
-  teams: [],
-  datetime: '',
-  scores: props.value.teams.reduce(
-    (scores: GameScores, teamId: TeamId) => ({
-      ...scores,
-      [teamId]: [0]
-    }),
-    {}
-  ),
+  ...getDefaultGame(),
+  ...props.value,
+  scores: Array.isArray(props.value.teams)
+    ? props.value.teams.reduce(
+        (scores: GameScores, teamId: TeamId) => ({
+          ...scores,
+          [teamId]: props.value.scores[teamId] || [0]
+        }),
+        {}
+      )
+    : {},
   boxscore: Object.values(props.value.teams).reduce((boxscore: GameBoxScore, teamId: TeamId) => {
     const team: CompetitionTeam =
       props.competitionTeams.find((t: CompetitionTeam) => t.id === teamId) ||
@@ -59,15 +80,13 @@ const data = ref<FormData>({
       team.players.map((player: CompetitionPlayer): PlayerId => player.id) || []
     players.forEach((playerId: PlayerId) => {
       boxscore[playerId] = {
-        ...getDefaultStats(),
+        ...getDefaultPlayerBoxScore(),
         ...(props.value.boxscore[playerId] || {})
       }
     })
     return boxscore
   }, {}),
-  awards: [],
-  //
-  ...props.value
+  awards: []
 })
 
 const boxscoreByTeams = computed({
@@ -96,6 +115,23 @@ const boxscoreByTeams = computed({
   }
 })
 
+const playersOptions = computed((): Option[] => {
+  return Array.isArray(props.value.teams) 
+    ? props.value.teams
+      .reduce((list: PlayerId[], teamId: TeamId) => {
+        const team = getCompetitionTeam(teamId)
+        return [
+          ...list,
+          ...(Array.isArray(team?.players) ? team.players.map((player: CompetitionPlayer) => player.id) : [])
+        ]
+      }, [])
+      .map((playerId: PlayerId) => ({
+        text: getPlayerName(playerId),
+        value: playerId
+      }))
+    : []
+})
+
 const emit = defineEmits(['submit'])
 
 const handleSubmit = (ev: Event) => {
@@ -105,7 +141,6 @@ const handleSubmit = (ev: Event) => {
 </script>
 <template>
   <form @submit="handleSubmit">
-    {{ data }}
     <FieldComp label="Date & time">
       <InputComp v-model="data.datetime" type="datetime-local" required />
     </FieldComp>
@@ -114,12 +149,12 @@ const handleSubmit = (ev: Event) => {
       <ScoresInput v-model="data.scores" :teams="data.teams" required>
         <template #team1>
           <template v-for="(scores, teamId, idx) in data.scores">
-            <template v-if="!idx">{{ teamId }}</template>
+            <template v-if="!idx">{{ getTeamName(teamId) }}</template>
           </template>
         </template>
         <template #team2>
           <template v-for="(scores, teamId, idx) in data.scores">
-            <template v-if="idx">{{ teamId }}</template>
+            <template v-if="idx">{{ getTeamName(teamId) }}</template>
           </template>
         </template>
       </ScoresInput>
@@ -127,17 +162,16 @@ const handleSubmit = (ev: Event) => {
     <hr />
     <FieldComp label="Boxscore">
       <template v-for="(boxscore, teamId) in boxscoreByTeams" :key="teamId">
-        <div>{{ teamId }}</div>
+        <h6 class="mb-0">{{ getTeamName(teamId) }}</h6>
         <BoxScoreInput v-model="boxscoreByTeams[teamId]" />
       </template>
     </FieldComp>
     <hr />
     <FieldComp label="Awards">
-      <AwardsInput v-model="data.awards" />
+      <AwardsInput v-model="data.awards" :players-options="playersOptions" />
     </FieldComp>
     <div class="d-flex justify-content-end gap-2">
-      <ButtonComp variant="primary" type="submit">Save</ButtonComp>
+      <ButtonComp variant="primary" type="submit" :is-busy="isBusy">Save</ButtonComp>
     </div>
   </form>
 </template>
-@/composable/useTeams

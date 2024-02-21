@@ -8,7 +8,12 @@ const {
   rows: competitionsRows,
   get: getCompetition
 } = useCompetitionsLib()
-const { isReady: isTeamsLibReady, rows: teamsRows, get: getTeam } = useTeamsLib()
+const {
+  isReady: isTeamsLibReady,
+  rows: teamsRows,
+  get: getTeam,
+  getName: getTeamName
+} = useTeamsLib()
 const {
   isReady: isPlayersLibReady,
   rows: playersRows,
@@ -17,7 +22,9 @@ const {
 } = usePlayersLib()
 
 export default function useLibs() {
-  const isReady = computed(() => isCompetitionsLibReady && isTeamsLibReady && isPlayersLibReady)
+  const isReady = computed(
+    () => isCompetitionsLibReady.value && isTeamsLibReady.value && isPlayersLibReady.value
+  )
   return {
     isCompetitionsLibReady,
     isTeamsLibReady,
@@ -29,6 +36,7 @@ export default function useLibs() {
 
     teamsRows,
     getTeam,
+    getTeamName,
 
     playersRows,
     getPlayer,

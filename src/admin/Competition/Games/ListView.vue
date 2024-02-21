@@ -6,28 +6,49 @@ import TableComp from '@/components/TableComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import type { Option } from '@/types/comp-fields'
-import type { CompetitionTeam, Team } from '@/types/teams'
+import type { CompetitionTeam, TeamId } from '@/types/teams'
 import type { Game } from '@/types/games'
 import useCompetition from '@/composable/useCompetition'
 import AddGameForm from '@/admin/competition/forms/AddGameForm.vue'
-
+import { compareDesc } from 'date-fns'
 import useLibs from '@/composable/useLibs'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 
 const route = useRoute()
 const { competitionId } = route.params
 
-const { isReady: isLibsReady, getTeam } = useLibs()
+const { isReady: isLibsReady, getTeam, getTeamName } = useLibs()
+
 const {
   row,
   writeGame: addCompetitionGame,
   deleteGame: deleteCompetitionGame
 } = useCompetition(competitionId)
 
-const gamesItems = computed(() => row?.value?.games || [])
+const gamesItems = computed(() => {
+  const result = Array.isArray(row?.value?.games)
+    ? row?.value?.games.map((game: Game) => {
+        return {
+          ...game,
+          game: game.teams
+            .reduce((score, teamId: TeamId) => {
+              const finalScore = game.scores[teamId]
+                ? game.scores[teamId].reduce((tot, score) => tot + score, 0)
+                : 0
+              return {
+                ...score,
+                [teamId]: finalScore
+              }
+            }, {})
+        }
+      })
+    : []
+    result.sort((a: Game, b: Game) => compareDesc(a.datetime, b.datetime))
+    return result
+})
 
 const fields: TableField[] = [
-  { key: 'teams', label: 'Games' },
+  { key: 'game', label: 'Games' },
   { key: 'datetime', label: 'Date' },
   { key: 'actions', label: '' }
 ]
@@ -64,22 +85,23 @@ const handleDelete = async () => {
 </script>
 <template>
   <div>
-    <p>All games list:</p>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item active" aria-current="page">Games list</li>
+      </ol>
+    </nav>
     <template v-if="!isLibsReady">
       <SpinnerComp />
     </template>
-    <template v-if="row?.teams?.length < 2">
-      <p class="text-secondary">Add at least 2 teams into the competition.</p>
-    </template>
     <template v-else>
       <TableComp :fields="fields" :items="gamesItems">
-        <template #teams="{ item }">
-          {{
-            item.teams
-              ?.map(getTeam)
-              .map((row: Team) => row.title)
-              .join(' &times; ')
-          }}
+        <template #game="{ item }">
+          <div class="score-col">
+            <template v-for="(score, teamId) in item.game" :key="teamId">
+                <div>{{ score }}</div>
+                <strong>{{ getTeamName(teamId) }}</strong>
+            </template>
+          </div>
         </template>
         <template #actions="{ item }">
           <div class="d-flex justify-content-end gap-1">
@@ -113,3 +135,12 @@ const handleDelete = async () => {
     </template>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.score-col { 
+  display: grid;
+  grid-template-columns: 2rem auto; 
+  column-gap: .25rem;
+  row-gap: .25rem;
+}
+</style>

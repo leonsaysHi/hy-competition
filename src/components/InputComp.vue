@@ -7,6 +7,7 @@
     :placeholder="placeholder"
     :disabled="readonly || disabled"
     :required="required"
+    :min="type === 'number' ? props.min : undefined"
     @input="emit('input')"
     @keyup.enter="handleEnterKey"
   />
@@ -22,6 +23,7 @@ interface IProps {
   required?: boolean
   disabled?: boolean
   size?: 'lg' | 'md' | 'sm'
+  min?: number
   isValid?: boolean
   isInvalid?: boolean
 }
@@ -32,6 +34,7 @@ const props = withDefaults(defineProps<IProps>(), {
   required: false,
   disabled: false,
   size: 'md',
+  min: 0,
   isValid: false,
   isInvalid: false
 })

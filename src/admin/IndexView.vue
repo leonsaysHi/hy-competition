@@ -30,18 +30,7 @@ const {
   </header>
   <main>
     <section class="py-5 container">
-      <template v-if="isLibsReady">
-        <RouterView />
-      </template>
-      <template v-else>
-        <SpinnerComp />
-        <p>...Loading libraries</p>
-        <p>
-          Players: {{ isPlayersLibReady ? 'Ok' : 'Loading...' }} <br />Teams:
-          {{ isTeamsLibReady ? 'Ok' : 'Loading...' }} <br />Competitions:
-          {{ isCompetitionsLibReady ? 'Ok' : 'Loading...' }}
-        </p>
-      </template>
+      <RouterView />
     </section>
   </main>
 </template>

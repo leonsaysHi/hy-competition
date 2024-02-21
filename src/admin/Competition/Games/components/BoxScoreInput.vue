@@ -117,6 +117,7 @@ const fields = [
 ]
 
 const emit = defineEmits(['update:modelValue', 'input'])
+
 const model = computed({
   get: (): GameBoxScore => props.modelValue,
   set: (val: GameBoxScore) => emit('update:modelValue', val)
@@ -129,7 +130,7 @@ const items = computed((): TableItem[][] => {
           id: playerId,
           number: getPlayerNumber(playerId),
           name: getPlayerName(playerId),
-          ...props.modelValue[playerId]
+          ...model.value[playerId]
         }
       })
     : []
