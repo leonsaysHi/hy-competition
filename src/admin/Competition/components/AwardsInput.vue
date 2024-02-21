@@ -4,7 +4,12 @@
       <h6 class="d-flex gap-3">
         <span>{{ getPlayerName(award.id) }}</span>
         <span class="badge bg-warning">{{ awards[award.value] }}</span>
-        <ButtonComp variant="danger" class="btn-close" size="sm" @click="() => handleDelete(idx)"></ButtonComp>
+        <ButtonComp
+          variant="danger"
+          class="btn-close"
+          size="sm"
+          @click="() => handleDelete(idx)"
+        ></ButtonComp>
       </h6>
     </template>
     <form class="d-flex align-items-end gap-3" @submit="handleAdd">
@@ -68,12 +73,10 @@ const awards: { [key: Award]: string } = {
   def: 'Defensive player'
 }
 const awardsOptions = computed((): Option[] => {
-  return Object.keys(awards).map(
-    (value: Award) => ({
-      text: awards[value],
-      value
-    })
-  )
+  return Object.keys(awards).map((value: Award) => ({
+    text: awards[value],
+    value
+  }))
 })
 const playersOptions = computed((): Option[] => {
   const competitionPlayersList: PlayerId[] =
@@ -101,12 +104,10 @@ const handleDelete = (idx) => {
 }
 const handleAdd = (ev: Event) => {
   ev.preventDefault()
-  model.value.push(
-    { 
-      id: data.value.playerId,
-      value: data.value.award 
-    } as AwardItem
-  )
+  model.value.push({
+    id: data.value.playerId,
+    value: data.value.award
+  } as AwardItem)
   data.value = getDefaultData()
 }
 </script>

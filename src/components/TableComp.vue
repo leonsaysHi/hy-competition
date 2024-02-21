@@ -45,7 +45,7 @@
   </table>
   <div v-if="showEmpty && !items?.length">
     <slot name="empty">
-      <p class="text-center text-danger mt-3">No result.</p>
+      <p class="text-center text-secondary mt-2">No result.</p>
     </slot>
   </div>
 </template>
@@ -70,7 +70,7 @@ withDefaults(defineProps<IProps>(), {
   thClass: 'bg-alt',
   tdClass: '',
   isBusy: false,
-  showEmpty: false
+  showEmpty: true
 })
 </script>
 

@@ -20,7 +20,7 @@ const { competitionId } = route.params
 const { isReady: isLibsReady, getTeam } = useLibs()
 const {
   row,
-  addGame: addCompetitionGameDoc,
+  writeGame: addCompetitionGameDoc,
   deleteGame: deleteCompetitionGameDoc
 } = useCompetition(competitionId)
 

@@ -18,9 +18,8 @@ export default function useCompetitionsLib() {
   const isReady = computed(() => Array.isArray(rows.value))
   const get = (competitionId: CompetitionId) =>
     rows.value?.find((row: Competition) => row.id === competitionId)
-  
+
   const add = async (payload: CompetitionDoc) => {
-    
     const batch = writeBatch(db)
 
     // doc
@@ -37,6 +36,6 @@ export default function useCompetitionsLib() {
     rows,
     isReady,
     get,
-    add,
+    add
   }
 }

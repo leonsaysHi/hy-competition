@@ -1,5 +1,5 @@
 <template>
-  <template v-for="(opt, idx) in options" :key="opt.value">
+  <template v-for="opt in options" :key="opt.value">
     <div class="form-check" :class="computedClass">
       <input
         class="form-check-input"

@@ -5,15 +5,25 @@ import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import { useRoute } from 'vue-router'
+import type { CompetitionTeam } from '@/types/teams'
+import { computed } from 'vue'
+
 const route = useRoute()
 const { competitionId, teamId } = route.params
 const { isReady: isLibsReady, getTeam } = useLibs()
+const { isReady, row, writeTeam: writeCompetitionTeam } = useCompetition(competitionId)
 
-const { isReady } = useCompetition(competitionId)
+const data = computed(() => {
+  return row.value?.teams?.find((team: CompetitionTeam) => team.id === teamId)
+})
 
-const handleSubmit = (ev: Event) => {
-  ev.preventDefault()
+const handleSubmit = async (payload: CompetitionTeam) => {
+  await writeCompetitionTeam({
+    id: teamId,
+    ...payload
+  })
 }
+
 </script>
 <template>
   <h5>Edit</h5>

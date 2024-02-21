@@ -6,7 +6,7 @@ import TableComp from '@/components/TableComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
 import TypeaheadSelectComp from '@/components/TypeaheadSelectComp.vue'
 import FieldComp from '@/components/FieldComp.vue'
-import type { CompetitionTeam, Team, TeamId } from '@/types/teams'
+import type { CompetitionTeam, CompetitionTeamDoc, Team, TeamId } from '@/types/teams'
 import type { Option } from '@/types/comp-fields'
 
 import useCompetition from '@/composable/useCompetition'
@@ -20,8 +20,8 @@ const { isReady: isLibsReady, teamsRows: teamsLib, getTeam } = useLibs()
 const {
   isReady: isRowReady,
   row,
-  addTeam: addCompetitionTeamDoc,
-  deleteTeam: deleteCompetitionTeamDoc
+  writeTeam: addCompetitionTeam,
+  deleteTeam: deleteCompetitionTeam
 } = useCompetition(competitionId)
 
 const fields: TableField[] = [
@@ -46,15 +46,14 @@ const addTeamsOptions = computed((): Option[] => {
 })
 
 // Add team
-const getDefaultTeam = (): CompetitionTeam => ({
+const getDefaultTeam = (): CompetitionTeamDoc => ({
   id: '',
   sponsor: '',
-  players: []
 })
-const addTeam = ref<CompetitionTeam>(getDefaultTeam())
+const addTeam = ref<CompetitionTeamDoc>(getDefaultTeam())
 const handleAddTeam = async (ev: Event) => {
   ev.preventDefault()
-  await addCompetitionTeamDoc(row?.value?.id, { ...addTeam.value })
+  await addCompetitionTeam({ ...addTeam.value })
   addTeam.value = getDefaultTeam()
 }
 
@@ -68,7 +67,7 @@ const handleConfirmDeleteTeam = (row: TableItem) => {
 }
 const handleRemove = async () => {
   deletePlayerIsBusy.value = true
-  await deleteCompetitionTeamDoc(row?.value?.id, deleteTeam.value)
+  await deleteCompetitionTeam(deleteTeam.value)
   deletePlayerIsBusy.value = false
   deleteModal.value?.hide()
 }

@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import FieldComp from '@/components/FieldComp.vue'
 import InputComp from '@/components/InputComp.vue'
+import ButtonComp from '@/components/ButtonComp.vue'
 
 interface IProps {
   value: FormData
@@ -31,5 +32,8 @@ const handleSubmit = (ev: Event) => {
     <FieldComp label="Sponsor">
       <InputComp v-model="data.sponsor" />
     </FieldComp>
+    <div class="d-flex justify-content-end gap-2">
+      <ButtonComp variant="primary" type="submit">Save</ButtonComp>
+    </div>
   </form>
 </template>

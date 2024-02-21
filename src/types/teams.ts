@@ -1,10 +1,11 @@
-import type { CompetitionPlayer, CompetitionPlayerDoc, PlayerId } from './players'
+import type { CompetitionPlayer, PlayerId } from './players'
 
 export type TeamId = string
 export type TeamRoster = PlayerId[]
 
 // data
 export interface TeamDoc {
+  id?: TeamId
   title: string
   logo?: string
 }
@@ -14,8 +15,8 @@ export interface Team extends TeamDoc {
 
 //data
 export interface CompetitionTeamDoc {
+  id?: TeamId
   sponsor: string
-  players: { [key: PlayerId]: CompetitionPlayerDoc } // collection
 }
 // front
 export interface CompetitionTeam {

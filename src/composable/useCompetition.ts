@@ -12,9 +12,9 @@ import useLibs from '@/composable/useLibs'
 import type { Ref } from 'vue'
 import { computed, ref, watch } from 'vue'
 
-import { competitionConverter } from '@/utils/firestore-converters'
+import { gameConverter, teamConverter, playerConverter } from '@/utils/firestore-converters'
 
-const coll = competitionsColl.withConverter(competitionConverter)
+const coll = competitionsColl
 
 const { writeDocs, deleteDocs } = useFirestoreAdmin()
 
@@ -22,13 +22,13 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   const { isReady: isLibsReady, getCompetition } = useLibs()
 
   const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`).withConverter(
-    competitionConverter
+    gameConverter
   )
   const teamsCollRef = collection(competitionsColl, `/${competitionId}/${teamsName}`).withConverter(
-    competitionConverter
+    teamConverter
   )
   const getPlayersColl = (teamId: TeamId) =>
-    collection(teamsCollRef, `${teamId}/${playersName}`).withConverter(competitionConverter)
+    collection(teamsCollRef, `${teamId}/${playersName}`).withConverter(playerConverter)
   const games = useFirestore(gamesCollRef, undefined) as Ref<Game[] | undefined>
   const teams = useFirestore(teamsCollRef, undefined) as Ref<CompetitionTeam[] | undefined>
   const playersLists = ref<{ [key: TeamId]: CompetitionPlayer[] }>({})
@@ -79,10 +79,10 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     return row?.value?.games?.find((game: Game) => game.id === gameId)
   }
 
-  const isReady = computed(() => row.value)
+  const isReady = computed(() => Boolean(row.value))
 
   // Admin game
-  const addGame = async (payload: Game) => {
+  const writeGame = async (payload: Game) => {
     writeDocs([payload], gamesCollRef)
   }
   const deleteGame = async (payload: Game) => {
@@ -93,10 +93,18 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   }
 
   // Admin team
-  const addTeam = async (payload: CompetitionTeam) => {
-    writeDocs([payload], teamsCollRef)
+  const writeTeam = async (payload: CompetitionTeam) => {
+    const {
+      players,
+      ...teamDoc
+    }: { 
+      players: CompetitionPlayer[]; 
+      teamDoc: CompetitionTeamDoc 
+    } = payload
+    console.log('save team doc', teamDoc)
+    writeDocs([teamDoc], teamsCollRef)
   }
-  const deleteTeam = async (competitionId: CompetitionId, payload: CompetitionTeam) => {
+  const deleteTeam = async (payload: CompetitionTeam) => {
     const { id: teamId } = payload
     const teamPlayersCollRef = getPlayersColl(teamId)
     const docs = []
@@ -108,7 +116,6 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   }
 
   const addTeamPlayer = async (
-    competitionId: CompetitionId,
     teamId: TeamId,
     row: CompetitionPlayer
   ) => {
@@ -116,26 +123,20 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     writeDocs([row], teamPlayersCollRef)
   }
   const deleteTeamPlayer = async (
-    competitionId: CompetitionId,
     teamId: TeamId,
     row: CompetitionPlayer
   ) => {
     const teamPlayersCollRef = getPlayersColl(teamId)
     deleteDocs([doc(teamPlayersCollRef, row.id)])
   }
-  const writeRow = async (competition: Competition) => {
+  const writeRow = async (payload: CompetitionDoc, teams: CompetitionTeam[]) => {
     const {
-      id = undefined,
-      // games,
-      teams = [],
+      id, 
       ...competitionDoc
     }: {
-      id: CompetitionId
-      // games: Game[]
-      teams: CompetitionTeam[]
+      id: CompetitionId | undefined,
       competitionDoc: CompetitionDoc
-    } = competition
-
+    } = payload
     const batch = writeBatch(db)
 
     // doc
@@ -154,18 +155,20 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     // teams
     teams.forEach((team: CompetitionTeam) => {
       const {
-        id,
         players,
         ...teamDoc
-      }: { id: GameId; players: CompetitionPlayer[]; teamDoc: CompetitionTeamDoc } = team
-      const teamRef = id ? doc(teamsCollRef, id) : doc(teamsCollRef)
+      }: { 
+        id: TeamId; 
+        players: CompetitionPlayer[]; 
+        teamDoc: CompetitionTeamDoc 
+      } = team
+      const teamRef = teamDoc.id ? doc(teamsCollRef, teamDoc.id) : doc(teamsCollRef)
       batch.set(teamRef, teamDoc)
       // players
       const playersColl = getPlayersColl(teamRef.id)
-      players.forEach((player: CompetitionPlayer) => {
-        const { id, ...playerDoc }: { id: PlayerId; playerDoc: CompetitionPlayerDoc } = player
-        const playerRef = id ? doc(playersColl, id) : doc(playersColl)
-        batch.set(playerRef, playerDoc)
+      players.forEach((player: CompetitionPlayerDoc) => {
+        const playerRef = player.id ? doc(playersColl, player.id) : doc(playersColl)
+        batch.set(playerRef, player)
       })
     })
 
@@ -186,11 +189,11 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     writeRow,
 
     // Admin game
-    addGame,
+    writeGame,
     deleteGame,
 
     // Admin team
-    addTeam,
+    writeTeam,
     addTeamPlayer,
     deleteTeam,
     deleteTeamPlayer

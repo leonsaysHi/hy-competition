@@ -5,6 +5,7 @@ import InputComp from '@/components/InputComp.vue'
 import FieldComp from '@/components/FieldComp.vue'
 import type {
   CompetitionCategorie,
+  CompetitionDoc,
   CompetitionGender,
   CompetitionSport
 } from '@/types/competitions'
@@ -59,7 +60,7 @@ const emit = defineEmits(['submit'])
 
 const handleSubmit = (ev: Event) => {
   ev.preventDefault()
-  emit('submit', data.value)
+  emit('submit', data.value as CompetitionDoc)
 }
 </script>
 <template>

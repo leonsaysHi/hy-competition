@@ -1,32 +1,13 @@
 import useFirestoreAdmin from '@/composable/useFirestoreAdmin'
-import {
-  doc,
-  QueryDocumentSnapshot,
-  type DocumentData,
-  type SnapshotOptions
-} from 'firebase/firestore'
+import { doc } from 'firebase/firestore'
 import { teamsColl } from '@/firebase-firestore.js'
 import type { Team, TeamId } from '@/types/teams'
 import { useFirestore } from '@vueuse/firebase/useFirestore'
 import { computed } from 'vue'
 import type { Ref } from 'vue'
+import { teamConverter } from '@/utils/firestore-converters'
 
-const converter = {
-  toFirestore: (row: Team): DocumentData => {
-    const payload = {
-      ...row
-    }
-    return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null))
-  },
-  fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions) => {
-    const data = snapshot.data(options)!
-    return {
-      id: snapshot.id,
-      ...data
-    }
-  }
-}
-const coll = teamsColl.withConverter(converter)
+const coll = teamsColl.withConverter(teamConverter)
 
 export default function useTeams() {
   const rows: Ref<Team[] | undefined> = useFirestore(coll, undefined) as Ref<Team[] | undefined>

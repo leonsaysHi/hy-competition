@@ -162,6 +162,10 @@ interface IProps {
 const props = withDefaults(defineProps<IProps>(), {
   title: undefined,
   size: 'md',
+  hideHeader: false,
+  hideFooter: false,
+  hideCancel: false,
+  hideClose: false,
   position: '',
   cancelTitle: 'Cancel',
   cancelVariant: 'light',

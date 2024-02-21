@@ -27,6 +27,7 @@ export type CompetitionGender = 'm' | 'f' | 'mf'
 
 // data
 export interface CompetitionDoc {
+  id?: CompetitionId
   title: string
   date: string
   sport: CompetitionSport
@@ -35,6 +36,7 @@ export interface CompetitionDoc {
   awards: AwardItem[]
   isActive: boolean
   isOver: boolean
+  lastUpdate: string
 }
 
 export interface Competition extends CompetitionDoc {

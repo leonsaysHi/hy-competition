@@ -15,7 +15,7 @@ const {
   isReady,
   row: competition,
   getGame,
-  addGame: updateCompetitionGameDoc
+  writeGame: updateCompetitionGameDoc
 } = useCompetition(competitionId)
 
 const data = computed(() => ({

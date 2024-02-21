@@ -8,7 +8,7 @@ import usePlayersLib from '@/composable/usePlayersLib'
 import ButtonComp from '@/components/ButtonComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
 import SpinnerComp from '@/components/SpinnerComp.vue'
-import PlayerForm from './Form.vue'
+import PlayerForm from './PlayerForm.vue'
 import useLibs from '@/composable/useLibs'
 
 const { isReady, playersRows: rows } = useLibs()

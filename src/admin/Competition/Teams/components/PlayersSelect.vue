@@ -131,7 +131,7 @@ const playersItems = computed(() => {
 
 // Add Player
 const handleAddPlayer = async (data) => {
-  await addPlayerDoc(competitionId, teamId, { ...data })
+  await addPlayerDoc(teamId, { ...data })
 }
 
 // Edit Player
@@ -148,7 +148,7 @@ const handleSubmitPlayer = async (data: CompetitionPlayer) => {
     ...players.value[idx],
     number
   } as CompetitionPlayer
-  await addPlayerDoc(competitionId, teamId, payload)
+  await addPlayerDoc(teamId, payload)
   editModal.value?.hide()
 }
 // Delete Player
@@ -161,7 +161,7 @@ const handleConfirmDeletePlayer = (row: TableItem) => {
 }
 const handleRemove = () => {
   deletePlayerIsBusy.value = true
-  removePlayerDoc(competitionId, teamId, { ...deletePlayer.value })
+  removePlayerDoc(teamId, { ...deletePlayer.value })
   deletePlayerIsBusy.value = false
   deleteModal.value?.hide()
 }

@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { watch } from 'vue'
 import { RouterView } from 'vue-router'
 import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
@@ -9,13 +8,6 @@ const route = useRoute()
 const { competitionId } = route.params
 const { isReady, row } = useCompetition(competitionId)
 
-watch(
-  () => row.value,
-  () => {
-    console.log('Watch: Update competition:', row)
-  },
-  { deep: true }
-)
 </script>
 <template>
   <h1>Competition admin</h1>
