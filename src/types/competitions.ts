@@ -42,8 +42,9 @@ export interface CompetitionTeamComputed {
   team: Team
   gp: number
   wins: number
+  diff: number
   pos: number
-  last3: boolean[]
+  lasts: (boolean | undefined)[]
 }
 export interface CompetitionPlayerComputed {
   id: PlayerId

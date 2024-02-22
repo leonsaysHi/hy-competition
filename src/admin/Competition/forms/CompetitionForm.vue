@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import InputComp from '@/components/InputComp.vue'
 import FieldComp from '@/components/FieldComp.vue'
 import type {
+  Competition,
   CompetitionCategorie,
   CompetitionDoc,
   CompetitionGender,
@@ -14,17 +15,14 @@ import SelectComp from '@/components/SelectComp.vue'
 import CheckComp from '@/components/CheckComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
 import CheckGroupComp from '@/components/CheckGroupComp.vue'
-import type { StatKey } from '@/types/stats'
-
-const {
-  competitionSports: sportsOptions,
-  competitionCategories: categoriesOptions,
-  competitionGenders: gendersOptions,
-  statsKeys: statsKeysOptions
-} = useOptionsLib()
+import type { AwardItem, StatKey } from '@/types/stats'
+import AwardsInput from '../components/AwardsInput.vue'
+import useCompetition from '@/composable/useCompetition'
+import useLibs from '@/composable/useLibs'
+import type { PlayerId } from '@/types/players'
 
 interface IProps {
-  value: FormData
+  value: Competition
   isBusy?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
@@ -39,8 +37,18 @@ type FormData = {
   gender?: CompetitionGender
   phases: Phase[]
   trackedStats: StatKey[]
+  awards: AwardItem[]
   isActive?: Boolean
 }
+const {
+  competitionSports: sportsOptions,
+  competitionCategories: categoriesOptions,
+  competitionGenders: gendersOptions,
+  statsKeys: statsKeysOptions
+} = useOptionsLib()
+const { getPlayerName } = useLibs()
+const { allPlayers } = useCompetition(props.value.id)
+
 const data = ref<FormData>({
   title: '',
   date: '',
@@ -51,9 +59,19 @@ const data = ref<FormData>({
 
   ...props.value,
 
+  awards: Array.isArray(props.value.awards) ? props.value.awards : [],
   trackedStats: Array.isArray(props.value.trackedStats) ? props.value.trackedStats : ['pts']
 })
 
+const playersOptions = computed(() =>
+  allPlayers.value.map((playerId: PlayerId) => {
+    const text = getPlayerName(playerId)
+    return {
+      text,
+      value: playerId
+    }
+  })
+)
 const emit = defineEmits(['submit'])
 
 const handleSubmit = (ev: Event) => {
@@ -93,6 +111,9 @@ const handleSubmit = (ev: Event) => {
         :disabled="isBusy"
         buttons
       />
+    </FieldComp>
+    <FieldComp label="Awards">
+      <AwardsInput v-model="data.awards" :players-options="playersOptions" />
     </FieldComp>
     <div class="d-flex justify-content-end gap-2">
       <ButtonComp variant="primary" type="submit" :is-busy="isBusy">Save</ButtonComp>

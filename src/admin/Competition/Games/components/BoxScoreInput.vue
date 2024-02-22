@@ -92,12 +92,15 @@ import useCompetition from '@/composable/useCompetition'
 import type { PlayerId } from '@/types/players'
 import { useRoute } from 'vue-router'
 import type { StatKey } from '@/types/stats'
+import useCompetitionsLib from '@/composable/useCompetitionsLib'
+import useOptionsLib from '@/composable/useOptionsLib'
 
 const route = useRoute()
 const { competitionId } = route.params
 
 const { getPlayerName } = useLibs()
 const { getPlayerNumber } = useCompetition(competitionId)
+const { statsKeys: statsFieldsAll } = useOptionsLib()
 
 interface IProps {
   modelValue: GameBoxScore
@@ -110,19 +113,12 @@ const props = withDefaults(defineProps<IProps>(), {
 })
 
 const statsFields = computed(() =>
-  [
-    { key: 'pts', label: 'Pts' },
-    { key: 'm3pts', label: '3Pts' },
-    { key: 'reb', label: 'Reb' },
-    { key: 'ast', label: 'Ast' },
-    { key: 'stl', label: 'Stl' },
-    { key: 'blk', label: 'Blk' },
-    { key: 'to', label: 'To' },
-    { key: 'pf', label: 'Pf' }
-  ].filter(
-    (field: TableField) =>
-      Array.isArray(props.trackedStats) && props.trackedStats.includes(field.key)
-  )
+  statsFieldsAll
+    .filter((opt) => Array.isArray(props.trackedStats) && props.trackedStats.includes(opt.value))
+    .map((opt) => ({
+      key: opt.value,
+      label: opt.text
+    }))
 )
 const fields = computed<TableField[]>(() => [
   { key: 'number', label: '#' },

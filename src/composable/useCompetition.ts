@@ -10,12 +10,7 @@ import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import useLibs from '@/composable/useLibs'
 import type { Ref } from 'vue'
 import { computed, ref, watch } from 'vue'
-import {
-  gameConverter,
-  teamConverter,
-  playerConverter,
-  competitionConverter
-} from '@/utils/firestore-converters'
+import { gameConverter, teamConverter, playerConverter } from '@/utils/firestore-converters'
 
 export default function useCompetition(competitionId: CompetitionId | undefined) {
   const { isReady: isLibsReady, getCompetition } = useLibs()
@@ -69,6 +64,22 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   })
 
   const isReady = computed(() => Boolean(row.value))
+
+  const allTeams = computed<TeamId[]>(() => {
+    const result = Array.isArray(row.value?.teams)
+      ? row.value.teams.map((team: CompetitionTeam) => team.id)
+      : []
+    return result
+  })
+  const allPlayers = computed<PlayerId[]>(() => {
+    const result = allTeams.value.map((teamId: TeamId) => {
+      const team = getTeam(teamId)
+      return Array.isArray(team?.players)
+        ? team.players.map((player: CompetitionPlayer) => player.id)
+        : []
+    })
+    return result.flat()
+  })
 
   const getTeam = (teamId: TeamId): CompetitionTeam | undefined => {
     return row.value?.teams?.find((team: CompetitionTeam) => team.id === teamId)
@@ -280,6 +291,8 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   return {
     isReady,
     row,
+    allTeams,
+    allPlayers,
     getGame,
     getTeam,
     getPlayer,

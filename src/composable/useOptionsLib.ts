@@ -32,8 +32,7 @@ export default function usePlayersLib() {
     { text: 'Blk', long: 'Blocks', value: 'blk' },
     { text: 'TO', long: 'Turn overs', value: 'to' },
     { text: 'PF', long: 'Personal Fouls', value: 'pf' },
-    { text: '3pts', long: '3 points', value: 'm3pts' },
-    { text: 'MVP', long: 'MVP', value: 'mvp' }
+    { text: '3pts', long: '3 points', value: 'm3pts' }
   ]
 
   return {
