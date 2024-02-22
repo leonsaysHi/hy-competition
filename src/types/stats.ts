@@ -6,6 +6,7 @@ export interface AwardItem {
   value: Award
 }
 
+export type StatKey = 'pts' | 'reb' | 'ast' | 'stl' | 'blk' | 'to' | 'pf' | 'm3pts' | 'mvp'
 export interface Stats {
   pts: number
   reb: number

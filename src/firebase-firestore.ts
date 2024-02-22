@@ -1,6 +1,6 @@
 import { app } from '@/firebase.js'
 import { collection, getFirestore } from 'firebase/firestore'
-import {competitionConverter } from '@/utils/firestore-converters'
+import { competitionConverter } from '@/utils/firestore-converters'
 
 // Initialize Firestore
 export const db = getFirestore(app)

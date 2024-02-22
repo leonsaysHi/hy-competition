@@ -3,7 +3,7 @@ import useCompetition from '@/composable/useCompetition'
 import useLibs from '@/composable/useLibs'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import { useRoute, RouterLink } from 'vue-router'
-import PhaseGroups from './components/PhaseGroups.vue';
+import PhaseGroups from './components/PhaseGroups.vue'
 
 const route = useRoute()
 const { competitionId } = route.params

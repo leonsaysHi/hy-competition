@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import TypeaheadSelectComp from '@/components/TypeaheadSelectComp.vue'
 import FieldComp from '@/components/FieldComp.vue'
@@ -9,7 +9,7 @@ interface IProps {
   teamsOptions?: Option[]
   isBusy?: boolean
 }
-const props = withDefaults(defineProps<IProps>(), {
+withDefaults(defineProps<IProps>(), {
   isBusy: false,
   teamsOptions: () => []
 })

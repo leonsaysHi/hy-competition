@@ -8,6 +8,7 @@ import PhaseGroupsInput from '@/admin/competition/phases/components/PhaseGroupsI
 import type { PhaseType } from '@/types/competitions'
 import type { TeamId } from '@/types/teams'
 import ButtonComp from '@/components/ButtonComp.vue'
+import useOptionsLib from '@/composable/useOptionsLib'
 
 interface IProps {
   teamsOptions: Option[]
@@ -31,10 +32,8 @@ const groupsLength = ref(1)
 const data = ref<FormData>(getDefaultData())
 const groupLengthMax = computed(() => (data.value.type === 'groups' ? 4 : 2))
 
-const phasesOptions = [
-  { text: 'Groups', value: 'groups' },
-  { text: 'Playoffs', value: 'playoffs' }
-]
+const { competitionPhases: phasesOptions } = useOptionsLib()
+
 const unassignedTeamsOptions = computed(() => {
   const assignedTeams = data.value.groups.flat()
   return props.teamsOptions.filter((opt: Option) => !assignedTeams.includes(opt.value))
@@ -76,7 +75,7 @@ const handleSubmit = async (ev: Event) => {
       </div>
       <div class="col">
         <FieldComp label="Start date">
-          <InputComp v-model="data.datetime" type="datetime-local"  required />
+          <InputComp v-model="data.datetime" type="datetime-local" required />
         </FieldComp>
       </div>
       <div class="col">

@@ -10,10 +10,7 @@
         :checked="model === opt.value"
         @click="() => handleSelect(opt.value)"
       />
-      <label 
-        :class="computedLabelClass" 
-        :for="`radio-input-${$.uid}-${opt.value}`"
-      >
+      <label :class="computedLabelClass" :for="`radio-input-${$.uid}-${opt.value}`">
         {{ opt.text }}
       </label>
     </div>
@@ -53,10 +50,12 @@ const model = computed({
     emit('update:modelValue', val)
   }
 })
-const handleSelect = (val) => { model.value = val}
+const handleSelect = (val) => {
+  model.value = val
+}
 const computedWrapperClass = computed(() => {
   const result: string[] = []
-  if (props.stacked) { 
+  if (props.stacked) {
     result.push('form-check')
   }
   return result
@@ -65,7 +64,7 @@ const computedInputClass = computed(() => {
   const result: string[] = []
   if (props.buttons) {
     result.push('btn-check')
-  } else if (props.stacked) { 
+  } else if (props.stacked) {
     result.push('form-check-input')
   }
   return result
@@ -74,7 +73,7 @@ const computedLabelClass = computed(() => {
   const result: string[] = []
   if (props.buttons) {
     result.push('btn btn-sm')
-  } else if (props.stacked) { 
+  } else if (props.stacked) {
     result.push('form-check-label')
   }
   return result

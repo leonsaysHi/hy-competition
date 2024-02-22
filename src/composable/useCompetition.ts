@@ -1,4 +1,3 @@
-
 import { doc, collection, writeBatch, WriteBatch } from 'firebase/firestore'
 import { db, competitionsColl, teamsName, gamesName, playersName } from '@/firebase-firestore.js'
 import type { Competition, CompetitionDoc, CompetitionId } from '@/types/competitions'
@@ -11,16 +10,22 @@ import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import useLibs from '@/composable/useLibs'
 import type { Ref } from 'vue'
 import { computed, ref, watch } from 'vue'
-import { gameConverter, teamConverter, playerConverter, competitionConverter } from '@/utils/firestore-converters'
-
+import {
+  gameConverter,
+  teamConverter,
+  playerConverter,
+  competitionConverter
+} from '@/utils/firestore-converters'
 
 export default function useCompetition(competitionId: CompetitionId | undefined) {
   const { isReady: isLibsReady, getCompetition } = useLibs()
 
-  const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`)
-    .withConverter(gameConverter)
-  const teamsCollRef = collection(competitionsColl, `/${competitionId}/${teamsName}`)
-    .withConverter(teamConverter)
+  const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`).withConverter(
+    gameConverter
+  )
+  const teamsCollRef = collection(competitionsColl, `/${competitionId}/${teamsName}`).withConverter(
+    teamConverter
+  )
   const getPlayersColl = (teamId: TeamId) =>
     collection(teamsCollRef, `${teamId}/${playersName}`).withConverter(playerConverter)
 
@@ -63,6 +68,8 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     } as Competition
   })
 
+  const isReady = computed(() => Boolean(row.value))
+
   const getTeam = (teamId: TeamId): CompetitionTeam | undefined => {
     return row.value?.teams?.find((team: CompetitionTeam) => team.id === teamId)
   }
@@ -77,14 +84,12 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     return row?.value?.games?.find((game: Game) => game.id === gameId)
   }
 
-  const isReady = computed(() => Boolean(row.value))
-
   // Admin game
-  const writeGame = async (payload: Game): WriteBatch => {
+  const writeGame = async (payload: Game) => {
     const batch = writeGameBatch(payload)
     await batch.commit()
   }
-  const writeGameBatch = (row: Game, batch: WriteBatch = writeBatch(db)) => {
+  const writeGameBatch = (row: Game, batch: WriteBatch = writeBatch(db)): WriteBatch => {
     const {
       id,
       ...gameDoc

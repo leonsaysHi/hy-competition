@@ -59,7 +59,11 @@ const props = withDefaults(defineProps<IProps>(), {
 const emit = defineEmits(['update:modelValue'])
 const model = computed({
   get: (): TeamId[][] => props.modelValue,
-  set: (val: TeamId[][]) => emit('update:modelValue', val.map(group => group.filter(Boolean)))
+  set: (val: TeamId[][]) =>
+    emit(
+      'update:modelValue',
+      val.map((group) => group.filter(Boolean))
+    )
 })
 
 const handleRemoveTeam = (gIdx: number, tId: TeamId) => {

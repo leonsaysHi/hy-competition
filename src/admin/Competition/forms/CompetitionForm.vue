@@ -10,25 +10,18 @@ import type {
   CompetitionSport,
   Phase
 } from '@/types/competitions'
-import type { Option } from '@/types/comp-fields'
 import SelectComp from '@/components/SelectComp.vue'
 import CheckComp from '@/components/CheckComp.vue'
+import useOptionsLib from '@/composable/useOptionsLib'
+import CheckGroupComp from '@/components/CheckGroupComp.vue'
+import type { StatKey } from '@/types/stats'
 
-const sportsOptions: Option[] = [
-  {
-    text: 'Basketball 5x5',
-    value: 'basketball5x5'
-  }
-]
-const categoriesOptions: Option[] =
-  'U6|U8|U9|U10|U11|U12|U13|U14|U15|U16|U17|U18|Senior|+30|+35|+40|+45'.split('|').map((str) => ({
-    text: str,
-    value: str
-  }))
-const gendersOptions: Option[] = 'M|F|MF'.split('|').map((str) => ({
-  text: str,
-  value: str
-}))
+const {
+  competitionSports: sportsOptions,
+  competitionCategories: categoriesOptions,
+  competitionGenders: gendersOptions,
+  statsKeys: statsKeysOptions,
+} = useOptionsLib()
 
 interface IProps {
   value: FormData
@@ -45,6 +38,7 @@ type FormData = {
   category?: CompetitionCategorie
   gender?: CompetitionGender
   phases: Phase[]
+  trackedStats: StatKey[]
   isActive?: Boolean
 }
 const data = ref<FormData>({
@@ -54,9 +48,10 @@ const data = ref<FormData>({
   gender: undefined,
   category: undefined,
   isActive: false,
-  phases: [],
 
-  ...props.value
+  ...props.value,
+
+  trackedStats: Array.isArray(props.value.trackedStats) ? props.value.trackedStats : ['pts']
 })
 
 const emit = defineEmits(['submit'])
@@ -90,6 +85,15 @@ const handleSubmit = (ev: Event) => {
         :disabled="isBusy"
         required
       />
+    </FieldComp>
+    <FieldComp label="Tracked stats">
+        <CheckGroupComp
+          v-model="data.trackedStats"
+          :options="statsKeysOptions"
+          :disabled="isBusy"
+          switches
+          inline
+        />
     </FieldComp>
     <div class="d-flex justify-content-end gap-2">
       <ButtonComp variant="primary" type="submit" :is-busy="isBusy">Save</ButtonComp>

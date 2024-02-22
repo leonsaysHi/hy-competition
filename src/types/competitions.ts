@@ -1,29 +1,12 @@
-import type { AwardItem } from './stats'
+import type { AwardItem, StatKey } from './stats'
 import type { CompetitionTeam, Team, TeamId } from './teams'
-import type { Game, GameId } from './games'
+import type { Game } from './games'
 import type { PlayerAdverages, PlayerAwards, PlayerId } from './players'
 export type CompetitionId = string
-export type CompetitionSport = 'basketball'
-export type CompetitionCategorie =
-  | 'U6'
-  | 'U8'
-  | 'U9'
-  | 'U10'
-  | 'U11'
-  | 'U12'
-  | 'U13'
-  | 'U14'
-  | 'U15'
-  | 'U16'
-  | 'U17'
-  | 'U18'
-  | 'Senior'
-  | '+30'
-  | '+35'
-  | '+40'
-  | '+45'
+export type CompetitionSport = 'basketball5x5' | 'basketball3x3'
+export type CompetitionCategorie = 'u17' | 'u21' | 'senior' | '+35'
 
-export type CompetitionGender = 'm' | 'f' | 'mf'
+export type CompetitionGender = 'm' | 'f'
 export type PhaseType = 'groups' | 'playins' | 'playoffs' | undefined
 export interface Phase {
   type: PhaseType
@@ -42,6 +25,7 @@ export interface CompetitionDoc {
   isActive: boolean
   isOver: boolean
   phases: Phase[]
+  trackedStats: StatKey[]
   lastUpdate: string
 }
 

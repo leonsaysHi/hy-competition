@@ -31,8 +31,5 @@ const { getTeamName } = useLibs()
 interface IProps {
   value: TeamId[][]
 }
-withDefaults(defineProps<IProps>(), {
-})
-
-
+withDefaults(defineProps<IProps>(), {})
 </script>

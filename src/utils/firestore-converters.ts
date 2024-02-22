@@ -19,11 +19,9 @@ export const competitionConverter = {
     const payload = {
       ...row,
       phases: Array.isArray(row.phases)
-        ? row.phases
-          .map((phase: Phase) => ({
+        ? row.phases.map((phase: Phase) => ({
             ...phase,
-            groups: phase.groups
-              .map((group: TeamId[]) => group.join(';'))
+            groups: phase.groups.map((group: TeamId[]) => group.join(';'))
           }))
         : [],
       lastUpdate
@@ -38,11 +36,9 @@ export const competitionConverter = {
       teams: [],
       ...data,
       phases: Array.isArray(data.phases)
-        ? data.phases
-          .map(phase => ({
+        ? data.phases.map((phase) => ({
             ...phase,
-            groups: phase.groups
-              .map((group: string) => group.split(';'))
+            groups: phase.groups.map((group: string) => group.split(';'))
           }))
         : {},
       lastUpdate: data.lastUpdate ? dateFromFirestore(data.lastUpdate) : new Date()
