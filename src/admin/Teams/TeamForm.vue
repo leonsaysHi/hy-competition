@@ -50,7 +50,7 @@ const handleSubmit = async (ev: Event) => {
   const { id, title } = row
   if (
     rows.value.findIndex(
-      (team:Team) => (!id || team.id !== id) && team.title.toLowerCase() === title.toLowerCase()
+      (team: Team) => (!id || team.id !== id) && team.title.toLowerCase() === title.toLowerCase()
     ) > -1
   ) {
     errors.value.title = 'This team already exists'

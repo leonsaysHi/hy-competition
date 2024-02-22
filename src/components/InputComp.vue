@@ -8,6 +8,7 @@
     :disabled="readonly || disabled"
     :required="required"
     :min="type === 'number' ? props.min : undefined"
+    :max="type === 'number' ? props.max : undefined"
     @input="emit('input')"
     @keyup.enter="handleEnterKey"
   />
@@ -23,7 +24,8 @@ interface IProps {
   required?: boolean
   disabled?: boolean
   size?: 'lg' | 'md' | 'sm'
-  min?: number
+  min?: number | undefined
+  max?: number | undefined
   isValid?: boolean
   isInvalid?: boolean
 }
@@ -35,6 +37,7 @@ const props = withDefaults(defineProps<IProps>(), {
   disabled: false,
   size: 'md',
   min: 0,
+  max: undefined,
   isValid: false,
   isInvalid: false
 })

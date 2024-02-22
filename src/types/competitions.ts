@@ -1,6 +1,6 @@
 import type { AwardItem } from './stats'
 import type { CompetitionTeam, Team, TeamId } from './teams'
-import type { Game } from './games'
+import type { Game, GameId } from './games'
 import type { PlayerAdverages, PlayerAwards, PlayerId } from './players'
 export type CompetitionId = string
 export type CompetitionSport = 'basketball'
@@ -24,7 +24,13 @@ export type CompetitionCategorie =
   | '+45'
 
 export type CompetitionGender = 'm' | 'f' | 'mf'
-
+export type CompetitionPhaseType = 'groups' | 'playins' | 'playoffs' | undefined
+export type CompetitionGroup = TeamId[]
+export interface Phase {
+  type: CompetitionPhaseType
+  groups: TeamId[][]
+  games: GameId[]
+}
 // data
 export interface CompetitionDoc {
   id?: CompetitionId
@@ -36,6 +42,7 @@ export interface CompetitionDoc {
   awards: AwardItem[]
   isActive: boolean
   isOver: boolean
+  phases: Phase[]
   lastUpdate: string
 }
 

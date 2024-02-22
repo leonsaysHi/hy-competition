@@ -9,6 +9,7 @@ import type { Option } from '@/types/comp-fields'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import type { Game } from '@/types/games'
 import useCompetition from '@/composable/useCompetition'
+import AddPhaseForm from '@/admin/competition/forms/AddPhaseForm.vue'
 import AddGameForm from '@/admin/competition/forms/AddGameForm.vue'
 import { compareDesc } from 'date-fns'
 import useLibs from '@/composable/useLibs'
@@ -30,21 +31,20 @@ const gamesItems = computed(() => {
     ? row?.value?.games.map((game: Game) => {
         return {
           ...game,
-          game: game.teams
-            .reduce((score, teamId: TeamId) => {
-              const finalScore = game.scores[teamId]
-                ? game.scores[teamId].reduce((tot, score) => tot + score, 0)
-                : 0
-              return {
-                ...score,
-                [teamId]: finalScore
-              }
-            }, {})
+          game: game.teams.reduce((score, teamId: TeamId) => {
+            const finalScore = game.scores[teamId]
+              ? game.scores[teamId].reduce((tot, score) => tot + score, 0)
+              : 0
+            return {
+              ...score,
+              [teamId]: finalScore
+            }
+          }, {})
         }
       })
     : []
-    result.sort((a: Game, b: Game) => compareDesc(a.datetime, b.datetime))
-    return result
+  result.sort((a: Game, b: Game) => compareDesc(a.datetime, b.datetime))
+  return result
 })
 
 const fields: TableField[] = [
@@ -98,8 +98,8 @@ const handleDelete = async () => {
         <template #game="{ item }">
           <div class="score-col">
             <template v-for="(score, teamId) in item.game" :key="teamId">
-                <div>{{ score }}</div>
-                <strong>{{ getTeamName(teamId) }}</strong>
+              <div>{{ score }}</div>
+              <strong>{{ getTeamName(teamId) }}</strong>
             </template>
           </div>
         </template>
@@ -137,10 +137,10 @@ const handleDelete = async () => {
 </template>
 
 <style lang="scss" scoped>
-.score-col { 
+.score-col {
   display: grid;
-  grid-template-columns: 2rem auto; 
-  column-gap: .25rem;
-  row-gap: .25rem;
+  grid-template-columns: 2rem auto;
+  column-gap: 0.25rem;
+  row-gap: 0.25rem;
 }
 </style>

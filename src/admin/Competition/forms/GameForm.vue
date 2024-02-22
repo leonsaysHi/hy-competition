@@ -14,7 +14,6 @@ import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import { useRoute } from 'vue-router'
 
-
 const route = useRoute()
 const { competitionId } = route.params
 const { getTeam: getCompetitionTeam } = useCompetition(competitionId)
@@ -116,19 +115,21 @@ const boxscoreByTeams = computed({
 })
 
 const playersOptions = computed((): Option[] => {
-  return Array.isArray(props.value.teams) 
+  return Array.isArray(props.value.teams)
     ? props.value.teams
-      .reduce((list: PlayerId[], teamId: TeamId) => {
-        const team = getCompetitionTeam(teamId)
-        return [
-          ...list,
-          ...(Array.isArray(team?.players) ? team.players.map((player: CompetitionPlayer) => player.id) : [])
-        ]
-      }, [])
-      .map((playerId: PlayerId) => ({
-        text: getPlayerName(playerId),
-        value: playerId
-      }))
+        .reduce((list: PlayerId[], teamId: TeamId) => {
+          const team = getCompetitionTeam(teamId)
+          return [
+            ...list,
+            ...(Array.isArray(team?.players)
+              ? team.players.map((player: CompetitionPlayer) => player.id)
+              : [])
+          ]
+        }, [])
+        .map((playerId: PlayerId) => ({
+          text: getPlayerName(playerId),
+          value: playerId
+        }))
     : []
 })
 

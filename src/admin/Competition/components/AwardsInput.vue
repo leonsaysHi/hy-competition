@@ -49,7 +49,7 @@ interface IProps {
   playersOptions?: Option[]
 }
 const props = withDefaults(defineProps<IProps>(), {
-  playersOptions: () => ([])
+  playersOptions: () => []
 })
 
 type FormData = {

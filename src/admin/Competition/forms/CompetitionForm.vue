@@ -7,7 +7,8 @@ import type {
   CompetitionCategorie,
   CompetitionDoc,
   CompetitionGender,
-  CompetitionSport
+  CompetitionSport,
+  Phase
 } from '@/types/competitions'
 import type { Option } from '@/types/comp-fields'
 import SelectComp from '@/components/SelectComp.vue'
@@ -43,6 +44,7 @@ type FormData = {
   sport?: CompetitionSport
   category?: CompetitionCategorie
   gender?: CompetitionGender
+  phases: Phase[]
   isActive?: Boolean
 }
 const data = ref<FormData>({
@@ -52,6 +54,7 @@ const data = ref<FormData>({
   gender: undefined,
   category: undefined,
   isActive: false,
+  phases: [],
 
   ...props.value
 })

@@ -1,38 +1,33 @@
-import useFirestoreAdmin from '@/composable/useFirestoreAdmin'
-import { doc, collection, writeBatch, WriteBatch, DocumentReference } from 'firebase/firestore'
+
+import { doc, collection, writeBatch, WriteBatch } from 'firebase/firestore'
 import { db, competitionsColl, teamsName, gamesName, playersName } from '@/firebase-firestore.js'
 import type { Competition, CompetitionDoc, CompetitionId } from '@/types/competitions'
 
 import { useFirestore } from '@vueuse/firebase/useFirestore'
 import type { CompetitionTeam, CompetitionTeamDoc, TeamId } from '@/types/teams'
 import type { Game, GameId } from '@/types/games'
-import type { CompetitionPlayer, Player, PlayerId } from '@/types/players'
+import type { CompetitionPlayer, PlayerId } from '@/types/players'
 
 import useLibs from '@/composable/useLibs'
 import type { Ref } from 'vue'
 import { computed, ref, watch } from 'vue'
+import { gameConverter, teamConverter, playerConverter, competitionConverter } from '@/utils/firestore-converters'
 
-import { gameConverter, teamConverter, playerConverter } from '@/utils/firestore-converters'
-
-const coll = competitionsColl
-
-const { writeDocs, deleteDocs } = useFirestoreAdmin()
 
 export default function useCompetition(competitionId: CompetitionId | undefined) {
   const { isReady: isLibsReady, getCompetition } = useLibs()
 
-  const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`).withConverter(
-    gameConverter
-  )
-  const teamsCollRef = collection(competitionsColl, `/${competitionId}/${teamsName}`).withConverter(
-    teamConverter
-  )
+  const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`)
+    .withConverter(gameConverter)
+  const teamsCollRef = collection(competitionsColl, `/${competitionId}/${teamsName}`)
+    .withConverter(teamConverter)
   const getPlayersColl = (teamId: TeamId) =>
     collection(teamsCollRef, `${teamId}/${playersName}`).withConverter(playerConverter)
+
+  // Competition
   const games = useFirestore(gamesCollRef, undefined) as Ref<Game[] | undefined>
   const teams = useFirestore(teamsCollRef, undefined) as Ref<CompetitionTeam[] | undefined>
   const playersLists = ref<{ [key: TeamId]: CompetitionPlayer[] }>({})
-
   watch(
     () => teams.value,
     (value) => {
@@ -46,7 +41,6 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
       }
     }
   )
-
   const row: Ref<Competition | undefined> = computed(() => {
     if (
       !isLibsReady.value ||
@@ -68,6 +62,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
       games: games?.value
     } as Competition
   })
+
   const getTeam = (teamId: TeamId): CompetitionTeam | undefined => {
     return row.value?.teams?.find((team: CompetitionTeam) => team.id === teamId)
   }
@@ -229,7 +224,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     await batch.commit()
   }
   const writeCompetitionDocBatch = (
-    row: CompetitionTeam,
+    row: Competition,
     batch: WriteBatch = writeBatch(db)
   ): WriteBatch => {
     const {

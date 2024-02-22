@@ -54,7 +54,9 @@ const handleSubmit = async (ev: Event) => {
   const { id, identification } = row
   if (
     rows.value.findIndex(
-      (player: Player) => (!id || player.id !== id) && player.identification.toLowerCase() === identification.toLowerCase()
+      (player: Player) =>
+        (!id || player.id !== id) &&
+        player.identification.toLowerCase() === identification.toLowerCase()
     ) > -1
   ) {
     errors.value.identification = 'This player already exists'

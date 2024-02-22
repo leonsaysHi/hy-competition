@@ -9,7 +9,7 @@
     @change="handleChange"
   >
     <template v-if="placeholder">
-      <option>{{ placeholder }}</option>
+      <option value="">{{ placeholder }}</option>
     </template>
     <template v-for="opt in options" :key="opt.value">
       <option :value="opt.value">{{ opt.text }}</option>
