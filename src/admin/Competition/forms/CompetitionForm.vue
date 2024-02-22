@@ -20,7 +20,7 @@ const {
   competitionSports: sportsOptions,
   competitionCategories: categoriesOptions,
   competitionGenders: gendersOptions,
-  statsKeys: statsKeysOptions,
+  statsKeys: statsKeysOptions
 } = useOptionsLib()
 
 interface IProps {
@@ -87,13 +87,12 @@ const handleSubmit = (ev: Event) => {
       />
     </FieldComp>
     <FieldComp label="Tracked stats">
-        <CheckGroupComp
-          v-model="data.trackedStats"
-          :options="statsKeysOptions"
-          :disabled="isBusy"
-          switches
-          inline
-        />
+      <CheckGroupComp
+        v-model="data.trackedStats"
+        :options="statsKeysOptions"
+        :disabled="isBusy"
+        buttons
+      />
     </FieldComp>
     <div class="d-flex justify-content-end gap-2">
       <ButtonComp variant="primary" type="submit" :is-busy="isBusy">Save</ButtonComp>

@@ -8,25 +8,33 @@
           variant="danger"
           class="btn-close"
           size="sm"
+          :disabled="disabled"
           @click="() => handleDelete(idx)"
         ></ButtonComp>
       </h6>
     </template>
     <form class="d-flex align-items-end gap-3" @submit="handleAdd">
       <FieldComp label="Add award:" class="flex-grow-1">
-        <SelectComp v-model="data.award" :options="awardsOptions" placeholder="Award..." required />
+        <SelectComp
+          v-model="data.award"
+          :options="awardsOptions"
+          placeholder="Award..."
+          :disabled="disabled"
+          required
+        />
       </FieldComp>
       <FieldComp label="to player:" class="flex-grow-1">
         <TypeaheadSelectComp
           v-model="data.playerId"
           :options="playersOptions"
           placeholder="Player..."
+          :disabled="disabled"
           required
         />
       </FieldComp>
 
       <FieldComp>
-        <ButtonComp variant="primary" type="submit">Add</ButtonComp>
+        <ButtonComp variant="primary" type="submit" :disabled="disabled">Add</ButtonComp>
       </FieldComp>
     </form>
   </div>
@@ -47,9 +55,11 @@ import useLibs from '@/composable/useLibs'
 interface IProps {
   modelValue: AwardItem[]
   playersOptions?: Option[]
+  disabled?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
-  playersOptions: () => []
+  playersOptions: () => [],
+  disabled: false
 })
 
 type FormData = {

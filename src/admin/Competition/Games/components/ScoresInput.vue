@@ -23,7 +23,11 @@
         <div>
           <template v-if="!colIdx">{{ period }}</template>
           <template v-else
-            ><ButtonComp variant="light" size="sm" @click="handleRemovePeriod(periodIdx)"
+            ><ButtonComp
+              variant="light"
+              size="sm"
+              :disabled="disabled"
+              @click="handleRemovePeriod(periodIdx)"
               >Remove</ButtonComp
             ></template
           >
@@ -32,6 +36,7 @@
           <InputComp
             v-model.number="model[teamId][periodIdx]"
             type="number"
+            :disabled="disabled"
             @update="(v) => handleInput(teamId, periodIdx, v)"
           />
         </div>
@@ -40,7 +45,9 @@
     </template>
 
     <div class="add d-flex justify-content-center">
-      <ButtonComp variant="light" size="sm" @click="handleAddPeriod">Add period</ButtonComp>
+      <ButtonComp variant="light" size="sm" :disabled="disabled" @click="handleAddPeriod"
+        >Add period</ButtonComp
+      >
     </div>
   </div>
 </template>
@@ -55,8 +62,11 @@ import type { TeamId } from '@/types/teams'
 interface IProps {
   modelValue: GameScores
   teams: TeamId[]
+  disabled?: boolean
 }
-const props = withDefaults(defineProps<IProps>(), {})
+const props = withDefaults(defineProps<IProps>(), {
+  disabled: false
+})
 
 const emit = defineEmits(['update:modelValue', 'input'])
 const model = computed({

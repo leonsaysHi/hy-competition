@@ -8,7 +8,7 @@
         v-model.number="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp"
+        :disabled="model[item.id].dnp || disabled"
       />
     </template>
     <template #m3pts="{ key, item }">
@@ -16,7 +16,7 @@
         v-model.number="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp"
+        :disabled="model[item.id].dnp || disabled"
       />
     </template>
     <template #reb="{ key, item }">
@@ -24,7 +24,7 @@
         v-model.number="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp"
+        :disabled="model[item.id].dnp || disabled"
       />
     </template>
     <template #ast="{ key, item }">
@@ -32,7 +32,7 @@
         v-model.number="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp"
+        :disabled="model[item.id].dnp || disabled"
       />
     </template>
     <template #stl="{ key, item }">
@@ -40,7 +40,7 @@
         v-model.number="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp"
+        :disabled="model[item.id].dnp || disabled"
       />
     </template>
     <template #blk="{ key, item }">
@@ -48,7 +48,7 @@
         v-model.number="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp"
+        :disabled="model[item.id].dnp || disabled"
       />
     </template>
     <template #to="{ key, item }">
@@ -56,7 +56,7 @@
         v-model.number="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp"
+        :disabled="model[item.id].dnp || disabled"
       />
     </template>
     <template #pf="{ key, item }">
@@ -64,7 +64,7 @@
         v-model.number="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp"
+        :disabled="model[item.id].dnp || disabled"
       />
     </template>
     <template #dnp="{ key, item }">
@@ -72,6 +72,7 @@
         v-model="model[item.id][key]"
         :value="false"
         :uncheck-value="true"
+        :disabled="disabled"
         switch
       ></CheckComp>
     </template>
@@ -82,7 +83,7 @@
 import { computed } from 'vue'
 import type { GameBoxScore } from '@/types/games'
 import TableComp from '@/components/TableComp.vue'
-import type { TableItem } from '@/types/comp-table'
+import type { TableField, TableItem } from '@/types/comp-table'
 import InputComp from '@/components/InputComp.vue'
 import CheckComp from '@/components/CheckComp.vue'
 
@@ -90,6 +91,7 @@ import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import type { PlayerId } from '@/types/players'
 import { useRoute } from 'vue-router'
+import type { StatKey } from '@/types/stats'
 
 const route = useRoute()
 const { competitionId } = route.params
@@ -99,22 +101,35 @@ const { getPlayerNumber } = useCompetition(competitionId)
 
 interface IProps {
   modelValue: GameBoxScore
+  trackedStats?: StatKey[]
+  disabled?: boolean
 }
-const props = withDefaults(defineProps<IProps>(), {})
+const props = withDefaults(defineProps<IProps>(), {
+  trackedStats: () => [],
+  disabled: false
+})
 
-const fields = [
+const statsFields = computed(() =>
+  [
+    { key: 'pts', label: 'Pts' },
+    { key: 'm3pts', label: '3Pts' },
+    { key: 'reb', label: 'Reb' },
+    { key: 'ast', label: 'Ast' },
+    { key: 'stl', label: 'Stl' },
+    { key: 'blk', label: 'Blk' },
+    { key: 'to', label: 'To' },
+    { key: 'pf', label: 'Pf' }
+  ].filter(
+    (field: TableField) =>
+      Array.isArray(props.trackedStats) && props.trackedStats.includes(field.key)
+  )
+)
+const fields = computed<TableField[]>(() => [
   { key: 'number', label: '#' },
   { key: 'name', label: 'Players' },
-  { key: 'pts', label: 'Pts' },
-  { key: 'm3pts', label: '3Pts' },
-  { key: 'reb', label: 'Reb' },
-  { key: 'ast', label: 'Ast' },
-  { key: 'stl', label: 'Stl' },
-  { key: 'blk', label: 'Blk' },
-  { key: 'to', label: 'To' },
-  { key: 'pf', label: 'Pf' },
+  ...statsFields.value,
   { key: 'dnp', label: '' }
-]
+])
 
 const emit = defineEmits(['update:modelValue', 'input'])
 

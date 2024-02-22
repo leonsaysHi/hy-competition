@@ -6,7 +6,6 @@ export interface AwardItem {
   value: Award
 }
 
-export type StatKey = 'pts' | 'reb' | 'ast' | 'stl' | 'blk' | 'to' | 'pf' | 'm3pts' | 'mvp'
 export interface Stats {
   pts: number
   reb: number
@@ -17,7 +16,9 @@ export interface Stats {
   pf: number
   m3pts: number
 }
+export type StatKey = keyof Stats
 
 export interface PlayerBoxScore extends Stats {
   dnp: boolean
 }
+export type PlayerBoxScoreKey = keyof PlayerBoxScore

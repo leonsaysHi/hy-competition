@@ -16,7 +16,7 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const { competitionId } = route.params
-const { getTeam: getCompetitionTeam } = useCompetition(competitionId)
+const { row, getTeam: getCompetitionTeam } = useCompetition(competitionId)
 
 const { getTeamName, getPlayerName } = useLibs()
 
@@ -143,11 +143,11 @@ const handleSubmit = (ev: Event) => {
 <template>
   <form @submit="handleSubmit">
     <FieldComp label="Date & time">
-      <InputComp v-model="data.datetime" type="datetime-local" required />
+      <InputComp v-model="data.datetime" type="datetime-local" :disabled="isBusy" required />
     </FieldComp>
     <hr />
     <FieldComp label="Scores">
-      <ScoresInput v-model="data.scores" :teams="data.teams" required>
+      <ScoresInput v-model="data.scores" :teams="data.teams" :disabled="isBusy">
         <template #team1>
           <template v-for="(scores, teamId, idx) in data.scores">
             <template v-if="!idx">{{ getTeamName(teamId) }}</template>
@@ -164,12 +164,16 @@ const handleSubmit = (ev: Event) => {
     <FieldComp label="Boxscore">
       <template v-for="(boxscore, teamId) in boxscoreByTeams" :key="teamId">
         <h6 class="mb-0">{{ getTeamName(teamId) }}</h6>
-        <BoxScoreInput v-model="boxscoreByTeams[teamId]" />
+        <BoxScoreInput
+          v-model="boxscoreByTeams[teamId]"
+          :trackedStats="row?.trackedStats"
+          :disabled="isBusy"
+        />
       </template>
     </FieldComp>
     <hr />
     <FieldComp label="Awards">
-      <AwardsInput v-model="data.awards" :players-options="playersOptions" />
+      <AwardsInput v-model="data.awards" :players-options="playersOptions" :disabled="isBusy" />
     </FieldComp>
     <div class="d-flex justify-content-end gap-2">
       <ButtonComp variant="primary" type="submit" :is-busy="isBusy">Save</ButtonComp>

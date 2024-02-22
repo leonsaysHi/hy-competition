@@ -1,27 +1,24 @@
 <template>
-    <div>
-  <template v-for="opt in options" :key="opt.value">
-    <div :class="computedWrapperClass">
-        <input
-            :class="computedInputClass"
-            type="checkbox"
-            :name="`check-input-${$.uid}`"
-            :id="`check-input-${$.uid}-${opt.value}`"
-            :disabled="disabled"
-            :checked="model.includes(opt.value)"
-            @click="() => handleCheck(opt.value)"
-        />
-        <label :class="computedLabelClass" :for="`check-input-${$.uid}-${opt.value}`">
-            {{ opt.text }}
-        </label>
-    </div>
-  </template>
-</div>
+  <div :class="computedWrapperClass">
+    <template v-for="opt in options" :key="opt.value">
+      <CheckComp
+        v-model="model[opt.value]"
+        :switch="switches"
+        :button="buttons"
+        :readonly="readonly"
+        :disabled="disabled"
+        :inline="inline"
+        @click="handleCheck"
+        >{{ opt.text }}</CheckComp
+      >
+    </template>
+  </div>
 </template>
 
 <script setup lang="ts">
 import type { Option } from '@/types/comp-fields'
 import { computed } from 'vue'
+import CheckComp from '@/components/CheckComp.vue'
 interface IProps {
   modelValue: []
   options: Option[]
@@ -29,6 +26,7 @@ interface IProps {
   disabled?: boolean
   inline?: boolean
   switches?: boolean
+  buttons?: boolean
   isValid?: boolean
   isInvalid?: boolean
 }
@@ -38,44 +36,40 @@ const props = withDefaults(defineProps<IProps>(), {
   disabled: false,
   inline: false,
   switches: false,
+  buttons: false,
   isValid: false,
   isInvalid: false
 })
 const emit = defineEmits(['update:modelValue', 'change', 'validate'])
 
-const model = computed<string[]>({
-  get: () => props.modelValue,
+const model = computed<{ [key: string]: boolean }>({
+  get: () =>
+    Array.isArray(props.options)
+      ? props.options.reduce((result, opt: Option) => {
+          return {
+            ...result,
+            [opt.value]: Array.isArray(props.modelValue) && props.modelValue.includes(opt.value)
+          }
+        }, {})
+      : {},
   set: (val) => {
-    emit('update:modelValue', val)
+    const newValue = Object.keys(val).filter((key) => val[key])
+    emit('update:modelValue', newValue)
   }
 })
 
-const handleCheck = (key: string) => {
-    const idx = model.value.findIndex(k => k === key)
-    if (idx > -1) {
-        model.value.splice(idx, 1)
-    } else {
-        model.value.push(key)
-    }
+const handleCheck = () => {
+  const newModel = {
+    ...model.value
+  }
+  model.value = newModel
 }
 
-
 const computedWrapperClass = computed(() => {
-  const result: string[] = ['form-check']
-  if (props.switches) {
-    result.push('form-switch')
+  const result = []
+  if (props.buttons) {
+    result.push('d-flex gap-2')
   }
-  if(props.inline) {
-    result.push('form-check-inline')
-  }
-  return result
-})
-const computedInputClass = computed(() => {
-  const result: string[] = ['form-check-input']
-  return result
-})
-const computedLabelClass = computed(() => {
-  const result: string[] = ['form-check-label']
   return result
 })
 </script>

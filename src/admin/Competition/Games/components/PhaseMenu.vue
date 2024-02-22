@@ -5,7 +5,7 @@ import type { Option } from '@/types/comp-fields'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 interface IProps {
   modelValue: string
-  phases: Phase[]
+  phases: Phase[] | undefined
 }
 const props = withDefaults(defineProps<IProps>(), {})
 
@@ -36,7 +36,7 @@ const phasesOptions = computed((): Option[] => {
       <RadioGroupComp
         v-model="model"
         :options="phasesOptions"
-        :disabled="props.phases.length === 1"
+        :disabled="phasesOptions.length === 2"
         buttons
       />
     </div>

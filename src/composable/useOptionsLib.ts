@@ -41,6 +41,6 @@ export default function usePlayersLib() {
     competitionCategories,
     competitionGenders,
     competitionPhases,
-    statsKeys,
+    statsKeys
   }
 }

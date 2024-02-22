@@ -28,6 +28,7 @@ interface IProps {
   disabled?: boolean
   inline?: boolean
   switch?: boolean
+  button?: boolean
   isValid?: boolean
   isInvalid?: boolean
 }
@@ -40,17 +41,23 @@ const props = withDefaults(defineProps<IProps>(), {
   disabled: false,
   inline: false,
   switch: false,
+  button: false,
   isValid: false,
   isInvalid: false
 })
 
-const emit = defineEmits(['update:modelValue', 'change', 'validate'])
+const emit = defineEmits(['update:modelValue'])
 const model = computed({
   get: () => props.modelValue,
   set: (val) => emit('update:modelValue', val)
 })
 const computedWrapperClass = computed(() => {
-  const result = ['form-check']
+  const result = []
+  if (props.button) {
+    result.push('d-inline-block')
+  } else {
+    result.push('form-check')
+  }
   if (props.inline) {
     result.push('form-check-inline')
   }
@@ -60,11 +67,22 @@ const computedWrapperClass = computed(() => {
   return result
 })
 const computedInputClass = computed(() => {
-  const result: string[] = ['form-check-input']
+  const result: string[] = []
+  if (props.button) {
+    result.push('btn-check')
+  } else {
+    result.push('form-check-input')
+  }
   return result
 })
 const computedLabelClass = computed(() => {
   const result: string[] = ['form-check-label']
+  if (props.button) {
+    result.push('btn')
+    result.push(model.value === props.value ? 'btn-primary' : 'btn-outline-secondary')
+  } else {
+    result.push('form-check-label')
+  }
   return result
 })
 </script>
