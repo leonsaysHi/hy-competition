@@ -24,12 +24,11 @@ export type CompetitionCategorie =
   | '+45'
 
 export type CompetitionGender = 'm' | 'f' | 'mf'
-export type CompetitionPhaseType = 'groups' | 'playins' | 'playoffs' | undefined
-export type CompetitionGroup = TeamId[]
+export type PhaseType = 'groups' | 'playins' | 'playoffs' | undefined
 export interface Phase {
-  type: CompetitionPhaseType
+  type: PhaseType
   groups: TeamId[][]
-  games: GameId[]
+  datetime: Date
 }
 // data
 export interface CompetitionDoc {

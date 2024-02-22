@@ -17,7 +17,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { computed } from 'vue'
 import type { Option } from '@/types/comp-fields'
 import type { CompetitionTeam } from '@/types/teams'
@@ -27,6 +27,7 @@ import useLibs from '@/composable/useLibs'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 
 const route = useRoute()
+const router = useRouter()
 const { competitionId } = route.params
 
 const { isReady: isLibsReady, getTeam } = useLibs()
@@ -47,13 +48,12 @@ const teamsOptions = computed((): Option[] => {
 
 // Add phase
 const handleAddPhase = async (data) => {
+  const phases = Array.isArray(row.value?.phases) ? row.value.phases : []
+  phases.push(data)
   await writeCompetitionDoc({
     ...row.value,
-    phases: [
-      ...(Array.isArray(row.value?.phases) ? row.value.phases : [] ),
-      data
-    ]
+    phases
   })
-  console.log('new phase', data)
+  router.push({ name: 'admin-competition-phases' })
 }
 </script>

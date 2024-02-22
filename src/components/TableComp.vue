@@ -1,6 +1,6 @@
 <template>
   <table class="table" :class="{ 'table-sm': small }">
-    <thead>
+    <thead class="table-light">
       <tr>
         <template v-for="({ label, sortable, key }, hIdx) in fields" :key="hIdx">
           <th

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { isAfter } from 'date-fns'
 import { useRoute, RouterLink } from 'vue-router'
 import { ref, computed } from 'vue'
 import type { TableField, TableItem } from '@/types/comp-table'
@@ -9,11 +10,12 @@ import type { Option } from '@/types/comp-fields'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import type { Game } from '@/types/games'
 import useCompetition from '@/composable/useCompetition'
-import AddPhaseForm from '@/admin/competition/forms/AddPhaseForm.vue'
 import AddGameForm from '@/admin/competition/forms/AddGameForm.vue'
 import { compareDesc } from 'date-fns'
 import useLibs from '@/composable/useLibs'
 import SpinnerComp from '@/components/SpinnerComp.vue'
+import RadioGroupComp from '@/components/RadioGroupComp.vue'
+import type { Phase } from '@/types/competitions'
 
 const route = useRoute()
 const { competitionId } = route.params
@@ -26,9 +28,32 @@ const {
   deleteGame: deleteCompetitionGame
 } = useCompetition(competitionId)
 
+const selectedPhase = ref('')
+
+const phasesOptions = computed(():Option[] => {
+  const result = Array.isArray(row?.value?.phases)
+    ? row?.value?.phases.map((phase: Phase, idx: number):Option => ({
+      text: `${phase.type} / ${phase.datetime}`,
+      value: idx.toString()
+    }))
+    : []
+  return [ 
+    { text: 'all', value: '' }, 
+    ...result 
+  ]
+})
+
 const gamesItems = computed(() => {
   const result = Array.isArray(row?.value?.games)
-    ? row?.value?.games.map((game: Game) => {
+    ? row?.value?.games
+      .filter((game: Game) => {
+        if (!selectedPhase.value) {
+          return true
+        }
+        const phase = row.value?.phases[Number(selectedPhase.value)]
+        return isAfter(game.datetime, phase?.datetime)
+      })
+      .map((game: Game) => {
         return {
           ...game,
           game: game.teams.reduce((score, teamId: TeamId) => {
@@ -94,6 +119,9 @@ const handleDelete = async () => {
       <SpinnerComp />
     </template>
     <template v-else>
+      <div class="mb-2 d-flex gap-1">
+        <RadioGroupComp v-model="selectedPhase" :options="phasesOptions" buttons />
+      </div>
       <TableComp :fields="fields" :items="gamesItems">
         <template #game="{ item }">
           <div class="score-col">

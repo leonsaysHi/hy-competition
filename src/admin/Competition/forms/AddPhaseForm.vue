@@ -5,9 +5,8 @@ import FieldComp from '@/components/FieldComp.vue'
 import type { Option } from '@/types/comp-fields'
 import InputComp from '@/components/InputComp.vue'
 import PhaseGroupsInput from '@/admin/competition/phases/components/PhaseGroupsInput.vue'
-import type { CompetitionPhase } from '@/types/competitions'
+import type { PhaseType } from '@/types/competitions'
 import type { TeamId } from '@/types/teams'
-import type { GameId } from '@/types/games'
 import ButtonComp from '@/components/ButtonComp.vue'
 
 interface IProps {
@@ -19,14 +18,14 @@ const props = withDefaults(defineProps<IProps>(), {
 })
 
 type FormData = {
-  type: CompetitionPhase
+  type: PhaseType
   groups: TeamId[][]
-  games: GameId[]
+  datetime: Date
 }
 const getDefaultData = (): FormData => ({
   type: undefined,
   groups: [],
-  games: []
+  datetime: new Date()
 })
 const groupsLength = ref(1)
 const data = ref<FormData>(getDefaultData())
@@ -73,6 +72,11 @@ const handleSubmit = async (ev: Event) => {
             @change="groupsLength = 1"
             required
           />
+        </FieldComp>
+      </div>
+      <div class="col">
+        <FieldComp label="Start date">
+          <InputComp v-model="data.datetime" type="datetime-local"  required />
         </FieldComp>
       </div>
       <div class="col">
