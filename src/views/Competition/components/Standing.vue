@@ -14,19 +14,21 @@ const props = withDefaults(defineProps<IProps>(), {})
 
 const { getTeamName } = useLibs()
 const fields = [
-  { label: 'Pos', key: 'pos', thClass: 'text-center', tdClass: 'text-center' },
-  { label: 'Teams', key: 'id' },
-  { label: 'GP', key: 'gp', sortable: true, tdClass: 'text-end' },
-  { label: 'W', key: 'wins', sortable: true, tdClass: 'text-end' },
-  { label: 'PTS+', key: 'ptspos', sortable: true, tdClass: 'text-end' },
-  { label: 'PTS-', key: 'ptsneg', sortable: true, tdClass: 'text-end' },
-  { label: 'L5', key: 'hist' }
+  { label: 'Pos', key: 'pos' },
+  { label: 'Teams', key: 'id', tdClass: 'fw-bold' },
+  { label: 'GP', key: 'gp', sortable: true, thClass: 'text-center', tdClass: 'text-end' },
+  { label: 'W', key: 'wins', sortable: true, thClass: 'text-center', tdClass: 'text-end' },
+  { label: 'PTS+', key: 'ptspos', sortable: true, thClass: 'text-center', tdClass: 'text-end' },
+  { label: 'PTS-', key: 'ptsneg', sortable: true, thClass: 'text-center', tdClass: 'text-end' },
+  { label: 'L5', key: 'hist', thClass: 'text-center', tdClass: 'text-end' }
 ]
 const items = computed(() => props.value)
 </script>
 <template>
   <TableComp :fields="fields" :items="items" small>
     <template #id="{ value }">{{ getTeamName(value) }}</template>
-    <template #hist="{ value }"><LastGames :value="value" :length="5" /></template>
+    <template #hist="{ value }"
+      ><LastGames :value="value" :length="5" class="d-inline-flex"
+    /></template>
   </TableComp>
 </template>

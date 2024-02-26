@@ -16,11 +16,10 @@
                     : 'descending'
                 : undefined
             "
-            :class="[thClass, sortedKey === key && 'text-bg-dark']"
+            :class="[sortedKey === key && 'text-bg-dark']"
           >
             <div
-              class="d-flex gap-2 align-items-end justify-content-between"
-              :class="sortable && 'cursor-pointer'"
+              :class="[thClass, sortable && 'position-relative pe-3 cursor-pointer']"
               :tabindex="sortable ? 0 : -1"
               @keyup.enter="() => sortable && handleSort(key)"
               @click="() => sortable && handleSort(key)"
@@ -28,7 +27,7 @@
               <span>{{ typeof label === 'string' ? label : key }}</span>
               <template v-if="sortable && sortedKey === key">
                 <i
-                  class="bi"
+                  class="bi position-absolute bottom-0 end-0"
                   :class="`bi-caret-${sortedDirection === 'asc' ? 'up' : 'down'}-fill`"
                 ></i>
               </template>

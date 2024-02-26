@@ -22,10 +22,10 @@ const { statsKeys } = useOptionsLibs()
 
 const row = getCompetition(competitionId)
 const fields = computed(() => [
-  { label: 'Pos', key: 'pos', tdClass: 'text-end' },
-  { label: 'Players', key: 'id' },
+  { label: 'Pos', key: 'pos' },
+  { label: 'Players', key: 'id', tdClass: 'fw-bold' },
   { label: 'Team', key: 'teamId' },
-  { label: 'GP', key: 'gp', sortable: true, tdClass: 'text-end' },
+  { label: 'GP', key: 'gp', sortable: true, thClass: 'text-center', tdClass: 'text-end' },
   ...statsKeys.reduce((fields: TableField[], opt): TableField[] => {
     if (row?.trackedStats.includes(opt.value)) {
       return [
@@ -34,6 +34,7 @@ const fields = computed(() => [
           key: opt.value,
           label: opt.text,
           sortable: true,
+          thClass: 'text-center',
           tdClass: 'text-end'
         }
       ]
