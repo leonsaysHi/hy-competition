@@ -1,9 +1,5 @@
-import type {
-  CompetitionCategorie,
-  CompetitionGender,
-  CompetitionSport,
-  PhaseType
-} from '@/types/competitions'
+import type { CompetitionCategorie, CompetitionSport, PhaseType } from '@/types/competitions'
+import type { Gender } from '@/types/players'
 import type { StatKey } from '@/types/stats'
 
 export default function usePlayersLib() {
@@ -16,10 +12,12 @@ export default function usePlayersLib() {
     { text: 'Senior', value: 'senior' },
     { text: '+35', value: '+35' }
   ]
-  const competitionGenders: { value: CompetitionGender; text: string }[] = [
-    { text: 'M', value: 'm' },
-    { text: 'F', value: 'f' }
+  const genders: { value: Gender; text: string; long: string }[] = [
+    { text: 'M', long: 'Male', value: 'm' },
+    { text: 'F', long: 'Female', value: 'f' }
   ]
+  const getGender = (value: Gender) => genders.find((row) => row.value === value)
+
   const competitionPhases: { value: PhaseType; text: string }[] = [
     { text: 'Groups', value: 'groups' },
     { text: 'Playoffs', value: 'playoffs' }
@@ -38,8 +36,11 @@ export default function usePlayersLib() {
   return {
     competitionSports,
     competitionCategories,
-    competitionGenders,
     competitionPhases,
+
+    genders,
+    getGender,
+
     statsKeys
   }
 }

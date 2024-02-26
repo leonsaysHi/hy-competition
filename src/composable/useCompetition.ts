@@ -12,6 +12,9 @@ import type { Ref } from 'vue'
 import { computed, ref, watch } from 'vue'
 import { gameConverter, teamConverter, playerConverter } from '@/utils/firestore-converters'
 
+import CompetitionComputed from '@/models/CompetitionComputed'
+import useComputed from './useCompetitionComputed'
+
 export default function useCompetition(competitionId: CompetitionId | undefined) {
   const { isReady: isLibsReady, getCompetition } = useLibs()
 
@@ -93,6 +96,16 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   const getPlayerNumber = (playerId: PlayerId) => getPlayer(playerId)?.number
   const getGame = (gameId: GameId) => {
     return row?.value?.games?.find((game: Game) => game.id === gameId)
+  }
+
+  // Competition Computed
+  const { writeComputedCompetitionDoc } = useComputed(competitionId)
+  const updateComputed = (row: Ref<Competition | undefined>) => {
+    if (!row.value) {
+      console.warn("Can't update computed!", row.value)
+    }
+    const competitionModel = new CompetitionComputed(row.value as Competition)
+    writeComputedCompetitionDoc(competitionModel.computed)
   }
 
   // Admin game
@@ -301,6 +314,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     // Admin competition
     writeCompetition,
     writeCompetitionDoc,
+    updateComputed,
 
     // Admin game
     writeGame,

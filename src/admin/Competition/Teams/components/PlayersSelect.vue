@@ -8,7 +8,7 @@
         <template #id="{ item }"> {{ item.fname }} {{ item.lname }} </template>
         <template #actions="{ item }">
           <div class="d-flex justify-content-end gap-1">
-            <ButtonComp variant="light" size="sm" @click="() => handleEditPlayer(item)"
+            <ButtonComp variant="light" size="sm" @click="() => handleEditPlayer(item.id)"
               >Edit</ButtonComp
             >
             <ButtonComp variant="danger" size="sm" @click="() => handleConfirmDeletePlayer(item)"
@@ -18,11 +18,13 @@
         </template>
       </TableComp>
       <h5>Add player</h5>
-      <AddTeamPlayerForm :playersOptions="playersOptions" @submit="handleAddPlayer" />
+      <AddTeamPlayerForm
+        :players-options="playersOptions"
+        :team-players="players"
+        @submit="handleAddPlayer"
+      />
       <ModalComp ref="editModal" title="Edit player" hide-footer>
-        <template v-if="editPlayer">
-          <TeamPlayerForm :value="editPlayer" :player="editPlayer" @submit="handleSubmitPlayer" />
-        </template>
+        <TeamPlayerForm :value="editPlayer" :team-players="players" @submit="handleSubmitPlayer" />
       </ModalComp>
       <ModalComp ref="deleteModal" title="Confirm removal" ok-title="Remove" ok-variant="danger">
         <p>
@@ -95,7 +97,7 @@ const fields: TableField[] = [
   },
   {
     key: 'id',
-    label: 'Player'
+    label: 'Players'
   },
   {
     key: 'identification',
@@ -113,6 +115,7 @@ const players = computed((): CompetitionPlayer[] => {
   ) as CompetitionTeam
   return team?.players
 })
+
 const playersItems = computed(() => {
   return players.value
     ? players.value.map((row: CompetitionPlayer) => {
@@ -137,8 +140,8 @@ const handleAddPlayer = async (data) => {
 // Edit Player
 const editPlayer = ref<undefined | CompetitionPlayer>(undefined)
 const editModal = ref<typeof ModalComp>()
-const handleEditPlayer = (item: TableItem) => {
-  editPlayer.value = item as unknown as CompetitionPlayer
+const handleEditPlayer = (playerId: PlayerId) => {
+  editPlayer.value = players.value.find((row: CompetitionPlayer) => row.id === playerId)
   editModal.value?.show()
 }
 const handleSubmitPlayer = async (data: CompetitionPlayer) => {

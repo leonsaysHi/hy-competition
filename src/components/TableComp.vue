@@ -2,39 +2,47 @@
   <table class="table" :class="{ 'table-sm': small }">
     <thead class="table-light">
       <tr>
-        <template v-for="({ label, sortable, key }, hIdx) in fields" :key="hIdx">
+        <template v-for="({ label, sortable, thClass, key }, hIdx) in fields" :key="hIdx">
           <th
             scope="col"
             role="columnheader"
             :aria-colindex="hIdx + 1"
             :aria-sort="
               sortable
-                ? sortKey !== key
+                ? sortedKey !== key
                   ? 'none'
-                  : sortDirection === 'asc'
+                  : sortedDirection === 'asc'
                     ? 'ascending'
                     : 'descending'
                 : undefined
             "
+            :class="[thClass, sortedKey === key && 'text-bg-dark']"
           >
             <div
-              :class="{ 'cursor-pointer': sortable }"
+              class="d-flex gap-2 align-items-end justify-content-between"
+              :class="sortable && 'cursor-pointer'"
               :tabindex="sortable ? 0 : -1"
-              @keyup.enter="() => sortable && emit('sortByKey', key)"
-              @click="() => sortable && emit('sortByKey', key)"
+              @keyup.enter="() => sortable && handleSort(key)"
+              @click="() => sortable && handleSort(key)"
             >
-              {{ typeof label === 'string' ? label : key }}
+              <span>{{ typeof label === 'string' ? label : key }}</span>
+              <template v-if="sortable && sortedKey === key">
+                <i
+                  class="bi"
+                  :class="`bi-caret-${sortedDirection === 'asc' ? 'up' : 'down'}-fill`"
+                ></i>
+              </template>
             </div>
           </th>
         </template>
       </tr>
     </thead>
     <tbody>
-      <template v-for="(item, rIdx) in items" :key="rIdx">
+      <template v-for="(item, index) in sortedItems" :key="index">
         <tr>
-          <template v-for="({ key }, hIdx) in fields" :key="hIdx">
-            <td>
-              <slot :name="key" v-bind="{ key, items, item }" :value="item[key]">
+          <template v-for="({ key, tdClass }, hIdx) in fields" :key="hIdx">
+            <td :class="[tdClass, sortedKey === key && 'text-bg-dark']">
+              <slot :name="key" v-bind="{ key, items, item, index }" :value="item[key]">
                 {{ item[key] }}
               </slot>
             </td>
@@ -52,26 +60,53 @@
 
 <script setup lang="ts">
 import type { TableField, TableItem } from '@/types/comp-table'
-
-const emit = defineEmits(['sortByKey'])
+import { compareDesc, isDate } from 'date-fns'
+import { computed, ref } from 'vue'
 
 interface IProps {
   fields: TableField[]
   items: TableItem[]
-  sortKey?: string
-  sortDirection?: 'asc' | 'desc'
+  sortedKey?: string
+  sortedDirection?: 'asc' | 'desc'
   small?: boolean
   isBusy?: boolean
   showEmpty?: boolean
 }
-withDefaults(defineProps<IProps>(), {
-  sortKey: '',
-  sortDirection: 'asc',
+const props = withDefaults(defineProps<IProps>(), {
+  sortedKey: undefined,
+  sortedDirection: 'asc',
   thClass: 'bg-alt',
   tdClass: '',
   isBusy: false,
   showEmpty: true
 })
+const sortedKey = ref<string | undefined>(props.sortedKey)
+const sortedDirection = ref<'asc' | 'desc'>(props.sortedDirection)
+const sortedItems = computed(() => {
+  const results = props.items.slice()
+  if (typeof sortedKey.value !== 'string') {
+    return results
+  }
+  results.sort((a, b) => {
+    const aVal = a[sortedKey.value as string]
+    const bVal = b[sortedKey.value as string]
+    const compared =
+      typeof aVal === 'string' && typeof bVal === 'string'
+        ? aVal.localeCompare(bVal)
+        : isDate(aVal) && isDate(bVal)
+          ? compareDesc(aVal, bVal)
+          : typeof aVal === 'number' && typeof bVal === 'number'
+            ? aVal - bVal
+            : 0
+    return compared * (sortedDirection.value === 'asc' ? -1 : 1)
+  })
+  return results
+})
+const handleSort = (key: string) => {
+  sortedDirection.value =
+    key !== sortedKey.value || sortedDirection.value === 'desc' ? 'asc' : 'desc'
+  sortedKey.value = key
+}
 </script>
 
 <style scoped lang="scss"></style>

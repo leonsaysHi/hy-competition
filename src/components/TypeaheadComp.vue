@@ -1,5 +1,5 @@
 <template>
-  <div class="dropdown">
+  <div :class="[`drop${direction}`]">
     <input
       v-model="model"
       type="text"
@@ -33,12 +33,14 @@ interface IProps {
   placeholder?: string
   disabled?: boolean
   size?: 'lg' | 'md' | 'sm'
+  direction?: 'down' | 'up'
 }
 const props = withDefaults(defineProps<IProps>(), {
   options: (): Option[] => [],
   placeholder: '',
   disabled: false,
-  size: 'md'
+  size: 'md',
+  direction: 'down'
 })
 const emit = defineEmits(['update:modelValue', 'select'])
 const model = computed({
@@ -57,3 +59,14 @@ const handleSelect = (opt: Option) => {
   emit('select', opt)
 }
 </script>
+
+<style lang="scss" scoped>
+.dropup {
+  .dropdown-menu {
+    top: auto;
+    bottom: 100%;
+    margin-top: 0;
+    // margin-bottom: var(--#{$prefix}dropdown-spacer);
+  }
+}
+</style>

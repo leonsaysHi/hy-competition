@@ -2,26 +2,36 @@
 import type { TableField, TableItem } from '@/types/comp-table'
 import type { Team } from '@/types/teams'
 import TableComp from '@/components/TableComp.vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
 import TeamForm from './TeamForm.vue'
 import useLibs from '@/composable/useLibs'
 import useTeamsLib from '@/composable/useTeamsLib'
 import SpinnerComp from '@/components/SpinnerComp.vue'
+import InputComp from '@/components/InputComp.vue'
+import { stringIncludes } from '@/utils/strings'
 
 const { isReady, teamsRows: rows } = useLibs()
 const { deleteRows } = useTeamsLib()
 const fields: TableField[] = [
   {
     key: 'title',
-    label: 'Team'
+    label: 'Team',
+    sortable: true,
   },
   {
     key: 'actions',
     label: ''
   }
 ]
+const searchStr = ref<string>('')
+const items = computed(() => rows.value 
+    ? rows.value.filter((row:Team) => 
+      !searchStr.value || stringIncludes(row.title, searchStr.value)
+    ) 
+    : rows.value
+)
 // Create / Edit
 const editTeam = ref<undefined | Team | null>(null)
 const editModal = ref<typeof ModalComp>()
@@ -55,16 +65,18 @@ const handleDelete = () => {
 </script>
 <template>
   <div>
-    <h1>Teams admin</h1>
+    <h1>All teams</h1>
     <template v-if="!isReady || !rows">
       <SpinnerComp />
     </template>
     <template v-else>
-      <div class="d-flex align-items-bottom justify-content-between">
-        <p>All teams list:</p>
+      <p class="d-flex align-items-bottom justify-content-between">
+        <div>
+          <InputComp v-model="searchStr" placeholder="Search..." />
+        </div>
         <ButtonComp variant="primary" @click="handleCreate">Create</ButtonComp>
-      </div>
-      <TableComp :fields="fields" :items="rows">
+      </p>
+      <TableComp :fields="fields" :items="items">
         <template #actions="{ item }">
           <div class="d-flex justify-content-end gap-1">
             <ButtonComp variant="light" size="sm" @click="() => handleEdit(item)">Edit</ButtonComp>

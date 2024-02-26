@@ -5,7 +5,7 @@ import InputComp from '@/components/InputComp.vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 
 interface IProps {
-  value: FormData
+  value: FormData | undefined
   isBusy?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {

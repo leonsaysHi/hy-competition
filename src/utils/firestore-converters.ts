@@ -1,15 +1,16 @@
-import type { Competition, Phase } from '@/types/competitions'
+import type { Competition, CompetitionId, Phase } from '@/types/competitions'
 import type { Player } from '@/types/players'
 import { Timestamp } from 'firebase/firestore'
 import type { DocumentData, QueryDocumentSnapshot, SnapshotOptions } from 'firebase/firestore'
 import { dateToTimeStamp } from '@/utils/dates'
-import type { TeamId } from '@/types/teams'
+import type { CompetitionTeam, TeamId } from '@/types/teams'
+import type { Game } from '@/types/games'
 
-const dateFromFirestore = (ts: Timestamp) => {
+const dateFromFirestore = (ts: Timestamp): Date => {
   return ts.toDate()
 }
 
-const dateToFireStore = (date: Date) => {
+const dateToFireStore = (date: Date): Timestamp => {
   return dateToTimeStamp(date)
 }
 
@@ -26,21 +27,40 @@ export const competitionConverter = {
         : [],
       lastUpdate
     }
+    return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null)) as DocumentData
+  },
+  fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions) => {
+    const data = snapshot.data(options)!
+    return {
+      id: snapshot.id as CompetitionId,
+      games: [],
+      teams: [],
+      ...data,
+      phases: Array.isArray(data.phases)
+        ? (data.phases.map((phase) => ({
+            ...phase,
+            groups: phase.groups.map((group: string) => group.split(';'))
+          })) as Phase[])
+        : [],
+      lastUpdate: data.lastUpdate ? dateFromFirestore(data.lastUpdate) : new Date()
+    }
+  }
+}
+
+export const computedConverter = {
+  toFirestore: (row: Player): DocumentData => {
+    const lastUpdate = dateToFireStore(new Date())
+    const payload = {
+      ...row,
+      lastUpdate
+    }
     return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null))
   },
   fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions) => {
     const data = snapshot.data(options)!
     return {
       id: snapshot.id,
-      games: [],
-      teams: [],
       ...data,
-      phases: Array.isArray(data.phases)
-        ? data.phases.map((phase) => ({
-            ...phase,
-            groups: phase.groups.map((group: string) => group.split(';'))
-          }))
-        : {},
       lastUpdate: data.lastUpdate ? dateFromFirestore(data.lastUpdate) : new Date()
     }
   }

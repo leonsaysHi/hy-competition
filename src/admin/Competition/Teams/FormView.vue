@@ -41,6 +41,7 @@ const handleSubmit = async (payload: CompetitionTeam) => {
   <template v-else>
     <h4>{{ getTeam(teamId)?.title }}</h4>
     <TeamForm :value="data" :is-busy="isBusy" @submit="handleSubmit" />
+    <hr />
     <PlayersSelect label="Players" />
   </template>
 </template>

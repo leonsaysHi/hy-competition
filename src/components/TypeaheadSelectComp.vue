@@ -1,8 +1,8 @@
 <template>
   <template v-if="selectedOption?.text">
     <div class="input-group">
-      <InputComp v-model="selectedOption.text" readonly />
-      <ButtonComp variant="light" class="border-secondary flex-grow-0" @click="model = undefined"
+      <div class="form-control text-bg-light">{{ selectedOption.text }}</div>
+      <ButtonComp variant="light" class="border flex-grow-0" @click="model = undefined"
         ><div class="btn-close"></div
       ></ButtonComp>
     </div>
@@ -14,6 +14,7 @@
         :options="filteredOptions"
         :placeholder="placeholder"
         :size="size"
+        :direction="direction"
         :disabled="disabled"
         @select="handleSelect"
       />
@@ -30,6 +31,7 @@ import TypeaheadComp from '@/components/TypeaheadComp.vue'
 import type { Option } from '@/types/comp-fields'
 import ButtonComp from './ButtonComp.vue'
 import InputComp from '@/components/InputComp.vue'
+import { stringIncludes } from '@/utils/strings'
 interface IProps {
   modelValue: string | undefined
   options?: Option[]
@@ -37,13 +39,15 @@ interface IProps {
   disabled?: boolean
   required?: boolean
   size?: 'lg' | 'md' | 'sm'
+  direction?: 'down' | 'up'
 }
 const props = withDefaults(defineProps<IProps>(), {
   options: (): Option[] => [],
   placeholder: '',
   disabled: false,
   required: false,
-  size: 'md'
+  size: 'md',
+  direction: 'down'
 })
 const emit = defineEmits(['update:modelValue', 'select'])
 const searchStr = ref('')
@@ -60,9 +64,7 @@ const selectedOption = computed(() =>
 )
 const filteredOptions = computed(() => {
   return searchStr.value.length
-    ? props.options.filter((opt: Option) =>
-        opt.text.toLocaleLowerCase().includes(searchStr.value.toLocaleLowerCase())
-      )
+    ? props.options.filter((opt: Option) => stringIncludes(opt.text, searchStr.value))
     : []
 })
 const handleSelect = (opt: Option) => {

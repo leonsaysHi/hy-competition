@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-import type { Player } from '@/types/players'
+import type { Gender, Player, PlayerId } from '@/types/players'
 import { ref, watch } from 'vue'
-import type { Ref } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import InputComp from '@/components/InputComp.vue'
 import usePlayersLib from '@/composable/usePlayersLib'
 import FieldComp from '@/components/FieldComp.vue'
+import SelectComp from '@/components/SelectComp.vue'
+import useOptionsLib from '@/composable/useOptionsLib'
 interface IProps {
   row?: Player | undefined | null
 }
@@ -13,38 +14,41 @@ const props = withDefaults(defineProps<IProps>(), {
   row: undefined
 })
 
-type PlayerForm = {
-  id: string | undefined
+type DataForm = {
+  id: PlayerId | undefined
   fname: string
   lname: string
   identification: string
+  gender: Gender | undefined
   dob: string
   foto: string
 }
-const dataDefault = {
+const getDefaultData = (): DataForm => ({
   id: undefined,
   fname: '',
   lname: '',
   identification: '',
+  gender: undefined,
   foto: '',
   dob: ''
-}
-const data = ref<PlayerForm>({
-  ...dataDefault
+})
+const data = ref<DataForm>({
+  ...getDefaultData()
 })
 
 const emit = defineEmits(['done'])
+
 const { rows, writeRows: writePlayers } = usePlayersLib()
+const { genders: genderOptions } = useOptionsLib()
 
-const errors: Ref<{ [key: string]: undefined | string }> = ref({})
-
+const errors = ref<{ [key: string]: undefined | string }>({})
 watch(
   () => props.row,
   (player) => {
     if (player?.id) {
-      data.value = { ...dataDefault, ...player }
+      data.value = { ...getDefaultData(), ...player }
     } else if (player === undefined) {
-      data.value = { ...dataDefault }
+      data.value = { ...getDefaultData() }
     }
   }
 )
@@ -86,6 +90,9 @@ const handleCancel = () => emit('done')
         :isInvalid="Boolean(errors.identification)"
         required
       />
+    </FieldComp>
+    <FieldComp label="gender">
+      <SelectComp v-model="data.gender" :options="genderOptions" required />
     </FieldComp>
     <FieldComp label="Birthdate">
       <InputComp v-model="data.dob" type="date" />
