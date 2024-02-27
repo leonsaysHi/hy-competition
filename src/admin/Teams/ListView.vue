@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { TableField, TableItem } from '@/types/comp-table'
-import type { Team } from '@/types/teams'
+import type { Team, TeamDoc } from '@/types/teams'
 import TableComp from '@/components/TableComp.vue'
 import { computed, ref } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
@@ -11,9 +11,10 @@ import useTeamsLib from '@/composable/useTeamsLib'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import InputComp from '@/components/InputComp.vue'
 import { stringIncludes } from '@/utils/strings'
+import { uploadTeamLogo } from '@/firebase-storage'
 
 const { isReady, teamsRows: rows } = useLibs()
-const { deleteRows } = useTeamsLib()
+const { writeRows : writeTeams, deleteRows } = useTeamsLib()
 const fields: TableField[] = [
   {
     key: 'title',
@@ -33,19 +34,29 @@ const items = computed(() => rows.value
     : rows.value
 )
 // Create / Edit
-const editTeam = ref<undefined | Team | null>(null)
+const editTeam = ref<undefined | Team>()
 const editModal = ref<typeof ModalComp>()
 const handleCreate = () => {
   editTeam.value = undefined
   editModal.value?.show()
 }
 const handleEdit = (row: TableItem) => {
-  console.log('edit?', row.id)
   editTeam.value = row as unknown as Team
   editModal.value?.show()
 }
-const handleEditDone = () => {
-  editTeam.value = null
+const handleSubmitEdit = async (payload: Team) => {
+  const {
+    logoUpload,
+    ...teamDoc
+  }: {
+    logoUpload: File | undefined
+    teamDoc: TeamDoc
+  } = payload
+  if (logoUpload) {
+    teamDoc.logo = await uploadTeamLogo(logoUpload, new Date().getTime().toString())
+  }
+  await writeTeams([teamDoc])
+  editTeam.value = undefined
   editModal.value?.hide()
 }
 
@@ -53,7 +64,6 @@ const handleEditDone = () => {
 const deleteTeam = ref<Team | null>(null)
 const deleteModal = ref<typeof ModalComp>()
 const handleConfirmDelete = (row: TableItem) => {
-  console.log('delete?', row.id)
   deleteTeam.value = row as unknown as Team
   deleteModal.value?.show()
 }
@@ -87,7 +97,7 @@ const handleDelete = () => {
         </template>
       </TableComp>
       <ModalComp ref="editModal" title="Edit team" hide-footer>
-        <TeamForm :row="editTeam" @done="handleEditDone" />
+        <TeamForm :row="editTeam" @submit="handleSubmitEdit" />
       </ModalComp>
       <ModalComp ref="deleteModal" title="Delete team" ok-variant="danger" @ok="handleDelete">
         Sure?

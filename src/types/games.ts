@@ -8,7 +8,7 @@ export type GameBoxScore = { [key: PlayerId]: PlayerBoxScore }
 export type GameScores = { [key: TeamId]: number[] }
 
 export interface Game {
-  id: GameId
+  id?: GameId
   datetime: string
   teams: TeamId[]
   scores: GameScores

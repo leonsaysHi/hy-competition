@@ -15,19 +15,16 @@ export default function useCompetitionsLib() {
     Competition[] | undefined
   >
 
-  const isReady = computed(() => {
-    return Array.isArray(rows.value)
-  })
+  const isReady = computed(() => Array.isArray(rows.value))
+
   const get = (competitionId: CompetitionId) =>
     rows.value?.find((row: Competition) => row.id === competitionId)
 
   const add = async (payload: CompetitionDoc) => {
     const batch = writeBatch(db)
-
     // doc
     const compRef = doc(coll)
     batch.set(compRef, payload)
-
     // commit all
     console.time('write.commit')
     await batch.commit()

@@ -6,6 +6,7 @@ import ButtonComp from '@/components/ButtonComp.vue'
 import InputComp from '@/components/InputComp.vue'
 import useTeamsLib from '@/composable/useTeamsLib'
 import FieldComp from '@/components/FieldComp.vue'
+import ImageUpload from '@/components/ImageUpload.vue'
 interface IProps {
   row?: Team | undefined | null
 }
@@ -14,23 +15,26 @@ const props = withDefaults(defineProps<IProps>(), {
 })
 
 type TeamForm = {
-  id: string | undefined
-  title: string
-  logo: string
-  color: string
+  id?: string | undefined
+  title?: string
+  logoUpload?: File | undefined
+  logo?: string
+  color?: string
 }
-const dataDefault = {
+const getDefaultData = (): TeamForm => ({
   id: undefined,
   title: '',
+  logoUpload: undefined,
   logo: '',
   color: ''
-}
+})
 const data = ref<TeamForm>({
-  ...dataDefault
+  ...getDefaultData()
 })
 
-const emit = defineEmits(['done'])
-const { rows, writeRows: writeTeams } = useTeamsLib()
+const emit = defineEmits(['submit'])
+
+const { rows } = useTeamsLib()
 
 const errors: Ref<{ [key: string]: undefined | string }> = ref({})
 
@@ -38,17 +42,17 @@ watch(
   () => props.row,
   (team) => {
     if (team?.id) {
-      data.value = { ...dataDefault, ...team }
+      data.value = { ...getDefaultData(), ...team }
     } else if (team === undefined) {
-      data.value = { ...dataDefault }
+      data.value = { ...getDefaultData() }
     }
   }
 )
-const handleSubmit = async (ev: Event) => {
+const handleSubmit = (ev: Event) => {
   ev.preventDefault()
-  const row = data.value as Team
-  const { id, title } = row
+  const { id, title } = data.value
   if (
+    !rows.value ||
     rows.value.findIndex(
       (team: Team) => (!id || team.id !== id) && team.title.toLowerCase() === title.toLowerCase()
     ) > -1
@@ -56,11 +60,9 @@ const handleSubmit = async (ev: Event) => {
     errors.value.title = 'This team already exists'
   } else {
     delete errors.value.title
-    await writeTeams([row])
-    emit('done')
+    emit('submit', data.value as Team)
   }
 }
-const handleCancel = () => emit('done')
 </script>
 <template>
   <form @submit="handleSubmit">
@@ -73,11 +75,13 @@ const handleCancel = () => emit('done')
         required
       />
     </FieldComp>
+    <FieldComp label="Logo">
+      <ImageUpload v-model="data.logoUpload" :src="data.logo" />
+    </FieldComp>
     <FieldComp label="Color">
       <InputComp v-model="data.color" type="color" />
     </FieldComp>
     <div class="d-flex justify-content-end gap-2">
-      <ButtonComp variant="light" @click="handleCancel">Cancel</ButtonComp>
       <ButtonComp variant="primary" type="submit">Save</ButtonComp>
     </div>
   </form>

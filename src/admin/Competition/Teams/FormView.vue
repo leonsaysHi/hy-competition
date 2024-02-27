@@ -5,8 +5,9 @@ import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import { useRoute } from 'vue-router'
-import type { CompetitionTeam } from '@/types/teams'
+import type { CompetitionTeam, CompetitionTeamDoc } from '@/types/teams'
 import { computed, ref } from 'vue'
+import { uploadTeamSponsor } from '@/firebase-storage'
 
 const route = useRoute()
 const { competitionId, teamId } = route.params
@@ -16,12 +17,29 @@ const { isReady, row, writeTeamDoc: writeCompetitionTeam } = useCompetition(comp
 const data = computed(() => {
   return row.value?.teams?.find((team: CompetitionTeam) => team.id === teamId)
 })
+
 const isBusy = ref(false)
+
 const handleSubmit = async (payload: CompetitionTeam) => {
   isBusy.value = true
+  const {
+    sponsorUpload,
+    ...competitionTeamDoc
+  }: {
+    sponsorUpload: MediaSource | undefined
+    competitionTeamDoc: CompetitionTeamDoc
+  } = payload
+  console.log(payload)
+  if (sponsorUpload) {
+    competitionTeamDoc.sponsor = await uploadTeamSponsor(
+      sponsorUpload,
+      new Date().getTime().toString()
+    )
+  }
+  console.log(competitionTeamDoc)
   await writeCompetitionTeam({
     id: teamId,
-    ...payload
+    ...competitionTeamDoc
   })
   setTimeout(() => (isBusy.value = false), 150)
 }

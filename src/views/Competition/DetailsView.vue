@@ -9,6 +9,8 @@ import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
 import Standing from '@/views/competition/components/Standing.vue'
 import Ranking from './components/Ranking.vue'
+import GamesList from '@/components/games/GamesList.vue'
+import type { Game, GameId } from '@/types/games'
 const route = useRoute()
 const { competitionId } = route.params
 
@@ -44,6 +46,12 @@ const groupsOptions = computed<Option[] | undefined>(() =>
 const selectedGroup = computed<CompetitionGroupComputed>(
   () => selectedPhase.value.groups[Number(selectedGroupIdx.value)]
 )
+
+const groupGames = computed<Game[]>(() => {
+  return selectedGroup.value.games.map((gameId: GameId) =>
+    games.value?.find((game: Game) => game.id === gameId)
+  )
+})
 </script>
 <template>
   <div>
@@ -78,23 +86,12 @@ const selectedGroup = computed<CompetitionGroupComputed>(
         `
         <h5>Standing</h5>
         <Standing :value="selectedGroup.standing" />
-        <h5>Ranking</h5>
-        <Ranking :value="selectedGroup.ranking" />
         <h5>Games</h5>
-        <ul class="list-group list-group-flush">
-          <template v-for="game in games" :key="game.id">
-            <li class="list-group-item">
-              <RouterLink
-                :to="{
-                  name: 'competition-game',
-                  params: { competitionId, gameId: game?.id }
-                }"
-                >{{ game?.teams.join('|') }}</RouterLink
-              >
-            </li>
-          </template>
-        </ul> </template
-      >`
+        <GamesList :games="groupGames" />
+        <hr class="my-5" />
+        <h5>Ranking</h5>
+        <Ranking :value="selectedGroup.ranking" :length="5" />
+      </template>
     </template>
   </div>
 </template>

@@ -1,5 +1,5 @@
 import type { Competition, Phase } from '@/types/competitions'
-import type { Game } from '@/types/games'
+import type { Game, GameId } from '@/types/games'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import { compareAsc, isAfter, isBefore } from 'date-fns'
 import type {
@@ -12,10 +12,8 @@ import type {
 } from '@/types/computed'
 import type { AwardItem, TeamStats } from '@/types/stats'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
+import { add } from '@/utils/maths'
 
-const add = (total: number, a: number) => {
-  return total + a
-}
 const getTeamPhaseStanding = (teamId: TeamId, games: Game[]): CompetitionGroupStanding => {
   games.sort((a: Game, b: Game) => compareAsc(a.datetime, b.datetime))
   const { gp, wins, ptspos, ptsneg, hist }: TeamStats = games.reduce(
@@ -110,6 +108,15 @@ export default class CompetitionClass {
       })
       // each group:
       const groups = phase.groups.map((groupTeams: TeamId[]): CompetitionGroupComputed => {
+        // games
+        const groupGames = groupTeams.reduce((groupGames: GameId[], teamId: TeamId) => {
+          groupGames.push(
+            ...phaseGames
+              .filter((game: Game) => !groupGames.includes(game.id) && game.teams.includes(teamId))
+              .map((game: Game) => game.id)
+          )
+          return groupGames
+        }, [])
         // standing:
         const standing: CompetitionGroupStanding[] = groupTeams.reduce(
           (standing: CompetitionGroupStanding[], teamId: TeamId) => {
@@ -159,7 +166,11 @@ export default class CompetitionClass {
           []
         )
         // returns CompetitionGroupComputed
-        return { standing, ranking }
+        return {
+          standing,
+          ranking,
+          games: groupGames
+        }
       })
 
       return {

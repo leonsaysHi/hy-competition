@@ -10,10 +10,11 @@ import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import useLibs from '@/composable/useLibs'
 import type { Ref } from 'vue'
 import { computed, ref, watch } from 'vue'
-import { gameConverter, teamConverter, playerConverter } from '@/utils/firestore-converters'
-
-import CompetitionComputed from '@/models/CompetitionComputed'
-import useComputed from './useCompetitionComputed'
+import {
+  gameConverter,
+  competitionTeamConverter,
+  competitionPlayerConverter
+} from '@/utils/firestore-converters'
 
 export default function useCompetition(competitionId: CompetitionId | undefined) {
   const { isReady: isLibsReady, getCompetition } = useLibs()
@@ -22,10 +23,10 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     gameConverter
   )
   const teamsCollRef = collection(competitionsColl, `/${competitionId}/${teamsName}`).withConverter(
-    teamConverter
+    competitionTeamConverter
   )
   const getPlayersColl = (teamId: TeamId) =>
-    collection(teamsCollRef, `${teamId}/${playersName}`).withConverter(playerConverter)
+    collection(teamsCollRef, `${teamId}/${playersName}`).withConverter(competitionPlayerConverter)
 
   // Competition
   const games = useFirestore(gamesCollRef, undefined) as Ref<Game[] | undefined>
@@ -99,13 +100,10 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   }
 
   // Competition Computed
-  const { writeComputedCompetitionDoc } = useComputed(competitionId)
   const updateComputed = (row: Ref<Competition | undefined>) => {
     if (!row.value) {
       console.warn("Can't update computed!", row.value)
     }
-    const competitionModel = new CompetitionComputed(row.value as Competition)
-    writeComputedCompetitionDoc(competitionModel.computed)
   }
 
   // Admin game
@@ -186,18 +184,21 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     const batch = writeTeamBatch(payload)
     await batch.commit()
   }
-  const writeTeamBatch = (row: CompetitionTeam, batch: WriteBatch = writeBatch(db)): WriteBatch => {
+  const writeTeamBatch = async (
+    row: CompetitionTeam,
+    batch: WriteBatch = writeBatch(db)
+  ): WriteBatch => {
     const {
       id,
       players,
-      ...teamDoc
+      ...competitionTeamDoc
     }: {
       id: TeamId
       players: CompetitionPlayer[]
-      teamDoc: CompetitionTeamDoc
+      competitionTeamDoc: CompetitionTeamDoc
     } = row
     const teamRef = id ? doc(teamsCollRef, id) : doc(teamsCollRef)
-    batch.set(teamRef, teamDoc)
+    batch.set(teamRef, competitionTeamDoc)
     players.forEach((row: CompetitionPlayer) => {
       writePlayerBatch(id, row, batch)
     })

@@ -5,12 +5,12 @@ const adminRoutes = [
     component: () => import('@/admin/dashboard/IndexView.vue')
   },
   {
-    path: 'players',
+    path: 'teams',
     name: 'admin-teams',
     component: () => import('@/admin/teams/ListView.vue')
   },
   {
-    path: 'teams',
+    path: 'players',
     name: 'admin-players',
     component: () => import('@/admin/players/ListView.vue')
   },

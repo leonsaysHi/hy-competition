@@ -1,4 +1,5 @@
 import type { CompetitionId, PhaseType } from './competitions'
+import type { GameId } from './games'
 import type { PlayerId } from './players'
 import type { AwardItem, Stats, TeamStats } from './stats'
 import type { TeamId } from './teams'
@@ -38,6 +39,7 @@ export interface CompetitionRanking extends PlayerRankTotals {
   number: string
 }
 export interface CompetitionGroupComputed {
+  games: GameId[]
   standing: CompetitionGroupStanding[]
   ranking: CompetitionRanking[]
 }
@@ -51,4 +53,5 @@ export interface CompetitionPlayerComputed extends PlayerRankTotals {
 export interface CompetitionComputed {
   id: CompetitionId
   phases: CompetitionPhaseComputed[]
+  lastUpdate: Date
 }

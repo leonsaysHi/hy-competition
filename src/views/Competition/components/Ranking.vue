@@ -11,11 +11,14 @@ import type { StatKey } from '@/types/stats'
 
 interface IProps {
   value: CompetitionRanking[]
+  length?: number
 }
 
 const route = useRoute()
 const { competitionId } = route.params
-const props = withDefaults(defineProps<IProps>(), {})
+const props = withDefaults(defineProps<IProps>(), {
+  length: 0
+})
 
 const { getTeamName, getPlayerName, getCompetition } = useLibs()
 const { statsKeys } = useOptionsLibs()
@@ -25,7 +28,7 @@ const fields = computed(() => [
   { label: 'Pos', key: 'pos' },
   { label: 'Players', key: 'id', tdClass: 'fw-bold' },
   { label: 'Team', key: 'teamId' },
-  { label: 'GP', key: 'gp', sortable: true, thClass: 'text-center', tdClass: 'text-end' },
+  { label: 'GP', key: 'gp', sortable: true, thClass: 'text-end', tdClass: 'text-end' },
   ...statsKeys.reduce((fields: TableField[], opt): TableField[] => {
     if (row?.trackedStats.includes(opt.value)) {
       return [
@@ -34,7 +37,7 @@ const fields = computed(() => [
           key: opt.value,
           label: opt.text,
           sortable: true,
-          thClass: 'text-center',
+          thClass: 'text-end',
           tdClass: 'text-end'
         }
       ]
@@ -42,10 +45,10 @@ const fields = computed(() => [
     return fields
   }, [])
 ])
-const items = computed(() => props.value)
+const items = computed(() => (!props.length ? props.value : props.value.slice(0, props.length)))
 </script>
 <template>
-  <TableComp :fields="fields" :items="items" sorted-key="pts" small>
+  <TableComp :fields="fields" :items="items" sorted-key="pts" sorted-direction="desc" small>
     <template #pos="{ index }">{{ index + 1 }}</template>
     <template #id="{ value }">{{ getPlayerName(value) }}</template>
     <template #teamId="{ value }">{{ getTeamName(value) }}</template>

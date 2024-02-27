@@ -7,10 +7,12 @@
     :placeholder="placeholder"
     :disabled="readonly || disabled"
     :required="required"
+    :accept="accept"
     :min="type === 'number' ? props.min : undefined"
     :max="type === 'number' ? props.max : undefined"
     @input="emit('input')"
     @keyup.enter="handleEnterKey"
+    @change="(ev) => emit('change', ev)"
   />
 </template>
 
@@ -26,6 +28,7 @@ interface IProps {
   size?: 'lg' | 'md' | 'sm'
   min?: number | undefined
   max?: number | undefined
+  accept?: string
   isValid?: boolean
   isInvalid?: boolean
 }
@@ -38,15 +41,15 @@ const props = withDefaults(defineProps<IProps>(), {
   size: 'md',
   min: 0,
   max: undefined,
+  accept: 'image/*',
   isValid: false,
   isInvalid: false
 })
-const emit = defineEmits(['update:modelValue', 'input', 'validate', 'on-enter-key', 'update'])
+const emit = defineEmits(['update:modelValue', 'input', 'validate', 'on-enter-key', 'change'])
 const model = computed({
   get: () => props.modelValue,
   set: (val) => {
     emit('update:modelValue', val)
-    emit('update', val)
   }
 })
 const computedClass = computed(() => {

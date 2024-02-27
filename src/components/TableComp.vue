@@ -19,7 +19,7 @@
             :class="[sortedKey === key && 'text-bg-dark']"
           >
             <div
-              :class="[thClass, sortable && 'position-relative pe-3 cursor-pointer']"
+              :class="[thClass, sortable && 'position-relative pe-4 cursor-pointer']"
               :tabindex="sortable ? 0 : -1"
               @keyup.enter="() => sortable && handleSort(key)"
               @click="() => sortable && handleSort(key)"
@@ -97,7 +97,7 @@ const sortedItems = computed(() => {
           : typeof aVal === 'number' && typeof bVal === 'number'
             ? aVal - bVal
             : 0
-    return compared * (sortedDirection.value === 'asc' ? -1 : 1)
+    return compared * (sortedDirection.value === 'desc' ? -1 : 1)
   })
   return results
 })

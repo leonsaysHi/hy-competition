@@ -18,7 +18,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   const row = computed(() => (competitionId ? getCompetition(competitionId) : undefined))
   const games = useFirestore(gamesCollRef, undefined) as Ref<Game[] | undefined>
   const computedRow = useFirestore(doc(computedCompetitionsColl, competitionId), undefined)
-  const isReady = computed(() => !!computedRow.value && isLibsReady && !!games.value)
+  const isReady = computed(() => isLibsReady && !!computedRow.value && !!games.value)
 
   // Admin
   const writeComputedCompetition = async (payload: CompetitionComputed) => {

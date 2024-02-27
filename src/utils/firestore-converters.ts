@@ -1,9 +1,10 @@
 import type { Competition, CompetitionId, Phase } from '@/types/competitions'
-import type { Player } from '@/types/players'
+import type { CompetitionPlayer, Player } from '@/types/players'
 import { Timestamp } from 'firebase/firestore'
 import type { DocumentData, QueryDocumentSnapshot, SnapshotOptions } from 'firebase/firestore'
 import { dateToTimeStamp } from '@/utils/dates'
-import type { CompetitionTeam, TeamId } from '@/types/teams'
+import type { CompetitionTeamDoc, TeamDoc, TeamId } from '@/types/teams'
+import type { CompetitionComputed } from '@/types/computed'
 import type { Game } from '@/types/games'
 
 const dateFromFirestore = (ts: Timestamp): Date => {
@@ -46,9 +47,42 @@ export const competitionConverter = {
     }
   }
 }
+export const competitionPlayerConverter = {
+  toFirestore: (row: CompetitionPlayer): DocumentData => {
+    const payload = {
+      ...row
+    }
+    return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null))
+  },
+  fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions): CompetitionPlayer => {
+    const data = snapshot.data(options)!
+    return {
+      id: snapshot.id,
+      ...data
+    }
+  }
+}
+export const competitionTeamConverter = {
+  toFirestore: (row: CompetitionTeamDoc): DocumentData => {
+    const payload = {
+      ...row
+    }
+    return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null))
+  },
+  fromFirestore: (
+    snapshot: QueryDocumentSnapshot,
+    options: SnapshotOptions
+  ): CompetitionTeamDoc => {
+    const data = snapshot.data(options)!
+    return {
+      id: snapshot.id,
+      ...data
+    }
+  }
+}
 
 export const computedConverter = {
-  toFirestore: (row: Player): DocumentData => {
+  toFirestore: (row: CompetitionComputed): DocumentData => {
     const lastUpdate = dateToFireStore(new Date())
     const payload = {
       ...row,
@@ -67,7 +101,7 @@ export const computedConverter = {
 }
 
 export const gameConverter = {
-  toFirestore: (row: Player): DocumentData => {
+  toFirestore: (row: Game): DocumentData => {
     const payload = {
       ...row
     }
@@ -83,7 +117,7 @@ export const gameConverter = {
 }
 
 export const teamConverter = {
-  toFirestore: (row: Player): DocumentData => {
+  toFirestore: (row: TeamDoc): DocumentData => {
     const payload = {
       ...row
     }
@@ -93,7 +127,6 @@ export const teamConverter = {
     const data = snapshot.data(options)!
     return {
       id: snapshot.id,
-      players: [],
       ...data
     }
   }
