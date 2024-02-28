@@ -14,7 +14,7 @@ import type { AwardItem, TeamStats } from '@/types/stats'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import { add } from '@/utils/maths'
 
-const getTeamPhaseStanding = (teamId: TeamId, games: Game[]): CompetitionGroupStanding => {
+export const getTeamStatsFromGames = (teamId: TeamId, games: Game[] = []): TeamStats => {
   games.sort((a: Game, b: Game) => compareAsc(a.datetime, b.datetime))
   const { gp, wins, ptspos, ptsneg, hist }: TeamStats = games.reduce(
     (result: TeamStats, game: Game): TeamStats => {
@@ -32,6 +32,16 @@ const getTeamPhaseStanding = (teamId: TeamId, games: Game[]): CompetitionGroupSt
     },
     { gp: 0, wins: 0, ptspos: 0, ptsneg: 0, hist: [] }
   )
+  return {
+    gp,
+    wins,
+    ptspos,
+    ptsneg,
+    hist
+  }
+}
+const getTeamPhaseStanding = (teamId: TeamId, games: Game[]): CompetitionGroupStanding => {
+  const { gp, wins, ptspos, ptsneg, hist }: TeamStats = getTeamStatsFromGames(teamId, games)
   const result: CompetitionGroupStanding = {
     id: teamId,
     pos: 0,

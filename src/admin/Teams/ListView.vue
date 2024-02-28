@@ -14,12 +14,12 @@ import { stringIncludes } from '@/utils/strings'
 import { uploadTeamLogo } from '@/firebase-storage'
 
 const { isReady, teamsRows: rows } = useLibs()
-const { writeRows : writeTeams, deleteRows } = useTeamsLib()
+const { writeRows: writeTeams, deleteRows } = useTeamsLib()
 const fields: TableField[] = [
   {
     key: 'title',
     label: 'Team',
-    sortable: true,
+    sortable: true
   },
   {
     key: 'actions',
@@ -27,10 +27,11 @@ const fields: TableField[] = [
   }
 ]
 const searchStr = ref<string>('')
-const items = computed(() => rows.value 
-    ? rows.value.filter((row:Team) => 
-      !searchStr.value || stringIncludes(row.title, searchStr.value)
-    ) 
+const items = computed(() =>
+  rows.value
+    ? rows.value.filter(
+        (row: Team) => !searchStr.value || stringIncludes(row.title, searchStr.value)
+      )
     : rows.value
 )
 // Create / Edit

@@ -14,4 +14,5 @@ export interface Game {
   scores: GameScores
   boxscore: GameBoxScore
   awards: AwardItem[]
+  isFinished: boolean
 }

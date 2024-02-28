@@ -6,6 +6,7 @@ import { dateToTimeStamp } from '@/utils/dates'
 import type { CompetitionTeamDoc, TeamDoc, TeamId } from '@/types/teams'
 import type { CompetitionComputed } from '@/types/computed'
 import type { Game } from '@/types/games'
+import { add } from './maths'
 
 const dateFromFirestore = (ts: Timestamp): Date => {
   return ts.toDate()
@@ -103,7 +104,8 @@ export const computedConverter = {
 export const gameConverter = {
   toFirestore: (row: Game): DocumentData => {
     const payload = {
-      ...row
+      ...row,
+      isFinished: Object.values(row.scores).some((score) => score.reduce(add, 0))
     }
     return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null))
   },

@@ -7,10 +7,12 @@ import type { CompetitionGroupComputed, CompetitionPhaseComputed } from '@/types
 import type { Option } from '@/types/comp-fields'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
-import CompetitionStanding from '@/views/competition/components/Standing.vue'
-import CompetitionRanking from './components/Ranking.vue'
+import CompetitionStanding from '@/components/competitions/CompetitionStanding.vue'
+import CompetitionRanking from '@/components/competitions/CompetitionRanking.vue'
 import GamesList from '@/components/games/GamesList.vue'
 import type { Game, GameId } from '@/types/games'
+import GameComputedClass from '@/models/GameComputed'
+import type ComputedGame from '@/models/GameComputed'
 const route = useRoute()
 const { competitionId } = route.params
 
@@ -47,10 +49,17 @@ const selectedGroup = computed<CompetitionGroupComputed>(
   () => selectedPhase.value.groups[Number(selectedGroupIdx.value)]
 )
 
+const gamesViewOptions: Option[] = [
+  { text: 'Upcoming', value: 'next' },
+  { text: 'Lasts', value: 'prev' }
+]
+const currentGamesView = ref<'prev' | 'next'>('prev')
 const groupGames = computed<Game[]>(() => {
-  return selectedGroup.value.games.map((gameId: GameId) =>
-    games.value?.find((game: Game) => game.id === gameId)
-  )
+  return selectedGroup.value.games
+    .map((gameId: GameId): Game => games.value?.find((game: Game) => game.id === gameId) as Game)
+    .filter((game: Game) =>
+      currentGamesView.value === 'prev' ? game.isFinished : !game.isFinished
+    )
 })
 </script>
 <template>
@@ -83,11 +92,26 @@ const groupGames = computed<Game[]>(() => {
         <template v-if="groupsOptions.length > 1">
           <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons />
         </template>
-        `
         <h5>Standing</h5>
         <CompetitionStanding :value="selectedGroup.standing" />
-        <h5>Games</h5>
-        <GamesList :games="groupGames" />
+        <div class="d-flex align-items-end justify-content-between">
+          <h5>Games</h5>
+          <ul class="nav nav-underline justify-content-end">
+            <template v-for="opt in gamesViewOptions" :key="opt.value">
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  :class="[currentGamesView === opt.value && 'active']"
+                  :aria-current="currentGamesView === opt.value ? 'page' : false"
+                  href="#"
+                  @click="currentGamesView = opt.value"
+                  >{{ opt.text }}</a
+                >
+              </li>
+            </template>
+          </ul>
+        </div>
+        <GamesList :items="groupGames" />
         <hr class="my-5" />
         <h5>Ranking</h5>
         <CompetitionRanking :value="selectedGroup.ranking" :length="5" />

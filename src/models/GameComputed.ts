@@ -18,7 +18,8 @@ export type StatsLeadersComputed = {
   [key in StatKey]: []
 }
 const { getTeam } = useLibs()
-export default class GameClass {
+
+export default class GameComputedClass {
   id: GameId
   competitionId: CompetitionId
   row: Game
@@ -34,7 +35,7 @@ export default class GameClass {
     }
   }
   get isFinished(): boolean {
-    return this.scores.some((team) => team.finalScore > 0)
+    return this.row.isFinished
   }
   get boxScore(): GameBoxScore {
     return this.row.boxscore

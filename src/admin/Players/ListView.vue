@@ -22,7 +22,7 @@ const fields: TableField[] = [
   {
     key: 'name',
     label: 'Name',
-    sortable: true,
+    sortable: true
   },
   {
     key: 'identification',
@@ -32,9 +32,7 @@ const fields: TableField[] = [
     key: 'dob',
     label: 'Dob'
   },
-  { key: 'gender',
-  label: 'Gender'
-  },
+  { key: 'gender', label: 'Gender' },
   {
     key: 'actions',
     label: ''
@@ -44,13 +42,15 @@ const searchStr = ref<string>('')
 const items = computed(() => {
   const items = Array.isArray(rows.value) ? rows.value.slice() : []
   return items
-  .map((row: Player):TableItem => ({
-    ...row,
-    name: [row.fname, row.lname].join(' '),
-  }))
-  .filter((row:TableItem) => 
-      !searchStr.value || stringIncludes(row.name as string, searchStr.value)
-    ) 
+    .map(
+      (row: Player): TableItem => ({
+        ...row,
+        name: [row.fname, row.lname].join(' ')
+      })
+    )
+    .filter(
+      (row: TableItem) => !searchStr.value || stringIncludes(row.name as string, searchStr.value)
+    )
 })
 // Create / Edit
 const editPlayer = ref<undefined | Player | null>(null)

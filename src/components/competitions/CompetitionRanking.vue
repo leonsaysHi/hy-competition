@@ -25,7 +25,7 @@ const { statsKeys } = useOptionsLibs()
 const row = getCompetition(competitionId)
 const fields = computed(() => [
   { label: 'Pos', key: 'pos' },
-  { label: 'Players', key: 'id', tdClass: 'fw-bold' },
+  { label: 'Players', key: 'id' },
   { label: 'Team', key: 'teamId' },
   { label: 'GP', key: 'gp', sortable: true, thClass: 'text-end', tdClass: 'text-end' },
   ...statsKeys.reduce((fields: TableField[], opt): TableField[] => {
@@ -49,7 +49,14 @@ const items = computed(() => (!props.length ? props.value : props.value.slice(0,
 <template>
   <TableComp :fields="fields" :items="items" sorted-key="pts" sorted-direction="desc" small>
     <template #pos="{ index }">{{ index + 1 }}</template>
-    <template #id="{ value }">{{ getPlayerName(value) }}</template>
+    <template #id="{ value }">
+      <RouterLink
+        class="link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+        :to="{ name: 'competition-player', params: { playerId: value } }"
+      >
+        <strong>{{ getPlayerName(value) }}</strong>
+      </RouterLink>
+    </template>
     <template #teamId="{ value }">{{ getTeamName(value) }}</template>
   </TableComp>
 </template>

@@ -1,6 +1,6 @@
 <template>
   <ul class="list-group list-group-flush border-top border-bottom">
-    <template v-for="gameComputed in items" :key="gameComputed.id">
+    <template v-for="gameComputed in computedGames" :key="gameComputed.id">
       <RouterLink class="list-group-item list-group-item-action game" :to="gameComputed.to">
         <template v-for="(team, idx) in gameComputed.scores" :key="idx">
           <div class="team">
@@ -22,24 +22,24 @@
 </template>
 
 <script lang="ts" setup>
+import TeamLogo from '@/components/teams/TeamLogo.vue'
+import type ComputedGame from '@/models/GameComputed'
+import GameComputedClass from '@/models/GameComputed'
 import type { Game } from '@/types/games'
 import { computed } from 'vue'
-import GameComputed from '@/models/GameComputed'
 import { useRoute } from 'vue-router'
-import TeamLogo from '@/components/teams/TeamLogo.vue'
 
 const route = useRoute()
 const { competitionId } = route.params
 
 interface IProps {
-  games: Game[]
+  items: Game[]
 }
 const props = withDefaults(defineProps<IProps>(), {})
-const items = computed(() => {
-  return props.games.map((game: Game) => {
-    return new GameComputed(competitionId, game)
-  })
-})
+
+const computedGames = computed<ComputedGame[]>(() =>
+  props.items.map((game: Game) => new GameComputedClass(competitionId, game))
+)
 </script>
 <style lang="scss" scoped>
 .game {

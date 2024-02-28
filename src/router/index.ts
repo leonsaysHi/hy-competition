@@ -4,6 +4,8 @@ import HomeView from '@/views/HomeView.vue'
 import CompetitionView from '@/views/competition/IndexView.vue'
 import CompetitionDetailsView from '@/views/competition/DetailsView.vue'
 import CompetitionGameDetailsView from '@/views/competition/GameDetailsView.vue'
+import CompetitionTeamDetailsView from '@/views/competition/TeamDetailsView.vue'
+import CompetitionPlayerDetailsView from '@/views/competition/PlayerDetailsView.vue'
 import TeamsView from '@/views/teams/IndexView.vue'
 import TeamsListView from '@/views/teams/ListView.vue'
 import TeamDetailsView from '@/views/teams/DetailsView.vue'
@@ -34,9 +36,19 @@ const router = createRouter({
               component: CompetitionDetailsView
             },
             {
-              path: 'games/:gameId',
+              path: 'game/:gameId',
               name: 'competition-game',
               component: CompetitionGameDetailsView
+            },
+            {
+              path: 'team/:teamId',
+              name: 'competition-team',
+              component: CompetitionTeamDetailsView
+            },
+            {
+              path: 'player/:playerId',
+              name: 'competition-player',
+              component: CompetitionPlayerDetailsView
             }
           ]
         },
