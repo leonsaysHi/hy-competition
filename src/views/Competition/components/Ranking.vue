@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import TableComp from '@/components/TableComp.vue'
 
 import useLibs from '@/composable/useLibs'
@@ -7,7 +7,6 @@ import useOptionsLibs from '@/composable/useOptionsLib'
 import type { CompetitionRanking } from '@/types/computed'
 import { useRoute } from 'vue-router'
 import type { TableField } from '@/types/comp-table'
-import type { StatKey } from '@/types/stats'
 
 interface IProps {
   value: CompetitionRanking[]

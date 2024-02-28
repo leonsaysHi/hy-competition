@@ -15,7 +15,7 @@ const props = withDefaults(defineProps<IProps>(), {})
 const { getTeamName } = useLibs()
 const fields = [
   { label: 'Pos', key: 'pos', sortable: true, thClass: 'text-end', tdClass: 'text-end' },
-  { label: 'Teams', key: 'id', },
+  { label: 'Teams', key: 'id' },
   { label: 'GP', key: 'gp', sortable: true, thClass: 'text-end', tdClass: 'text-end' },
   { label: 'W', key: 'wins', sortable: true, thClass: 'text-end', tdClass: 'text-end' },
   { label: 'PTS+', key: 'ptspos', sortable: true, thClass: 'text-end', tdClass: 'text-end' },

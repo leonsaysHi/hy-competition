@@ -3,12 +3,7 @@ import { RouterLink, RouterView } from 'vue-router'
 import useLibs from '@/composable/useLibs'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 
-const {
-  isReady: isLibsReady,
-  isPlayersLibReady,
-  isCompetitionsLibReady,
-  isTeamsLibReady
-} = useLibs()
+const { isReady: isLibsReady } = useLibs()
 </script>
 <template>
   <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
@@ -30,7 +25,12 @@ const {
   </header>
   <main>
     <section class="py-5 container">
-      <RouterView />
+      <template v-if="!isLibsReady">
+        <SpinnerComp />
+      </template>
+      <template v-else>
+        <RouterView />
+      </template>
     </section>
   </main>
 </template>

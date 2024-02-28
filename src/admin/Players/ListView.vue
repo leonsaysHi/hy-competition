@@ -88,12 +88,12 @@ const handleDelete = () => {
       <SpinnerComp />
     </template>
     <template v-else>
-      <p class="d-flex align-items-bottom justify-content-between">
+      <div class="mb-3 d-flex align-items-bottom justify-content-between">
         <div>
           <InputComp v-model="searchStr" placeholder="Search..." />
         </div>
         <ButtonComp variant="primary" @click="handleCreate">Create</ButtonComp>
-      </p>
+      </div>
       <TableComp :fields="fields" :items="items">
         <template #name="{ item }"> {{ item.fname }} {{ item.lname }} </template>
         <template #dob="{ value }"> {{ value || '-' }} </template>

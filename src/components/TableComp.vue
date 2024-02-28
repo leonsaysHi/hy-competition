@@ -103,7 +103,11 @@ const sortedItems = computed(() => {
 })
 const handleSort = (key: string) => {
   sortedDirection.value =
-    key !== sortedKey.value || sortedDirection.value === 'desc' ? 'asc' : 'desc'
+    key !== sortedKey.value || sortedDirection.value !== props.sortedDirection
+      ? props.sortedDirection
+      : props.sortedDirection === 'desc'
+        ? 'asc'
+        : 'desc'
   sortedKey.value = key
 }
 </script>

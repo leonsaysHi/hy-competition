@@ -1,7 +1,7 @@
 import useFirestoreAdmin from '@/composable/useFirestoreAdmin'
 import { doc } from 'firebase/firestore'
 import { teamsColl } from '@/firebase-firestore.js'
-import type { Team, TeamDoc, TeamId } from '@/types/teams'
+import type { Team, TeamId } from '@/types/teams'
 import { useFirestore } from '@vueuse/firebase/useFirestore'
 import { computed } from 'vue'
 import type { Ref } from 'vue'

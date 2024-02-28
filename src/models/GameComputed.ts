@@ -1,18 +1,23 @@
 import useLibs from '@/composable/useLibs'
 import type { CompetitionId } from '@/types/competitions'
 import type { Game, GameBoxScore, GameId } from '@/types/games'
+import type { StatKey } from '@/types/stats'
 import type { Team, TeamId } from '@/types/teams'
 import { add } from '@/utils/maths'
 import type { RouteLocationRaw } from 'vue-router'
 
-interface ScoresComputed extends Team {
+export interface ScoresComputed extends Team {
+  id: TeamId
   title: string
   finalScore: number
   periods: number[]
   winner: boolean
 }
-const { getTeam } = useLibs()
 
+export type StatsLeadersComputed = {
+  [key in StatKey]: []
+}
+const { getTeam } = useLibs()
 export default class GameClass {
   id: GameId
   competitionId: CompetitionId
@@ -20,7 +25,7 @@ export default class GameClass {
   to: RouteLocationRaw
 
   constructor(competitionId: CompetitionId, game: Game) {
-    this.id = game.id
+    this.id = game.id as GameId
     this.competitionId = competitionId
     this.row = game
     this.to = {
@@ -28,7 +33,9 @@ export default class GameClass {
       params: { gameId: this.row.id, competitionId: this.competitionId }
     }
   }
-
+  get isFinished(): boolean {
+    return this.scores.some((team) => team.finalScore > 0)
+  }
   get boxScore(): GameBoxScore {
     return this.row.boxscore
   }

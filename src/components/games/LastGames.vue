@@ -22,7 +22,7 @@ const items = computed(() => {
   const start = items.length - props.value.length
   items.splice(start, props.value.length, ...props.value)
   return items
-    .map((h, idx) => (h > 0 ? 'success' : h < 0 ? 'danger' : 'body-tertiary opacity-25'))
+    .map((h) => (h > 0 ? 'success' : h < 0 ? 'danger' : 'body-tertiary opacity-25'))
     .map((str) => `text-${str}`)
 })
 </script>
