@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import TableComp from '@/components/TableComp.vue'
 import LastGames from '@/components/games/LastGames.vue'
-import Logo from '@/components/teams/Logo.vue'
+import TeamLogo from '@/components/teams/TeamLogo.vue'
 import useLibs from '@/composable/useLibs'
 import type { CompetitionGroupStanding } from '@/types/computed'
 
@@ -28,7 +28,7 @@ const items = computed(() => props.value)
   <TableComp :fields="fields" :items="items" sorted-key="pos" sorted-direction="asc" small>
     <template #id="{ value }">
       <div class="d-flex align-items-center gap-2">
-        <Logo :team-id="value" :size="40" />
+        <TeamLogo :team-id="value" :size="40" />
         <strong>{{ getTeamName(value) }}</strong>
       </div>
     </template>

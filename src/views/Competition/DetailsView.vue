@@ -7,8 +7,8 @@ import type { CompetitionGroupComputed, CompetitionPhaseComputed } from '@/types
 import type { Option } from '@/types/comp-fields'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
-import Standing from '@/views/competition/components/Standing.vue'
-import Ranking from './components/Ranking.vue'
+import CompetitionStanding from '@/views/competition/components/Standing.vue'
+import CompetitionRanking from './components/Ranking.vue'
 import GamesList from '@/components/games/GamesList.vue'
 import type { Game, GameId } from '@/types/games'
 const route = useRoute()
@@ -85,12 +85,12 @@ const groupGames = computed<Game[]>(() => {
         </template>
         `
         <h5>Standing</h5>
-        <Standing :value="selectedGroup.standing" />
+        <CompetitionStanding :value="selectedGroup.standing" />
         <h5>Games</h5>
         <GamesList :games="groupGames" />
         <hr class="my-5" />
         <h5>Ranking</h5>
-        <Ranking :value="selectedGroup.ranking" :length="5" />
+        <CompetitionRanking :value="selectedGroup.ranking" :length="5" />
       </template>
     </template>
   </div>

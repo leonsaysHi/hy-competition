@@ -2,10 +2,10 @@
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
-import BoxScore from '@/views/competition/components/BoxScore.vue'
+import GameBoxcore from '@/views/competition/components/GameBoxcore.vue'
 import GameLeaders from '@/views/competition/components/GameLeaders.vue'
 import SpinnerComp from '@/components/SpinnerComp.vue'
-import Logo from '@/components/teams/Logo.vue'
+import TeamLogo from '@/components/teams/TeamLogo.vue'
 import GameComputed from '@/models/GameComputed'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import type { Game } from '@/types/games'
@@ -47,8 +47,8 @@ const competitionStatsOptions = computed(() => {
         >
           <strong class="h4 d-none d-md-block">{{ gameComputed.scores[0].title }}</strong>
           <strong class="h5 d-md-none">{{ gameComputed.scores[0].title }}</strong>
-          <Logo :team-id="gameComputed.scores[0].id" :size="100" class="d-none d-md-block" />
-          <Logo :team-id="gameComputed.scores[0].id" :size="60" class="d-md-none" />
+          <TeamLogo :team-id="gameComputed.scores[0].id" :size="100" class="d-none d-md-block" />
+          <TeamLogo :team-id="gameComputed.scores[0].id" :size="60" class="d-md-none" />
         </div>
         <div class="d-flex align-items-center justify-content-center gap-2">
           <template v-if="gameComputed.isFinished">
@@ -78,8 +78,8 @@ const competitionStatsOptions = computed(() => {
         >
           <strong class="h4 d-none d-md-block">{{ gameComputed.scores[1].title }}</strong>
           <strong class="h5 d-md-none">{{ gameComputed.scores[1].title }}</strong>
-          <Logo :team-id="gameComputed.scores[1].id" :size="100" class="d-none d-md-block" />
-          <Logo :team-id="gameComputed.scores[1].id" :size="60" class="d-md-none" />
+          <TeamLogo :team-id="gameComputed.scores[1].id" :size="100" class="d-none d-md-block" />
+          <TeamLogo :team-id="gameComputed.scores[1].id" :size="60" class="d-md-none" />
         </div>
       </div>
       <template v-if="gameComputed.isFinished">
@@ -113,7 +113,7 @@ const competitionStatsOptions = computed(() => {
           />
         </template>
         <template v-if="statView === 1">
-          <BoxScore :boxscore="row.boxscore" :teams="competitionTeams" />
+          <GameBoxcore :boxscore="row.boxscore" :teams="competitionTeams" />
         </template>
       </template>
     </template>

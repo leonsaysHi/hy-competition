@@ -16,7 +16,7 @@
                     : 'descending'
                 : undefined
             "
-            :class="[sortedKey === key && 'text-bg-dark']"
+            :class="[sortedKey === key && 'text-bg-sorted-th']"
           >
             <div
               :class="[thClass, sortable && 'position-relative pe-4 cursor-pointer']"
@@ -40,7 +40,7 @@
       <template v-for="(item, index) in sortedItems" :key="index">
         <tr>
           <template v-for="({ key, tdClass }, hIdx) in fields" :key="hIdx">
-            <td :class="[tdClass, sortedKey === key && 'text-bg-dark']">
+            <td :class="[tdClass, sortedKey === key && 'text-bg-sorted-td']">
               <slot :name="key" v-bind="{ key, items, item, index }" :value="item[key]">
                 {{ item[key] }}
               </slot>

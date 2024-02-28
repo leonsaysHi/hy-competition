@@ -6,7 +6,7 @@
           <div class="team">
             <div class="name">
               <strong>{{ team.title }}</strong>
-              <Logo :team-id="team.id" :size="54" />
+              <TeamLogo :team-id="team.id" :size="54" />
             </div>
             <div
               class="score border border-3 rounded-2"
@@ -26,7 +26,7 @@ import type { Game } from '@/types/games'
 import { computed } from 'vue'
 import GameComputed from '@/models/GameComputed'
 import { useRoute } from 'vue-router'
-import Logo from '../teams/Logo.vue'
+import TeamLogo from '@/components/teams/TeamLogo.vue'
 
 const route = useRoute()
 const { competitionId } = route.params
