@@ -53,8 +53,8 @@ const getTeamPhaseStanding = (teamId: TeamId, games: Game[]): CompetitionGroupSt
   }
   return result
 }
-const getPlayerPhaseRanking = (playerId: PlayerId, games: Game[]): PlayerRankTotals => {
-  const { gp, awards, pts, reb, ast, stl, blk, to, pf, m3pts }: PlayerRankTotals = games.reduce(
+export const getPlayerStatsFromGames = (playerId: PlayerId, games: Game[]): PlayerRankTotals => {
+  return games.reduce(
     (ranking: PlayerRankTotals, game: Game) => {
       const boxscore = game.boxscore[playerId]
       return {
@@ -75,6 +75,10 @@ const getPlayerPhaseRanking = (playerId: PlayerId, games: Game[]): PlayerRankTot
     },
     { gp: 0, awards: [], pts: 0, reb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0, m3pts: 0 }
   )
+}
+const getPlayerPhaseRanking = (playerId: PlayerId, games: Game[]): PlayerRankTotals => {
+  const { gp, awards, pts, reb, ast, stl, blk, to, pf, m3pts }: PlayerRankTotals =
+    getPlayerStatsFromGames(playerId, games)
   return {
     // PlayerRankTotals
     gp,

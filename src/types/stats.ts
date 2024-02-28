@@ -1,7 +1,6 @@
 import type { PlayerId } from './players'
 
 // Player
-
 export type Award = 'mvp' | 'def'
 export interface AwardItem {
   id: PlayerId
@@ -25,7 +24,6 @@ export interface PlayerBoxScore extends Stats {
 export type PlayerBoxScoreKey = keyof PlayerBoxScore
 
 // Team
-
 export interface TeamStats {
   gp: number
   wins: number
@@ -33,3 +31,4 @@ export interface TeamStats {
   ptsneg: number
   hist: (1 | -1 | 0)[]
 }
+export type TeamStatKey = keyof TeamStats

@@ -6,12 +6,13 @@
 import { computed } from 'vue'
 interface IProps {
   src: string | undefined
-  title: string
+  title?: string
   width?: number | 'auto'
   height?: number | 'auto'
   square?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
+  title: '',
   width: 'auto',
   height: 'auto',
   square: false

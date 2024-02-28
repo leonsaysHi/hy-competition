@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import TableComp from '@/components/TableComp.vue'
+import ImageComp from '@/components/ImageComp.vue'
 import type { Game } from '@/types/games'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import useLibs from '@/composable/useLibs'
@@ -13,14 +14,18 @@ import type { TeamStats } from '@/types/stats'
 import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
 import LastGames from '@/components/games/LastGames.vue'
+import type { CompetitionTeam } from '@/types/teams'
 
 const route = useRoute()
 const { competitionId, teamId } = route.params
 
 const { getTeamName } = useLibs()
 const { teamStatsKeys } = useOptionsLib()
-const { isReady, row, games } = useCompetitionComputed(competitionId)
+const { isReady, row, games, teams } = useCompetitionComputed(competitionId)
 
+const competitionTeam = computed(() => {
+  return teams.value?.find((team: CompetitionTeam) => team.id === teamId)
+})
 const teamGames = computed<Game[]>(() =>
   Array.isArray(games.value)
     ? games.value
@@ -28,12 +33,20 @@ const teamGames = computed<Game[]>(() =>
         .filter((game: Game) => game.isFinished)
     : []
 )
-const statsFields: TableField[] = teamStatsKeys.map((opt: Option) => ({
-  key: opt.value,
-  label: opt.text
-}))
+const statsFields: TableField[] = [
+  { key: 'pos', label: 'Pos', tdClass: 'fw-bold' },
+  ...teamStatsKeys.map((opt: Option) => ({
+    key: opt.value,
+    label: opt.text
+  }))
+]
 const statsItems = computed<TableItem[]>(() => {
-  return [getTeamStatsFromGames(teamId, teamGames.value) as unknown as TableItem]
+  return [
+    {
+      pos: '?',
+      ...(getTeamStatsFromGames(teamId, teamGames.value) as unknown as TableItem)
+    }
+  ]
 })
 </script>
 <template>
@@ -42,7 +55,10 @@ const statsItems = computed<TableItem[]>(() => {
       <SpinnerComp />
     </template>
     <template v-else>
-      <div class="pt-5 pb-3 d-flex flex-column align-items-center gap-3">
+      <div class="position-relative mt-4 pb-3 d-flex flex-column align-items-center gap-3">
+        <div class="position-absolute top-0 end-0">
+          <ImageComp :src="competitionTeam?.sponsor" :width="100" />
+        </div>
         <TeamLogo :team-id="teamId" :size="150" />
         <h1>{{ getTeamName(teamId) }}</h1>
       </div>

@@ -60,7 +60,7 @@ const handleCreate = async (payload) => {
                 <h5 class="card-title">{{ row.title }}</h5>
                 <RouterLink
                   :to="{ name: 'admin-competition-home', params: { competitionId: row.id } }"
-                  class="btn btn-primary"
+                  class="btn btn-primary stretched-link"
                   >View</RouterLink
                 >
               </div>

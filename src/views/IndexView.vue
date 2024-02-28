@@ -28,7 +28,7 @@ import { RouterLink, RouterView } from 'vue-router'
     </ul>
   </header>
   <main>
-    <section class="py-5 container">
+    <section class="py-4 container">
       <RouterView />
     </section>
   </main>

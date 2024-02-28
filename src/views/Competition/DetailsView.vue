@@ -11,8 +11,6 @@ import CompetitionStanding from '@/components/competitions/CompetitionStanding.v
 import CompetitionRanking from '@/components/competitions/CompetitionRanking.vue'
 import GamesList from '@/components/games/GamesList.vue'
 import type { Game, GameId } from '@/types/games'
-import GameComputedClass from '@/models/GameComputed'
-import type ComputedGame from '@/models/GameComputed'
 const route = useRoute()
 const { competitionId } = route.params
 
