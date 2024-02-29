@@ -11,12 +11,12 @@ import AwardsInput from '@/admin/competition/components/AwardsInput.vue'
 import type { AwardItem, PlayerBoxScore } from '@/types/stats'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import useLibs from '@/composable/useLibs'
-import useCompetitionComputed from '@/composable/useCompetitionComputed'
+import useCompetition from '@/composable/useCompetition'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const { competitionId } = route.params
-const { row, getCompetitionTeam: getCompetitionTeam } = useCompetitionComputed(competitionId)
+const { row, getCompetitionTeam: getCompetitionTeam } = useCompetition(competitionId)
 
 const { getTeamName, getPlayerName } = useLibs()
 

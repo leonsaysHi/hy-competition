@@ -42,8 +42,8 @@ export default class GameComputedClass {
   }
 
   get scores(): ScoresComputed[] {
-    const result = Object.keys(this.row.scores).map((teamId: TeamId): ScoresComputed => {
-      const periods: number[] = this.row.scores[teamId]
+    const result = this.row.teams.map((teamId: TeamId): ScoresComputed => {
+      const periods: number[] = this.row.scores[teamId] ? this.row.scores[teamId] : [0]
       return {
         ...getTeam(teamId),
         finalScore: periods.reduce(add, 0),

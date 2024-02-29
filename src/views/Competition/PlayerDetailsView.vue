@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import useCompetition from '@/composable/useCompetition'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import TableComp from '@/components/TableComp.vue'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
@@ -10,7 +9,7 @@ import useLibs from '@/composable/useLibs'
 
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import ImageComp from '@/components/ImageComp.vue'
-import useCompetitionComputed from '@/composable/useCompetitionComputed'
+import useCompetition from '@/composable/useCompetition'
 import PlayerGamesList from '@/components/games/PlayerGamesList.vue'
 import type { Game } from '@/types/games'
 import type { Option } from '@/types/comp-fields'
@@ -30,13 +29,10 @@ const { playerRankingKeys } = useOptionsLib()
 const {
   isReady: isCompetitionReady,
   getPlayerCompetitionTeam,
-  row: competition
-} = useCompetition(competitionId)
-const {
-  isReady: isComputedCompetitionReady,
+  row: competition,
   games,
-  computedRow
-} = useCompetitionComputed(competitionId)
+  competitionClass
+} = useCompetition(competitionId)
 
 const competitionTeam = computed<CompetitionTeam | undefined>(() =>
   getPlayerCompetitionTeam(playerId)
@@ -56,7 +52,7 @@ const playerGames = computed<Game[]>(() => {
 const trackedPlayerRankingKeys = computed<Option[]>(() =>
   playerRankingKeys.filter((opt: Option) => competition.value?.trackedStats.includes(opt.value))
 )
-const statsFields = computed(() =>
+const statsFields = computed<TableField[]>(() =>
   trackedPlayerRankingKeys.value.map((opt: Option) => ({
     key: opt.value,
     label: opt.text
@@ -68,8 +64,8 @@ const statsItems = computed<TableItem[]>(() => {
     {} as Stats
   )
   // accumulate phases rankings:
-  const totalRanks: PlayerRankingStats = Array.isArray(computedRow.value?.phases)
-    ? computedRow.value?.phases.reduce(
+  const totalRanks: PlayerRankingStats = Array.isArray(competitionClass.value?.computedPhases)
+    ? competitionClass.value.computedPhases.reduce(
         (totalRanks: PlayerRankingStats, phase: CompetitionPhaseComputed): PlayerRankingStats => {
           if (Array.isArray(phase.groups)) {
             const group = phase.groups.find((group: CompetitionGroupComputed) => {
@@ -103,7 +99,7 @@ const statsItems = computed<TableItem[]>(() => {
 </script>
 <template>
   <div>
-    <template v-if="!isCompetitionReady || !isComputedCompetitionReady">
+    <template v-if="!isCompetitionReady">
       <SpinnerComp />
     </template>
     <template v-else>
@@ -123,8 +119,7 @@ const statsItems = computed<TableItem[]>(() => {
           </div>
         </div>
       </div>
-      <TableComp :fields="statsFields" :items="statsItems">
-      </TableComp>
+      <TableComp :fields="statsFields" :items="statsItems"> </TableComp>
       <hr />
       <PlayerGamesList :items="playerGames" />
     </template>

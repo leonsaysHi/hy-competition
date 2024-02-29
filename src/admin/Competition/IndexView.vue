@@ -6,23 +6,14 @@ import SpinnerComp from '@/components/SpinnerComp.vue'
 import { computed } from 'vue'
 import AlertComp from '@/components/AlertComp.vue'
 import ButtonComp from '@/components/ButtonComp.vue'
-import useCompetitionComputed from '@/composable/useCompetitionComputed'
-import CompetitionComputed from '@/models/CompetitionComputed'
 
 const route = useRoute()
 const { competitionId } = route.params
 const { isReady, row } = useCompetition(competitionId)
-const { writeComputedCompetition } = useCompetitionComputed(competitionId)
 const teamsListMinLength = computed(
   () => Array.isArray(row?.value?.teams) && row.value.teams.length >= 2
 )
 const hasCurrentPhase = computed(() => Array.isArray(row?.value?.phases) && row.value.phases.length)
-const handlePublish = () => {
-  if (row.value) {
-    const competitionModel = new CompetitionComputed(row.value)
-    writeComputedCompetition(competitionModel.computed)
-  }
-}
 </script>
 <template>
   <h1>{{ row?.title || '...' }}</h1>
@@ -68,9 +59,6 @@ const handlePublish = () => {
         >Settings</RouterLink
       >
     </li>
-    <li class="nav-item ms-auto">
-      <ButtonComp variant="primary" @click="handlePublish">Publish</ButtonComp>
-    </li>
   </ul>
   <template v-if="!isReady">
     <SpinnerComp />
@@ -79,4 +67,3 @@ const handlePublish = () => {
     <RouterView />
   </template>
 </template>
-@/composable/useCompetitionComputed

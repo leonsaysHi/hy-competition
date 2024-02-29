@@ -9,23 +9,22 @@ import ButtonComp from '@/components/ButtonComp.vue'
 import type { Option } from '@/types/comp-fields'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import type { Game } from '@/types/games'
-import useCompetition from '@/composable/useCompetition'
+import useCompetitionAdmin from '@/composable/useCompetition'
 import AddGameForm from '@/admin/competition/forms/AddGameForm.vue'
 import { compareDesc } from 'date-fns'
 import useLibs from '@/composable/useLibs'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import PhaseMenu from './components/PhaseMenu.vue'
+import useCompetition from '@/composable/useCompetition'
 
 const route = useRoute()
 const { competitionId } = route.params
 
 const { isReady: isLibsReady, getTeam, getTeamName } = useLibs()
 
-const {
-  row,
-  writeGame: addCompetitionGame,
-  deleteGame: deleteCompetitionGame
-} = useCompetition(competitionId)
+const { row } = useCompetition(competitionId)
+const { writeGame: addCompetitionGame, deleteGame: deleteCompetitionGame } =
+  useCompetitionAdmin(competitionId)
 
 const selectedPhase = ref('')
 

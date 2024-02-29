@@ -7,10 +7,9 @@ import type {
   CompetitionStanding,
   CompetitionGroupComputed,
   CompetitionRanking,
-  PlayerRankTotals,
   CompetitionComputed
 } from '@/types/computed'
-import type { AwardItem, TeamStats } from '@/types/stats'
+import type { AwardItem, TeamStats, PlayerRankingStats } from '@/types/stats'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import { add } from '@/utils/maths'
 
@@ -41,7 +40,10 @@ export const getTeamStatsFromGames = (teamId: TeamId, games: Game[] = []): TeamS
   }
 }
 const getTeamPhaseStanding = (teamId: TeamId, games: Game[]): CompetitionStanding => {
-  const { gp, wins, ptspos, ptsneg, hist }: TeamStats = getTeamStatsFromGames(teamId, games)
+  const { gp, wins, ptspos, ptsneg, hist }: TeamStats = getTeamStatsFromGames(
+    teamId,
+    games.filter((game: Game) => game.isFinished)
+  )
   const result: CompetitionStanding = {
     id: teamId,
     pos: 0,
@@ -53,9 +55,9 @@ const getTeamPhaseStanding = (teamId: TeamId, games: Game[]): CompetitionStandin
   }
   return result
 }
-export const getPlayerStatsFromGames = (playerId: PlayerId, games: Game[]): PlayerRankTotals => {
+export const getPlayerStatsFromGames = (playerId: PlayerId, games: Game[]): PlayerRankingStats => {
   return games.reduce(
-    (ranking: PlayerRankTotals, game: Game) => {
+    (ranking: PlayerRankingStats, game: Game) => {
       const boxscore = game.boxscore[playerId]
       return {
         gp: ranking.gp + 1,
@@ -76,11 +78,11 @@ export const getPlayerStatsFromGames = (playerId: PlayerId, games: Game[]): Play
     { gp: 0, awards: [], pts: 0, reb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0, m3pts: 0 }
   )
 }
-const getPlayerPhaseRanking = (playerId: PlayerId, games: Game[]): PlayerRankTotals => {
-  const { gp, awards, pts, reb, ast, stl, blk, to, pf, m3pts }: PlayerRankTotals =
+const getPlayerPhaseRanking = (playerId: PlayerId, games: Game[]): PlayerRankingStats => {
+  const { gp, awards, pts, reb, ast, stl, blk, to, pf, m3pts }: PlayerRankingStats =
     getPlayerStatsFromGames(playerId, games)
   return {
-    // PlayerRankTotals
+    // PlayerRankingStats
     gp,
     awards,
     pts,

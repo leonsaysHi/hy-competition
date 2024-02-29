@@ -106,10 +106,7 @@ const competitionStatsOptions = computed(() => {
           </li>
         </ul>
         <template v-if="statView === 0">
-          <GameLeaders
-            :boxscore="row.boxscore"
-            :statsOptions="competitionStatsOptions"
-          />
+          <GameLeaders :boxscore="row.boxscore" :statsOptions="competitionStatsOptions" />
         </template>
         <template v-if="statView === 1">
           <GameBoxcore :boxscore="row.boxscore" :teams="competitionTeams" />

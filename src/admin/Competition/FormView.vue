@@ -2,13 +2,15 @@
 import CompetitionForm from '@/admin/competition/forms/CompetitionForm.vue'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import useCompetition from '@/composable/useCompetition'
+import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
 import type { CompetitionDoc } from '@/types/competitions'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const { competitionId } = route.params
-const { isReady, writeCompetitionDoc: addCompetition, row } = useCompetition(competitionId)
+const { isReady, row } = useCompetition(competitionId)
+const { writeCompetitionDoc: addCompetition } = useCompetitionAdmin(competitionId)
 
 const isBusy = ref(false)
 const handleSubmit = async (values: CompetitionDoc) => {

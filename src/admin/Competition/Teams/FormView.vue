@@ -8,11 +8,13 @@ import { useRoute } from 'vue-router'
 import type { CompetitionTeam, CompetitionTeamDoc } from '@/types/teams'
 import { computed, ref } from 'vue'
 import { uploadTeamSponsor } from '@/firebase-storage'
+import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
 
 const route = useRoute()
 const { competitionId, teamId } = route.params
 const { isReady: isLibsReady, getTeam } = useLibs()
-const { isReady, row, writeTeamDoc: writeCompetitionTeam } = useCompetition(competitionId)
+const { isReady, row } = useCompetition(competitionId)
+const { writeTeamDoc: writeCompetitionTeam } = useCompetitionAdmin(competitionId)
 
 const data = computed(() => {
   return row.value?.teams?.find((team: CompetitionTeam) => team.id === teamId)

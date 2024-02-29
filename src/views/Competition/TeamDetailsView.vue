@@ -7,7 +7,7 @@ import ImageComp from '@/components/ImageComp.vue'
 import type { Game } from '@/types/games'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import useLibs from '@/composable/useLibs'
-import useCompetitionComputed from '@/composable/useCompetitionComputed'
+import useCompetition from '@/composable/useCompetition'
 import GamesList from '@/components/games/GamesList.vue'
 import { getTeamStatsFromGames } from '@/models/CompetitionComputed'
 import useOptionsLib from '@/composable/useOptionsLib'
@@ -20,7 +20,7 @@ const { competitionId, teamId } = route.params
 
 const { getTeamName } = useLibs()
 const { teamStandingKeys } = useOptionsLib()
-const { isReady, row, computedRow, games, teams } = useCompetitionComputed(competitionId)
+const { isReady, row, games, teams } = useCompetition(competitionId)
 
 const competitionTeam = computed(() => {
   return teams.value?.find((team: CompetitionTeam) => team.id === teamId)
@@ -33,8 +33,7 @@ const teamGames = computed<Game[]>(() =>
     : []
 )
 const statsFields: TableField[] = [
-  ...teamStandingKeys
-  .map((opt: Option) => ({
+  ...teamStandingKeys.map((opt: Option) => ({
     key: opt.value,
     label: opt.text
   }))

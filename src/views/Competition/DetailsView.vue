@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useRoute } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
-import useCompetitionComputed from '@/composable/useCompetitionComputed'
+import useCompetition from '@/composable/useCompetition'
 import { computed, ref } from 'vue'
 import type { CompetitionGroupComputed, CompetitionPhaseComputed } from '@/types/computed'
 import type { Option } from '@/types/comp-fields'
@@ -16,10 +16,11 @@ const { competitionId } = route.params
 
 const { competitionPhases } = useOptionsLib()
 
-const { isReady, row, games, computedRow } = useCompetitionComputed(competitionId)
+const { isReady, row, games, competitionClass } = useCompetition(competitionId)
+
 const phasesOptions = computed<Option[] | undefined>(() =>
-  Array.isArray(computedRow.value?.phases)
-    ? computedRow.value.phases.map(
+  Array.isArray(competitionClass.value?.computedPhases)
+    ? competitionClass.value.computedPhases.map(
         (row: CompetitionPhaseComputed, idx): Option => ({
           value: idx.toString(),
           text: competitionPhases.find((opt) => opt.value === row.type)?.text as string
@@ -29,7 +30,10 @@ const phasesOptions = computed<Option[] | undefined>(() =>
 )
 const selectedPhaseIdx = ref('0')
 const selectedPhase = computed<CompetitionPhaseComputed>(
-  () => computedRow.value?.phases[Number(selectedPhaseIdx.value)]
+  () =>
+    competitionClass.value?.computedPhases[
+      Number(selectedPhaseIdx.value)
+    ] as CompetitionPhaseComputed
 )
 
 const selectedGroupIdx = ref('0')

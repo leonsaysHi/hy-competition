@@ -12,16 +12,14 @@ import useLibs from '@/composable/useLibs'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import { useRoute } from 'vue-router'
 import AddTeamForm from '../forms/AddTeamForm.vue'
+import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
 const route = useRoute()
 const { competitionId } = route.params
 const { isReady: isLibsReady, teamsRows: teamsLib, getTeam } = useLibs()
 
-const {
-  isReady: isRowReady,
-  row,
-  writeTeamDoc: addCompetitionTeam,
-  deleteTeam: deleteCompetitionTeam
-} = useCompetition(competitionId)
+const { isReady: isRowReady, row } = useCompetition(competitionId)
+const { writeTeamDoc: addCompetitionTeam, deleteTeam: deleteCompetitionTeam } =
+  useCompetitionAdmin(competitionId)
 
 const fields: TableField[] = [
   { key: 'id', label: 'Teams' },

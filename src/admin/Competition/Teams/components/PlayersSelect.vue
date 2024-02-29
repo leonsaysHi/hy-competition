@@ -63,15 +63,13 @@ import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import { useRoute } from 'vue-router'
+import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
 const route = useRoute()
 const { competitionId, teamId } = route.params
 const { isReady: isLibsReady, playersRows: playersLib, getPlayer } = useLibs()
 
-const {
-  row: competition,
-  writePlayer: addPlayer,
-  deletePlayer: removePlayer
-} = useCompetition(competitionId)
+const { row: competition } = useCompetition(competitionId)
+const { writePlayer: addPlayer, deletePlayer: removePlayer } = useCompetitionAdmin(competitionId)
 
 const playersOptions = computed((): Option[] => {
   const competitionOtherPlayers: PlayerId[] = competition?.value?.teams

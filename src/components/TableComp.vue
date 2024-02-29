@@ -103,7 +103,7 @@ const sortedItems = computed(() => {
             : 0
     return compared * (sortedDirection.value === 'desc' ? -1 : 1)
   })
-  
+
   const sliceFirstIdx = props.perPage > 0 ? (props.currentPage - 1) * props.perPage : 0
   const sliceLength = props.perPage > 0 ? Math.min(results.length, props.perPage) : results.length
   return results.slice(sliceFirstIdx, sliceFirstIdx + sliceLength)

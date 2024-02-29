@@ -25,6 +25,7 @@ import useCompetition from '@/composable/useCompetition'
 import AddPhaseForm from '@/admin/competition/forms/AddPhaseForm.vue'
 import useLibs from '@/composable/useLibs'
 import SpinnerComp from '@/components/SpinnerComp.vue'
+import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
 
 const route = useRoute()
 const router = useRouter()
@@ -32,7 +33,8 @@ const { competitionId } = route.params
 
 const { isReady: isLibsReady, getTeam } = useLibs()
 
-const { row, writeCompetitionDoc } = useCompetition(competitionId)
+const { row } = useCompetition(competitionId)
+const { writeCompetitionDoc } = useCompetitionAdmin(competitionId)
 
 const teamsOptions = computed((): Option[] => {
   return Array.isArray(row?.value?.teams)

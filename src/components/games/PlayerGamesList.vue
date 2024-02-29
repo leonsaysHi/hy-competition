@@ -8,7 +8,7 @@ import TableComp from '../TableComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
 import useLibs from '@/composable/useLibs'
-import useCompetitionComputed from '@/composable/useCompetitionComputed'
+import useCompetition from '@/composable/useCompetition'
 import type { PlayerBoxScore } from '@/types/stats'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 
@@ -29,7 +29,7 @@ const props = withDefaults(defineProps<IProps>(), {})
 
 const { getTeamName, getCompetition } = useLibs()
 const { statsKeys } = useOptionsLib()
-const { getPlayerCompetitionTeam } = useCompetitionComputed(competitionId)
+const { getPlayerCompetitionTeam } = useCompetition(competitionId)
 
 const row = getCompetition(competitionId)
 const fields = computed(() => [

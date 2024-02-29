@@ -6,17 +6,14 @@ import useLibs from '@/composable/useLibs'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import GameForm from '@/admin/competition/forms/GameForm.vue'
 import { computed, ref } from 'vue'
+import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
 const { isReady: isLibsReady, getTeamName } = useLibs()
 
 const route = useRoute()
 const { competitionId, gameId } = route.params
 
-const {
-  isReady,
-  row: competition,
-  getGame,
-  writeGame: updateCompetitionGameDoc
-} = useCompetition(competitionId)
+const { isReady, row: competition, getGame } = useCompetition(competitionId)
+const { writeGame: updateCompetitionGameDoc } = useCompetitionAdmin(competitionId)
 
 const data = computed(() => ({
   ...getGame(gameId)
