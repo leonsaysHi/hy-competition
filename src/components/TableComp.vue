@@ -67,6 +67,8 @@ interface IProps {
   items: TableItem[]
   sortedKey?: string
   sortedDirection?: 'asc' | 'desc'
+  perPage?: number
+  currentPage?: number
   small?: boolean
   isBusy?: boolean
   showEmpty?: boolean
@@ -74,6 +76,8 @@ interface IProps {
 const props = withDefaults(defineProps<IProps>(), {
   sortedKey: undefined,
   sortedDirection: 'asc',
+  perPage: 0,
+  currentPage: 1,
   thClass: 'bg-alt',
   tdClass: '',
   isBusy: false,
@@ -99,7 +103,10 @@ const sortedItems = computed(() => {
             : 0
     return compared * (sortedDirection.value === 'desc' ? -1 : 1)
   })
-  return results
+  
+  const sliceFirstIdx = props.perPage > 0 ? (props.currentPage - 1) * props.perPage : 0
+  const sliceLength = props.perPage > 0 ? Math.min(results.length, props.perPage) : results.length
+  return results.slice(sliceFirstIdx, sliceFirstIdx + sliceLength)
 })
 const handleSort = (key: string) => {
   sortedDirection.value =

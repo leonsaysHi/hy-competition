@@ -4,7 +4,7 @@ import type { CompetitionTeam, TeamId } from '@/types/teams'
 import { compareAsc, isAfter, isBefore } from 'date-fns'
 import type {
   CompetitionPhaseComputed,
-  CompetitionGroupStanding,
+  CompetitionStanding,
   CompetitionGroupComputed,
   CompetitionRanking,
   PlayerRankTotals,
@@ -40,9 +40,9 @@ export const getTeamStatsFromGames = (teamId: TeamId, games: Game[] = []): TeamS
     hist
   }
 }
-const getTeamPhaseStanding = (teamId: TeamId, games: Game[]): CompetitionGroupStanding => {
+const getTeamPhaseStanding = (teamId: TeamId, games: Game[]): CompetitionStanding => {
   const { gp, wins, ptspos, ptsneg, hist }: TeamStats = getTeamStatsFromGames(teamId, games)
-  const result: CompetitionGroupStanding = {
+  const result: CompetitionStanding = {
     id: teamId,
     pos: 0,
     gp,
@@ -132,16 +132,16 @@ export default class CompetitionClass {
           return groupGames
         }, [])
         // standing:
-        const standing: CompetitionGroupStanding[] = groupTeams.reduce(
-          (standing: CompetitionGroupStanding[], teamId: TeamId) => {
+        const standing: CompetitionStanding[] = groupTeams.reduce(
+          (standing: CompetitionStanding[], teamId: TeamId) => {
             const teamGames = phaseGames.filter((game: Game) => game.teams.includes(teamId))
             return [...standing, getTeamPhaseStanding(teamId, teamGames)]
           },
           []
         )
-        standing.sort((a: CompetitionGroupStanding, b: CompetitionGroupStanding) => {
-          const getPct = (st: CompetitionGroupStanding) => st.gp / st.wins
-          const getDiff = (st: CompetitionGroupStanding) => st.ptspos - st.ptsneg
+        standing.sort((a: CompetitionStanding, b: CompetitionStanding) => {
+          const getPct = (st: CompetitionStanding) => st.gp / st.wins
+          const getDiff = (st: CompetitionStanding) => st.ptspos - st.ptsneg
           const aPct = getPct(a)
           const bPct = getPct(b)
           const bestWinningPerc = aPct - bPct
@@ -149,7 +149,7 @@ export default class CompetitionClass {
           const bestDiff = getDiff(a) - getDiff(b)
           return bestWinningPerc || mostPlayedGames || bestDiff
         })
-        standing.forEach((row: CompetitionGroupStanding, idx) => {
+        standing.forEach((row: CompetitionStanding, idx) => {
           row.pos = idx + 1
         })
         // ranking:

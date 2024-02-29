@@ -20,12 +20,14 @@ import type { CompetitionPlayer, PlayerId } from '@/types/players'
 export default function useCompetition(competitionId: CompetitionId | undefined) {
   const { isReady: isLibsReady, getCompetition } = useLibs()
 
+  
   const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`).withConverter(
     gameConverter
   )
   const teamsCollRef = collection(competitionsColl, `/${competitionId}/${teamsName}`).withConverter(
     competitionTeamConverter
   )
+  
   const row = computed(() => (competitionId ? getCompetition(competitionId) : undefined))
   const games = useFirestore(gamesCollRef, undefined) as Ref<Game[] | undefined>
   const teams = useFirestore(teamsCollRef, undefined) as Ref<CompetitionTeam[] | undefined>
@@ -36,15 +38,15 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     () => isLibsReady && !!computedRow.value && !!games.value && !!teams.value
   )
 
-  const getTeam = (teamId: TeamId): CompetitionTeam | undefined =>
+  const getCompetitionTeam = (teamId: TeamId): CompetitionTeam | undefined =>
     teams.value?.find((team: CompetitionTeam) => team.id === teamId)
-  const getTeamFromPlayerId = (playerId: PlayerId): CompetitionTeam | undefined => {
+  const getPlayerCompetitionTeam = (playerId: PlayerId): CompetitionTeam | undefined => {
     return teams.value?.find((team: CompetitionTeam) => {
-      return team.players?.find((player: CompetitionPlayer) => player.id === playerId)
+      return team.players?.findIndex((player: CompetitionPlayer) => player.id === playerId) > -1
     })
   }
-  const getPlayer = (playerId: PlayerId): CompetitionPlayer | undefined => {
-    const team = getTeamFromPlayerId(playerId)
+  const getCompetitionPlayer = (playerId: PlayerId): CompetitionPlayer | undefined => {
+    const team = getPlayerCompetitionTeam(playerId)
     return team?.players?.find((player: CompetitionPlayer) => player.id === playerId)
   }
   // Admin
@@ -60,9 +62,9 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
 
   return {
     isReady,
-    getTeam,
-    getPlayer,
-    getTeamFromPlayerId,
+    getCompetitionTeam,
+    getCompetitionPlayer,
+    getPlayerCompetitionTeam,
 
     // Competition
     row,

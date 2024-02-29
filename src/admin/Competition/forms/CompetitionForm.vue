@@ -43,8 +43,8 @@ type FormData = {
 const {
   competitionSports: sportsOptions,
   competitionCategories: categoriesOptions,
-  competitionGenders: gendersOptions,
-  statsKeys: statsKeysOptions
+  genders: gendersOptions,
+  playerRankingKeys: playerRankingKeys
 } = useOptionsLib()
 const { getPlayerName } = useLibs()
 const { allPlayers } = useCompetition(props.value.id)
@@ -107,7 +107,7 @@ const handleSubmit = (ev: Event) => {
     <FieldComp label="Tracked stats">
       <CheckGroupComp
         v-model="data.trackedStats"
-        :options="statsKeysOptions"
+        :options="playerRankingKeys"
         :disabled="isBusy"
         buttons
       />

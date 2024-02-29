@@ -4,10 +4,10 @@ import TableComp from '@/components/TableComp.vue'
 import LastGames from '@/components/games/LastGames.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import useLibs from '@/composable/useLibs'
-import type { CompetitionGroupStanding } from '@/types/computed'
+import type { CompetitionStanding } from '@/types/computed'
 
 interface IProps {
-  value: CompetitionGroupStanding[]
+  value: CompetitionStanding[]
 }
 
 const props = withDefaults(defineProps<IProps>(), {})

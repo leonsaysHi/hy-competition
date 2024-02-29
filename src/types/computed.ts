@@ -1,7 +1,7 @@
 import type { CompetitionId, PhaseType } from './competitions'
 import type { GameId } from './games'
 import type { PlayerId } from './players'
-import type { AwardItem, Stats, TeamStats } from './stats'
+import type { PlayerRankingStats, TeamStats } from './stats'
 import type { TeamId } from './teams'
 
 // Team
@@ -19,35 +19,31 @@ export interface TeamCompetitionComputed {
 }
 
 // Players
-export interface PlayerRankTotals extends Stats {
-  gp: number
-  awards: AwardItem[]
-}
-export interface PlayerCompetitionComputed extends PlayerRankTotals {
+export interface PlayerCompetitionComputed extends PlayerRankingStats {
   id: CompetitionId
   teamId: TeamId
 }
 
 // Competition
-export interface CompetitionGroupStanding extends TeamStats {
+export interface CompetitionStanding extends TeamStats {
   id: TeamId
   pos: number
 }
-export interface CompetitionRanking extends PlayerRankTotals {
+export interface CompetitionRanking extends PlayerRankingStats {
   id: PlayerId
   teamId: TeamId
   number: string
 }
 export interface CompetitionGroupComputed {
   games: GameId[]
-  standing: CompetitionGroupStanding[]
+  standing: CompetitionStanding[]
   ranking: CompetitionRanking[]
 }
 export interface CompetitionPhaseComputed {
   type: PhaseType
   groups: CompetitionGroupComputed[]
 }
-export interface CompetitionPlayerComputed extends PlayerRankTotals {
+export interface CompetitionPlayerComputed extends PlayerRankingStats {
   number: string
 }
 export interface CompetitionComputed {

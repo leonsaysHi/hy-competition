@@ -18,6 +18,12 @@ export interface Stats {
 }
 export type StatKey = keyof Stats
 
+export interface PlayerRankingStats extends Stats {
+  gp: number
+  awards: AwardItem[]
+}
+export type PlayerRankingKey = keyof PlayerRankingStats
+
 export interface PlayerBoxScore extends Stats {
   dnp: boolean
 }
@@ -31,4 +37,4 @@ export interface TeamStats {
   ptsneg: number
   hist: (1 | -1 | 0)[]
 }
-export type TeamStatKey = keyof TeamStats
+export type TeamStandingKey = keyof TeamStats

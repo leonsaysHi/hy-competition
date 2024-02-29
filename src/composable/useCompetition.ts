@@ -77,7 +77,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   })
   const allPlayers = computed<PlayerId[]>(() => {
     const result = allTeams.value.map((teamId: TeamId) => {
-      const team = getTeam(teamId)
+      const team = getCompetitionTeam(teamId)
       return Array.isArray(team?.players)
         ? team.players.map((player: CompetitionPlayer) => player.id)
         : []
@@ -85,16 +85,21 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     return result.flat()
   })
 
-  const getTeam = (teamId: TeamId): CompetitionTeam | undefined => {
+  const getCompetitionTeam = (teamId: TeamId): CompetitionTeam | undefined => {
     return row.value?.teams?.find((team: CompetitionTeam) => team.id === teamId)
   }
-  const getPlayer = (playerId: PlayerId): CompetitionPlayer | undefined => {
+  const getCompetitionPlayer = (playerId: PlayerId): CompetitionPlayer | undefined => {
     const team: CompetitionTeam | undefined = row.value?.teams?.find((team: CompetitionTeam) => {
       team.players.findIndex((player: CompetitionPlayer) => player.id === playerId) > -1
     })
     return team?.players.find((player: CompetitionPlayer) => player.id === playerId)
   }
-  const getPlayerNumber = (playerId: PlayerId) => getPlayer(playerId)?.number
+  const getPlayerCompetitionTeam = (playerId: PlayerId): CompetitionTeam | undefined =>
+    row.value?.teams?.find(
+      (team: CompetitionTeam) =>
+        team.players.findIndex((player: CompetitionPlayer) => player.id === playerId) > -1
+    )
+  const getPlayerNumber = (playerId: PlayerId) => getCompetitionPlayer(playerId)?.number
   const getGame = (gameId: GameId) => {
     return row?.value?.games?.find((game: Game) => game.id === gameId)
   }
@@ -308,8 +313,9 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     allTeams,
     allPlayers,
     getGame,
-    getTeam,
-    getPlayer,
+    getCompetitionTeam,
+    getCompetitionPlayer,
+    getPlayerCompetitionTeam,
     getPlayerNumber,
 
     // Admin competition

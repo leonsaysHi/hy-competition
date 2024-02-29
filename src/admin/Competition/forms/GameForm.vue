@@ -11,12 +11,12 @@ import AwardsInput from '@/admin/competition/components/AwardsInput.vue'
 import type { AwardItem, PlayerBoxScore } from '@/types/stats'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import useLibs from '@/composable/useLibs'
-import useCompetition from '@/composable/useCompetition'
+import useCompetitionComputed from '@/composable/useCompetitionComputed'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const { competitionId } = route.params
-const { row, getTeam: getCompetitionTeam } = useCompetition(competitionId)
+const { row, getCompetitionTeam: getCompetitionTeam } = useCompetitionComputed(competitionId)
 
 const { getTeamName, getPlayerName } = useLibs()
 
@@ -163,7 +163,7 @@ const handleSubmit = (ev: Event) => {
     <hr />
     <FieldComp label="Boxscore">
       <template v-for="(boxscore, teamId) in boxscoreByTeams" :key="teamId">
-        <h6 class="mb-0">{{ getTeamName(teamId) }}</h6>
+        <h3 class="mb-0">{{ getTeamName(teamId) }}</h3>
         <BoxScoreInput
           v-model="boxscoreByTeams[teamId]"
           :trackedStats="row?.trackedStats"

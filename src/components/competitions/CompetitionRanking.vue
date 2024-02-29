@@ -20,15 +20,14 @@ const props = withDefaults(defineProps<IProps>(), {
 })
 
 const { getTeamName, getPlayerName, getCompetition } = useLibs()
-const { statsKeys } = useOptionsLibs()
+const { playerRankingKeys } = useOptionsLibs()
 
 const row = getCompetition(competitionId)
 const fields = computed(() => [
   { label: 'Pos', key: 'pos' },
   { label: 'Players', key: 'id' },
   { label: 'Team', key: 'teamId' },
-  { label: 'GP', key: 'gp', sortable: true, thClass: 'text-end', tdClass: 'text-end' },
-  ...statsKeys.reduce((fields: TableField[], opt): TableField[] => {
+  ...playerRankingKeys.reduce((fields: TableField[], opt): TableField[] => {
     if (row?.trackedStats.includes(opt.value)) {
       return [
         ...fields,
@@ -44,10 +43,17 @@ const fields = computed(() => [
     return fields
   }, [])
 ])
-const items = computed(() => (!props.length ? props.value : props.value.slice(0, props.length)))
+const items = computed(() => props.value)
 </script>
 <template>
-  <TableComp :fields="fields" :items="items" sorted-key="pts" sorted-direction="desc" small>
+  <TableComp
+    :fields="fields"
+    :items="items"
+    sorted-key="pts"
+    sorted-direction="desc"
+    :per-page="5"
+    small
+  >
     <template #pos="{ index }">{{ index + 1 }}</template>
     <template #id="{ value }">
       <RouterLink

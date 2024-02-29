@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import TeamLogo from '@/components/teams/TeamLogo.vue'
-import type ComputedGame from '@/models/GameComputed'
 import GameComputedClass, { type ScoresComputed } from '@/models/GameComputed'
 import type { Game } from '@/types/games'
 import { computed } from 'vue'
@@ -12,7 +11,6 @@ import useLibs from '@/composable/useLibs'
 import useCompetitionComputed from '@/composable/useCompetitionComputed'
 import type { PlayerBoxScore } from '@/types/stats'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
-import type { PlayerId } from '@/types/players'
 
 interface PlayerGameComputed extends PlayerBoxScore {
   datetime: string
@@ -29,9 +27,9 @@ interface IProps {
 }
 const props = withDefaults(defineProps<IProps>(), {})
 
-const { getTeamName, getPlayerName, getCompetition } = useLibs()
+const { getTeamName, getCompetition } = useLibs()
 const { statsKeys } = useOptionsLib()
-const { getTeamFromPlayerId } = useCompetitionComputed(competitionId)
+const { getPlayerCompetitionTeam } = useCompetitionComputed(competitionId)
 
 const row = getCompetition(competitionId)
 const fields = computed(() => [
@@ -56,7 +54,7 @@ const fields = computed(() => [
 const computedGames = computed<TableItem[]>(() => {
   return props.items.map((game: Game) => {
     const computedGame = new GameComputedClass(competitionId, game)
-    const team = getTeamFromPlayerId(playerId) as CompetitionTeam
+    const team = getPlayerCompetitionTeam(playerId) as CompetitionTeam
     const opp = computedGame.scores.find((score: ScoresComputed) => score.id !== team?.id)
     const result: PlayerGameComputed = {
       datetime: game.datetime,

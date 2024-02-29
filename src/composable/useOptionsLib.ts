@@ -1,6 +1,6 @@
 import type { CompetitionCategorie, CompetitionSport, PhaseType } from '@/types/competitions'
 import type { Gender } from '@/types/players'
-import type { StatKey, TeamStatKey } from '@/types/stats'
+import type { StatKey, TeamStandingKey, PlayerRankingKey } from '@/types/stats'
 
 export default function usePlayersLib() {
   const competitionSports: { value: CompetitionSport; text: string }[] = [
@@ -32,8 +32,11 @@ export default function usePlayersLib() {
     { text: 'PF', long: 'Personal Fouls', value: 'pf' },
     { text: '3pts', long: '3 points', value: 'm3pts' }
   ]
-
-  const teamStatsKeys: { value: TeamStatKey; text: string; long: string }[] = [
+  const playerRankingKeys: { value: PlayerRankingKey; text: string; long: string }[] = [
+    { text: 'GP', long: 'Game played', value: 'gp' },
+    ...statsKeys
+  ]
+  const teamStandingKeys: { value: TeamStandingKey; text: string; long: string }[] = [
     { text: 'GP', long: 'Game played', value: 'gp' },
     { text: 'W', long: 'Wins', value: 'wins' },
     { text: 'Pts+', long: 'Points in favor', value: 'ptspos' },
@@ -50,6 +53,7 @@ export default function usePlayersLib() {
     getGender,
 
     statsKeys,
-    teamStatsKeys
+    playerRankingKeys,
+    teamStandingKeys
   }
 }

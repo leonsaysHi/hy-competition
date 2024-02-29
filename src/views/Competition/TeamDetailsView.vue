@@ -10,7 +10,6 @@ import useLibs from '@/composable/useLibs'
 import useCompetitionComputed from '@/composable/useCompetitionComputed'
 import GamesList from '@/components/games/GamesList.vue'
 import { getTeamStatsFromGames } from '@/models/CompetitionComputed'
-import type { TeamStats } from '@/types/stats'
 import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
 import LastGames from '@/components/games/LastGames.vue'
@@ -20,8 +19,8 @@ const route = useRoute()
 const { competitionId, teamId } = route.params
 
 const { getTeamName } = useLibs()
-const { teamStatsKeys } = useOptionsLib()
-const { isReady, row, games, teams } = useCompetitionComputed(competitionId)
+const { teamStandingKeys } = useOptionsLib()
+const { isReady, row, computedRow, games, teams } = useCompetitionComputed(competitionId)
 
 const competitionTeam = computed(() => {
   return teams.value?.find((team: CompetitionTeam) => team.id === teamId)
@@ -34,8 +33,8 @@ const teamGames = computed<Game[]>(() =>
     : []
 )
 const statsFields: TableField[] = [
-  { key: 'pos', label: 'Pos', tdClass: 'fw-bold' },
-  ...teamStatsKeys.map((opt: Option) => ({
+  ...teamStandingKeys
+  .map((opt: Option) => ({
     key: opt.value,
     label: opt.text
   }))
@@ -55,16 +54,16 @@ const statsItems = computed<TableItem[]>(() => {
       <SpinnerComp />
     </template>
     <template v-else>
-      <div class="position-relative mt-4 pb-3 d-flex flex-column align-items-center gap-3">
+      <div class="position-relative mt-4 pb-3 d-flex flex-column align-items-center">
         <div class="position-absolute top-0 end-0">
           <ImageComp :src="competitionTeam?.sponsor" :width="100" />
         </div>
         <TeamLogo :team-id="teamId" :size="150" />
-        <h1>{{ getTeamName(teamId) }}</h1>
+        <div class="display-3 fw-bold">{{ getTeamName(teamId) }}</div>
       </div>
       <TableComp :fields="statsFields" :items="statsItems">
         <template #hist="{ value }">
-          <LastGames :value="value" />
+          <LastGames :value="value" :length="5" />
         </template>
       </TableComp>
       <hr />

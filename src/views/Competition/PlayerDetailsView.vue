@@ -19,27 +19,27 @@ import type { TableField, TableItem } from '@/types/comp-table'
 import type {
   CompetitionGroupComputed,
   CompetitionPhaseComputed,
-  CompetitionRanking,
-  PlayerRankTotals
+  CompetitionRanking
 } from '@/types/computed'
-import type { StatKey, Stats } from '@/types/stats'
+import type { StatKey, Stats, PlayerRankingStats } from '@/types/stats'
 const route = useRoute()
 const { competitionId, playerId } = route.params
 
-const { getPlayerName, getTeamName } = useLibs()
-const { statsKeys } = useOptionsLib()
-const { isReady: isCompetitionReady, row: competition } = useCompetition(competitionId)
+const { getPlayerName } = useLibs()
+const { playerRankingKeys } = useOptionsLib()
+const {
+  isReady: isCompetitionReady,
+  getPlayerCompetitionTeam,
+  row: competition
+} = useCompetition(competitionId)
 const {
   isReady: isComputedCompetitionReady,
   games,
   computedRow
 } = useCompetitionComputed(competitionId)
 
-const competitionTeam = computed<CompetitionTeam | undefined>(
-  () =>
-    competition.value?.teams?.find((team: CompetitionTeam) =>
-      team.players.findIndex((player: CompetitionPlayer) => player.id === playerId)
-    ) as CompetitionTeam
+const competitionTeam = computed<CompetitionTeam | undefined>(() =>
+  getPlayerCompetitionTeam(playerId)
 )
 const teamId = computed<TeamId | undefined>(() => competitionTeam.value?.id)
 const competitionPlayer = computed(() =>
@@ -48,27 +48,29 @@ const competitionPlayer = computed(() =>
 const playerGames = computed<Game[]>(() => {
   return Array.isArray(games.value) && teamId.value
     ? games.value.filter((game: Game) => {
-        return Object.keys(game.boxscore).includes(playerId)
+        return Object.keys(game.boxscore).includes(playerId) && !game.boxscore[playerId].dnp
       })
     : []
 })
 
-const statsFields: TableField[] = [
-  { key: 'gp', label: 'GP' },
-  ...statsKeys.map((opt: Option) => ({
+const trackedPlayerRankingKeys = computed<Option[]>(() =>
+  playerRankingKeys.filter((opt: Option) => competition.value?.trackedStats.includes(opt.value))
+)
+const statsFields = computed(() =>
+  trackedPlayerRankingKeys.value.map((opt: Option) => ({
     key: opt.value,
     label: opt.text
   }))
-]
+)
 const statsItems = computed<TableItem[]>(() => {
-  const emptyStats = statsKeys.reduce(
+  const emptyRank: PlayerRankingStats = trackedPlayerRankingKeys.value.reduce(
     (acc: Stats, opt: Option) => ({ ...acc, [opt.value]: 0 }),
     {} as Stats
   )
-  const emptyRank: PlayerRankTotals = { gp: 0, awards: [], ...emptyStats }
-  const totalRanks: PlayerRankTotals = Array.isArray(computedRow.value?.phases)
+  // accumulate phases rankings:
+  const totalRanks: PlayerRankingStats = Array.isArray(computedRow.value?.phases)
     ? computedRow.value?.phases.reduce(
-        (totalRanks: PlayerRankTotals, phase: CompetitionPhaseComputed): PlayerRankTotals => {
+        (totalRanks: PlayerRankingStats, phase: CompetitionPhaseComputed): PlayerRankingStats => {
           if (Array.isArray(phase.groups)) {
             const group = phase.groups.find((group: CompetitionGroupComputed) => {
               return (
@@ -81,14 +83,13 @@ const statsItems = computed<TableItem[]>(() => {
                 (rank: CompetitionRanking) => rank.id === playerId
               )
               if (stats) {
-                statsKeys.forEach((opt: Option) => {
+                playerRankingKeys.forEach((opt: Option) => {
                   const key = opt.value as StatKey
                   if (key in stats) {
                     totalRanks[key] = (totalRanks[key] || 0) + stats[key]
                   }
                 })
                 totalRanks.gp += stats.gp
-                totalRanks.awards.push(...stats.awards)
               }
             }
           }
@@ -106,25 +107,23 @@ const statsItems = computed<TableItem[]>(() => {
       <SpinnerComp />
     </template>
     <template v-else>
-      <div class="mt-4 pb-3 d-flex justify-content-between gap-3">
+      <div class="mt-4 pb-3 d-flex gap-3">
         <div>
-          <div class="display-1 text-body-secondary">
+          <TeamLogo :team-id="competitionTeam?.id" :size="150" />
+        </div>
+        <div>
+          <div class="display-1 text-body-secondary lh-1">
             #<strong>{{ competitionPlayer?.number }}</strong>
           </div>
           <h1 class="display-6 fw-bold">{{ getPlayerName(playerId) }}</h1>
-          <h5>{{ getTeamName(competitionTeam?.id) }}</h5>
         </div>
-        <div>
+        <div class="ms-auto align-self-end">
           <div class="d-flex flex-column align-items-center gap-2">
-            <TeamLogo :team-id="competitionTeam?.id" :size="150" />
             <ImageComp :src="competitionTeam?.sponsor" :width="100" />
           </div>
         </div>
       </div>
       <TableComp :fields="statsFields" :items="statsItems">
-        <template #hist="{ value }">
-          <LastGames :value="value" />
-        </template>
       </TableComp>
       <hr />
       <PlayerGamesList :items="playerGames" />
