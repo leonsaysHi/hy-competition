@@ -15,9 +15,7 @@ import type { Game } from '@/types/games'
 import type { Option } from '@/types/comp-fields'
 import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
-import type {
-PlayerCompetitionComputed
-} from '@/types/computed'
+import type { PlayerCompetitionComputed } from '@/types/computed'
 const route = useRoute()
 const { competitionId, playerId } = route.params
 
@@ -36,7 +34,9 @@ const teamId = computed<TeamId>(() => competitionComputed.value.teamId as TeamId
 const competitionTeam = computed<CompetitionTeam | undefined>(() =>
   getCompetitionTeam(teamId.value)
 )
-const competitionPlayer = computed<CompetitionPlayer>(() => getCompetitionPlayer(playerId) as CompetitionPlayer)
+const competitionPlayer = computed<CompetitionPlayer>(
+  () => getCompetitionPlayer(playerId) as CompetitionPlayer
+)
 const playerGames = computed<Game[]>(() => {
   return Array.isArray(games.value) && teamId.value
     ? games.value.filter((game: Game) => {
@@ -55,11 +55,12 @@ const statsFields = computed<TableField[]>(() =>
   }))
 )
 const competitionComputed = computed<PlayerCompetitionComputed>(() => {
-  return competitionClass.value?.competitionRankings
-    .find((rank:PlayerCompetitionComputed) => rank.id === playerId) as PlayerCompetitionComputed
+  return competitionClass.value?.competitionRankings.find(
+    (rank: PlayerCompetitionComputed) => rank.id === playerId
+  ) as PlayerCompetitionComputed
 })
 const statsItem = computed<TableItem[]>(() => {
-  return [ competitionComputed.value as unknown as TableItem ]
+  return [competitionComputed.value as unknown as TableItem]
 })
 </script>
 <template>

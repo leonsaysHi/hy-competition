@@ -87,21 +87,26 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     return result.flat()
   })
 
-  const getCompetitionTeam = (teamId: TeamId): CompetitionTeam | undefined => {
-    return row.value?.teams?.find((team: CompetitionTeam) => team.id === teamId)
+  const getCompetitionTeam = (teamId: TeamId): CompetitionTeam => {
+    return row.value?.teams?.find((team: CompetitionTeam) => team.id === teamId) as CompetitionTeam
   }
-  const getCompetitionPlayer = (playerId: PlayerId): CompetitionPlayer | undefined => {
-    const team: CompetitionTeam | undefined = row.value?.teams?.find((team: CompetitionTeam) => team.players.findIndex((player: CompetitionPlayer) => player.id === playerId) > -1)
-    return team?.players.find((player: CompetitionPlayer) => player.id === playerId)
-  }
-  const getPlayerCompetitionTeam = (playerId: PlayerId): CompetitionTeam | undefined =>
-    row.value?.teams?.find(
+  const getCompetitionPlayer = (playerId: PlayerId): CompetitionPlayer => {
+    const team: CompetitionTeam | undefined = row.value?.teams?.find(
       (team: CompetitionTeam) =>
         team.players.findIndex((player: CompetitionPlayer) => player.id === playerId) > -1
     )
-  const getPlayerNumber = (playerId: PlayerId) => getCompetitionPlayer(playerId)?.number
-  const getGame = (gameId: GameId) => {
-    return row?.value?.games?.find((game: Game) => game.id === gameId)
+    return team?.players.find(
+      (player: CompetitionPlayer) => player.id === playerId
+    ) as CompetitionPlayer
+  }
+  const getPlayerCompetitionTeam = (playerId: PlayerId): CompetitionTeam =>
+    row.value?.teams?.find(
+      (team: CompetitionTeam) =>
+        team.players.findIndex((player: CompetitionPlayer) => player.id === playerId) > -1
+    ) as CompetitionTeam
+  const getPlayerNumber = (playerId: PlayerId): string => getCompetitionPlayer(playerId).number
+  const getGame = (gameId: GameId): Game => {
+    return row?.value?.games?.find((game: Game) => game.id === gameId) as Game
   }
 
   // Competition Computed

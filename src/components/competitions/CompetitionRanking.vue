@@ -63,6 +63,8 @@ const items = computed(() => props.value)
         <strong class="jersey-name">{{ getPlayerName(value) }}</strong>
       </RouterLink>
     </template>
-    <template #teamId="{ value }"><span class="jersey-team">{{ getTeamName(value) }}</span></template>
+    <template #teamId="{ value }"
+      ><span class="jersey-team">{{ getTeamName(value) }}</span></template
+    >
   </TableComp>
 </template>

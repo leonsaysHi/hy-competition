@@ -4,7 +4,7 @@
       <RouterLink class="list-group-item list-group-item-action game" :to="gameComputed.to">
         <template v-if="gameComputed.isFinished">
           <div class="date d-flex flex-column align-items-center justify-content-center lh-1">
-              <span>{{ gameComputed.date?.short }}</span>
+            <span>{{ gameComputed.date?.short }}</span>
           </div>
         </template>
         <template v-for="(team, idx) in gameComputed.scores" :key="idx">
@@ -18,15 +18,15 @@
                 class="score border border-3 rounded-2"
                 :class="[team.winner ? 'border-win' : 'border-loss']"
               >
-                <strong>{{ team.finalScore }}</strong>
+                <strong class="jersey-score fs-2 lh-1 pt-1">{{ team.finalScore }}</strong>
               </div>
             </template>
           </div>
 
-          <template v-if="idx===0 && !gameComputed.isFinished">
+          <template v-if="idx === 0 && !gameComputed.isFinished">
             <div class="date d-flex flex-column align-items-center justify-content-center lh-1">
-                <span>{{ gameComputed.date?.short }}</span>
-                <small class="text-body-secondary">{{ gameComputed.date?.time }}</small>
+              <span>{{ gameComputed.date?.short }}</span>
+              <small class="text-body-secondary">{{ gameComputed.date?.time }}</small>
             </div>
           </template>
         </template>

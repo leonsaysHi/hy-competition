@@ -62,27 +62,26 @@ const getTeamPhaseStanding = (teamId: TeamId, games: Game[]): CompetitionStandin
 }
 export const getPlayerStatsFromGames = (playerId: PlayerId, games: Game[]): Stats => {
   return games
-    .filter((game: Game) => game.isFinished && game.boxscore[playerId] && ~game.boxscore[playerId].dnp)
-    .reduce((ranking: Stats, game: Game) => {
-        const { dnp, ...stats } = game.boxscore[playerId]
-        statsKeys
-          .map((opt: Option) => opt.value as StatKey)
-          .forEach((key: StatKey) => {
-            ranking[key] = (ranking[key] || 0) + (stats[key] || 0)
-          })
-        return ranking
-      },
-      {} as Stats
+    .filter(
+      (game: Game) => game.isFinished && game.boxscore[playerId] && ~game.boxscore[playerId].dnp
     )
+    .reduce((ranking: Stats, game: Game) => {
+      const { dnp, ...stats } = game.boxscore[playerId]
+      statsKeys
+        .map((opt: Option) => opt.value as StatKey)
+        .forEach((key: StatKey) => {
+          ranking[key] = (ranking[key] || 0) + (stats[key] || 0)
+        })
+      return ranking
+    }, {} as Stats)
 }
 const getPlayerPhaseRankingStats = (playerId: PlayerId, games: Game[]): PlayerRankingStats => {
-  const playedgames = games
-    .filter((game: Game) => game.isFinished && game.boxscore[playerId] && ~game.boxscore[playerId].dnp)
+  const playedgames = games.filter(
+    (game: Game) => game.isFinished && game.boxscore[playerId] && ~game.boxscore[playerId].dnp
+  )
   const playerStats: Stats = getPlayerStatsFromGames(playerId, playedgames)
-  const playerAwards: AwardItem[] = playedgames.reduce((awards: AwardItem[], game: Game, ) => {
-    return [ ...awards,
-      ...game.awards.filter((row: AwardItem) => row.id === playerId)
-    ]
+  const playerAwards: AwardItem[] = playedgames.reduce((awards: AwardItem[], game: Game) => {
+    return [...awards, ...game.awards.filter((row: AwardItem) => row.id === playerId)]
   }, [])
   return {
     // PlayerRankingStats
@@ -192,29 +191,36 @@ export default class CompetitionClass {
     })
     return phases
   }
-  get competitionRankings(): PlayerCompetitionComputed[]  {
+  get competitionRankings(): PlayerCompetitionComputed[] {
     const trackedPlayerRankingKeys: StatKey[] = statsKeys
       .filter((opt: Option) => this.row.trackedStats.includes(opt.value as StatKey))
       .map((opt: Option) => opt.value as StatKey)
-    return this.computedPhases.reduce((rankingList:PlayerCompetitionComputed[], phase:CompetitionPhaseComputed) => {
-      phase.groups.forEach((group: CompetitionGroupComputed) => {
-        group.ranking.forEach((rank:CompetitionRanking) => {
-          const idx = rankingList.findIndex((row:PlayerCompetitionComputed) => row.id === rank.id)
-          if (idx === -1) {
-            rankingList.push({ ...rank })
-          } else {
-            trackedPlayerRankingKeys.forEach((key: StatKey) => {
-              rankingList[idx][key] = (rankingList[idx][key] || 0) + (rank[key] || 0)
-            })
-            rankingList[idx].gp = (rankingList[idx].gp || 0) + (rank.gp || 0)
-            rankingList[idx].awards = [
-              ...(Array.isArray(rankingList[idx].awards) ? rankingList[idx].awards : []) as AwardItem[],
-              ...(Array.isArray(rank.awards) ? rank.awards : []) as AwardItem[]
-            ]
-          }
+    return this.computedPhases.reduce(
+      (rankingList: PlayerCompetitionComputed[], phase: CompetitionPhaseComputed) => {
+        phase.groups.forEach((group: CompetitionGroupComputed) => {
+          group.ranking.forEach((rank: CompetitionRanking) => {
+            const idx = rankingList.findIndex(
+              (row: PlayerCompetitionComputed) => row.id === rank.id
+            )
+            if (idx === -1) {
+              rankingList.push({ ...rank })
+            } else {
+              trackedPlayerRankingKeys.forEach((key: StatKey) => {
+                rankingList[idx][key] = (rankingList[idx][key] || 0) + (rank[key] || 0)
+              })
+              rankingList[idx].gp = (rankingList[idx].gp || 0) + (rank.gp || 0)
+              rankingList[idx].awards = [
+                ...((Array.isArray(rankingList[idx].awards)
+                  ? rankingList[idx].awards
+                  : []) as AwardItem[]),
+                ...((Array.isArray(rank.awards) ? rank.awards : []) as AwardItem[])
+              ]
+            }
+          })
         })
-      })
-      return rankingList
-    }, [])
+        return rankingList
+      },
+      []
+    )
   }
 }

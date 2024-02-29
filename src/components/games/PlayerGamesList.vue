@@ -37,13 +37,16 @@ const fields = computed(() => [
   { key: 'opp', label: 'Opp' },
   { key: 'isWin', label: '', tdClass: 'text-center' },
   ...statsKeys
-  .filter((opt: Option) => row?.trackedStats.includes(opt.value))
-  .map((opt: Option): TableField => ({
-    key: opt.value,
-    label: opt.text,
-    thClass: 'text-end',
-    tdClass: 'text-end'
-  } as TableField))
+    .filter((opt: Option) => row?.trackedStats.includes(opt.value))
+    .map(
+      (opt: Option): TableField =>
+        ({
+          key: opt.value,
+          label: opt.text,
+          thClass: 'text-end',
+          tdClass: 'text-end'
+        }) as TableField
+    )
 ])
 const computedGames = computed<TableItem[]>(() => {
   return props.items.map((game: Game) => {

@@ -40,18 +40,16 @@ export default class GameComputedClass {
   get boxScore(): GameBoxScore {
     return this.row.boxscore
   }
-
-  get date(): { num: string, short: string, long: string, time: string } {
+  get date(): { num: string; short: string; long: string; time: string } {
     const value = this.row.datetime
-    const day = format(value, 'P')
     const min = format(value, 'mm')
     const time = format(value, 'h') + (min !== '00' ? ':' + min : '') + format(value, 'aa')
-    return  {
+    return {
       num: format(value, 'P'),
       short: format(value, 'do LLL'),
       long: format(value, 'iii, do LLL'),
-      time,
-    }     
+      time
+    }
   }
 
   get scores(): ScoresComputed[] {

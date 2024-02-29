@@ -1,66 +1,81 @@
 <script lang="ts" setup>
 import useLibs from '@/composable/useLibs'
 import type { Option } from '@/types/comp-fields'
-import { computed, ref } from 'vue'
-import type { StatKey } from '@/types/stats'
+import { computed } from 'vue'
+import type { PlayerBoxScore, StatKey } from '@/types/stats'
 import type { GameBoxScore } from '@/types/games'
-import type { PlayerId } from '@/types/players'
+import type { CompetitionPlayer, PlayerId } from '@/types/players'
+import { useRoute } from 'vue-router'
+import useOptionsLib from '@/composable/useOptionsLib'
+import useCompetition from '@/composable/useCompetition'
+
+const route = useRoute()
+const { competitionId } = route.params
+const { row: competition, getCompetitionPlayer } = useCompetition(competitionId)
+const { statsKeys: statsOptions } = useOptionsLib()
+const { getPlayerName } = useLibs()
+
+const competitionStatsKeys = computed<StatKey[]>(() => {
+  return statsOptions
+    .filter((opt: Option) => competition.value?.trackedStats.includes(opt.value))
+    .map((opt: Option) => opt.value as StatKey)
+})
+
 interface IProps {
   boxscore: GameBoxScore
-  statsOptions: Option[]
 }
-
-const { getPlayerName } = useLibs()
 
 const props = withDefaults(defineProps<IProps>(), {})
 
-const currentStatKey = ref<StatKey>(props.statsOptions[0].value as StatKey)
+interface PlayerBoxScoreItem extends CompetitionPlayer, PlayerBoxScore {
+  id: PlayerId
+}
+type StatLeaders = { [key in StatKey]: PlayerBoxScoreItem[] }
 
-const statsLeaders = computed(() => {
-  const boxscore = Object.keys(props.boxscore).map((playerId: PlayerId) => ({
-    id: playerId,
-    ...props.boxscore[playerId]
-  }))
-
-  const keyBoxscore = boxscore.slice()
-  keyBoxscore.sort((a, b) => {
-    const aKey = a[currentStatKey.value]
-    const bKey = b[currentStatKey.value]
-    return bKey - aKey
-  })
-  return keyBoxscore.slice(0, 5)
+const leadersBystats = computed<StatLeaders>(() => {
+  const boxScorelist: PlayerBoxScoreItem[] = Object.keys(props.boxscore)
+    .map(
+      (playerId: PlayerId) =>
+        ({
+          ...getCompetitionPlayer(playerId),
+          ...props.boxscore[playerId]
+        }) as PlayerBoxScoreItem
+    )
+    .filter((bs: PlayerBoxScoreItem) => !bs.dnp)
+  return competitionStatsKeys.value.reduce((statsLeader: StatLeaders, key: StatKey) => {
+    const bs = boxScorelist.slice()
+    bs.sort((a, b) => {
+      const aKey = a[key]
+      const bKey = b[key]
+      return bKey - aKey
+    })
+    const leader: PlayerBoxScoreItem = bs[0]
+    return {
+      ...statsLeader,
+      [key]: [leader]
+    }
+  }, {} as StatLeaders)
 })
-const getStatLong = (key: StatKey): string =>
-  props.statsOptions.find((opt: Option) => opt.value === key)?.long
+const getStatShort = (key: StatKey): string =>
+  statsOptions.find((opt: Option) => opt.value === key)?.text as string
 </script>
 <template>
-  <ul class="mb-3 nav nav-underline justify-content-center">
-    <template v-for="opt in props.statsOptions" :key="opt.value">
-      <li class="nav-item">
-        <a
-          class="nav-link"
-          :class="[currentStatKey === opt.value && 'active']"
-          :aria-current="currentStatKey === opt.value ? 'page' : false"
-          href="#"
-          @click="currentStatKey = opt.value"
-          >{{ opt.long }}</a
-        >
-      </li>
-    </template>
-  </ul>
-  <div class="row row-cols-1 row-cols-md-2 g-4">
-    <div class="col">
-      <div class="card">
-        <div class="card-header">{{ getStatLong(currentStatKey) }}</div>
-        <ul class="list-group list-group-flush">
-          <template v-for="(row, idx) in statsLeaders" :key="idx">
-            <li class="list-group-item d-flex gap-3 justify-content-between">
-              <div>{{ getPlayerName(row.id) }}</div>
-              <div>{{ row[currentStatKey] }}</div>
-            </li>
-          </template>
-        </ul>
+  <div class="row row-cols-1 row-cols-md-2 g-2">
+    <template v-for="(items, key) in leadersBystats" :key="key">
+      <div class="col d-flex">
+        <div class="card card-sm">
+          <div class="card-body">
+            <div class="d-flex align-items-start gap-1">
+              <div class="display-3 jersey-number lh-1">{{ items[0][key] }}</div>
+              <strong>{{ getStatShort(key) }}</strong>
+            </div>
+            <div class="d-flex align-items-start justify-content-between gap-2">
+              <div class="fs-4 lh-1 jersey-name">{{ getPlayerName(items[0].id) }}</div>
+              <div class="fs-4 lh-1 text-body-secondary jersey-name">#{{ items[0].number }}</div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>

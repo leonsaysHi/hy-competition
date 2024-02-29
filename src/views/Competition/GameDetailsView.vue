@@ -8,31 +8,40 @@ import SpinnerComp from '@/components/SpinnerComp.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import GameComputed from '@/models/GameComputed'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
-import type { Game } from '@/types/games'
-import useOptionsLib from '@/composable/useOptionsLib'
+import type { Game, GameBoxScore } from '@/types/games'
+import type { CompetitionPlayer } from '@/types/players'
+import type { PlayerBoxScore } from '@/types/stats'
 
 const route = useRoute()
 const { competitionId, gameId } = route.params
 
-const { statsKeys: statsOptions } = useOptionsLib()
-const { isReady, row: competition } = useCompetition(competitionId)
+const { isReady, row: competition, getCompetitionTeam } = useCompetition(competitionId)
+
 const row = computed<Game | undefined>(() =>
   competition.value?.games?.find((game) => game.id === gameId)
 )
-
 const gameComputed = computed<GameComputed | undefined>(() =>
   row.value?.id ? new GameComputed(competitionId, row.value) : undefined
 )
+
 const statView = ref<number>(0)
 const competitionTeams = computed<CompetitionTeam[]>(() => {
   return row.value?.teams.map((teamId: TeamId): CompetitionTeam => {
-    return competition.value?.teams.find(
-      (team: CompetitionTeam) => team.id === teamId
-    ) as CompetitionTeam
+    return getCompetitionTeam(teamId)
   }) as CompetitionTeam[]
 })
-const competitionStatsOptions = computed(() => {
-  return statsOptions.filter((opt: Option) => competition.value?.trackedStats.includes(opt.value))
+const teamsBoxscores = computed<GameBoxScore[]>(() => {
+  return Array.isArray(row.value?.teams)
+    ? row.value.teams.map((teamId: TeamId) => {
+        const players: CompetitionPlayer[] = getCompetitionTeam(teamId).players
+        return players.reduce((boxscore: GameBoxScore, player: CompetitionPlayer) => {
+          return {
+            ...boxscore,
+            [player.id]: gameComputed.value?.boxScore[player.id] as PlayerBoxScore
+          }
+        }, {} as GameBoxScore)
+      })
+    : []
 })
 </script>
 <template>
@@ -45,7 +54,9 @@ const competitionStatsOptions = computed(() => {
         <div
           class="flex-grow-1 d-flex flex-column-reverse justify-content-start align-items-center gap-2"
         >
-          <strong class="h4 d-none d-md-block jersey-team">{{ gameComputed.scores[0].title }}</strong>
+          <strong class="h4 d-none d-md-block jersey-team">{{
+            gameComputed.scores[0].title
+          }}</strong>
           <strong class="h5 d-md-none jersey-team">{{ gameComputed.scores[0].title }}</strong>
           <TeamLogo :team-id="gameComputed.scores[0].id" :size="100" class="d-none d-md-block" />
           <TeamLogo :team-id="gameComputed.scores[0].id" :size="60" class="d-md-none" />
@@ -57,18 +68,18 @@ const competitionStatsOptions = computed(() => {
                 class="p-2 border border-5 rounded-2 display-3 d-none d-md-block"
                 :class="[team.winner ? 'border-win' : 'border-loss']"
               >
-                <strong>{{ team.finalScore }}</strong>
+                <strong class="jersey-score">{{ team.finalScore }}</strong>
               </div>
               <div
                 class="p-2 border border-5 rounded-2 display-6 d-md-none"
                 :class="[team.winner ? 'border-win' : 'border-loss']"
               >
-                <strong>{{ team.finalScore }}</strong>
+                <strong class="jersey-score">{{ team.finalScore }}</strong>
               </div>
             </template>
           </template>
           <template v-else>
-            <div class="d-flex flex-column justify-content-center align-items-center ">
+            <div class="d-flex flex-column justify-content-center align-items-center">
               {{ gameComputed.date?.long }}
               <span class="text-body-secondary">{{ gameComputed.date.time }}</span>
             </div>
@@ -77,7 +88,9 @@ const competitionStatsOptions = computed(() => {
         <div
           class="flex-grow-1 d-flex flex-column-reverse justify-content-start align-items-center gap-2"
         >
-          <strong class="h4 d-none d-md-block jersey-team">{{ gameComputed.scores[1].title }}</strong>
+          <strong class="h4 d-none d-md-block jersey-team">{{
+            gameComputed.scores[1].title
+          }}</strong>
           <strong class="h5 d-md-none jersey-team">{{ gameComputed.scores[1].title }}</strong>
           <TeamLogo :team-id="gameComputed.scores[1].id" :size="100" class="d-none d-md-block" />
           <TeamLogo :team-id="gameComputed.scores[1].id" :size="60" class="d-md-none" />
@@ -107,7 +120,16 @@ const competitionStatsOptions = computed(() => {
           </li>
         </ul>
         <template v-if="statView === 0">
-          <GameLeaders :boxscore="row.boxscore" :statsOptions="competitionStatsOptions" />
+          <div class="row gap-2">
+            <template v-for="(boxscore, idx) in teamsBoxscores" :key="idx">
+              <div class="col">
+                <GameLeaders :boxscore="boxscore" />
+              </div>
+              <template v-if="idx === 0"
+                ><div class="col col-auto px-0 border-start"></div
+              ></template>
+            </template>
+          </div>
         </template>
         <template v-if="statView === 1">
           <GameBoxcore :boxscore="row.boxscore" :teams="competitionTeams" />
