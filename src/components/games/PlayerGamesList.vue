@@ -36,20 +36,14 @@ const fields = computed(() => [
   { key: 'datetime', label: 'Date' },
   { key: 'opp', label: 'Opp' },
   { key: 'isWin', label: '', tdClass: 'text-center' },
-  ...statsKeys.reduce((fields: TableField[], opt): TableField[] => {
-    if (row?.trackedStats.includes(opt.value)) {
-      return [
-        ...fields,
-        {
-          key: opt.value,
-          label: opt.text,
-          thClass: 'text-end',
-          tdClass: 'text-end'
-        }
-      ]
-    }
-    return fields
-  }, [])
+  ...statsKeys
+  .filter((opt: Option) => row?.trackedStats.includes(opt.value))
+  .map((opt: Option): TableField => ({
+    key: opt.value,
+    label: opt.text,
+    thClass: 'text-end',
+    tdClass: 'text-end'
+  } as TableField))
 ])
 const computedGames = computed<TableItem[]>(() => {
   return props.items.map((game: Game) => {
@@ -57,7 +51,7 @@ const computedGames = computed<TableItem[]>(() => {
     const team = getPlayerCompetitionTeam(playerId) as CompetitionTeam
     const opp = computedGame.scores.find((score: ScoresComputed) => score.id !== team?.id)
     const result: PlayerGameComputed = {
-      datetime: game.datetime,
+      datetime: computedGame.date.short,
       isFinished: game.isFinished,
       isWin: !opp?.winner,
       opp: opp?.id,

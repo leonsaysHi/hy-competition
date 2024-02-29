@@ -68,8 +68,9 @@ const competitionStatsOptions = computed(() => {
             </template>
           </template>
           <template v-else>
-            <div class="date">
-              {{ gameComputed.row.datetime }}
+            <div class="d-flex flex-column justify-content-center align-items-center ">
+              {{ gameComputed.date?.long }}
+              <span class="text-body-secondary">{{ gameComputed.date.time }}</span>
             </div>
           </template>
         </div>

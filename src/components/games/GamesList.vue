@@ -2,19 +2,33 @@
   <ul class="list-group list-group-flush border-top border-bottom">
     <template v-for="gameComputed in computedGames" :key="gameComputed.id">
       <RouterLink class="list-group-item list-group-item-action game" :to="gameComputed.to">
+        <template v-if="gameComputed.isFinished">
+          <div class="date d-flex flex-column align-items-center justify-content-center lh-1">
+              <span>{{ gameComputed.date?.short }}</span>
+          </div>
+        </template>
         <template v-for="(team, idx) in gameComputed.scores" :key="idx">
           <div class="team">
             <div class="name">
               <strong class="jersey-team">{{ team.title }}</strong>
               <TeamLogo :team-id="team.id" :size="54" />
             </div>
-            <div
-              class="score border border-3 rounded-2"
-              :class="[team.winner ? 'border-win' : 'border-loss']"
-            >
-              <strong>{{ team.finalScore }}</strong>
-            </div>
+            <template v-if="gameComputed.isFinished">
+              <div
+                class="score border border-3 rounded-2"
+                :class="[team.winner ? 'border-win' : 'border-loss']"
+              >
+                <strong>{{ team.finalScore }}</strong>
+              </div>
+            </template>
           </div>
+
+          <template v-if="idx===0 && !gameComputed.isFinished">
+            <div class="date d-flex flex-column align-items-center justify-content-center lh-1">
+                <span>{{ gameComputed.date?.short }}</span>
+                <small class="text-body-secondary">{{ gameComputed.date?.time }}</small>
+            </div>
+          </template>
         </template>
       </RouterLink>
     </template>

@@ -41,7 +41,6 @@ const statsFields: TableField[] = [
 const statsItems = computed<TableItem[]>(() => {
   return [
     {
-      pos: '?',
       ...(getTeamStatsFromGames(teamId, teamGames.value) as unknown as TableItem)
     }
   ]

@@ -52,15 +52,15 @@ const selectedGroup = computed<CompetitionGroupComputed>(
 )
 
 const gamesViewOptions: Option[] = [
-  { text: 'Upcoming', value: 'next' },
-  { text: 'Lasts', value: 'prev' }
+  { text: 'Upcoming', value: 'prev' },
+  { text: 'Lasts', value: 'next' }
 ]
 const currentGamesView = ref<'prev' | 'next'>('prev')
 const groupGames = computed<Game[]>(() => {
   return selectedGroup.value.games
     .map((gameId: GameId): Game => games.value?.find((game: Game) => game.id === gameId) as Game)
     .filter((game: Game) =>
-      currentGamesView.value === 'prev' ? game.isFinished : !game.isFinished
+      currentGamesView.value === 'prev' ? !game.isFinished : game.isFinished
     )
 })
 </script>
