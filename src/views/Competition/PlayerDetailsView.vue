@@ -16,11 +16,8 @@ import type { Option } from '@/types/comp-fields'
 import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
 import type {
-  CompetitionGroupComputed,
-  CompetitionPhaseComputed,
-  CompetitionRanking
+PlayerCompetitionComputed
 } from '@/types/computed'
-import type { StatKey, Stats, PlayerRankingStats } from '@/types/stats'
 const route = useRoute()
 const { competitionId, playerId } = route.params
 
@@ -28,19 +25,18 @@ const { getPlayerName } = useLibs()
 const { playerRankingKeys } = useOptionsLib()
 const {
   isReady: isCompetitionReady,
-  getPlayerCompetitionTeam,
+  getCompetitionTeam,
+  getCompetitionPlayer,
   row: competition,
   games,
   competitionClass
 } = useCompetition(competitionId)
 
+const teamId = computed<TeamId>(() => competitionComputed.value.teamId as TeamId)
 const competitionTeam = computed<CompetitionTeam | undefined>(() =>
-  getPlayerCompetitionTeam(playerId)
+  getCompetitionTeam(teamId.value)
 )
-const teamId = computed<TeamId | undefined>(() => competitionTeam.value?.id)
-const competitionPlayer = computed(() =>
-  competitionTeam.value?.players.find((player: CompetitionPlayer) => player.id === playerId)
-)
+const competitionPlayer = computed<CompetitionPlayer>(() => getCompetitionPlayer(playerId) as CompetitionPlayer)
 const playerGames = computed<Game[]>(() => {
   return Array.isArray(games.value) && teamId.value
     ? games.value.filter((game: Game) => {
@@ -58,43 +54,12 @@ const statsFields = computed<TableField[]>(() =>
     label: opt.text
   }))
 )
-const statsItems = computed<TableItem[]>(() => {
-  const emptyRank: PlayerRankingStats = trackedPlayerRankingKeys.value.reduce(
-    (acc: Stats, opt: Option) => ({ ...acc, [opt.value]: 0 }),
-    {} as Stats
-  )
-  // accumulate phases rankings:
-  const totalRanks: PlayerRankingStats = Array.isArray(competitionClass.value?.computedPhases)
-    ? competitionClass.value.computedPhases.reduce(
-        (totalRanks: PlayerRankingStats, phase: CompetitionPhaseComputed): PlayerRankingStats => {
-          if (Array.isArray(phase.groups)) {
-            const group = phase.groups.find((group: CompetitionGroupComputed) => {
-              return (
-                Array.isArray(group?.ranking) &&
-                group.ranking.findIndex((rank: CompetitionRanking) => rank.id === playerId) > -1
-              )
-            })
-            if (Array.isArray(group?.ranking)) {
-              const stats: CompetitionRanking | undefined = group?.ranking.find(
-                (rank: CompetitionRanking) => rank.id === playerId
-              )
-              if (stats) {
-                playerRankingKeys.forEach((opt: Option) => {
-                  const key = opt.value as StatKey
-                  if (key in stats) {
-                    totalRanks[key] = (totalRanks[key] || 0) + stats[key]
-                  }
-                })
-                totalRanks.gp += stats.gp
-              }
-            }
-          }
-          return totalRanks
-        },
-        emptyRank
-      )
-    : emptyRank
-  return [totalRanks] as unknown as TableItem
+const competitionComputed = computed<PlayerCompetitionComputed>(() => {
+  return competitionClass.value?.competitionRankings
+    .find((rank:PlayerCompetitionComputed) => rank.id === playerId) as PlayerCompetitionComputed
+})
+const statsItem = computed<TableItem[]>(() => {
+  return [ competitionComputed.value as unknown as TableItem ]
 })
 </script>
 <template>
@@ -105,13 +70,13 @@ const statsItems = computed<TableItem[]>(() => {
     <template v-else>
       <div class="mt-4 pb-3 d-flex gap-3">
         <div>
-          <TeamLogo :team-id="competitionTeam?.id" :size="150" />
+          <TeamLogo :team-id="competitionComputed.teamId" :size="150" />
         </div>
         <div>
-          <div class="display-1 text-body-secondary lh-1">
+          <div class="display-1 text-body-secondary lh-1 jersey-number">
             #<strong>{{ competitionPlayer?.number }}</strong>
           </div>
-          <h1 class="display-6 fw-bold">{{ getPlayerName(playerId) }}</h1>
+          <h1 class="display-6 fw-bold jersey-name">{{ getPlayerName(playerId) }}</h1>
         </div>
         <div class="ms-auto align-self-end">
           <div class="d-flex flex-column align-items-center gap-2">
@@ -119,7 +84,7 @@ const statsItems = computed<TableItem[]>(() => {
           </div>
         </div>
       </div>
-      <TableComp :fields="statsFields" :items="statsItems"> </TableComp>
+      <TableComp :fields="statsFields" :items="statsItem"> </TableComp>
       <hr />
       <PlayerGamesList :items="playerGames" />
     </template>

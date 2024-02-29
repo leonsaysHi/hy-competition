@@ -1,17 +1,22 @@
 import type { Competition, Phase } from '@/types/competitions'
 import type { Game, GameId } from '@/types/games'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
+import type { Option } from '@/types/comp-fields'
 import { compareAsc, isAfter, isBefore } from 'date-fns'
 import type {
   CompetitionPhaseComputed,
   CompetitionStanding,
   CompetitionGroupComputed,
   CompetitionRanking,
-  CompetitionComputed
+  CompetitionComputed,
+  PlayerCompetitionComputed
 } from '@/types/computed'
-import type { AwardItem, TeamStats, PlayerRankingStats } from '@/types/stats'
+import type { AwardItem, TeamStats, PlayerRankingStats, Stats, StatKey } from '@/types/stats'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import { add } from '@/utils/maths'
+import useOptionsLib from '@/composable/useOptionsLib'
+
+const { statsKeys } = useOptionsLib() // !gp !awards
 
 export const getTeamStatsFromGames = (teamId: TeamId, games: Game[] = []): TeamStats => {
   games.sort((a: Game, b: Game) => compareAsc(a.datetime, b.datetime))
@@ -55,44 +60,35 @@ const getTeamPhaseStanding = (teamId: TeamId, games: Game[]): CompetitionStandin
   }
   return result
 }
-export const getPlayerStatsFromGames = (playerId: PlayerId, games: Game[]): PlayerRankingStats => {
-  return games.reduce(
-    (ranking: PlayerRankingStats, game: Game) => {
-      const boxscore = game.boxscore[playerId]
-      return {
-        gp: ranking.gp + 1,
-        awards: [
-          ...ranking.awards,
-          ...(game.awards?.filter((award: AwardItem) => award.id === playerId) || [])
-        ],
-        pts: ranking.pts + boxscore.pts,
-        reb: ranking.reb + boxscore.reb,
-        ast: ranking.ast + boxscore.ast,
-        stl: ranking.stl + boxscore.stl,
-        blk: ranking.blk + boxscore.blk,
-        to: ranking.pts + boxscore.pts,
-        pf: ranking.pf + boxscore.pf,
-        m3pts: ranking.m3pts + boxscore.m3pts
-      }
-    },
-    { gp: 0, awards: [], pts: 0, reb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0, m3pts: 0 }
-  )
+export const getPlayerStatsFromGames = (playerId: PlayerId, games: Game[]): Stats => {
+  return games
+    .filter((game: Game) => game.isFinished && game.boxscore[playerId] && ~game.boxscore[playerId].dnp)
+    .reduce((ranking: Stats, game: Game) => {
+        const { dnp, ...stats } = game.boxscore[playerId]
+        statsKeys
+          .map((opt: Option) => opt.value as StatKey)
+          .forEach((key: StatKey) => {
+            ranking[key] = (ranking[key] || 0) + (stats[key] || 0)
+          })
+        return ranking
+      },
+      {} as Stats
+    )
 }
-const getPlayerPhaseRanking = (playerId: PlayerId, games: Game[]): PlayerRankingStats => {
-  const { gp, awards, pts, reb, ast, stl, blk, to, pf, m3pts }: PlayerRankingStats =
-    getPlayerStatsFromGames(playerId, games)
+const getPlayerPhaseRankingStats = (playerId: PlayerId, games: Game[]): PlayerRankingStats => {
+  const playedgames = games
+    .filter((game: Game) => game.isFinished && game.boxscore[playerId] && ~game.boxscore[playerId].dnp)
+  const playerStats: Stats = getPlayerStatsFromGames(playerId, playedgames)
+  const playerAwards: AwardItem[] = playedgames.reduce((awards: AwardItem[], game: Game, ) => {
+    return [ ...awards,
+      ...game.awards.filter((row: AwardItem) => row.id === playerId)
+    ]
+  }, [])
   return {
     // PlayerRankingStats
-    gp,
-    awards,
-    pts,
-    reb,
-    ast,
-    stl,
-    blk,
-    to,
-    pf,
-    m3pts
+    gp: playedgames.length,
+    awards: playerAwards,
+    ...playerStats
   }
 }
 
@@ -173,7 +169,7 @@ export default class CompetitionClass {
                 return {
                   teamId: team.id,
                   ...player,
-                  ...getPlayerPhaseRanking(playerId, playerGames)
+                  ...getPlayerPhaseRankingStats(playerId, playerGames)
                 }
               }
             )
@@ -195,5 +191,30 @@ export default class CompetitionClass {
       }
     })
     return phases
+  }
+  get competitionRankings(): PlayerCompetitionComputed[]  {
+    const trackedPlayerRankingKeys: StatKey[] = statsKeys
+      .filter((opt: Option) => this.row.trackedStats.includes(opt.value as StatKey))
+      .map((opt: Option) => opt.value as StatKey)
+    return this.computedPhases.reduce((rankingList:PlayerCompetitionComputed[], phase:CompetitionPhaseComputed) => {
+      phase.groups.forEach((group: CompetitionGroupComputed) => {
+        group.ranking.forEach((rank:CompetitionRanking) => {
+          const idx = rankingList.findIndex((row:PlayerCompetitionComputed) => row.id === rank.id)
+          if (idx === -1) {
+            rankingList.push({ ...rank })
+          } else {
+            trackedPlayerRankingKeys.forEach((key: StatKey) => {
+              rankingList[idx][key] = (rankingList[idx][key] || 0) + (rank[key] || 0)
+            })
+            rankingList[idx].gp = (rankingList[idx].gp || 0) + (rank.gp || 0)
+            rankingList[idx].awards = [
+              ...(Array.isArray(rankingList[idx].awards) ? rankingList[idx].awards : []) as AwardItem[],
+              ...(Array.isArray(rank.awards) ? rank.awards : []) as AwardItem[]
+            ]
+          }
+        })
+      })
+      return rankingList
+    }, [])
   }
 }

@@ -58,7 +58,7 @@ const statsItems = computed<TableItem[]>(() => {
           <ImageComp :src="competitionTeam?.sponsor" :width="100" />
         </div>
         <TeamLogo :team-id="teamId" :size="150" />
-        <div class="display-3 fw-bold">{{ getTeamName(teamId) }}</div>
+        <div class="display-3 fw-bold jersey-team">{{ getTeamName(teamId) }}</div>
       </div>
       <TableComp :fields="statsFields" :items="statsItems">
         <template #hist="{ value }">

@@ -45,8 +45,8 @@ const competitionStatsOptions = computed(() => {
         <div
           class="flex-grow-1 d-flex flex-column-reverse justify-content-start align-items-center gap-2"
         >
-          <strong class="h4 d-none d-md-block">{{ gameComputed.scores[0].title }}</strong>
-          <strong class="h5 d-md-none">{{ gameComputed.scores[0].title }}</strong>
+          <strong class="h4 d-none d-md-block jersey-team">{{ gameComputed.scores[0].title }}</strong>
+          <strong class="h5 d-md-none jersey-team">{{ gameComputed.scores[0].title }}</strong>
           <TeamLogo :team-id="gameComputed.scores[0].id" :size="100" class="d-none d-md-block" />
           <TeamLogo :team-id="gameComputed.scores[0].id" :size="60" class="d-md-none" />
         </div>
@@ -76,8 +76,8 @@ const competitionStatsOptions = computed(() => {
         <div
           class="flex-grow-1 d-flex flex-column-reverse justify-content-start align-items-center gap-2"
         >
-          <strong class="h4 d-none d-md-block">{{ gameComputed.scores[1].title }}</strong>
-          <strong class="h5 d-md-none">{{ gameComputed.scores[1].title }}</strong>
+          <strong class="h4 d-none d-md-block jersey-team">{{ gameComputed.scores[1].title }}</strong>
+          <strong class="h5 d-md-none jersey-team">{{ gameComputed.scores[1].title }}</strong>
           <TeamLogo :team-id="gameComputed.scores[1].id" :size="100" class="d-none d-md-block" />
           <TeamLogo :team-id="gameComputed.scores[1].id" :size="60" class="d-md-none" />
         </div>

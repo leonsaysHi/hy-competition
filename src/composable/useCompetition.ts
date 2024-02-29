@@ -91,9 +91,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     return row.value?.teams?.find((team: CompetitionTeam) => team.id === teamId)
   }
   const getCompetitionPlayer = (playerId: PlayerId): CompetitionPlayer | undefined => {
-    const team: CompetitionTeam | undefined = row.value?.teams?.find((team: CompetitionTeam) => {
-      team.players.findIndex((player: CompetitionPlayer) => player.id === playerId) > -1
-    })
+    const team: CompetitionTeam | undefined = row.value?.teams?.find((team: CompetitionTeam) => team.players.findIndex((player: CompetitionPlayer) => player.id === playerId) > -1)
     return team?.players.find((player: CompetitionPlayer) => player.id === playerId)
   }
   const getPlayerCompetitionTeam = (playerId: PlayerId): CompetitionTeam | undefined =>

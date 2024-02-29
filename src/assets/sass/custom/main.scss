@@ -1,3 +1,12 @@
 .cursor-pointer {
   cursor: pointer;
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bungee&display=swap');
+.jersey { 
+  &-team, &-number, &-name {
+    font-family: "Bebas Neue", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+}

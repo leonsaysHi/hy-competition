@@ -60,9 +60,9 @@ const items = computed(() => props.value)
         class="link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
         :to="{ name: 'competition-player', params: { playerId: value } }"
       >
-        <strong>{{ getPlayerName(value) }}</strong>
+        <strong class="jersey-name">{{ getPlayerName(value) }}</strong>
       </RouterLink>
     </template>
-    <template #teamId="{ value }">{{ getTeamName(value) }}</template>
+    <template #teamId="{ value }"><span class="jersey-team">{{ getTeamName(value) }}</span></template>
   </TableComp>
 </template>

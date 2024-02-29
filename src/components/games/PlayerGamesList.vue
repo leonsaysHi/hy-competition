@@ -75,7 +75,7 @@ const computedGames = computed<TableItem[]>(() => {
     </template>
     <template #opp="{ value }">
       <div class="d-flex gap-3">
-        <strong>{{ getTeamName(value) }}</strong>
+        <strong class="jersey-team">{{ getTeamName(value) }}</strong>
         <TeamLogo :team-id="value" :size="25" />
       </div>
     </template>

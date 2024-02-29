@@ -35,6 +35,7 @@ export default function usePlayersLib() {
   const playerRankingKeys: { value: PlayerRankingKey; text: string; long: string }[] = [
     { text: 'GP', long: 'Game played', value: 'gp' },
     ...statsKeys
+    // awards[]
   ]
   const teamStandingKeys: { value: TeamStandingKey; text: string; long: string }[] = [
     { text: 'GP', long: 'Game played', value: 'gp' },
