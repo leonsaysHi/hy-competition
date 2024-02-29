@@ -41,7 +41,7 @@ const items = computed(() => props.value)
         :to="{ name: 'competition-team', params: { teamId: value } }"
       >
         <TeamLogo :team-id="value" :size="40" />
-        <strong class="jersey-team">{{ getTeamName(value) }}</strong>
+        <strong class="jersey-team fs-5">{{ getTeamName(value) }}</strong>
       </RouterLink>
     </template>
     <template #hist="{ value }"

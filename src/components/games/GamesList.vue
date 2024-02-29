@@ -10,7 +10,7 @@
         <template v-for="(team, idx) in gameComputed.scores" :key="idx">
           <div class="team">
             <div class="name">
-              <strong class="jersey-team">{{ team.title }}</strong>
+              <strong class="jersey-team fs-5">{{ team.title }}</strong>
               <TeamLogo :team-id="team.id" :size="54" />
             </div>
             <template v-if="gameComputed.isFinished">
