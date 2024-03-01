@@ -206,7 +206,7 @@ export default class CompetitionClass {
         })
         standing.forEach((row: CompetitionStanding, idx: number) => {
           if (type === 'groups') {
-            standing[idx].pos = idx + 1
+            standing[idx].pos = standing[idx].gp ? idx + 1 : standing.length
           } else {
             standing[idx].playoff = groupTeams.length / (row.wins + 1)
           }

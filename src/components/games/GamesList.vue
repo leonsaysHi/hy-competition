@@ -1,5 +1,5 @@
 <template>
-  <ul class="list-group list-group-flush">
+  <ul class="list-group list-group-flush border-top border-bottom">
     <template v-if="!computedGames.length">
       <div class="list-group-item text-center text-body-secondary">No games.</div>
     </template>

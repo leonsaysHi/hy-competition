@@ -18,3 +18,10 @@
   --#{$prefix}card-spacer-y: #{$card-spacer-y * 0.5};
   --#{$prefix}card-spacer-x: #{$card-spacer-x * 0.5};
 }
+
+.table-xs {
+  // stylelint-disable-next-line selector-max-universal
+  > :not(caption) > * > * {
+    padding: $table-cell-padding-y-sm * 0.5 $table-cell-padding-x-sm * 0.5;
+  }
+}

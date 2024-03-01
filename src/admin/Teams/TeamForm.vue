@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 import type { Team } from '@/types/teams'
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import InputComp from '@/components/InputComp.vue'
 import useTeamsLib from '@/composable/useTeamsLib'
 import FieldComp from '@/components/FieldComp.vue'
 import ImageUpload from '@/components/ImageUpload.vue'
+import { getAbbrev } from '@/utils/strings'
 interface IProps {
   row?: Team | undefined | null
 }
@@ -17,6 +18,7 @@ const props = withDefaults(defineProps<IProps>(), {
 type TeamForm = {
   id?: string | undefined
   title?: string
+  short?: string
   logoUpload?: File | undefined
   logo?: string
   color?: string
@@ -24,6 +26,7 @@ type TeamForm = {
 const getDefaultData = (): TeamForm => ({
   id: undefined,
   title: '',
+  short: '',
   logoUpload: undefined,
   logo: '',
   color: ''
@@ -57,11 +60,18 @@ const handleSubmit = (ev: Event) => {
   ) {
     errors.value.title = 'This team already exists'
   } else {
+    if (!data.value.short?.length) {
+      data.value.short = getAbbrev(data.value.title)
+    }
+
     delete errors.value.title
     emit('submit', data.value as Team)
     data.value = getDefaultData()
   }
 }
+const shortHelper = computed(() => {
+  return !data.value.title ? undefined : `Ex: ${getAbbrev(data.value.title)}`
+})
 </script>
 <template>
   <form @submit="handleSubmit">
@@ -72,6 +82,14 @@ const handleSubmit = (ev: Event) => {
         :invalidFeedback="errors.title"
         :isInvalid="Boolean(errors.title)"
         required
+      />
+    </FieldComp>
+    <FieldComp label="Short name" :helper="shortHelper">
+      <InputComp
+        v-model="data.short"
+        placeholder="2 or 3 letters max"
+        :invalidFeedback="errors.short"
+        :isInvalid="Boolean(errors.short)"
       />
     </FieldComp>
     <FieldComp label="Logo">

@@ -6,8 +6,11 @@
           <ImageComp class="logo" :src="url" :width="size" :title="title" square />
         </template>
         <template v-else>
-          <div class="flex-grow-1 d-flex align-items-center justify-content-center">
-            <span class="placeholder text-muted text-uppercase">{{ placeholder }}</span>
+          <div
+            class="flex-grow-1 d-flex align-items-center justify-content-center pt-1 fs-3 jersey-team text-black"
+            :style="`background-color:${team.color}`"
+          >
+            <strong class="text-muted text-uppercase">{{ short }}</strong>
           </div>
         </template>
       </div>
@@ -37,9 +40,7 @@ const styleObj = computed(() => ({
 const team = computed(() => getTeam(props.teamId))
 const url = computed(() => team.value?.logo)
 const title = computed(() => team.value?.title)
-const placeholder = computed(() =>
-  team.value?.title ? team.value?.title.toLocaleUpperCase().split(' ').slice(0, 2).join('') : '-'
-)
+const short = computed(() => team.value?.short)
 </script>
 <style lang="scss" scoped>
 .logo {
@@ -47,8 +48,5 @@ const placeholder = computed(() =>
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-}
-.placeholder {
-  font-size: 1rem;
 }
 </style>

@@ -27,12 +27,21 @@ const fields = [
   { label: 'PTS-', key: 'ptsneg', sortable: true, thClass: 'text-end', tdClass: 'text-end' },
   { label: 'L5', key: 'hist', thClass: 'text-center', tdClass: 'text-end' }
 ]
-const items = computed(() => props.value)
+const items = computed(() => {
+  const items = props.value.slice()
+  // items.sort((a: CompetitionStanding, b: CompetitionStanding) => a.pos - b.pos)
+  return items
+})
 </script>
 <template>
   <TableComp :fields="fields" :items="items" sorted-key="pos" sorted-direction="asc" small>
-    <template #pos="{ value }">
-      <span :class="`fs-${2 + Math.min(value, 3)}`">{{ value }}</span>
+    <template #pos="{ value, item }">
+      <template v-if="Number(item.pos) < items.length">
+        <span :class="`fs-${2 + Math.min(value, 3)}`">{{ value }}</span>
+      </template>
+      <template v-else>
+        <span class="fs-5 fw-normal">-</span>
+      </template>
     </template>
     <template #id="{ value }">
       <RouterLink

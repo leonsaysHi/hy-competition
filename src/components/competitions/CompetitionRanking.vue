@@ -43,7 +43,9 @@ const fields = computed(() => [
     return fields
   }, [])
 ])
-const items = computed(() => props.value)
+const items = computed(() =>
+  Array.isArray(props.value) ? props.value.filter((row: CompetitionRanking) => row.gp > 0) : []
+)
 </script>
 <template>
   <TableComp
@@ -53,6 +55,7 @@ const items = computed(() => props.value)
     sorted-direction="desc"
     :per-page="5"
     small
+    show-empty
   >
     <template #pos="{ index }">{{ index + 1 }}</template>
     <template #id="{ value }">

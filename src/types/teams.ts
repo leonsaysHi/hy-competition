@@ -7,6 +7,7 @@ export type TeamRoster = PlayerId[]
 export interface TeamDoc {
   id?: TeamId
   title: string
+  short: string
   logo: string
   color: string
 }

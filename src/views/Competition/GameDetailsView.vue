@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
 import GameBoxcore from '@/components/games/GameBoxcore.vue'
 import GameLeaders from '@/components/games/GameLeaders.vue'
+import GamePeriods from '@/components/games/GamePeriods.vue'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import GameComputed from '@/models/GameComputed'
@@ -49,30 +50,34 @@ const teamsBoxscores = computed<GameBoxScore[]>(() => {
       <SpinnerComp />
     </template>
     <template v-else>
-      <div class="d-flex gap-2">
+      <div class="d-flex gap-2 align-items-start">
         <div
           class="flex-grow-1 d-flex flex-column-reverse justify-content-start align-items-center gap-2"
         >
-          <strong class="fs-3 jersey-team">{{ gameComputed.scores[0].title }}</strong>
+          <strong class="fs-3 jersey-team text-center lh-1">{{
+            gameComputed.scores[0].title
+          }}</strong>
           <TeamLogo :team-id="gameComputed.scores[0].id" :size="100" class="d-none d-md-block" />
           <TeamLogo :team-id="gameComputed.scores[0].id" :size="60" class="d-md-none" />
         </div>
-        <div class="d-flex align-items-center justify-content-center gap-2">
+        <div>
           <template v-if="gameComputed.isFinished">
-            <template v-for="(team, idx) in gameComputed.scores" :key="idx">
-              <div
-                class="p-2 border border-5 rounded-2 display-3 d-none d-md-block"
-                :class="[team.winner ? 'border-win' : 'border-loss']"
-              >
-                <strong class="jersey-score">{{ team.finalScore }}</strong>
+              <div class="d-flex align-items-center justify-content-center gap-2">
+                <template v-for="(team, idx) in gameComputed.scores" :key="idx">
+                  <div
+                    class="py-2 px-3 border border-5 rounded-2 display-3 d-none d-md-block"
+                    :class="[team.winner ? 'border-win' : 'border-loss']"
+                  >
+                    <strong class="jersey-score">{{ team.finalScore }}</strong>
+                  </div>
+                  <div
+                    class="py-2 px-3 border border-5 rounded-2 display-6 d-md-none"
+                    :class="[team.winner ? 'border-win' : 'border-loss']"
+                  >
+                    <strong class="jersey-score">{{ team.finalScore }}</strong>
+                  </div>
+                </template>
               </div>
-              <div
-                class="p-2 border border-5 rounded-2 display-6 d-md-none"
-                :class="[team.winner ? 'border-win' : 'border-loss']"
-              >
-                <strong class="jersey-score">{{ team.finalScore }}</strong>
-              </div>
-            </template>
           </template>
           <template v-else>
             <div class="d-flex flex-column justify-content-center align-items-center">
@@ -84,11 +89,18 @@ const teamsBoxscores = computed<GameBoxScore[]>(() => {
         <div
           class="flex-grow-1 d-flex flex-column-reverse justify-content-start align-items-center gap-2"
         >
-          <strong class="jersey-team fs-3">{{ gameComputed.scores[1].title }}</strong>
+          <strong class="jersey-team fs-3 text-center lh-1">{{
+            gameComputed.scores[1].title
+          }}</strong>
           <TeamLogo :team-id="gameComputed.scores[1].id" :size="100" class="d-none d-md-block" />
           <TeamLogo :team-id="gameComputed.scores[1].id" :size="60" class="d-md-none" />
         </div>
       </div>
+      <template v-if="gameComputed.isFinished">
+          <div class="d-flex justify-content-center">
+            <GamePeriods :scores="gameComputed.scores" />
+          </div>
+      </template>
       <template v-if="gameComputed.isFinished">
         <ul class="mt-5 mb-3 nav nav-tabs">
           <li class="nav-item">
