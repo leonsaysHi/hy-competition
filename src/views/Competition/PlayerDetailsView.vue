@@ -27,7 +27,7 @@ const {
   getPlayerCompetitionTeam,
   row: competition,
   games,
-  competitionRanking
+  competitionRankings
 } = useCompetition(competitionId)
 
 const competitionTeam = computed<CompetitionTeam | undefined>(() =>
@@ -54,7 +54,7 @@ const statsFields = computed<TableField[]>(() =>
   }))
 )
 const competitionComputed = computed<CompetitionRanking | undefined>(() => {
-  return competitionRanking.value?.find((rank: CompetitionRanking) => rank.id === playerId)
+  return competitionRankings.value?.find((rank: CompetitionRanking) => rank.id === playerId)
 })
 const statsItem = computed<TableItem[]>(() => {
   return [competitionComputed.value as unknown as TableItem]

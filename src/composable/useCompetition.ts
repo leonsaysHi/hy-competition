@@ -16,7 +16,11 @@ import {
   competitionPlayerConverter
 } from '@/utils/firestore-converters'
 import CompetitionClass from '@/models/CompetitionComputed'
-import type { CompetitionRanking, CompetitionPhaseComputed } from '@/models/CompetitionComputed'
+import type {
+  CompetitionPhaseComputed,
+  CompetitionStandingComputed,
+  CompetitionRankingComputed
+} from '@/models/CompetitionComputed'
 
 export default function useCompetition(competitionId: CompetitionId | undefined) {
   const { isReady: isLibsReady, getCompetition } = useLibs()
@@ -116,10 +120,15 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
       isReady.value && row.value ? new CompetitionClass(row.value) : undefined
     return competitionClass ? competitionClass.computedPhases : undefined
   })
-  const competitionRanking = computed<CompetitionRanking[] | undefined>(() => {
+  const competitionRankings = computed<CompetitionRankingComputed[] | undefined>(() => {
     const competitionClass =
       isReady.value && row.value ? new CompetitionClass(row.value) : undefined
-    return competitionClass ? competitionClass.competitionRanking : undefined
+    return competitionClass?.competitionRankings
+  })
+  const competitionStandings = computed<CompetitionStandingComputed[] | undefined>(() => {
+    const competitionClass =
+      isReady.value && row.value ? new CompetitionClass(row.value) : undefined
+    return competitionClass?.competitionStandings
   })
 
   return {
@@ -128,7 +137,8 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     games,
     teams,
     computedPhases,
-    competitionRanking,
+    competitionRankings,
+    competitionStandings,
     allTeams,
     allPlayers,
     getGame,

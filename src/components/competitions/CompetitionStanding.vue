@@ -11,7 +11,6 @@ interface IProps {
 }
 
 const props = withDefaults(defineProps<IProps>(), {})
-
 const { getTeamName } = useLibs()
 const fields = [
   {

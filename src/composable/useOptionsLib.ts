@@ -1,6 +1,6 @@
 import type { CompetitionCategorie, CompetitionSport, PhaseType } from '@/types/competitions'
 import type { Gender } from '@/types/players'
-import type { StatKey, TeamStandingKey, PlayerRankingKey } from '@/types/stats'
+import type { PlayerStatKey, TeamStatKey, PlayerRankingKey } from '@/types/stats'
 
 export default function usePlayersLib() {
   const competitionSports: { value: CompetitionSport; text: string }[] = [
@@ -22,7 +22,7 @@ export default function usePlayersLib() {
     { text: 'Groups', value: 'groups' },
     { text: 'Playoffs', value: 'playoffs' }
   ]
-  const statsKeys: { value: StatKey; text: string; long: string }[] = [
+  const statsKeys: { value: PlayerStatKey; text: string; long: string }[] = [
     { text: 'Pts', long: 'Points', value: 'pts' },
     { text: 'Reb', long: 'Rebounds', value: 'reb' },
     { text: 'Ast', long: 'Assists', value: 'ast' },
@@ -37,12 +37,11 @@ export default function usePlayersLib() {
     ...statsKeys
     // awards[]
   ]
-  const teamStandingKeys: { value: TeamStandingKey; text: string; long: string }[] = [
+  const teamStandingKeys: { value: TeamStatKey; text: string; long: string }[] = [
     { text: 'GP', long: 'Game played', value: 'gp' },
     { text: 'W', long: 'Wins', value: 'wins' },
     { text: 'Pts+', long: 'Points in favor', value: 'ptspos' },
-    { text: 'Pts-', long: 'Points against', value: 'ptsneg' },
-    { text: 'L5', long: 'Lasts 5 games', value: 'hist' }
+    { text: 'Pts-', long: 'Points against', value: 'ptsneg' }
   ]
 
   return {

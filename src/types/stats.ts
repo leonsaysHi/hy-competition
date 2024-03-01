@@ -7,7 +7,7 @@ export interface AwardItem {
   value: Award
 }
 
-export interface Stats {
+export interface PlayerStats {
   pts: number
   reb: number
   ast: number
@@ -17,9 +17,9 @@ export interface Stats {
   pf: number
   m3pts: number
 }
-export type StatKey = keyof Stats
+export type PlayerStatKey = keyof PlayerStats
 
-export interface PlayerRankingStats extends Stats {
+export interface PlayerRankingStats extends PlayerStats {
   gp: number
   awards: AwardItem[]
 }
@@ -31,6 +31,8 @@ export interface TeamStats {
   wins: number
   ptspos: number
   ptsneg: number
+}
+export type TeamStatKey = keyof TeamStats
+export interface TeamStandingStats extends TeamStats {
   hist: (1 | -1 | 0)[]
 }
-export type TeamStandingKey = keyof TeamStats

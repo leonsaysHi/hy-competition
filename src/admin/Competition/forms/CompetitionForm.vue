@@ -15,7 +15,7 @@ import SelectComp from '@/components/SelectComp.vue'
 import CheckComp from '@/components/CheckComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
 import CheckGroupComp from '@/components/CheckGroupComp.vue'
-import type { AwardItem, StatKey } from '@/types/stats'
+import type { AwardItem, PlayerStatKey } from '@/types/stats'
 import AwardsInput from '../components/AwardsInput.vue'
 import useCompetition from '@/composable/useCompetition'
 import useLibs from '@/composable/useLibs'
@@ -36,7 +36,7 @@ type FormData = {
   category?: CompetitionCategorie
   gender?: CompetitionGender
   phases: Phase[]
-  trackedStats: StatKey[]
+  trackedStats: PlayerStatKey[]
   awards: AwardItem[]
   isActive?: Boolean
 }

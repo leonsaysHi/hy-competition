@@ -10,7 +10,7 @@ import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import type { PlayerId } from '@/types/players'
 import { useRoute } from 'vue-router'
-import type { StatKey } from '@/types/stats'
+import type { PlayerStatKey } from '@/types/stats'
 import useOptionsLib from '@/composable/useOptionsLib'
 
 const route = useRoute()
@@ -22,7 +22,7 @@ const { statsKeys: statsFieldsAll } = useOptionsLib()
 
 interface IProps {
   modelValue: GameBoxScore
-  trackedStats?: StatKey[]
+  trackedStats?: PlayerStatKey[]
   disabled?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {

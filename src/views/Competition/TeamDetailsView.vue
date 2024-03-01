@@ -9,7 +9,11 @@ import TeamLogo from '@/components/teams/TeamLogo.vue'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import GamesList from '@/components/games/GamesList.vue'
-import { getTeamStatsFromGames } from '@/models/CompetitionComputed'
+import {
+  getTeamStatsFromGames,
+  type CompetitionStanding,
+  type CompetitionStandingComputed
+} from '@/models/CompetitionComputed'
 import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
 import LastGames from '@/components/games/LastGames.vue'
@@ -20,7 +24,16 @@ const { competitionId, teamId } = route.params as { competitionId: string; teamI
 
 const { getTeamName } = useLibs()
 const { teamStandingKeys } = useOptionsLib()
-const { isReady, row, games, teams } = useCompetition(competitionId)
+const { isReady, row, games, teams, competitionStandings } = useCompetition(competitionId)
+
+const competitionComputed = computed<CompetitionStandingComputed | undefined>(() => {
+  return competitionStandings.value?.find(
+    (stand: CompetitionStandingComputed) => stand.id === teamId
+  )
+})
+const statsItem = computed<TableItem[]>(() => {
+  return [competitionComputed.value as unknown as TableItem]
+})
 
 const competitionTeam = computed(() => {
   return teams.value?.find((team: CompetitionTeam) => team.id === teamId)
@@ -36,15 +49,9 @@ const statsFields: TableField[] = [
   ...teamStandingKeys.map((opt: Option) => ({
     key: opt.value,
     label: opt.text
-  }))
+  })),
+  { key: 'hist', label: 'L5' }
 ]
-const statsItems = computed<TableItem[]>(() => {
-  return [
-    {
-      ...(getTeamStatsFromGames(teamId, teamGames.value) as unknown as TableItem)
-    }
-  ]
-})
 </script>
 <template>
   <div>
@@ -59,7 +66,7 @@ const statsItems = computed<TableItem[]>(() => {
         <TeamLogo :team-id="teamId" :size="150" />
         <div class="display-3 fw-bold jersey-team">{{ getTeamName(teamId) }}</div>
       </div>
-      <TableComp :fields="statsFields" :items="statsItems">
+      <TableComp :fields="statsFields" :items="statsItem">
         <template #hist="{ value }">
           <LastGames :value="value" :length="5" />
         </template>

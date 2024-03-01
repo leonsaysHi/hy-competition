@@ -2,7 +2,7 @@
 import useLibs from '@/composable/useLibs'
 import type { Option } from '@/types/comp-fields'
 import { computed } from 'vue'
-import type { StatKey } from '@/types/stats'
+import type { PlayerStatKey } from '@/types/stats'
 import type { GameBoxScore, PlayerBoxScore } from '@/types/games'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import { useRoute } from 'vue-router'
@@ -15,10 +15,10 @@ const { row: competition, getCompetitionPlayer } = useCompetition(competitionId)
 const { statsKeys: statsOptions } = useOptionsLib()
 const { getPlayerName } = useLibs()
 
-const competitionStatsKeys = computed<StatKey[]>(() => {
+const competitionStatsKeys = computed<PlayerStatKey[]>(() => {
   return statsOptions
     .filter((opt: Option) => competition.value?.trackedStats.includes(opt.value))
-    .map((opt: Option) => opt.value as StatKey)
+    .map((opt: Option) => opt.value as PlayerStatKey)
 })
 
 interface IProps {
@@ -30,7 +30,7 @@ const props = withDefaults(defineProps<IProps>(), {})
 interface PlayerBoxScoreItem extends CompetitionPlayer, PlayerBoxScore {
   id: PlayerId
 }
-type StatLeaders = { [key in StatKey]: PlayerBoxScoreItem[] }
+type StatLeaders = { [key in PlayerStatKey]: PlayerBoxScoreItem[] }
 
 const leadersBystats = computed<StatLeaders>(() => {
   const boxScorelist: PlayerBoxScoreItem[] = Object.keys(props.boxscore)
@@ -42,7 +42,7 @@ const leadersBystats = computed<StatLeaders>(() => {
         }) as PlayerBoxScoreItem
     )
     .filter((bs: PlayerBoxScoreItem) => !bs.dnp)
-  return competitionStatsKeys.value.reduce((statsLeader: StatLeaders, key: StatKey) => {
+  return competitionStatsKeys.value.reduce((statsLeader: StatLeaders, key: PlayerStatKey) => {
     const bs = boxScorelist.slice()
     bs.sort((a, b) => {
       const aKey = a[key]
@@ -56,7 +56,7 @@ const leadersBystats = computed<StatLeaders>(() => {
     }
   }, {} as StatLeaders)
 })
-const getStatShort = (key: StatKey): string =>
+const getStatShort = (key: PlayerStatKey): string =>
   statsOptions.find((opt: Option) => opt.value === key)?.text as string
 </script>
 <template>

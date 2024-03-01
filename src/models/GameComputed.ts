@@ -1,7 +1,7 @@
 import useLibs from '@/composable/useLibs'
 import type { CompetitionId } from '@/types/competitions'
 import type { Game, GameBoxScore, GameId } from '@/types/games'
-import type { StatKey } from '@/types/stats'
+import type { PlayerStatKey } from '@/types/stats'
 import type { Team, TeamId } from '@/types/teams'
 import { add } from '@/utils/maths'
 import type { RouteLocationRaw } from 'vue-router'
@@ -15,7 +15,7 @@ export interface ScoresComputed extends Team {
 }
 
 export type StatsLeadersComputed = {
-  [key in StatKey]: []
+  [key in PlayerStatKey]: []
 }
 const { getTeam } = useLibs()
 
