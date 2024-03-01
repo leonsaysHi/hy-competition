@@ -49,6 +49,19 @@
         </tr>
       </template>
     </tbody>
+    <template v-if="footer">
+      <tfoot>
+        <tr class="table-secondary">
+          <template v-for="({ key, tfClass }, fIdx) in fields" :key="fIdx">
+            <td :class="[tfClass, sortedKey === key && 'text-bg-sorted-td']">
+              <slot :name="'footer'+key" v-bind="{ key, footer }" :value="footer[key]">
+                {{ footer[key] }}
+              </slot>
+            </td>
+          </template>
+        </tr>
+      </tfoot>
+    </template>
   </table>
   <div v-if="showEmpty && !items?.length">
     <slot name="empty">
@@ -65,6 +78,7 @@ import { computed, ref } from 'vue'
 interface IProps {
   fields: TableField[]
   items: TableItem[]
+  footer?: TableItem | undefined,
   sortedKey?: string
   sortedDirection?: 'asc' | 'desc'
   perPage?: number
@@ -75,14 +89,13 @@ interface IProps {
   showEmpty?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
+  footer: undefined,
   sortedKey: undefined,
   sortedDirection: 'asc',
   perPage: 0,
   currentPage: 1,
   small: false,
   xSmall: false,
-  thClass: 'bg-alt',
-  tdClass: '',
   isBusy: false,
   showEmpty: true
 })

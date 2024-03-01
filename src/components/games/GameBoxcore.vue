@@ -5,10 +5,11 @@ import TableComp from '@/components/TableComp.vue'
 import useLibs from '@/composable/useLibs'
 import useOptionsLibs from '@/composable/useOptionsLib'
 import { useRoute } from 'vue-router'
-import type { TableField } from '@/types/comp-table'
+import type { TableField, TableItem } from '@/types/comp-table'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import type { CompetitionPlayer } from '@/types/players'
 import type { GameBoxScore } from '@/types/games'
+import type { PlayerStatKey } from '@/types/stats'
 
 interface IProps {
   boxscore: GameBoxScore
@@ -36,7 +37,8 @@ const fields = computed(() => [
           label: opt.text,
           sortable: true,
           thClass: 'text-end',
-          tdClass: 'text-end'
+          tdClass: 'text-end',
+          tfClass: 'text-end fw-bold'
         }
       ]
     }
@@ -55,6 +57,15 @@ const boxScoreItems = computed(() => {
     ...props.boxscore[player.id]
   }))
 })
+const totalsItem = computed<TableItem>(() => ({
+  number: '',
+  id: '',
+  ...statsKeys.reduce((item: TableItem, opt: Option): TableItem => {
+    const key = opt.value as PlayerStatKey
+    item[key] = boxScoreItems.value?.reduce((tot: number, row) => tot + row[key], 0) || 0
+    return item
+  }, {})
+}))
 </script>
 <template>
   <ul class="mb-3 nav nav-underline justify-content-center">
@@ -71,8 +82,16 @@ const boxScoreItems = computed(() => {
       </li>
     </template>
   </ul>
-  <TableComp :fields="fields" :items="boxScoreItems" sorted-key="pts" sorted-direction="desc" small>
+  <TableComp 
+    :fields="fields" 
+    :items="boxScoreItems" 
+    :footer="totalsItem"
+    sorted-key="pts" 
+    sorted-direction="desc" 
+    small
+  >
     <template #number="{ value }">#{{ value }}</template>
     <template #id="{ value }">{{ getPlayerName(value) }}</template>
+    <template #footerid><span class="fw-lighter">Totals</span></template>
   </TableComp>
 </template>

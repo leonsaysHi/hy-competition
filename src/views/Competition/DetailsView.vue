@@ -52,8 +52,8 @@ const selectedGroup = computed<CompetitionGroupComputed>(
 )
 
 const gamesViewOptions: Option[] = [
+  { text: 'Lastest', value: 'next' },
   { text: 'Upcoming', value: 'prev' },
-  { text: 'Lasts', value: 'next' }
 ]
 const currentGamesView = ref<'prev' | 'next'>('prev')
 const groupGames = computed<Game[]>(() => {

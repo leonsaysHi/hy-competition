@@ -4,6 +4,7 @@ export interface TableField {
   sortable?: boolean
   tdClass?: string
   thClass?: string
+  tfClass?: string
 }
 export interface TableItem {
   [key: string]: string | boolean | number | {} | []
