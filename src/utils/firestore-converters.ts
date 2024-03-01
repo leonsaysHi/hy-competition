@@ -4,7 +4,6 @@ import { Timestamp } from 'firebase/firestore'
 import type { DocumentData, QueryDocumentSnapshot, SnapshotOptions } from 'firebase/firestore'
 import { dateToTimeStamp } from '@/utils/dates'
 import type { CompetitionTeamDoc, TeamDoc, TeamId } from '@/types/teams'
-import type { CompetitionComputed } from '@/types/computed'
 import type { Game } from '@/types/games'
 import { add } from './maths'
 
@@ -78,25 +77,6 @@ export const competitionTeamConverter = {
     return {
       id: snapshot.id,
       ...data
-    }
-  }
-}
-
-export const computedConverter = {
-  toFirestore: (row: CompetitionComputed): DocumentData => {
-    const lastUpdate = dateToFireStore(new Date())
-    const payload = {
-      ...row,
-      lastUpdate
-    }
-    return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null))
-  },
-  fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions) => {
-    const data = snapshot.data(options)!
-    return {
-      id: snapshot.id,
-      ...data,
-      lastUpdate: data.lastUpdate ? dateFromFirestore(data.lastUpdate) : new Date()
     }
   }
 }

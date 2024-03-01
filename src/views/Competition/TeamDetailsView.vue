@@ -16,7 +16,7 @@ import LastGames from '@/components/games/LastGames.vue'
 import type { CompetitionTeam } from '@/types/teams'
 
 const route = useRoute()
-const { competitionId, teamId } = route.params
+const { competitionId, teamId } = route.params as { competitionId: string; teamId: string }
 
 const { getTeamName } = useLibs()
 const { teamStandingKeys } = useOptionsLib()

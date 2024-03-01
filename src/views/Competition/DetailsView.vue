@@ -3,24 +3,27 @@ import { useRoute } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import useCompetition from '@/composable/useCompetition'
 import { computed, ref } from 'vue'
-import type { CompetitionGroupComputed, CompetitionPhaseComputed } from '@/types/computed'
+import type {
+  CompetitionGroupComputed,
+  CompetitionPhaseComputed
+} from '@/models/CompetitionComputed'
 import type { Option } from '@/types/comp-fields'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
 import CompetitionStanding from '@/components/competitions/CompetitionStanding.vue'
 import CompetitionRanking from '@/components/competitions/CompetitionRanking.vue'
 import GamesList from '@/components/games/GamesList.vue'
-import type { Game, GameId } from '@/types/games'
+import type { Game } from '@/types/games'
 const route = useRoute()
-const { competitionId } = route.params
+const { competitionId } = route.params as { competitionId: string }
 
 const { competitionPhases } = useOptionsLib()
 
-const { isReady, row, games, competitionClass } = useCompetition(competitionId)
+const { isReady, row, computedPhases } = useCompetition(competitionId)
 
 const phasesOptions = computed<Option[] | undefined>(() =>
-  Array.isArray(competitionClass.value?.computedPhases)
-    ? competitionClass.value.computedPhases.map(
+  Array.isArray(computedPhases.value)
+    ? computedPhases.value?.map(
         (row: CompetitionPhaseComputed, idx): Option => ({
           value: idx.toString(),
           text: competitionPhases.find((opt) => opt.value === row.type)?.text as string
@@ -30,10 +33,7 @@ const phasesOptions = computed<Option[] | undefined>(() =>
 )
 const selectedPhaseIdx = ref('0')
 const selectedPhase = computed<CompetitionPhaseComputed>(
-  () =>
-    competitionClass.value?.computedPhases[
-      Number(selectedPhaseIdx.value)
-    ] as CompetitionPhaseComputed
+  () => computedPhases.value[Number(selectedPhaseIdx.value)] as CompetitionPhaseComputed
 )
 
 const selectedGroupIdx = ref('0')
@@ -58,10 +58,10 @@ const gamesViewOptions: Option[] = [
 const currentGamesView = ref<'prev' | 'next'>('prev')
 const groupGames = computed<Game[]>(() => {
   return selectedGroup.value.games
-    .map((gameId: GameId): Game => games.value?.find((game: Game) => game.id === gameId) as Game)
     .filter((game: Game) =>
       currentGamesView.value === 'prev' ? !game.isFinished : game.isFinished
     )
+    .slice(0, Math.round(selectedGroup.value.standing.length * 0.5))
 })
 </script>
 <template>

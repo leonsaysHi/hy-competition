@@ -4,7 +4,7 @@ import TableComp from '@/components/TableComp.vue'
 import LastGames from '@/components/games/LastGames.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import useLibs from '@/composable/useLibs'
-import type { CompetitionStanding } from '@/types/computed'
+import type { CompetitionStanding } from '@/models/CompetitionComputed'
 
 interface IProps {
   value: CompetitionStanding[]

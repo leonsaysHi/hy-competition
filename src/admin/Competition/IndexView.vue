@@ -5,7 +5,6 @@ import useCompetition from '@/composable/useCompetition'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import { computed } from 'vue'
 import AlertComp from '@/components/AlertComp.vue'
-import ButtonComp from '@/components/ButtonComp.vue'
 
 const route = useRoute()
 const { competitionId } = route.params

@@ -16,7 +16,7 @@ import {
   competitionPlayerConverter
 } from '@/utils/firestore-converters'
 import CompetitionClass from '@/models/CompetitionComputed'
-import type CompetitionComputed from '@/models/CompetitionComputed'
+import type { CompetitionRanking, CompetitionPhaseComputed } from '@/models/CompetitionComputed'
 
 export default function useCompetition(competitionId: CompetitionId | undefined) {
   const { isReady: isLibsReady, getCompetition } = useLibs()
@@ -87,52 +87,48 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     return result.flat()
   })
 
-  const getCompetitionTeam = (teamId: TeamId): CompetitionTeam => {
-    return row.value?.teams?.find((team: CompetitionTeam) => team.id === teamId) as CompetitionTeam
+  const getCompetitionTeam = (teamId: TeamId): CompetitionTeam | undefined => {
+    return row.value?.teams?.find((team: CompetitionTeam) => team.id === teamId)
   }
-  const getCompetitionPlayer = (playerId: PlayerId): CompetitionPlayer => {
+  const getCompetitionPlayer = (playerId: PlayerId): CompetitionPlayer | undefined => {
     const team: CompetitionTeam | undefined = row.value?.teams?.find(
       (team: CompetitionTeam) =>
         team.players.findIndex((player: CompetitionPlayer) => player.id === playerId) > -1
     )
-    return team?.players.find(
-      (player: CompetitionPlayer) => player.id === playerId
-    ) as CompetitionPlayer
+    return team?.players.find((player: CompetitionPlayer) => player.id === playerId)
   }
-  const getPlayerCompetitionTeam = (playerId: PlayerId): CompetitionTeam =>
+  const getPlayerCompetitionTeam = (playerId: PlayerId): CompetitionTeam | undefined =>
     row.value?.teams?.find(
       (team: CompetitionTeam) =>
         team.players.findIndex((player: CompetitionPlayer) => player.id === playerId) > -1
-    ) as CompetitionTeam
-  const getPlayerNumber = (playerId: PlayerId): string => getCompetitionPlayer(playerId).number
-  const getGame = (gameId: GameId): Game => {
-    return row?.value?.games?.find((game: Game) => game.id === gameId) as Game
+    )
+  const getPlayerNumber = (playerId: PlayerId): string | undefined => {
+    const player: CompetitionPlayer = getCompetitionPlayer(playerId)
+    return player?.number
+  }
+  const getGame = (gameId: GameId): Game | undefined => {
+    return row?.value?.games?.find((game: Game) => game.id === gameId)
   }
 
   // Competition Computed
-  const competitionClass = computed<CompetitionClass | undefined>(() => {
-    if (!isReady.value || !row.value) {
-      return undefined
-    }
-    return new CompetitionClass(row.value)
+  const computedPhases = computed<CompetitionPhaseComputed[] | undefined>(() => {
+    const competitionClass =
+      isReady.value && row.value ? new CompetitionClass(row.value) : undefined
+    return competitionClass ? competitionClass.computedPhases : undefined
   })
-  const computedRow = computed<CompetitionComputed | undefined>(
-    (): CompetitionComputed | undefined => {
-      if (!isReady.value || !row.value) {
-        return undefined
-      }
-      const competitionClass: CompetitionClass = new CompetitionClass(row.value)
-      return competitionClass.computed as CompetitionComputed
-    }
-  )
+  const competitionRanking = computed<CompetitionRanking[] | undefined>(() => {
+    const competitionClass =
+      isReady.value && row.value ? new CompetitionClass(row.value) : undefined
+    return competitionClass ? competitionClass.competitionRanking : undefined
+  })
 
   return {
     isReady,
     row,
     games,
     teams,
-    competitionClass,
-    computedRow,
+    computedPhases,
+    competitionRanking,
     allTeams,
     allPlayers,
     getGame,

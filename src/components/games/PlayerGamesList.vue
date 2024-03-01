@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import GameComputedClass, { type ScoresComputed } from '@/models/GameComputed'
-import type { Game } from '@/types/games'
+import type { Game, PlayerBoxScore } from '@/types/games'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import TableComp from '../TableComp.vue'
@@ -9,7 +9,6 @@ import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
-import type { PlayerBoxScore } from '@/types/stats'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 
 interface PlayerGameComputed extends PlayerBoxScore {

@@ -4,7 +4,7 @@ import TableComp from '@/components/TableComp.vue'
 
 import useLibs from '@/composable/useLibs'
 import useOptionsLibs from '@/composable/useOptionsLib'
-import type { CompetitionRanking } from '@/types/computed'
+import type { CompetitionRanking } from '@/models/CompetitionComputed'
 import { useRoute } from 'vue-router'
 import type { TableField } from '@/types/comp-table'
 

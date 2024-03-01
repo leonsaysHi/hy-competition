@@ -1,9 +1,13 @@
-import type { AwardItem, PlayerBoxScore } from './stats'
+import type { AwardItem, Stats } from './stats'
 import type { PlayerId } from './players'
 import type { TeamId } from './teams'
 
 export type GameId = string
 
+export interface PlayerBoxScore extends Stats {
+  dnp: boolean
+}
+export type PlayerBoxScoreKey = keyof PlayerBoxScore
 export type GameBoxScore = { [key: PlayerId]: PlayerBoxScore }
 export type GameScores = { [key: TeamId]: number[] }
 

@@ -5,7 +5,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const { competitionId } = route.params
+const { competitionId } = route.params as { competitionId: string }
 const { isReady, row } = useCompetition(competitionId)
 const deepPage = computed(() => {
   const { teamId, gameId, playerId } = route.params

@@ -8,12 +8,11 @@ import SpinnerComp from '@/components/SpinnerComp.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import GameComputed from '@/models/GameComputed'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
-import type { Game, GameBoxScore } from '@/types/games'
+import type { Game, PlayerBoxScore, GameBoxScore } from '@/types/games'
 import type { CompetitionPlayer } from '@/types/players'
-import type { PlayerBoxScore } from '@/types/stats'
 
 const route = useRoute()
-const { competitionId, gameId } = route.params
+const { competitionId, gameId } = route.params as { competitionId: string; gameId: string }
 
 const { isReady, row: competition, getCompetitionTeam } = useCompetition(competitionId)
 
@@ -54,9 +53,7 @@ const teamsBoxscores = computed<GameBoxScore[]>(() => {
         <div
           class="flex-grow-1 d-flex flex-column-reverse justify-content-start align-items-center gap-2"
         >
-          <strong class="fs-3 jersey-team">{{
-            gameComputed.scores[0].title
-          }}</strong>
+          <strong class="fs-3 jersey-team">{{ gameComputed.scores[0].title }}</strong>
           <TeamLogo :team-id="gameComputed.scores[0].id" :size="100" class="d-none d-md-block" />
           <TeamLogo :team-id="gameComputed.scores[0].id" :size="60" class="d-md-none" />
         </div>

@@ -43,8 +43,6 @@ watch(
   (team) => {
     if (team?.id) {
       data.value = { ...getDefaultData(), ...team }
-    } else if (team === undefined) {
-      data.value = { ...getDefaultData() }
     }
   }
 )
@@ -61,6 +59,7 @@ const handleSubmit = (ev: Event) => {
   } else {
     delete errors.value.title
     emit('submit', data.value as Team)
+    data.value = getDefaultData()
   }
 }
 </script>

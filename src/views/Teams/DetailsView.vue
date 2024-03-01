@@ -1,3 +1,14 @@
+<script lang="ts" setup>
+import { useRoute } from 'vue-router'
+import useLibs from '@/composable/useLibs'
+import SpinnerComp from '@/components/SpinnerComp.vue'
+import { computed } from 'vue'
+
+const route = useRoute()
+const { teamId } = route.params
+const { isReady, getTeam } = useLibs()
+const row = computed(() => getTeam(teamId))
+</script>
 <template>
   <div>
     <template v-if="!isReady">
@@ -11,14 +22,3 @@
     </template>
   </div>
 </template>
-<script lang="ts" setup>
-import { useRoute } from 'vue-router'
-import useLibs from '@/composable/useLibs'
-import SpinnerComp from '@/components/SpinnerComp.vue'
-import { computed } from 'vue'
-
-const route = useRoute()
-const { teamId } = route.params
-const { isReady, getTeam } = useLibs()
-const row = computed(() => getTeam(teamId))
-</script>

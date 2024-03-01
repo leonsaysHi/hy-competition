@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import TableComp from '@/components/TableComp.vue'
-import type { CompetitionTeam, TeamId } from '@/types/teams'
+import type { CompetitionTeam } from '@/types/teams'
 import type { CompetitionPlayer } from '@/types/players'
 import useLibs from '@/composable/useLibs'
 
@@ -15,30 +15,29 @@ import type { Game } from '@/types/games'
 import type { Option } from '@/types/comp-fields'
 import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
-import type { PlayerCompetitionComputed } from '@/types/computed'
+import type { CompetitionRanking } from '@/models/CompetitionComputed'
 const route = useRoute()
-const { competitionId, playerId } = route.params
+const { competitionId, playerId } = route.params as { competitionId: string; playerId: string }
 
 const { getPlayerName } = useLibs()
 const { playerRankingKeys } = useOptionsLib()
 const {
   isReady: isCompetitionReady,
-  getCompetitionTeam,
   getCompetitionPlayer,
+  getPlayerCompetitionTeam,
   row: competition,
   games,
-  competitionClass
+  competitionRanking
 } = useCompetition(competitionId)
 
-const teamId = computed<TeamId>(() => competitionComputed.value.teamId as TeamId)
 const competitionTeam = computed<CompetitionTeam | undefined>(() =>
-  getCompetitionTeam(teamId.value)
+  getPlayerCompetitionTeam(playerId)
 )
-const competitionPlayer = computed<CompetitionPlayer>(
-  () => getCompetitionPlayer(playerId) as CompetitionPlayer
+const competitionPlayer = computed<CompetitionPlayer | undefined>(() =>
+  getCompetitionPlayer(playerId)
 )
 const playerGames = computed<Game[]>(() => {
-  return Array.isArray(games.value) && teamId.value
+  return Array.isArray(games.value) && competitionTeam.value?.id
     ? games.value.filter((game: Game) => {
         return Object.keys(game.boxscore).includes(playerId) && !game.boxscore[playerId].dnp
       })
@@ -54,10 +53,8 @@ const statsFields = computed<TableField[]>(() =>
     label: opt.text
   }))
 )
-const competitionComputed = computed<PlayerCompetitionComputed>(() => {
-  return competitionClass.value?.competitionRankings.find(
-    (rank: PlayerCompetitionComputed) => rank.id === playerId
-  ) as PlayerCompetitionComputed
+const competitionComputed = computed<CompetitionRanking | undefined>(() => {
+  return competitionRanking.value?.find((rank: CompetitionRanking) => rank.id === playerId)
 })
 const statsItem = computed<TableItem[]>(() => {
   return [competitionComputed.value as unknown as TableItem]
@@ -71,7 +68,7 @@ const statsItem = computed<TableItem[]>(() => {
     <template v-else>
       <div class="mt-4 pb-3 d-flex gap-3">
         <div>
-          <TeamLogo :team-id="competitionComputed.teamId" :size="150" />
+          <TeamLogo :team-id="competitionTeam?.id" :size="150" />
         </div>
         <div>
           <div class="display-1 text-body-secondary lh-1 jersey-number">
