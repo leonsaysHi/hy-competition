@@ -19,7 +19,7 @@
             :class="[sortedKey === key && 'text-bg-sorted-th']"
           >
             <div
-              :class="[thClass, sortable && 'position-relative pe-4 cursor-pointer']"
+              :class="[thClass, sortable && 'position-relative pt-3 cursor-pointer']"
               :tabindex="sortable ? 0 : -1"
               @keyup.enter="() => sortable && handleSort(key)"
               @click="() => sortable && handleSort(key)"
@@ -27,7 +27,7 @@
               <span>{{ typeof label === 'string' ? label : key }}</span>
               <template v-if="sortable && sortedKey === key">
                 <i
-                  class="bi position-absolute bottom-0 end-0"
+                  class="bi position-absolute top-0 start-50 translate-middle-x small lh-1"
                   :class="`bi-caret-${sortedDirection === 'asc' ? 'up' : 'down'}-fill`"
                 ></i>
               </template>

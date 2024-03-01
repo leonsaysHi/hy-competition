@@ -17,8 +17,8 @@ const fields = [
     label: 'Pos',
     key: 'pos',
     sortable: true,
-    thClass: 'text-end',
-    tdClass: 'text-end fw-bold pe-2'
+    thClass: 'text-center',
+    tdClass: 'text-center fw-bold pe-2'
   },
   { label: 'Teams', key: 'id' },
   { label: 'GP', key: 'gp', sortable: true, thClass: 'text-end', tdClass: 'text-end' },
@@ -53,7 +53,7 @@ const items = computed(() => {
       </RouterLink>
     </template>
     <template #hist="{ value }"
-      ><LastGames :value="value" :length="5" class="d-inline-flex"
+      ><LastGames :items="value" :length="5" class="d-inline-flex"
     /></template>
   </TableComp>
 </template>

@@ -24,7 +24,7 @@ const { playerRankingKeys } = useOptionsLibs()
 
 const row = getCompetition(competitionId)
 const fields = computed(() => [
-  { label: 'Pos', key: 'pos' },
+  { label: 'Pos', key: 'pos', thClass:'text-center', tdClass:'text-center' },
   { label: 'Players', key: 'id' },
   { label: 'Team', key: 'teamId' },
   ...playerRankingKeys.reduce((fields: TableField[], opt): TableField[] => {
@@ -43,8 +43,9 @@ const fields = computed(() => [
     return fields
   }, [])
 ])
-const items = computed(() =>
-  Array.isArray(props.value) ? props.value.filter((row: CompetitionRanking) => row.gp > 0) : []
+const items = computed(() => Array.isArray(props.value) 
+  ? props.value.filter((row: CompetitionRanking) => row.gp > 0) 
+  : []
 )
 </script>
 <template>

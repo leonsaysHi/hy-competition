@@ -10,7 +10,8 @@ import type {
   PlayerStats,
   PlayerStatKey,
   TeamStatKey,
-  TeamStandingStats
+  TeamStandingStats,
+  GamesHist
 } from '@/types/stats'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import { add } from '@/utils/maths'
@@ -106,14 +107,14 @@ export const getPlayerStatsFromGames = (playerId: PlayerId, games: Game[]): Play
     }, {} as PlayerStats)
   return games
     .filter(
-      (game: Game) => game.isFinished && game.boxscore[playerId] && game.boxscore[playerId].dnp
+      (game: Game) => game.isFinished && game.boxscore[playerId] && !game.boxscore[playerId].dnp
     )
     .reduce((ranking: PlayerStats, game: Game) => {
       const { dnp, ...stats } = game.boxscore[playerId]
       statsKeys
         .map((opt: Option) => opt.value as PlayerStatKey)
         .forEach((key: PlayerStatKey) => {
-          ranking[key] = (ranking[key] || 0) + (stats[key] || 0)
+          ranking[key] += (stats[key] || 0)
         })
       return ranking
     }, getEmptyStats())
@@ -174,7 +175,7 @@ export default class CompetitionClass {
             const teamGames: Game[] = phaseGames.filter(
               (game: Game) => game.teams.includes(teamId) && game.isFinished
             )
-            const hist: (1 | -1 | 0)[] = new Array(5).fill(0).map((n: number, idx: number) => {
+            const hist: GamesHist = new Array(5).fill(0).map((n: number, idx: number) => {
               const game = teamGames[idx]
               if (!game?.isFinished) return 0
               const gameComputed = new GameComputedClass(this.row.id, game)

@@ -9,13 +9,10 @@ import TeamLogo from '@/components/teams/TeamLogo.vue'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import GamesList from '@/components/games/GamesList.vue'
-import {
-  getTeamStatsFromGames,
-  type CompetitionStanding,
-  type CompetitionStandingComputed
-} from '@/models/CompetitionComputed'
+import type {CompetitionStandingComputed } from '@/models/CompetitionComputed'
 import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
+import type { Option } from '@/types/comp-fields'
 import LastGames from '@/components/games/LastGames.vue'
 import type { CompetitionTeam } from '@/types/teams'
 
@@ -68,7 +65,7 @@ const statsFields: TableField[] = [
       </div>
       <TableComp :fields="statsFields" :items="statsItem">
         <template #hist="{ value }">
-          <LastGames :value="value" :length="5" />
+          <LastGames :items="value" :length="5" />
         </template>
       </TableComp>
       <hr />

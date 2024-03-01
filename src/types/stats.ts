@@ -33,6 +33,8 @@ export interface TeamStats {
   ptsneg: number
 }
 export type TeamStatKey = keyof TeamStats
+
+export type GamesHist = (1 | -1 | 0)[] 
 export interface TeamStandingStats extends TeamStats {
-  hist: (1 | -1 | 0)[]
+  hist: GamesHist
 }
