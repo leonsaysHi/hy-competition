@@ -82,12 +82,12 @@ const totalsItem = computed<TableItem>(() => ({
       </li>
     </template>
   </ul>
-  <TableComp 
-    :fields="fields" 
-    :items="boxScoreItems" 
+  <TableComp
+    :fields="fields"
+    :items="boxScoreItems"
     :footer="totalsItem"
-    sorted-key="pts" 
-    sorted-direction="desc" 
+    sorted-key="pts"
+    sorted-direction="desc"
     small
   >
     <template #number="{ value }">#{{ value }}</template>

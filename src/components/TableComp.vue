@@ -37,7 +37,7 @@
       </tr>
     </thead>
     <tbody>
-      <template v-for="(item, index) in sortedItems" :key="index">
+      <template v-for="(item, index) in computedItems" :key="index">
         <tr>
           <template v-for="({ key, tdClass }, hIdx) in fields" :key="hIdx">
             <td :class="[tdClass, sortedKey === key && 'text-bg-sorted-td']">
@@ -54,7 +54,7 @@
         <tr class="table-secondary">
           <template v-for="({ key, tfClass }, fIdx) in fields" :key="fIdx">
             <td :class="[tfClass, sortedKey === key && 'text-bg-sorted-td']">
-              <slot :name="'footer'+key" v-bind="{ key, footer }" :value="footer[key]">
+              <slot :name="'footer' + key" v-bind="{ key, footer }" :value="footer[key]">
                 {{ footer[key] }}
               </slot>
             </td>
@@ -73,12 +73,13 @@
 <script setup lang="ts">
 import type { TableField, TableItem } from '@/types/comp-table'
 import { compareDesc, isDate } from 'date-fns'
+import { FieldPath } from 'firebase/firestore';
 import { computed, ref } from 'vue'
 
 interface IProps {
   fields: TableField[]
   items: TableItem[]
-  footer?: TableItem | undefined,
+  footer?: TableItem | undefined
   sortedKey?: string
   sortedDirection?: 'asc' | 'desc'
   perPage?: number
@@ -101,28 +102,43 @@ const props = withDefaults(defineProps<IProps>(), {
 })
 const sortedKey = ref<string | undefined>(props.sortedKey)
 const sortedDirection = ref<'asc' | 'desc'>(props.sortedDirection)
-const sortedItems = computed(() => {
+const computedItems = computed(() => {
   const results = props.items.slice()
-  if (typeof sortedKey.value !== 'string') {
-    return results
+  const key = sortedKey.value
+  if (typeof key === 'string') {
+    const field = props.fields.find((field: TableField) => field.key === key)
+    results.sort((a, b) => {
+      const aVal = field?.sortByFormatted && field?.formatter 
+        ? field.formatter(a[key]) 
+        : a[key]
+      const bVal = field?.sortByFormatted && field?.formatter 
+        ? field.formatter(b[key]) 
+        : b[key]
+      const compared =
+        typeof aVal === 'string' && typeof bVal === 'string'
+          ? aVal.localeCompare(bVal)
+          : isDate(aVal) && isDate(bVal)
+            ? compareDesc(aVal, bVal)
+            : typeof aVal === 'number' && typeof bVal === 'number'
+              ? aVal - bVal
+              : 0
+      return compared * (sortedDirection.value === 'desc' ? -1 : 1)
+    })
   }
-  results.sort((a, b) => {
-    const aVal = a[sortedKey.value as string]
-    const bVal = b[sortedKey.value as string]
-    const compared =
-      typeof aVal === 'string' && typeof bVal === 'string'
-        ? aVal.localeCompare(bVal)
-        : isDate(aVal) && isDate(bVal)
-          ? compareDesc(aVal, bVal)
-          : typeof aVal === 'number' && typeof bVal === 'number'
-            ? aVal - bVal
-            : 0
-    return compared * (sortedDirection.value === 'desc' ? -1 : 1)
-  })
-
+  // pagination
   const sliceFirstIdx = props.perPage > 0 ? (props.currentPage - 1) * props.perPage : 0
   const sliceLength = props.perPage > 0 ? Math.min(results.length, props.perPage) : results.length
-  return results.slice(sliceFirstIdx, sliceFirstIdx + sliceLength)
+  return results
+    .slice(sliceFirstIdx, sliceFirstIdx + sliceLength)
+    .map((row: TableItem) => {
+        return props.fields.reduce((item: TableItem, field: TableField) => {
+          const key = field.key
+          item[key] = field?.sortByFormatted && field?.formatter 
+          ? field.formatter(row[key]) 
+          : row[key]
+          return item
+        }, {})
+    })
 })
 const handleSort = (key: string) => {
   sortedDirection.value =

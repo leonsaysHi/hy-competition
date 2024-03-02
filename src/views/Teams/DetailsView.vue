@@ -3,7 +3,7 @@ import { useRoute } from 'vue-router'
 import useLibs from '@/composable/useLibs'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import { computed } from 'vue'
-import type { TeamId } from '@/types/teams';
+import type { TeamId } from '@/types/teams'
 
 const route = useRoute()
 const { teamId } = route.params as { teamId: TeamId }

@@ -26,16 +26,16 @@ const props = withDefaults(defineProps<IProps>(), {})
 
 const fields = computed((): TableField[] => {
   return [
-    { 
-        key: 'id', 
-        label: 'Team', 
-        tdClass: 'jersey-team text-uppercase' 
+    {
+      key: 'id',
+      label: 'Team',
+      tdClass: 'jersey-team text-uppercase'
     },
     ...props.scores[0].periods.map((n: number, idx: number) => ({
       key: `p${idx}`,
       label: `Q${idx + 1}`,
       thClass: 'text-center',
-      tdClass: 'text-center',
+      tdClass: 'text-center'
     }))
   ] as TableField[]
 })

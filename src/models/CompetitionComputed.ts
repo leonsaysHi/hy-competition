@@ -114,7 +114,7 @@ export const getPlayerStatsFromGames = (playerId: PlayerId, games: Game[]): Play
       statsKeys
         .map((opt: Option) => opt.value as PlayerStatKey)
         .forEach((key: PlayerStatKey) => {
-          ranking[key] += (stats[key] || 0)
+          ranking[key] += stats[key] || 0
         })
       return ranking
     }, getEmptyStats())

@@ -62,22 +62,22 @@ const teamsBoxscores = computed<GameBoxScore[]>(() => {
         </div>
         <div>
           <template v-if="gameComputed.isFinished">
-              <div class="d-flex align-items-center justify-content-center gap-2">
-                <template v-for="(team, idx) in gameComputed.scores" :key="idx">
-                  <div
-                    class="py-2 px-3 border border-5 rounded-2 display-3 d-none d-md-block"
-                    :class="[team.winner ? 'border-win' : 'border-loss']"
-                  >
-                    <strong class="jersey-score">{{ team.finalScore }}</strong>
-                  </div>
-                  <div
-                    class="py-2 px-3 border border-5 rounded-2 display-6 d-md-none"
-                    :class="[team.winner ? 'border-win' : 'border-loss']"
-                  >
-                    <strong class="jersey-score">{{ team.finalScore }}</strong>
-                  </div>
-                </template>
-              </div>
+            <div class="d-flex align-items-center justify-content-center gap-2">
+              <template v-for="(team, idx) in gameComputed.scores" :key="idx">
+                <div
+                  class="py-2 px-3 border border-5 rounded-2 display-3 d-none d-md-block"
+                  :class="[team.winner ? 'border-win' : 'border-loss']"
+                >
+                  <strong class="jersey-score">{{ team.finalScore }}</strong>
+                </div>
+                <div
+                  class="py-2 px-3 border border-5 rounded-2 display-6 d-md-none"
+                  :class="[team.winner ? 'border-win' : 'border-loss']"
+                >
+                  <strong class="jersey-score">{{ team.finalScore }}</strong>
+                </div>
+              </template>
+            </div>
           </template>
           <template v-else>
             <div class="d-flex flex-column justify-content-center align-items-center">
@@ -97,9 +97,9 @@ const teamsBoxscores = computed<GameBoxScore[]>(() => {
         </div>
       </div>
       <template v-if="gameComputed.isFinished">
-          <div class="d-flex justify-content-center">
-            <GamePeriods :scores="gameComputed.scores" />
-          </div>
+        <div class="d-flex justify-content-center">
+          <GamePeriods :scores="gameComputed.scores" />
+        </div>
       </template>
       <template v-if="gameComputed.isFinished">
         <ul class="mt-5 mb-3 nav nav-tabs">

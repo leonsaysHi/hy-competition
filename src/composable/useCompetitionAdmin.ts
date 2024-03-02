@@ -219,6 +219,13 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     return batch
   }
 
+  const updateTeamStandingComputed = (row: CompetitionStandingComputed) => {
+    // store computed competition datas inside team
+  }
+  const updatePlayerRankingComputed = (row: CompetitionRankingComputed) => {
+    // store computed competition datas inside player
+  }
+
   return {
     // Admin competition
     writeCompetition,
