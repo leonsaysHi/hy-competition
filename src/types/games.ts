@@ -11,7 +11,7 @@ export type PlayerBoxScoreKey = keyof PlayerBoxScore
 export type GameBoxScore = { [key: PlayerId]: PlayerBoxScore }
 export type GameScores = { [key: TeamId]: number[] }
 
-export interface Game {
+export interface GameDoc {
   id?: GameId
   datetime: string
   teams: TeamId[]
@@ -19,4 +19,7 @@ export interface Game {
   boxscore: GameBoxScore
   awards: AwardItem[]
   isFinished: boolean
+}
+export interface Game extends GameDoc {
+  id: GameId
 }

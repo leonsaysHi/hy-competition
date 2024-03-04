@@ -50,14 +50,16 @@ const trackedPlayerRankingKeys = computed<Option[]>(() =>
 const statsFields = computed<TableField[]>(() =>
   trackedPlayerRankingKeys.value.map((opt: Option) => ({
     key: opt.value,
-    label: opt.text
+    label: opt.text,
+    thClass: 'text-end',
+    tdClass: 'text-end'
   }))
 )
 const competitionComputed = computed<CompetitionRanking | undefined>(() => {
-  return competitionRankings.value?.find((rank: CompetitionRanking) => rank.id === playerId)
+  return competitionRankings.value?.find((rank: CompetitionRanking) => rank.playerId === playerId)
 })
 const statsItem = computed<TableItem[]>(() => {
-  return [competitionComputed.value as unknown as TableItem]
+  return competitionComputed.value ? [competitionComputed.value as unknown as TableItem] : []
 })
 </script>
 <template>
@@ -82,7 +84,7 @@ const statsItem = computed<TableItem[]>(() => {
           </div>
         </div>
       </div>
-      <TableComp :fields="statsFields" :items="statsItem"> </TableComp>
+      <TableComp :fields="statsFields" :items="statsItem"></TableComp>
       <hr />
       <PlayerGamesList :items="playerGames" />
     </template>

@@ -14,21 +14,22 @@ const currentPage = ref(1)
 const perPage = 25
 const searchStr = ref<string>('')
 const fields: TableField[] = [
-  { 
-    key: 'fname', 
-    label: 'First name', 
-    sortable: true,
+  {
+    key: 'fname',
+    label: 'First name',
+    sortable: true
   },
-  { 
-    key: 'lname', 
-    label: 'Last name', 
-    sortable: true,
+  {
+    key: 'lname',
+    label: 'Last name',
+    sortable: true
   },
   { key: 'dob', label: 'Age', sortable: true }
 ]
 const items = computed<TableItem[]>(() => {
   return Array.isArray(playersLib.value)
-    ? playersLib.value?.map(
+    ? playersLib.value
+        ?.map(
           (row: Player): TableItem => ({
             id: row.id,
             lname: row.lname,
@@ -36,13 +37,11 @@ const items = computed<TableItem[]>(() => {
             dob: row.dob
           })
         )
-      .filter(
-        (row: TableItem) => {
+        .filter((row: TableItem) => {
           const string = [row.lname, row.fname].join('')
           return !searchStr.value || stringIncludes(string, searchStr.value)
-        }
-      )
-      : []
+        })
+    : []
 })
 </script>
 <template>
@@ -52,6 +51,9 @@ const items = computed<TableItem[]>(() => {
       <InputComp v-model="searchStr" placeholder="Search..." />
     </div>
     <TableComp :fields="fields" :items="items" :currentPage="currentPage" :per-page="perPage">
+      <template #fname="{ value, item }">
+        <RouterLink :to="{ name: 'player', params: { playerId: item.id } }">{{ value }}</RouterLink>
+      </template>
       <template #dob="{ value }">
         <template v-if="value"> {{ differenceInYears(new Date(), value) }}</template>
         <template v-else><span class="text-body-secondary">n/a</span></template>

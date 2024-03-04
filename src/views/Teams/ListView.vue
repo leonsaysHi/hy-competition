@@ -13,22 +13,19 @@ const { rows: teamsLib } = useTeamsLib()
 const currentPage = ref(1)
 const perPage = 25
 const searchStr = ref<string>('')
-const fields: TableField[] = [
-  { key: 'id', label: '' },
-  { key: 'title', label: 'Teams', sortable: true }
-]
+const fields: TableField[] = [{ key: 'id', label: 'Teams', sortable: true }]
 const items = computed<TableItem[]>(() => {
   return Array.isArray(teamsLib.value)
-    ? teamsLib.value?.map(
-        (row: Team): TableItem => ({
-          id: row.id,
-          title: row.title
-        })
-      ).filter(
-        (row: TableItem) => {
+    ? teamsLib.value
+        ?.map(
+          (row: Team): TableItem => ({
+            id: row.id,
+            title: row.title
+          })
+        )
+        .filter((row: TableItem) => {
           return !searchStr.value || stringIncludes(row.title as string, searchStr.value)
-        }
-      )
+        })
     : []
 })
 </script>
@@ -39,8 +36,14 @@ const items = computed<TableItem[]>(() => {
       <InputComp v-model="searchStr" placeholder="Search..." />
     </div>
     <TableComp :fields="fields" :items="items" :per-page="perPage" :current-page="currentPage">
-      <template #id="{ value }">
-        <TeamLogo :team-id="value" :size="23" />
+      <template #id="{ value, item }">
+        <RouterLink
+          class="d-flex align-items-center gap-3"
+          :to="{ name: 'team', params: { teamId: value } }"
+        >
+          <TeamLogo :team-id="value" :size="23" />
+          <strong class="jersey-team">{{ item.title }}</strong>
+        </RouterLink>
       </template>
     </TableComp>
     <div class="d-flex justify-content-center">

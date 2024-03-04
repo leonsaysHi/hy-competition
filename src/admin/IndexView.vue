@@ -7,14 +7,12 @@ const { isReady: isLibsReady } = useLibs()
 </script>
 <template>
   <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-    <RouterLink
-      :to="{ name: 'admin' }"
-      class="mb-3 mb-md-0 ms-3 me-md-auto link-body-emphasis text-decoration-none"
-    >
-      <span class="fs-4">Admin</span>
-    </RouterLink>
+    <span class="fs-4">Admin</span>
 
     <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+      <li class="nav-item">
+        <RouterLink :to="{ name: 'admin' }" class="nav-link">Competitions</RouterLink>
+      </li>
       <li class="nav-item">
         <RouterLink :to="{ name: 'admin-teams' }" class="nav-link">Teams</RouterLink>
       </li>

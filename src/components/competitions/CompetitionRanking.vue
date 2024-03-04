@@ -25,7 +25,7 @@ const { playerRankingKeys } = useOptionsLibs()
 const row = getCompetition(competitionId)
 const fields = computed(() => [
   { label: 'Pos', key: 'pos', thClass: 'text-center', tdClass: 'text-center' },
-  { label: 'Players', key: 'id' },
+  { label: 'Players', key: 'playerId' },
   { label: 'Team', key: 'teamId' },
   ...playerRankingKeys.reduce((fields: TableField[], opt): TableField[] => {
     if (row?.trackedStats.includes(opt.value)) {
@@ -58,7 +58,7 @@ const items = computed(() =>
     show-empty
   >
     <template #pos="{ index }">{{ index + 1 }}</template>
-    <template #id="{ value }">
+    <template #playerId="{ value }">
       <RouterLink
         class="link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
         :to="{ name: 'competition-player', params: { playerId: value } }"

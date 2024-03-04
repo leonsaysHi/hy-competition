@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex gap-1 small">
+  <div class="d-inline-flex gap-1 small">
     <template v-for="(colorclass, idx) in items" :key="idx">
       <i class="bi bi-circle-fill" :class="colorclass"></i>
     </template>

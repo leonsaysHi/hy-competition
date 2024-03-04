@@ -7,11 +7,7 @@
           :class="{ active: model === page }"
           :aria-current="model === page ? 'page' : false"
         >
-          <a 
-          class="page-link" 
-          href="#"
-          @click="model = page"
-          >{{ page }}</a>
+          <a class="page-link" href="#" @click="model = page">{{ page }}</a>
         </li>
       </template>
     </ul>

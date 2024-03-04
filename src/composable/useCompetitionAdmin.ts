@@ -1,7 +1,17 @@
 import { doc, collection, writeBatch, WriteBatch } from 'firebase/firestore'
-import { db, competitionsColl, teamsName, gamesName, playersName } from '@/firebase-firestore.js'
+import {
+  db,
+  competitionsColl,
+  teamsName,
+  gamesName,
+  playersName,
+  playerCompetitionsComputedName,
+  playersColl,
+  teamsColl,
+  teamCompetitionsComputedName
+} from '@/firebase-firestore.js'
 import type { Competition, CompetitionDoc, CompetitionId } from '@/types/competitions'
-
+import CompetitionClass from '@/models/CompetitionComputed'
 import type { CompetitionTeam, CompetitionTeamDoc, TeamId } from '@/types/teams'
 import type { Game, GameId } from '@/types/games'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
@@ -9,8 +19,14 @@ import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import {
   gameConverter,
   competitionTeamConverter,
-  competitionPlayerConverter
+  competitionPlayerConverter,
+  computedRankingConverter,
+  computedStandingConverter
 } from '@/utils/firestore-converters'
+import type {
+  CompetitionRankingComputed,
+  CompetitionStandingComputed
+} from '@/models/CompetitionComputed'
 
 export default function useCompetition(competitionId: CompetitionId | undefined) {
   const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`).withConverter(
@@ -168,6 +184,9 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   // Admin Competition Doc
   const writeCompetitionDoc = async (payload: Competition) => {
     const batch = writeCompetitionDocBatch(payload)
+    const computedClass = new CompetitionClass(payload)
+    writePlayersCompetitionComputed(computedClass.competitionRankings, batch)
+    writeTeamsCompetitionComputed(computedClass.competitionStandings, batch)
     await batch.commit()
   }
   const writeCompetitionDocBatch = (
@@ -189,11 +208,16 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     batch.set(competitionRef, competitionDoc)
     return batch
   }
-  const writeCompetition = async (payload: Competition) => {
+
+  /*const writeCompetition = async (payload: Competition) => {
     const batch = writeCompetitionBatch(payload)
+    const computedClass = new CompetitionClass(payload)
+    console.log('hip')
+    writePlayersCompetitionComputed(computedClass.competitionRankings, batch)
+    writeTeamsCompetitionComputed(computedClass.competitionStandings, batch)
     await batch.commit()
-  }
-  const writeCompetitionBatch = (
+  }*/
+  /*const writeCompetitionBatch = (
     row: Competition,
     batch: WriteBatch = writeBatch(db)
   ): WriteBatch => {
@@ -217,18 +241,42 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
       writeTeamBatch(row, batch)
     })
     return batch
-  }
+  }*/
 
-  const updateTeamStandingComputed = (row: CompetitionStandingComputed) => {
-    // store computed competition datas inside team
+  const writePlayersCompetitionComputed = (
+    rows: CompetitionRankingComputed[],
+    batch: WriteBatch = writeBatch(db)
+  ): WriteBatch => {
+    rows.forEach((row: CompetitionRankingComputed) => {
+      const { playerId, id } = row
+      const computedCollection = collection(
+        doc(playersColl, playerId),
+        playerCompetitionsComputedName
+      ).withConverter(computedRankingConverter)
+      const computedRef = doc(computedCollection, id)
+      batch.set(computedRef, row)
+    })
+    return batch
   }
-  const updatePlayerRankingComputed = (row: CompetitionRankingComputed) => {
-    // store computed competition datas inside player
+  const writeTeamsCompetitionComputed = (
+    rows: CompetitionStandingComputed[],
+    batch: WriteBatch = writeBatch(db)
+  ): WriteBatch => {
+    rows.forEach((row: CompetitionStandingComputed) => {
+      const { teamId, id } = row
+      const computedCollection = collection(
+        doc(teamsColl, teamId),
+        teamCompetitionsComputedName
+      ).withConverter(computedStandingConverter)
+      const computedRef = doc(computedCollection, id)
+      batch.set(computedRef, row)
+    })
+    return batch
   }
 
   return {
     // Admin competition
-    writeCompetition,
+    // writeCompetition,
     writeCompetitionDoc,
 
     // Admin game

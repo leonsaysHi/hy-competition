@@ -20,7 +20,7 @@ const fields = [
     thClass: 'text-center',
     tdClass: 'text-center fw-bold pe-2'
   },
-  { label: 'Teams', key: 'id' },
+  { label: 'Teams', key: 'teamId' },
   { label: 'GP', key: 'gp', sortable: true, thClass: 'text-end', tdClass: 'text-end' },
   { label: 'W', key: 'wins', sortable: true, thClass: 'text-end', tdClass: 'text-end' },
   { label: 'PTS+', key: 'ptspos', sortable: true, thClass: 'text-end', tdClass: 'text-end' },
@@ -43,7 +43,7 @@ const items = computed(() => {
         <span class="fs-5 fw-normal">-</span>
       </template>
     </template>
-    <template #id="{ value }">
+    <template #teamId="{ value }">
       <RouterLink
         class="d-flex align-items-center gap-2 link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
         :to="{ name: 'competition-team', params: { teamId: value } }"

@@ -1,11 +1,15 @@
 import type { Competition, CompetitionId, Phase } from '@/types/competitions'
-import type { CompetitionPlayer, Player } from '@/types/players'
+import type { CompetitionPlayer, PlayerDoc } from '@/types/players'
 import { Timestamp } from 'firebase/firestore'
 import type { DocumentData, QueryDocumentSnapshot, SnapshotOptions } from 'firebase/firestore'
 import { dateToTimeStamp } from '@/utils/dates'
 import type { CompetitionTeamDoc, TeamDoc, TeamId } from '@/types/teams'
-import type { Game } from '@/types/games'
+import type { GameDoc } from '@/types/games'
 import { add } from './maths'
+import type {
+  CompetitionRankingComputed,
+  CompetitionStandingComputed
+} from '@/models/CompetitionComputed'
 
 const dateFromFirestore = (ts: Timestamp): Date => {
   return ts.toDate()
@@ -82,7 +86,7 @@ export const competitionTeamConverter = {
 }
 
 export const gameConverter = {
-  toFirestore: (row: Game): DocumentData => {
+  toFirestore: (row: GameDoc): DocumentData => {
     const payload = {
       ...row,
       isFinished: Object.values(row.scores).some((score) => score.reduce(add, 0))
@@ -115,7 +119,38 @@ export const teamConverter = {
 }
 
 export const playerConverter = {
-  toFirestore: (row: Player): DocumentData => {
+  toFirestore: (row: PlayerDoc): DocumentData => {
+    const payload = {
+      ...row
+    }
+    return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null))
+  },
+  fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions) => {
+    const data = snapshot.data(options)!
+    return {
+      id: snapshot.id,
+      ...data
+    }
+  }
+}
+
+export const computedRankingConverter = {
+  toFirestore: (row: CompetitionRankingComputed): DocumentData => {
+    const payload = {
+      ...row
+    }
+    return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null))
+  },
+  fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions) => {
+    const data = snapshot.data(options)!
+    return {
+      id: snapshot.id,
+      ...data
+    }
+  }
+}
+export const computedStandingConverter = {
+  toFirestore: (row: CompetitionStandingComputed): DocumentData => {
     const payload = {
       ...row
     }

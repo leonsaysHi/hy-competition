@@ -12,9 +12,12 @@ export default function usePlayersLib() {
     { text: 'Senior', value: 'senior' },
     { text: '+35', value: '+35' }
   ]
+  const getCategory = (value: CompetitionCategorie) =>
+    competitionCategories.find((row) => row.value === value)
+
   const genders: { value: Gender; text: string; long: string }[] = [
-    { text: 'M', long: 'Male', value: 'm' },
-    { text: 'F', long: 'Female', value: 'f' }
+    { text: 'M', long: 'Men', value: 'm' },
+    { text: 'F', long: 'Women', value: 'f' }
   ]
   const getGender = (value: Gender) => genders.find((row) => row.value === value)
 
@@ -48,9 +51,10 @@ export default function usePlayersLib() {
     competitionSports,
     competitionCategories,
     competitionPhases,
-
     genders,
+
     getGender,
+    getCategory,
 
     statsKeys,
     playerRankingKeys,

@@ -37,12 +37,17 @@
       </tr>
     </thead>
     <tbody>
-      <template v-for="(item, index) in computedItems" :key="index">
+      <template v-for="(item, trIdx) in computedItems" :key="trIdx">
         <tr>
-          <template v-for="({ key, tdClass }, hIdx) in fields" :key="hIdx">
+          <template v-for="({ key, tdClass }, tdIdx) in fields" :key="tdIdx">
             <td :class="[tdClass, sortedKey === key && 'text-bg-sorted-td']">
-              <slot :name="key" v-bind="{ key, items, item, index }" :value="item[key]">
-                {{ item[key] }}
+              <slot :name="key" v-bind="{ key, item, index: trIdx }" :value="item[key]">
+                <template v-if="item[key] !== undefined">
+                  {{ item[key] }}
+                </template>
+                <template v-else>
+                  <span class="text-body-secondary">-</span>
+                </template>
               </slot>
             </td>
           </template>
@@ -52,7 +57,7 @@
     <template v-if="footer">
       <tfoot>
         <tr class="table-secondary">
-          <template v-for="({ key, tfClass }, fIdx) in fields" :key="fIdx">
+          <template v-for="({ key, tfClass }, tdIdx) in fields" :key="tdIdx">
             <td :class="[tfClass, sortedKey === key && 'text-bg-sorted-td']">
               <slot :name="'footer' + key" v-bind="{ key, footer }" :value="footer[key]">
                 {{ footer[key] }}
@@ -63,7 +68,7 @@
       </tfoot>
     </template>
   </table>
-  <div v-if="showEmpty && !items?.length">
+  <div v-if="showEmpty && !computedItems?.length">
     <slot name="empty">
       <p class="text-center text-secondary mt-2">No result.</p>
     </slot>
@@ -73,7 +78,6 @@
 <script setup lang="ts">
 import type { TableField, TableItem } from '@/types/comp-table'
 import { compareDesc, isDate } from 'date-fns'
-import { FieldPath } from 'firebase/firestore';
 import { computed, ref } from 'vue'
 
 interface IProps {
@@ -103,17 +107,17 @@ const props = withDefaults(defineProps<IProps>(), {
 const sortedKey = ref<string | undefined>(props.sortedKey)
 const sortedDirection = ref<'asc' | 'desc'>(props.sortedDirection)
 const computedItems = computed(() => {
+  if (!Array.isArray(props.items)) {
+    console.warn('Items is not an array:', props.items)
+    return []
+  }
   const results = props.items.slice()
   const key = sortedKey.value
   if (typeof key === 'string') {
     const field = props.fields.find((field: TableField) => field.key === key)
     results.sort((a, b) => {
-      const aVal = field?.sortByFormatted && field?.formatter 
-        ? field.formatter(a[key]) 
-        : a[key]
-      const bVal = field?.sortByFormatted && field?.formatter 
-        ? field.formatter(b[key]) 
-        : b[key]
+      const aVal = field?.sortByFormatted && field?.formatter ? field.formatter(a[key]) : a[key]
+      const bVal = field?.sortByFormatted && field?.formatter ? field.formatter(b[key]) : b[key]
       const compared =
         typeof aVal === 'string' && typeof bVal === 'string'
           ? aVal.localeCompare(bVal)
@@ -126,19 +130,16 @@ const computedItems = computed(() => {
     })
   }
   // pagination
-  const sliceFirstIdx = props.perPage > 0 ? (props.currentPage - 1) * props.perPage : 0
-  const sliceLength = props.perPage > 0 ? Math.min(results.length, props.perPage) : results.length
-  return results
-    .slice(sliceFirstIdx, sliceFirstIdx + sliceLength)
-    .map((row: TableItem) => {
-        return props.fields.reduce((item: TableItem, field: TableField) => {
-          const key = field.key
-          item[key] = field?.sortByFormatted && field?.formatter 
-          ? field.formatter(row[key]) 
-          : row[key]
-          return item
-        }, {})
-    })
+  const sliceFirstIdx = (props.currentPage - 1) * props.perPage
+  const sliceEnd =
+    props.perPage > 0 ? Math.min(results.length, sliceFirstIdx + props.perPage) : results.length
+  return results.slice(sliceFirstIdx, sliceEnd).map((row: TableItem) => {
+    return Object.keys(row).reduce((item: TableItem, key: string) => {
+      const field = props.fields.find((field: TableField) => field.key === key)
+      item[key] = field?.formatter ? field.formatter(row[key]) : row[key]
+      return item
+    }, {})
+  })
 })
 const handleSort = (key: string) => {
   sortedDirection.value =

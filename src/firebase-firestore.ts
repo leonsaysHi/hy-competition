@@ -9,10 +9,11 @@ export const competitionsName = 'competitions'
 export const gamesName = 'games'
 export const teamsName = 'teams'
 export const playersName = 'players'
-export const computedCompetitionName = `${competitionsName}-computed`
 
-export const competitionsColl = collection(db, competitionsName).withConverter(competitionConverter)
+export const playerCompetitionsComputedName = `player-${competitionsName}-computed`
+export const teamCompetitionsComputedName = `team-${competitionsName}-computed`
 
 export const teamsColl = collection(db, teamsName)
 export const playersColl = collection(db, playersName)
 export const gamesColl = collection(db, gamesName)
+export const competitionsColl = collection(db, competitionsName).withConverter(competitionConverter)

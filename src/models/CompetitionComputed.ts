@@ -29,25 +29,25 @@ export interface CompetitionPhaseComputed {
 }
 // Teams standinds
 export interface CompetitionStanding extends TeamStandingStats {
-  id: TeamId
+  teamId: TeamId
   pos?: number
   playin?: 'pass' | 'elim'
   playoff?: 'winner' | number // 'winner', 2: final, 4: semi, 8: quarter ...
 }
 export interface CompetitionStandingComputed extends CompetitionStanding {
   // to save as computed
-  competitionId: CompetitionId
+  id: CompetitionId
 }
 // Players rankings
 export interface CompetitionRanking extends PlayerRankingStats {
-  id: PlayerId
+  playerId: PlayerId
   teamId: TeamId
-  competitionId?: CompetitionId
+  id?: CompetitionId
   number: string
 }
 export interface CompetitionRankingComputed extends CompetitionRanking {
   // to save as computed
-  competitionId: CompetitionId
+  id: CompetitionId
 }
 
 const { statsKeys, teamStandingKeys } = useOptionsLib() // !gp !awards
@@ -187,7 +187,7 @@ export default class CompetitionClass {
             })
             hist.reverse()
             standing.push({
-              id: teamId,
+              teamId,
               ...getTeamPhaseStanding(teamId, teamGames),
               hist
             })
@@ -231,7 +231,8 @@ export default class CompetitionClass {
                 })
                 return {
                   teamId: team.id,
-                  ...player,
+                  playerId: player.id,
+                  number: player.number,
                   ...getPlayerPhaseRankingStats(playerId, playerGames)
                 }
               }
@@ -273,13 +274,15 @@ export default class CompetitionClass {
       (rankingList: CompetitionRankingComputed[], phase: CompetitionPhaseComputed) => {
         phase.groups.forEach((group: CompetitionGroupComputed) => {
           group.ranking.forEach((rank: CompetitionRanking) => {
-            const idx = rankingList.findIndex((r: CompetitionRankingComputed) => r.id === rank.id)
+            const idx = rankingList.findIndex(
+              (r: CompetitionRankingComputed) => r.playerId === rank.playerId
+            )
             const newRank =
               idx > -1
                 ? rankingList[idx]
                 : {
                     ...rank,
-                    competitionId: this.row.id,
+                    id: this.row.id,
                     ...getEmptyRankingStats()
                   }
             statsKeys.forEach((opt: Option) => {
@@ -304,10 +307,10 @@ export default class CompetitionClass {
 
   // each teams overall stats
   get competitionStandings(): CompetitionStandingComputed[] {
-    const getEmptyRankingStats = (): PlayerRankingStats => ({
+    const getEmptyStandingStats = (): PlayerRankingStats => ({
       gp: 0,
       awards: [],
-      ...statsKeys.reduce((stats: PlayerStats, opt: Option) => {
+      ...teamStandingKeys.reduce((stats: PlayerStats, opt: Option) => {
         return {
           ...stats,
           [opt.value]: 0
@@ -326,8 +329,8 @@ export default class CompetitionClass {
                 ? standingList[idx]
                 : ({
                     ...stand,
-                    competitionId: this.row.id,
-                    ...getEmptyRankingStats()
+                    id: this.row.id,
+                    ...getEmptyStandingStats()
                   } as CompetitionStandingComputed)
             teamStandingKeys.forEach((opt: Option) => {
               const key = opt.value as TeamStatKey

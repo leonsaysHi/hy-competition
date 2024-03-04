@@ -17,7 +17,7 @@ import type { Game } from '@/types/games'
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
 
-const { competitionPhases } = useOptionsLib()
+const { competitionPhases, getGender, getCategory } = useOptionsLib()
 
 const { isReady, row, computedPhases } = useCompetition(competitionId)
 
@@ -67,6 +67,12 @@ const groupGames = computed<Game[]>(() => {
 <template>
   <div>
     <h1>{{ row?.title }}</h1>
+    <div class="d-flex gap-3 align-items-start">
+      <p>{{ row?.date }}</p>
+      <p>{{ getGender(row?.gender)?.long }}</p>
+      <p>{{ getCategory(row?.category)?.text }}</p>
+    </div>
+
     <template v-if="!isReady">
       <SpinnerComp />
     </template>

@@ -21,15 +21,15 @@ const { competitionId, teamId } = route.params as { competitionId: string; teamI
 
 const { getTeamName } = useLibs()
 const { teamStandingKeys } = useOptionsLib()
-const { isReady, row, games, teams, competitionStandings } = useCompetition(competitionId)
+const { isReady, games, teams, competitionStandings } = useCompetition(competitionId)
 
 const competitionComputed = computed<CompetitionStandingComputed | undefined>(() => {
   return competitionStandings.value?.find(
-    (stand: CompetitionStandingComputed) => stand.id === teamId
+    (stand: CompetitionStandingComputed) => stand.teamId === teamId
   )
 })
 const statsItem = computed<TableItem[]>(() => {
-  return [competitionComputed.value as unknown as TableItem]
+  return competitionComputed.value ? [competitionComputed.value as unknown as TableItem] : []
 })
 
 const competitionTeam = computed(() => {
@@ -45,14 +45,16 @@ const teamGames = computed<Game[]>(() =>
 const statsFields: TableField[] = [
   ...teamStandingKeys.map((opt: Option) => ({
     key: opt.value,
-    label: opt.text
+    label: opt.text,
+    thClass: 'text-end',
+    tdClass: 'text-end'
   })),
-  { key: 'hist', label: 'L5' }
+  { key: 'hist', label: 'L5', thClass: 'text-end', tdClass: 'text-end' }
 ]
 </script>
 <template>
   <div>
-    <template v-if="!isReady || !row?.id">
+    <template v-if="!isReady">
       <SpinnerComp />
     </template>
     <template v-else>
