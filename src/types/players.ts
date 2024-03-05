@@ -1,12 +1,12 @@
 export type PlayerId = string
-export type Gender = 'm' | 'f'
+export type GenderKey = 'm' | 'f'
 
 // data
 export interface PlayerDoc {
   id?: PlayerId
   fname: string
   lname: string
-  gender: Gender
+  gender: GenderKey
   identification: string
   dob: string
 }

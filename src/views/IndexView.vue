@@ -14,16 +14,16 @@ import { RouterLink, RouterView } from 'vue-router'
 
     <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
       <li class="nav-item">
-        <RouterLink :to="{ name: 'home' }" class="nav-link">Home</RouterLink>
+        <RouterLink :to="{ name: 'home' }" class="nav-link">{{ $t('sections.home') }}</RouterLink>
       </li>
       <li class="nav-item">
-        <RouterLink :to="{ name: 'about' }" class="nav-link">About</RouterLink>
+        <RouterLink :to="{ name: 'about' }" class="nav-link">{{ $t('sections.about')}}</RouterLink>
       </li>
       <li class="nav-item">
-        <RouterLink :to="{ name: 'teams' }" class="nav-link">Teams</RouterLink>
+        <RouterLink :to="{ name: 'teams' }" class="nav-link">{{ $tc('sections.team', 2) }}</RouterLink>
       </li>
       <li class="nav-item">
-        <RouterLink :to="{ name: 'players' }" class="nav-link">Players</RouterLink>
+        <RouterLink :to="{ name: 'players' }" class="nav-link">{{ $tc('sections.player', 2) }}</RouterLink>
       </li>
     </ul>
   </header>

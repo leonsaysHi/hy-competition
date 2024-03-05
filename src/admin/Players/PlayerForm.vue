@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Gender, Player, PlayerId } from '@/types/players'
+import type { GenderKey, Player, PlayerId } from '@/types/players'
 import { ref, watch } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import InputComp from '@/components/InputComp.vue'
@@ -19,7 +19,7 @@ type DataForm = {
   fname: string
   lname: string
   identification: string
-  gender: Gender | undefined
+  gender: GenderKey | undefined
   dob: string
   foto: string
 }

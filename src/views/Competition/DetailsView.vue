@@ -6,7 +6,7 @@ import { computed, ref } from 'vue'
 import type {
   CompetitionGroupComputed,
   CompetitionPhaseComputed
-} from '@/models/CompetitionComputed'
+} from '@/types/computed'
 import type { Option } from '@/types/comp-fields'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
@@ -14,6 +14,7 @@ import CompetitionStanding from '@/components/competitions/CompetitionStanding.v
 import CompetitionRanking from '@/components/competitions/CompetitionRanking.vue'
 import GamesList from '@/components/games/GamesList.vue'
 import type { Game } from '@/types/games'
+
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
 
@@ -35,7 +36,6 @@ const selectedPhaseIdx = ref('0')
 const selectedPhase = computed<CompetitionPhaseComputed>(
   () => computedPhases.value[Number(selectedPhaseIdx.value)] as CompetitionPhaseComputed
 )
-
 const selectedGroupIdx = ref('0')
 const groupsOptions = computed<Option[] | undefined>(() =>
   Array.isArray(selectedPhase.value?.groups)
@@ -52,8 +52,8 @@ const selectedGroup = computed<CompetitionGroupComputed>(
 )
 
 const gamesViewOptions: Option[] = [
-  { text: 'Lastest', value: 'next' },
-  { text: 'Upcoming', value: 'prev' }
+  { text: 'global.previous', value: 'prev' },
+  { text: 'global.upcoming', value: 'next' }
 ]
 const currentGamesView = ref<'prev' | 'next'>('prev')
 const groupGames = computed<Game[]>(() => {
@@ -100,10 +100,10 @@ const groupGames = computed<Game[]>(() => {
         <template v-if="groupsOptions.length > 1">
           <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons />
         </template>
-        <h5>Standing</h5>
+        <h5>{{ $t('global.standing') }}</h5>
         <CompetitionStanding :value="selectedGroup.standing" />
         <div class="d-flex align-items-end justify-content-between">
-          <h5>Games</h5>
+          <h5>{{ $tc('global.game', 2) }}</h5>
           <ul class="nav nav-underline justify-content-end">
             <template v-for="opt in gamesViewOptions" :key="opt.value">
               <li class="nav-item">
@@ -113,7 +113,7 @@ const groupGames = computed<Game[]>(() => {
                   :aria-current="currentGamesView === opt.value ? 'page' : false"
                   href="#"
                   @click="currentGamesView = opt.value"
-                  >{{ opt.text }}</a
+                  >{{ $tc(opt.text, 2) }}</a
                 >
               </li>
             </template>
@@ -121,7 +121,7 @@ const groupGames = computed<Game[]>(() => {
         </div>
         <GamesList :items="groupGames" />
         <hr class="my-5" />
-        <h5>Ranking</h5>
+        <h5>{{ $t('global.ranking') }}</h5>
         <CompetitionRanking :value="selectedGroup.ranking" :length="5" />
       </template>
     </template>

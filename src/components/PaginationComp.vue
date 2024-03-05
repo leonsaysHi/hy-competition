@@ -4,10 +4,11 @@
       <template v-for="page in pageItems" :key="page">
         <li
           class="page-item"
-          :class="{ active: model === page }"
+          :class="{ active: pageItems.length && model === page, disabled: !pageItems.length }"
           :aria-current="model === page ? 'page' : false"
         >
-          <a class="page-link" href="#" @click="model = page">{{ page }}</a>
+          <template v-if="model === page"><span class="page-link">{{ page }}</span></template>
+          <template v-else><a class="page-link" href="#" @click="model = page">{{ page }}</a></template>
         </li>
       </template>
     </ul>

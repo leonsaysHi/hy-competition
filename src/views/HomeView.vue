@@ -5,9 +5,7 @@ const { isReady, rows: competitions } = useCompetitionsLib()
 </script>
 <template>
   <div>
-    <h1>Organization home</h1>
-    <h4>All competitions list:</h4>
-    <p>Infos, competitions list w/ rank</p>
+    <h1>{{ $t('home.title') }}</h1>
     <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-2">
       <template v-if="!isReady">
         <SpinnerComp />
@@ -21,11 +19,11 @@ const { isReady, rows: competitions } = useCompetitionsLib()
                 <RouterLink
                   :to="{ name: 'competition', params: { competitionId: row.id } }"
                   class="btn btn-primary stretched-link"
-                  >View</RouterLink
+                  >{{ $t('cta.view') }}</RouterLink
                 >
               </div>
               <div class="card-footer">
-                <small class="text-body-secondary">Last updated 3 mins ago</small>
+                <small class="text-body-secondary">{{ $t('home.lastUpdate') }} {{ row.lastUpdate }}</small>
               </div>
             </div>
           </div>
