@@ -11,6 +11,8 @@ import type { CompetitionPlayer } from '@/types/players'
 import type { GameBoxScore } from '@/types/games'
 import type { PlayerStatKey } from '@/types/stats'
 
+import { useI18n } from "vue-i18n"
+const { t } = useI18n()
 interface IProps {
   boxscore: GameBoxScore
   teams: CompetitionTeam[]
@@ -102,6 +104,6 @@ const totalsItem = computed<TableItem>(() => ({
         {{ getPlayerName(value) }}
       </RouterLink></template
     >
-    <template #footerid><span class="fw-lighter">Totals</span></template>
+    <template #footerid><span class="fw-lighter">{{ t('global.total', 2) }}</span></template>
   </TableComp>
 </template>

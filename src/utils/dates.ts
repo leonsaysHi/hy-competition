@@ -1,18 +1,19 @@
-import { isDate, parseISO, format, add, getWeek } from 'date-fns'
+import type { DateFormats } from '@/types/utils'
+import { isDate, parseISO, format } from 'date-fns'
 import { Timestamp } from 'firebase/firestore'
 
-export function dateToUTCString(date: Date) {
-  return format(add(date, { minutes: date.getTimezoneOffset() }), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-}
+
 export function dateToTimeStamp(date: Date = new Date()) {
   return Timestamp.fromDate(isDate(date) ? date : parseISO(date))
 }
-export function dateToDayValue(date: Date) {
-  return format(date, 'yyyy-MM-dd')
-}
-export function dateToWeekRef(date: Date) {
-  return getWeek(date, { weekStartsOn: 1 }) + '-' + format(date, 'yy')
-}
-export function dateToTimeValue(date: Date) {
-  return format(date, 'HH:mm')
+
+export function formatDate(date: Date):DateFormats {
+  const min = format(date, 'mm')
+    const time = format(date, 'h') + (min !== '00' ? ':' + min : '') + format(date, 'aa')
+    return {
+      num: format(date, 'P'),
+      short: format(date, 'do LLL'),
+      long: format(date, 'iii, do LLL'),
+      time
+    }
 }

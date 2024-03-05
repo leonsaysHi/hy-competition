@@ -17,6 +17,8 @@ import useLibs from '@/composable/useLibs'
 import type { ScoresComputed } from '@/models/GameComputed'
 import type { TableField, TableItem } from '@/types/comp-table'
 
+import { useI18n } from "vue-i18n"
+const { t } = useI18n()
 const { getTeam } = useLibs()
 
 interface IProps {
@@ -28,12 +30,12 @@ const fields = computed((): TableField[] => {
   return [
     {
       key: 'id',
-      label: 'Team',
+      label: t('global.team', 2),
       tdClass: 'jersey-team text-uppercase'
     },
     ...props.scores[0].periods.map((n: number, idx: number) => ({
       key: `p${idx}`,
-      label: `Q${idx + 1}`,
+      label:  `${t('global.gameDetails.period.text')}${idx + 1}`,
       thClass: 'text-center',
       tdClass: 'text-center'
     }))

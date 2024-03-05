@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import useCompetitionsLib from '@/composable/useCompetitionsLib'
+import {  } from '@/utils/dates'
 const { isReady, rows: competitions } = useCompetitionsLib()
 </script>
 <template>

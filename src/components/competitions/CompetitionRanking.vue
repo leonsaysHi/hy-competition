@@ -10,6 +10,10 @@ import type { TableField } from '@/types/comp-table'
 import { getOrd, getAvg } from '@/utils/maths'
 import type { PlayerStats } from '@/types/stats'
 import type { Option } from '@/types/comp-fields'
+
+import { useI18n } from "vue-i18n"
+const { t } = useI18n()
+
 interface IProps {
   value: CompetitionRanking[]
   length?: number
@@ -26,9 +30,9 @@ const { playerRankingKeys, statsKeys } = useOptionsLibs()
 const competition = getCompetition(competitionId)
 
 const fields = computed(() => ([
-  { label: 'Pos', key: 'pos', thClass: 'text-center', tdClass: 'text-center' },
-  { label: 'Players', key: 'playerId' },
-  { label: 'Team', key: 'teamId' },
+  { label: t('options.rankingStats.text.gp'), key: 'pos', thClass: 'text-center', tdClass: 'text-center' },
+  { label: t('global.player', 2), key: 'playerId' },
+  { label: t('global.team', 2), key: 'teamId' },
   ...playerRankingKeys
     .filter((opt: Option) => competition?.trackedStats.includes(opt.value))
     .map((opt: Option): TableField => ({

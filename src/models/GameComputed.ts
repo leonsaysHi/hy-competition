@@ -5,7 +5,9 @@ import type { PlayerStatKey } from '@/types/stats'
 import type { Team, TeamId } from '@/types/teams'
 import { add } from '@/utils/maths'
 import type { RouteLocationRaw } from 'vue-router'
-import { format } from 'date-fns'
+import { parseISO } from 'date-fns'
+import { formatDate } from '@/utils/dates'
+import type { DateFormats } from '@/types/utils'
 export interface ScoresComputed extends Team {
   id: TeamId
   title: string
@@ -40,16 +42,9 @@ export default class GameComputedClass {
   get boxScore(): GameBoxScore {
     return this.row.boxscore
   }
-  get date(): { num: string; short: string; long: string; time: string } {
-    const value = this.row.datetime
-    const min = format(value, 'mm')
-    const time = format(value, 'h') + (min !== '00' ? ':' + min : '') + format(value, 'aa')
-    return {
-      num: format(value, 'P'),
-      short: format(value, 'do LLL'),
-      long: format(value, 'iii, do LLL'),
-      time
-    }
+
+  get date(): DateFormats {
+    return formatDate(parseISO(this.row.datetime))
   }
 
   get scores(): ScoresComputed[] {

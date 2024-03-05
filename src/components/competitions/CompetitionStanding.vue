@@ -4,9 +4,14 @@ import TableComp from '@/components/TableComp.vue'
 import LastGames from '@/components/games/LastGames.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import useLibs from '@/composable/useLibs'
+import useOptionsLibs from '@/composable/useOptionsLib'
 import type { CompetitionStanding } from '@/types/computed'
 import { useRoute } from 'vue-router'
 import { getOrd } from '@/utils/maths'
+
+import { useI18n } from "vue-i18n"
+const { t } = useI18n()
+const { teamStandingKeys } = useOptionsLibs()
 const route = useRoute()
 const { competitionId } = route.params
 
@@ -18,18 +23,22 @@ const props = withDefaults(defineProps<IProps>(), {})
 const { getTeamName } = useLibs()
 const fields = [
   {
-    label: 'Pos',
+    label: t('options.rankingStats.text.pos'),
     key: 'pos',
     sortable: true,
     thClass: 'text-center',
     tdClass: 'text-center fw-bold pe-2'
   },
-  { label: 'Teams', key: 'teamId' },
-  { label: 'GP', key: 'gp', sortable: true, thClass: 'text-end', tdClass: 'text-end' },
-  { label: 'W', key: 'wins', sortable: true, thClass: 'text-end', tdClass: 'text-end' },
-  { label: 'PTS+', key: 'ptspos', sortable: true, thClass: 'text-end', tdClass: 'text-end' },
-  { label: 'PTS-', key: 'ptsneg', sortable: true, thClass: 'text-end', tdClass: 'text-end' },
-  { label: 'L5', key: 'hist', thClass: 'text-center', tdClass: 'text-end' }
+  { label: t('global.team', 2), key: 'teamId' },
+  ...(teamStandingKeys
+    .map((opt: Option): TableField => ({
+      key: opt.value,
+      label: opt.text,
+      sortable: true,
+      thClass: 'text-end',
+      tdClass: 'text-end'
+    }))),
+  { label: t('options.standingStats.text.hist'), key: 'hist', thClass: 'text-center', tdClass: 'text-end' }
 ]
 const items = computed(() => {
   const items = props.value.slice()

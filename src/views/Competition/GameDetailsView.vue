@@ -13,6 +13,8 @@ import type { Game, PlayerBoxScore, GameBoxScore } from '@/types/games'
 import type { CompetitionPlayer } from '@/types/players'
 import AwardsList from '@/components/competitions/AwardsList.vue'
 
+import { useI18n } from "vue-i18n"
+const { t } = useI18n()
 const route = useRoute()
 const { competitionId, gameId } = route.params as { competitionId: string; gameId: string }
 
@@ -112,7 +114,7 @@ const teamsBoxscores = computed<GameBoxScore[]>(() => {
               :aria-current="statView === 0 ? 'page' : false"
               href="#"
               @click="statView = 0"
-              >Game leaders</a
+              >{{ t('global.gameDetails.leader', 2)}}</a
             >
           </li>
           <li class="nav-item">
@@ -122,7 +124,7 @@ const teamsBoxscores = computed<GameBoxScore[]>(() => {
               :aria-current="statView === 1 ? 'page' : false"
               href="#"
               @click="statView = 1"
-              >Boxscore</a
+              >{{ t('global.statistic', 2)}}</a
             >
           </li>
         </ul>

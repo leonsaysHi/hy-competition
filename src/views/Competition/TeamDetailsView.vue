@@ -9,13 +9,15 @@ import TeamLogo from '@/components/teams/TeamLogo.vue'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import GamesList from '@/components/games/GamesList.vue'
-import type { CompetitionStandingComputed } from '@/models/CompetitionComputed'
+import type { CompetitionStandingComputed } from '@/types/computed'
 import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
 import type { Option } from '@/types/comp-fields'
 import LastGames from '@/components/games/LastGames.vue'
 import type { CompetitionTeam } from '@/types/teams'
 
+import { useI18n } from "vue-i18n"
+const { t } = useI18n()
 const route = useRoute()
 const { competitionId, teamId } = route.params as { competitionId: string; teamId: string }
 
@@ -43,13 +45,14 @@ const teamGames = computed<Game[]>(() =>
     : []
 )
 const statsFields: TableField[] = [
-  ...teamStandingKeys.map((opt: Option) => ({
-    key: opt.value,
-    label: opt.text,
-    thClass: 'text-end',
-    tdClass: 'text-end'
-  })),
-  { key: 'hist', label: 'L5', thClass: 'text-end', tdClass: 'text-end' }
+  ...(teamStandingKeys
+    .map((opt: Option): TableField => ({
+      key: opt.value,
+      label: opt.text,
+      thClass: 'text-end',
+      tdClass: 'text-end'
+    }))),
+  { label: t('options.standingStats.text.hist'), key: 'hist', thClass: 'text-center', tdClass: 'text-end' }
 ]
 </script>
 <template>
@@ -71,6 +74,7 @@ const statsFields: TableField[] = [
         </template>
       </TableComp>
       <hr />
+      <h3>{{ t('global.game', 2) }}</h3>
       <GamesList :items="teamGames" />
     </template>
   </div>

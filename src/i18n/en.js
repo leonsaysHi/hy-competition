@@ -55,31 +55,23 @@ const messages = {
         },
         rankingStats: {
             text: {
-                pos: 'Pos',
-                gp: 'GP',
+                gp: 'GP'
             },
             long: {
-                pos: 'Posición',
-                gp: 'Partidos jugados',
+                gp: 'Partidos jugados'
             }
         },
         standingStats: {
             text: {
-                pos: 'Pos',
-                gp: 'GP',
                 wins: 'W',
                 ptspos: 'Pts+',
                 ptsneg: 'Pts-',
-                hist: 'Ú5',
               
             },
             long: {
-                pos: 'Posición',
-                gp: 'Partidos jugados',
                 wins: 'Ganados',
                 ptspos: 'Puntos anotados',
                 ptsneg: 'Puntos encajados',
-                hist: 'Últimos 5 juegos',
             }
         },
     },
@@ -92,26 +84,9 @@ const messages = {
     },
     //
     global: {
-        group: 'Grupo' | 'Grupos',
         standing: 'Clasificación',
         ranking: 'Líderes',
         game: 'Juego | Juegos',
-        gameDetails: {
-            leader: 'Lídere de partido | Líderes de partido',
-            period: {
-                text: 'P',
-                long: 'Periodo | Periodos',
-            },
-            opponent: {
-                text: 'Adv',
-                long: 'Adversario | Adversarios',
-            },
-        },
-        team: 'Equipo | Equipos',
-        player: 'Jugador | Jugadores',
-        statistic: 'Estadística | Estadísticas',
-        total: 'Total | Totals',
-        date: 'Fecha | Fechas',
         previous: 'Ultimo | Ultimos',
         upcoming: 'Proximo | Proximos',
     },

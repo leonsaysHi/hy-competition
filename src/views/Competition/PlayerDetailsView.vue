@@ -15,9 +15,12 @@ import type { Game } from '@/types/games'
 import type { Option } from '@/types/comp-fields'
 import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
-import type { CompetitionRanking } from '@/models/CompetitionComputed'
-import type { PlayerStatKey, PlayerStats } from '@/types/stats'
+import type { CompetitionRanking } from '@/types/computed'
+import type { PlayerStatKey } from '@/types/stats'
 import { getAvg } from '@/utils/maths'
+
+import { useI18n } from "vue-i18n"
+const { t } = useI18n()
 const route = useRoute()
 const { competitionId, playerId } = route.params as { competitionId: string; playerId: string }
 
@@ -102,6 +105,7 @@ const statsItem = computed<TableItem[]>(() => {
       </div>
       <TableComp :fields="statsFields" :items="statsItem"></TableComp>
       <hr />
+      <h3>{{ t('global.game', 2) }}</h3>
       <PlayerGamesList :items="playerGames" />
     </template>
   </div>

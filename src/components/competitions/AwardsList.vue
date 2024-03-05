@@ -5,7 +5,8 @@ import useLibs from '@/composable/useLibs'
 import useOptionsLibs from '@/composable/useOptionsLib'
 import type { AwardItem } from '@/types/stats'
 import type { PlayerId } from '@/types/players'
-
+import { useI18n } from "vue-i18n"
+const { t } = useI18n()
 interface IProps {
   items: AwardItem[]
   playerId?: PlayerId
