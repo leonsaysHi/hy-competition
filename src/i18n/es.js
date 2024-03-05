@@ -121,7 +121,8 @@ const messages = {
         date: 'Fecha | Fechas',
         previous: 'Ultimo | Ultimos',
         upcoming: 'Proximo | Proximos',
-        search: 'Buscar'
+        search: 'Buscar',
+        backToTop: 'Volver arriba',
     },
 }
 
