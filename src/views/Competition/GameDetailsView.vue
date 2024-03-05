@@ -11,6 +11,7 @@ import GameComputed from '@/models/GameComputed'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import type { Game, PlayerBoxScore, GameBoxScore } from '@/types/games'
 import type { CompetitionPlayer } from '@/types/players'
+import AwardsList from '@/components/competitions/AwardsList.vue'
 
 const route = useRoute()
 const { competitionId, gameId } = route.params as { competitionId: string; gameId: string }
@@ -97,8 +98,9 @@ const teamsBoxscores = computed<GameBoxScore[]>(() => {
         </div>
       </div>
       <template v-if="gameComputed.isFinished">
-        <div class="d-flex justify-content-center">
+        <div class="vstack gap-2 align-items-center">
           <GamePeriods :scores="gameComputed.scores" />
+          <AwardsList :items="gameComputed.row.awards" class="d-inline-flex flex-column gap-1" />
         </div>
       </template>
       <template v-if="gameComputed.isFinished">

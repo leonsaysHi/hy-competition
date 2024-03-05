@@ -1,4 +1,4 @@
-import type { Competition, CompetitionId, Phase, PhaseType } from '@/types/competitions'
+import type { Competition, Phase } from '@/types/competitions'
 import type { Game } from '@/types/games'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import type { Option } from '@/types/comp-fields'
@@ -10,45 +10,20 @@ import type {
   PlayerStats,
   PlayerStatKey,
   TeamStatKey,
-  TeamStandingStats,
   GamesHist
 } from '@/types/stats'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import { add } from '@/utils/maths'
 import useOptionsLib from '@/composable/useOptionsLib'
 import GameComputedClass, { type ScoresComputed } from './GameComputed'
-
-export interface CompetitionGroupComputed {
-  games: Game[]
-  standing: CompetitionStanding[]
-  ranking: CompetitionRanking[]
-}
-export interface CompetitionPhaseComputed {
-  type: PhaseType
-  groups: CompetitionGroupComputed[]
-}
-// Teams standinds
-export interface CompetitionStanding extends TeamStandingStats {
-  teamId: TeamId
-  pos?: number
-  playin?: 'pass' | 'elim'
-  playoff?: 'winner' | number // 'winner', 2: final, 4: semi, 8: quarter ...
-}
-export interface CompetitionStandingComputed extends CompetitionStanding {
-  // to save as computed
-  id: CompetitionId
-}
-// Players rankings
-export interface CompetitionRanking extends PlayerRankingStats {
-  playerId: PlayerId
-  teamId: TeamId
-  id?: CompetitionId
-  number: string
-}
-export interface CompetitionRankingComputed extends CompetitionRanking {
-  // to save as computed
-  id: CompetitionId
-}
+import type {
+  CompetitionGroupComputed,
+  CompetitionPhaseComputed,
+  CompetitionRanking,
+  CompetitionRankingComputed,
+  CompetitionStanding,
+  CompetitionStandingComputed
+} from '@/types/computed'
 
 const { statsKeys, teamStandingKeys } = useOptionsLib() // !gp !awards
 
@@ -125,7 +100,12 @@ const getPlayerPhaseRankingStats = (playerId: PlayerId, games: Game[]): PlayerRa
   )
   const playerStats: PlayerStats = getPlayerStatsFromGames(playerId, playedgames)
   const playerAwards: AwardItem[] = playedgames.reduce((awards: AwardItem[], game: Game) => {
-    return [...awards, ...game.awards.filter((row: AwardItem) => row.id === playerId)]
+    return [
+      ...awards,
+      ...game.awards
+        .filter((row: AwardItem) => row.id === playerId)
+        .map((row: AwardItem) => ({ ...row, gameId: game.id }))
+    ]
   }, [])
   return {
     // PlayerRankingStats
@@ -202,12 +182,12 @@ export default class CompetitionClass {
           const bPct = getPct(b)
           const bestWinningPerc = aPct - bPct
           const mostPlayedGames = b.gp - a.gp
-          const bestDiff = getDiff(a) - getDiff(b)
+          const bestDiff = getDiff(b) - getDiff(a)
           return bestWinningPerc || mostPlayedGames || bestDiff
         })
         standing.forEach((row: CompetitionStanding, idx: number) => {
           if (type === 'groups') {
-            standing[idx].pos = standing[idx].gp ? idx + 1 : standing.length
+            standing[idx].pos = standing[idx].gp ? idx + 1 : standing.length + 1
           } else {
             standing[idx].playoff = groupTeams.length / (row.wins + 1)
           }
@@ -229,11 +209,18 @@ export default class CompetitionClass {
                     !game.boxscore[playerId].dnp
                   )
                 })
+                const ranking = getPlayerPhaseRankingStats(playerId, playerGames)
                 return {
                   teamId: team.id,
                   playerId: player.id,
                   number: player.number,
-                  ...getPlayerPhaseRankingStats(playerId, playerGames)
+                  ...ranking,
+                  awards: [
+                    ...ranking.awards,
+                    ...this.row.awards
+                      .filter((row: AwardItem) => row.id === player.id)
+                      .map((row: AwardItem) => ({ ...row, competitionId: this.row.id }))
+                  ]
                 }
               }
             )
@@ -322,7 +309,7 @@ export default class CompetitionClass {
         phase.groups.forEach((group: CompetitionGroupComputed) => {
           group.standing.forEach((stand: CompetitionStanding) => {
             const idx = standingList.findIndex(
-              (r: CompetitionStandingComputed) => r.id === stand.id
+              (r: CompetitionStandingComputed) => r.id === stand.teamId
             )
             const newStand =
               idx > -1

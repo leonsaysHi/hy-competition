@@ -85,7 +85,7 @@ const data = ref<FormData>({
     })
     return boxscore
   }, {}),
-  awards: []
+  awards: props.value.awards
 })
 
 const boxscoreByTeams = computed({

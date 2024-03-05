@@ -9,7 +9,9 @@ import useOptionsLib from '@/composable/useOptionsLib'
 import useTeamComputed from '@/composable/useTeamComputed'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import LastGames from '@/components/games/LastGames.vue'
-import type { CompetitionStandingComputed } from '@/models/CompetitionComputed'
+import type { CompetitionStandingComputed } from '@/types/computed'
+import type { GamesHist, TeamStatKey } from '@/types/stats'
+import { getOrd } from '@/utils/maths'
 
 const route = useRoute()
 const { teamId } = route.params as { teamId: TeamId }
@@ -20,6 +22,7 @@ const { isReady: isTeamComputedReady, rows } = useTeamComputed(teamId)
 const team = computed(() => getTeam(teamId))
 const fields = computed(() => [
   { key: 'competition', label: 'Competitions' },
+  { key: 'rank', label: 'Result' },
   ...teamStandingKeys.map((opt: Option) => ({
     key: opt.value,
     label: opt.text,
@@ -28,12 +31,39 @@ const fields = computed(() => [
   })),
   { key: 'hist', label: 'L5', thClass: 'text-end', tdClass: 'text-end' }
 ])
+const stats = computed(() => {
+  return ['gp', 'wins'].map((key: TeamStatKey) => {
+    const opt = teamStandingKeys.find((opt: Option) => opt.value === key)
+    const total = Array.isArray(items.value)
+      ? items.value.reduce(
+          (total: number, item: CompetitionStandingComputed) => (total += item[key]),
+          0
+        )
+      : 0
+    return {
+      key,
+      text: opt?.long,
+      total
+    }
+  })
+})
+const hist = computed<GamesHist>(
+  (): GamesHist =>
+    Array.isArray(items.value)
+      ? items.value.reduce((result: GamesHist, item: CompetitionStandingComputed) => {
+          result.push(...item.hist)
+          const startIdx = Math.max(result.length - 5, 0)
+          return result.slice(startIdx, startIdx + 5)
+        }, [] as GamesHist)
+      : []
+)
 const items = computed(() => {
   return rows.value?.map((row: CompetitionStandingComputed) => {
     const competition = getCompetition(row.id)
 
     return {
       competition,
+      rank: row.pos + getOrd(row.pos) || row.playoff + getOrd(row.playoff) || '-',
       ...row
     }
   })
@@ -45,11 +75,29 @@ const items = computed(() => {
       <SpinnerComp />
     </template>
     <template v-else>
-      <div class="d-flex flex-column align-items-center gap-2">
+      <div class="mb-3 d-flex align-items-start gap-3">
         <TeamLogo :team-id="teamId" :size="150" />
-        <h1 class="display-6 fw-bold jersey-team">{{ team?.title }}</h1>
+        <div>
+          <h1 class="display-6 fw-bold jersey-team">{{ team?.title }}</h1>
+          <div class="hstack gap-2">
+            <template v-for="stat in stats" :key="stat.key">
+              <div class="vstack gap-2 text-center">
+                <strong class="px-4">{{ stat.text }}</strong>
+                <strong class="display-3">{{ stat.total }}</strong>
+              </div>
+              <div class="vr"></div>
+            </template>
+            <div class="vstack gap-2 text-center">
+              <div class="vstack gap-2 text-center">
+                <strong class="px-4">Last 5</strong>
+                <div class="flex-grow-1 d-flex align-items-center">
+                  <LastGames :items="hist" :length="5" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <p>List current and past competitions w/ results</p>
       <TableComp :fields="fields" :items="items">
         <template #competition="{ value }">
           <RouterLink

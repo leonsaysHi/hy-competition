@@ -16,11 +16,13 @@ import type { Option } from '@/types/comp-fields'
 import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
 import type { CompetitionRanking } from '@/models/CompetitionComputed'
+import type { PlayerStatKey, PlayerStats } from '@/types/stats'
+import { getAvg } from '@/utils/maths'
 const route = useRoute()
 const { competitionId, playerId } = route.params as { competitionId: string; playerId: string }
 
 const { getPlayerName } = useLibs()
-const { playerRankingKeys } = useOptionsLib()
+const { playerRankingKeys, statsKeys } = useOptionsLib()
 const {
   isReady: isCompetitionReady,
   getCompetitionPlayer,
@@ -59,7 +61,21 @@ const competitionComputed = computed<CompetitionRanking | undefined>(() => {
   return competitionRankings.value?.find((rank: CompetitionRanking) => rank.playerId === playerId)
 })
 const statsItem = computed<TableItem[]>(() => {
-  return competitionComputed.value ? [competitionComputed.value as unknown as TableItem] : []
+  const row = competitionComputed.value
+  return competitionComputed.value 
+  ? [
+      {
+        ...row,
+        ...statsKeys
+          .filter((opt: Option) => competition.value?.trackedStats.includes(opt.value))
+          .reduce((result:TableItem, opt:Option) => {
+            const key = opt.value as PlayerStatKey
+            result[key] = getAvg(row[key], row.gp)
+            return result
+          }, {})
+      }
+  ] 
+  : []
 })
 </script>
 <template>

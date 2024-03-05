@@ -17,7 +17,7 @@ interface IProps {
 }
 
 const route = useRoute()
-const { competitionId } = route.params
+const { competitionId } = route.params as { competitionId: string }
 const props = withDefaults(defineProps<IProps>(), {})
 
 const { getTeamName, getPlayerName, getCompetition } = useLibs()
@@ -91,7 +91,17 @@ const totalsItem = computed<TableItem>(() => ({
     small
   >
     <template #number="{ value }">#{{ value }}</template>
-    <template #id="{ value }">{{ getPlayerName(value) }}</template>
+    <template #id="{ value }"
+      ><RouterLink
+        class="d-flex align-items-center gap-2 link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+        :to="{
+          name: 'competition-player',
+          params: { competitionId: competitionId, playerId: value }
+        }"
+      >
+        {{ getPlayerName(value) }}
+      </RouterLink></template
+    >
     <template #footerid><span class="fw-lighter">Totals</span></template>
   </TableComp>
 </template>

@@ -9,27 +9,42 @@ import usePlayerComputed from '@/composable/usePlayerComputed'
 import useOptionsLib from '@/composable/useOptionsLib'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import type { CompetitionRankingComputed } from '@/models/CompetitionComputed'
-import type { PlayerStatKey } from '@/types/stats'
+import type { PlayerRankingKey, PlayerStatKey } from '@/types/stats'
 import type { Option } from '@/types/comp-fields'
 
 const route = useRoute()
 const { playerId } = route.params as { playerId: PlayerId }
 
-const { statsKeys, getCategory } = useOptionsLib()
+const { playerRankingKeys, getCategory } = useOptionsLib()
 const { isReady, getPlayer, getCompetition, getTeamName } = useLibs()
 const { isReady: isPlayerComputedReady, rows } = usePlayerComputed(playerId)
 const player = computed(() => getPlayer(playerId))
 const fields = computed(() => [
   { key: 'competition', label: 'Competitions' },
   { key: 'teamId', label: 'Team' },
-  { key: 'gp', label: 'GP' },
-  ...statsKeys.map((opt: Option) => ({
+  ...playerRankingKeys.map((opt: Option) => ({
     key: opt.value,
     label: opt.text,
     thClass: 'text-end',
     tdClass: 'text-end'
   }))
 ])
+const stats = computed(() => {
+  return ['gp', 'pts'].map((key: PlayerRankingKey) => {
+    const opt = playerRankingKeys.find((opt: Option) => opt.value === key)
+    const total = Array.isArray(items.value)
+      ? items.value.reduce(
+          (total: number, item: CompetitionRankingComputed) => (total += item[key]),
+          0
+        )
+      : 0
+    return {
+      key,
+      text: opt?.long,
+      total
+    }
+  })
+})
 const items = computed(() => {
   return rows.value?.map((row: CompetitionRankingComputed) => {
     const competition = getCompetition(row.id)
@@ -37,7 +52,7 @@ const items = computed(() => {
     return {
       ...row,
       competition,
-      ...statsKeys.reduce((stats, opt: Option) => {
+      ...playerRankingKeys.reduce((stats, opt: Option) => {
         const key = opt.value as PlayerStatKey
         return {
           ...stats,
@@ -56,9 +71,18 @@ const items = computed(() => {
     <template v-else>
       <div>
         <h1 class="display-6 fw-bold jersey-name">{{ player.fname }} {{ player.lname }}</h1>
+        <div class="mb-3 hstack gap-2">
+          <template v-for="(stat, idx) in stats" :key="stat.key">
+            <template v-if="idx > 0">
+              <div class="vr"></div>
+            </template>
+            <div class="vstack gap-2 text-center">
+              <strong class="px-4">{{ stat.text }}</strong>
+              <strong class="display-3">{{ stat.total }}</strong>
+            </div>
+          </template>
+        </div>
       </div>
-
-      <p>List current and past competitions w/ avg, awards</p>
       <TableComp :fields="fields" :items="items">
         <template #competition="{ value }">
           <RouterLink

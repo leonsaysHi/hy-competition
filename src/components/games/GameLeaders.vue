@@ -64,14 +64,14 @@ const getStatShort = (key: PlayerStatKey): string =>
     <template v-for="(items, key) in leadersBystats" :key="key">
       <div class="col d-flex">
         <div class="card card-sm">
-          <div class="card-body">
+          <div class="card-body d-flex">
+            <div class="vstack gap-1">
+              <div class="fs-4 lh-1 text-body-secondary jersey-name">#{{ items[0].number }}</div>
+              <div class="fs-4 lh-1 jersey-name">{{ getPlayerName(items[0].id) }}</div>
+            </div>
             <div class="d-flex align-items-start gap-1">
               <div class="display-3 jersey-number lh-1">{{ items[0][key] }}</div>
-              <strong>{{ getStatShort(key) }}</strong>
-            </div>
-            <div class="d-flex align-items-start justify-content-between gap-2">
-              <div class="fs-4 lh-1 jersey-name">{{ getPlayerName(items[0].id) }}</div>
-              <div class="fs-4 lh-1 text-body-secondary jersey-name">#{{ items[0].number }}</div>
+              <strong class="small">{{ getStatShort(key) }}</strong>
             </div>
           </div>
         </div>

@@ -92,6 +92,8 @@ interface IProps {
   xSmall?: boolean
   isBusy?: boolean
   showEmpty?: boolean
+  ascOnly?: boolean
+  descOnly?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
   footer: undefined,
@@ -102,10 +104,14 @@ const props = withDefaults(defineProps<IProps>(), {
   small: false,
   xSmall: false,
   isBusy: false,
-  showEmpty: true
+  showEmpty: false,
+  ascOnly: false,
+  descOnly: false
 })
 const sortedKey = ref<string | undefined>(props.sortedKey)
-const sortedDirection = ref<'asc' | 'desc'>(props.sortedDirection)
+const sortedDirection = ref<'asc' | 'desc'>(
+  props.ascOnly ? 'asc' : props.descOnly ? 'desc' : props.sortedDirection
+)
 const computedItems = computed(() => {
   if (!Array.isArray(props.items)) {
     console.warn('Items is not an array:', props.items)
@@ -142,12 +148,17 @@ const computedItems = computed(() => {
   })
 })
 const handleSort = (key: string) => {
-  sortedDirection.value =
-    key !== sortedKey.value || sortedDirection.value !== props.sortedDirection
-      ? props.sortedDirection
-      : props.sortedDirection === 'desc'
-        ? 'asc'
-        : 'desc'
+  const { ascOnly, descOnly } = props
+  console.log(key, sortedDirection.value, sortedKey.value, )
+  sortedDirection.value = ascOnly
+    ? 'asc'
+    : descOnly
+      ? 'desc'
+      : key !== sortedKey.value
+        ? props.sortedDirection
+        : sortedDirection.value === 'desc'
+          ? 'asc'
+          : 'desc'
   sortedKey.value = key
 }
 </script>

@@ -1,9 +1,7 @@
 <template>
   <div>
-    <template v-for="(award, idx) in model" :key="idx">
-      <h6 class="d-flex gap-3">
-        <span>{{ getPlayerName(award.id) }}</span>
-        <span class="badge bg-warning">{{ awards[award.value] }}</span>
+    <AwardsList :items="model">
+      <template #action="{ idx }">
         <ButtonComp
           variant="danger"
           class="btn-close"
@@ -11,13 +9,13 @@
           :disabled="disabled"
           @click="() => handleDelete(idx)"
         ></ButtonComp>
-      </h6>
-    </template>
+      </template>
+    </AwardsList>
     <form class="d-flex align-items-end gap-3" @submit="handleAdd">
       <FieldComp label="Add award:" class="flex-grow-1">
         <SelectComp
           v-model="data.award"
-          :options="awardsOptions"
+          :options="awardsKeys"
           placeholder="Award..."
           :disabled="disabled"
           required
@@ -43,7 +41,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import type { PlayerId } from '@/types/players'
-import type { Award, AwardItem } from '@/types/stats'
+import type { AwardKey, AwardItem } from '@/types/stats'
 import type { Option } from '@/types/comp-fields'
 import ButtonComp from '@/components/ButtonComp.vue'
 
@@ -51,6 +49,8 @@ import FieldComp from '@/components/FieldComp.vue'
 import TypeaheadSelectComp from '@/components/TypeaheadSelectComp.vue'
 import SelectComp from '@/components/SelectComp.vue'
 import useLibs from '@/composable/useLibs'
+import useOptionsLib from '@/composable/useOptionsLib'
+import AwardsList from '@/components/competitions/AwardsList.vue'
 
 interface IProps {
   modelValue: AwardItem[]
@@ -64,7 +64,7 @@ const props = withDefaults(defineProps<IProps>(), {
 
 type FormData = {
   playerId: PlayerId | undefined
-  award: Award | undefined
+  award: AwardKey | undefined
 }
 
 const getDefaultData = (): FormData => ({
@@ -74,16 +74,7 @@ const getDefaultData = (): FormData => ({
 const data = ref(getDefaultData())
 const { getPlayerName } = useLibs()
 
-const awards: { [key: Award]: string } = {
-  mvp: 'MVP',
-  def: 'Defensive player'
-}
-const awardsOptions = computed((): Option[] => {
-  return Object.keys(awards).map((value: Award) => ({
-    text: awards[value],
-    value
-  }))
-})
+const { awardsKeys, getAward } = useOptionsLib()
 
 const emit = defineEmits(['update:modelValue', 'input'])
 const model = computed({

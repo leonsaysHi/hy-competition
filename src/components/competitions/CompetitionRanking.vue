@@ -4,64 +4,78 @@ import TableComp from '@/components/TableComp.vue'
 
 import useLibs from '@/composable/useLibs'
 import useOptionsLibs from '@/composable/useOptionsLib'
-import type { CompetitionRanking } from '@/models/CompetitionComputed'
+import type { CompetitionRanking } from '@/types/computed'
 import { useRoute } from 'vue-router'
 import type { TableField } from '@/types/comp-table'
-
+import { getOrd, getAvg } from '@/utils/maths'
+import type { PlayerStats } from '@/types/stats'
+import type { Option } from '@/types/comp-fields'
 interface IProps {
   value: CompetitionRanking[]
   length?: number
 }
 
 const route = useRoute()
-const { competitionId } = route.params
+const { competitionId } = route.params as { competitionId: string }
 const props = withDefaults(defineProps<IProps>(), {
   length: 0
 })
 
 const { getTeamName, getPlayerName, getCompetition } = useLibs()
-const { playerRankingKeys } = useOptionsLibs()
+const { playerRankingKeys, statsKeys } = useOptionsLibs()
+const competition = getCompetition(competitionId)
 
-const row = getCompetition(competitionId)
-const fields = computed(() => [
+const fields = computed(() => ([
   { label: 'Pos', key: 'pos', thClass: 'text-center', tdClass: 'text-center' },
   { label: 'Players', key: 'playerId' },
   { label: 'Team', key: 'teamId' },
-  ...playerRankingKeys.reduce((fields: TableField[], opt): TableField[] => {
-    if (row?.trackedStats.includes(opt.value)) {
-      return [
-        ...fields,
-        {
-          key: opt.value,
-          label: opt.text,
-          sortable: true,
-          thClass: 'text-end',
-          tdClass: 'text-end'
-        }
-      ]
-    }
-    return fields
-  }, [])
-])
+  ...playerRankingKeys
+    .filter((opt: Option) => competition?.trackedStats.includes(opt.value))
+    .map((opt: Option): TableField => ({
+      key: opt.value,
+      label: opt.text,
+      sortable: true,
+      thClass: 'text-end',
+      tdClass: 'text-end'
+    }))
+]))
 const items = computed(() =>
-  Array.isArray(props.value) ? props.value.filter((row: CompetitionRanking) => row.gp > 0) : []
+  Array.isArray(props.value) 
+  ? props.value
+    .filter((row: CompetitionRanking) => row.gp > 0) 
+    .map((row:CompetitionRanking) => ({
+      ...row,
+      ...statsKeys
+        .filter((opt: Option) => competition?.trackedStats.includes(opt.value))
+        .reduce((result:PlayerStats, opt:Option) => {
+          const key = opt.value as PlayerStatKey
+          result[key] = getAvg(row[key], row.gp)
+          return result
+        }, {} as PlayerStats)
+    }))
+    : []
 )
 </script>
 <template>
   <TableComp
     :fields="fields"
     :items="items"
-    sorted-key="pts"
-    sorted-direction="desc"
+    :sorted-key="playerRankingKeys[0].value"
     :per-page="5"
     small
     show-empty
+    desc-only
   >
-    <template #pos="{ index }">{{ index + 1 }}</template>
+    <template #pos="{ index }"
+      >{{ index + 1 }}<sup>{{ getOrd(index + 1) }}</sup></template
+    >
     <template #playerId="{ value }">
       <RouterLink
         class="link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
-        :to="{ name: 'competition-player', params: { playerId: value } }"
+        :to="{
+          name: 'competition-player',
+          params: { competitionId: competitionId, playerId: value }
+        }"
       >
         <strong class="jersey-name">{{ getPlayerName(value) }}</strong>
       </RouterLink>

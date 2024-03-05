@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<IProps>(), {
 })
 const items = computed(() => {
   const items = new Array(props.length).fill(0)
-  const start = items.length - props.items.length
+  const start = Math.max(0, items.length - props.items.length)
   items.splice(start, props.items.length, ...props.items)
   return items
     .map((h) => (h > 0 ? 'win' : h < 0 ? 'loss' : 'body-tertiary opacity-25'))

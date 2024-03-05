@@ -1,8 +1,12 @@
+import type { CompetitionId } from './competitions'
+import type { GameId } from './games'
 import type { PlayerId } from './players'
 
 // Player
-export type Award = 'mvp' | 'def'
+export type AwardKey = 'mvp' | 'def'
 export interface AwardItem {
+  gameId?: GameId
+  competitionId?: CompetitionId
   id: PlayerId
   value: Award
 }
