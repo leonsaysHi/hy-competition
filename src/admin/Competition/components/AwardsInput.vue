@@ -48,7 +48,6 @@ import ButtonComp from '@/components/ButtonComp.vue'
 import FieldComp from '@/components/FieldComp.vue'
 import TypeaheadSelectComp from '@/components/TypeaheadSelectComp.vue'
 import SelectComp from '@/components/SelectComp.vue'
-import useLibs from '@/composable/useLibs'
 import useOptionsLib from '@/composable/useOptionsLib'
 import AwardsList from '@/components/competitions/AwardsList.vue'
 
@@ -72,9 +71,8 @@ const getDefaultData = (): FormData => ({
   award: undefined
 })
 const data = ref(getDefaultData())
-const { getPlayerName } = useLibs()
 
-const { awardsKeys, getAward } = useOptionsLib()
+const { awardsKeys } = useOptionsLib()
 
 const emit = defineEmits(['update:modelValue', 'input'])
 const model = computed({

@@ -92,6 +92,7 @@ const messages = {
     },
     //
     global: {
+        competition: 'Liga | Ligas',
         group: 'Grupo' | 'Grupos',
         standing: 'Clasificación',
         ranking: 'Líderes',
@@ -107,13 +108,20 @@ const messages = {
                 long: 'Adversario | Adversarios',
             },
         },
+        playerDetails: {
+            firstName: 'Nombre',
+            lastName: 'Appelido',
+            age: 'Edad',
+        },
         team: 'Equipo | Equipos',
         player: 'Jugador | Jugadores',
         statistic: 'Estadística | Estadísticas',
+        result: 'Resultado | Resultados',
         total: 'Total | Totals',
         date: 'Fecha | Fechas',
         previous: 'Ultimo | Ultimos',
         upcoming: 'Proximo | Proximos',
+        search: 'Buscar'
     },
 }
 

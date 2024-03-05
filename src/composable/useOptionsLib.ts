@@ -4,7 +4,6 @@ import type { PlayerStatKey, TeamStatKey, PlayerRankingKey, AwardKey } from '@/t
 import i18n from '@/i18n'
 
 const t = (path: string):string => i18n.global.t(path)
-const tc = (path: string):string => i18n.global.tc(path)
 
 export default function usePlayersLib() {
   const competitionSports: { value: CompetitionSport; text: string }[] = [

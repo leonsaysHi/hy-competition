@@ -12,7 +12,8 @@ import LastGames from '@/components/games/LastGames.vue'
 import type { CompetitionStandingComputed } from '@/types/computed'
 import type { GamesHist, TeamStatKey } from '@/types/stats'
 import { getOrd } from '@/utils/maths'
-
+import { useI18n } from "vue-i18n"
+const { t } = useI18n()
 const route = useRoute()
 const { teamId } = route.params as { teamId: TeamId }
 
@@ -21,8 +22,8 @@ const { isReady, getTeam, getCompetition } = useLibs()
 const { isReady: isTeamComputedReady, rows } = useTeamComputed(teamId)
 const team = computed(() => getTeam(teamId))
 const fields = computed(() => [
-  { key: 'competition', label: 'Competitions' },
-  { key: 'rank', label: 'Result' },
+  { key: 'competition', label: t('global.competition', 2) },
+  { key: 'rank', label: t('global.result', 2) },
   ...teamStandingKeys.map((opt: Option) => ({
     key: opt.value,
     label: opt.text,
@@ -101,7 +102,7 @@ const items = computed(() => {
       <TableComp :fields="fields" :items="items">
         <template #competition="{ value }">
           <RouterLink
-            class="d-flex flex-column align-items-start"
+            class="text-decoration-none d-flex flex-column align-items-start"
             :to="{ name: 'competition', params: { competitionId: value.id } }"
           >
             <div>{{ value.title }}</div>

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import useCompetitionsLib from '@/composable/useCompetitionsLib'
-import {  } from '@/utils/dates'
+import { formatDistanceToNow } from 'date-fns'
 const { isReady, rows: competitions } = useCompetitionsLib()
 </script>
 <template>
@@ -24,7 +24,7 @@ const { isReady, rows: competitions } = useCompetitionsLib()
                 >
               </div>
               <div class="card-footer">
-                <small class="text-body-secondary">{{ $t('home.lastUpdate') }} {{ row.lastUpdate }}</small>
+                <small class="text-body-secondary">{{ $t('home.lastUpdate') }} {{ formatDistanceToNow(row.lastUpdate) }}</small>
               </div>
             </div>
           </div>
