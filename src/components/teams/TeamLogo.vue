@@ -1,8 +1,8 @@
 <template>
   <div class="ratio ratio-1x1" :style="styleObj">
     <div>
-      <div 
-        class="position-relative d-flex overflow-hidden w-100 h-100 rounded-4" 
+      <div
+        class="position-relative d-flex overflow-hidden w-100 h-100 rounded-4"
         :class="{ border: border }"
       >
         <template v-if="url">
@@ -33,7 +33,7 @@ interface IProps {
 }
 const props = withDefaults(defineProps<IProps>(), {
   size: 50,
-  border: false,
+  border: false
 })
 
 const { getTeam } = useLibs()

@@ -5,38 +5,44 @@
     </template>
     <template v-else>
       <template v-for="gameComputed in computedGames" :key="gameComputed.id">
-        <RouterLink 
-          class="list-group-item list-group-item-action game" 
+        <RouterLink
+          class="hstack gap-2 list-group-item list-group-item-action lh-1"
           :to="gameComputed.to"
         >
-          <template v-if="gameComputed.isFinished">
-            <div class="date d-flex flex-column align-items-center justify-content-center lh-1">
-              <span>{{ gameComputed.date?.short }}</span>
-            </div>
-          </template>
-          <template v-for="(team, idx) in gameComputed.scores" :key="idx">
-            <div class="team">
-              <div class="name">
-                <strong class="jersey-team fs-6 lh-1">{{ team.title }}</strong>
-                <TeamLogo :team-id="team.id" :size="50" />
-              </div>
-              <template v-if="gameComputed.isFinished">
-                <div
-                  class="score border border-3 rounded-2"
-                  :class="[team.winner ? 'border-win' : 'border-loss']"
-                >
-                  <strong class="jersey-score fs-3 lh-1 pt-1">{{ team.finalScore }}</strong>
-                </div>
-              </template>
-            </div>
+          <div class="team vstack align-items-center">
+            <strong class="jersey-team fs-6 lh-1">{{ gameComputed.scores[0].title }}</strong>
+            <TeamLogo :team-id="gameComputed.scores[0].id" :size="45" />
+          </div>
 
-            <template v-if="idx === 0 && !gameComputed.isFinished">
-              <div class="date d-flex flex-column align-items-center justify-content-center lh-1">
-                <span>{{ gameComputed.date?.short }}</span>
-                <small class="text-body-secondary">{{ gameComputed.date?.time }}</small>
+          <div class="">
+          <template v-if="gameComputed.isFinished">
+            <div class="vstack gap-1">
+              <small class="text-center text-body-secondary">{{ gameComputed.date?.short }}</small>
+              <div class="hstack gap-2 justify-content-center">
+                <template v-for="(team, idx) in gameComputed.scores" :key="idx">
+                  <div
+                    class="flex-grow-1 p-2 border border-3 rounded-2"
+                    :class="[team.winner ? 'border-win' : 'border-loss']"
+                  >
+                    <strong class="jersey-score fs-3 lh-1 pt-1">{{ team.finalScore }}</strong>
+                  </div>
+                </template>
               </div>
-            </template>
+            </div>
           </template>
+
+          <template v-else>
+            <div class="vstack gap-1 align-items-center justify-content-center">
+              <strong>{{ gameComputed.date?.long }}</strong>
+              <small class="text-body-secondary">{{ gameComputed.date?.time }}</small>
+            </div>
+          </template>
+        </div>
+
+          <div class="team vstack align-items-center">
+            <strong class="jersey-team fs-6">{{ gameComputed.scores[1].title }}</strong>
+            <TeamLogo :team-id="gameComputed.scores[1].id" :size="45" />
+          </div>
         </RouterLink>
       </template>
     </template>
@@ -64,35 +70,7 @@ const computedGames = computed<ComputedGame[]>(() => {
 })
 </script>
 <style lang="scss" scoped>
-.game {
-  display: flex;
-  gap: 1rem;
   .team {
     flex: 1;
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    .name {
-      flex-grow: 1;
-      display: flex;
-      align-items: center;
-      justify-content: end;
-      gap: .5rem;
-    }
-    .score {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 45px;
-      height: 50px;
-    }
   }
-  .team ~ .team {
-    flex-direction: row-reverse;
-    .name {
-      flex-direction: row-reverse;
-      justify-content: start;
-    }
-  }
-}
 </style>

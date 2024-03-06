@@ -49,15 +49,15 @@ const statsFields: TableField[] = [
     (opt: Option): TableField => ({
       key: opt.value,
       label: opt.text,
-      thClass: 'text-end',
-      tdClass: 'text-end'
+      thClass: 'text-center',
+      tdClass: 'text-center'
     })
   ),
   {
     label: t('options.standingStats.text.hist'),
     key: 'hist',
     thClass: 'text-center',
-    tdClass: 'text-end'
+    tdClass: 'text-center'
   }
 ]
 </script>

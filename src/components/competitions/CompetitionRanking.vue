@@ -31,7 +31,7 @@ const competition = getCompetition(competitionId)
 
 const fields = computed(() => [
   {
-    label: t('options.rankingStats.text.gp'),
+    label: t('options.rankingStats.text.pos'),
     key: 'pos',
     thClass: 'text-center',
     tdClass: 'text-center'

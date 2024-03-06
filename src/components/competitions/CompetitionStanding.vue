@@ -43,7 +43,7 @@ const fields = [
     label: t('options.standingStats.text.hist'),
     key: 'hist',
     thClass: 'text-center',
-    tdClass: 'text-end'
+    tdClass: 'text-center'
   }
 ]
 const items = computed(() => {
@@ -73,7 +73,6 @@ const items = computed(() => {
       </RouterLink>
     </template>
     <template #hist="{ value }"
-      ><LastGames :items="value" :length="5" class="d-inline-flex"
-    /></template>
+      ><LastGames :items="value" :length="5" /></template>
   </TableComp>
 </template>

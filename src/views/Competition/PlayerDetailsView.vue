@@ -56,8 +56,8 @@ const statsFields = computed<TableField[]>(() =>
   trackedPlayerRankingKeys.value.map((opt: Option) => ({
     key: opt.value,
     label: opt.text,
-    thClass: 'text-end',
-    tdClass: 'text-end'
+    thClass: 'text-center',
+    tdClass: 'text-center'
   }))
 )
 const competitionComputed = computed<CompetitionRanking | undefined>(() => {

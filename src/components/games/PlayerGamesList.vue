@@ -10,7 +10,7 @@ import type { TableField, TableItem } from '@/types/comp-table'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 interface PlayerGameComputed extends PlayerBoxScore {

@@ -19,15 +19,23 @@
   --#{$prefix}card-spacer-x: #{$card-spacer-x * 0.5};
 }
 
-
 body {
   @include media-breakpoint-down(lg) {
-    --#{$prefix}body-font-size: #{$font-size-base * .875};
+    --#{$prefix}body-font-size: #{$font-size-base * 0.875};
   }
   .table-sm {
     // stylelint-disable-next-line selector-max-universal
     > :not(caption) > * > * {
       padding: $table-cell-padding-y-sm * 0.5 $table-cell-padding-x-sm * 0.5;
     }
+  }
+  
+}
+.last-games { 
+  display: inline-flex;
+  gap: map-get($spacers,1);
+  @include media-breakpoint-down(lg) {
+
+    gap: map-get($spacers,1)*.5
   }
 }
