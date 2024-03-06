@@ -57,12 +57,12 @@ const es = {
       text: {
         pos: 'Pos',
         gp: 'GP',
-        ptsAvg: 'Pts ave.',
+        ptsAvg: 'Pts ave.'
       },
       long: {
         pos: 'Posición',
         gp: 'Partidos jugados',
-        ptsAvg: 'Puntos por partido',
+        ptsAvg: 'Puntos por partido'
       }
     },
     standingStats: {

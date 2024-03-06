@@ -79,7 +79,7 @@ const items = computed(() => {
       <div class="mb-3 d-flex align-items-start gap-3">
         <TeamLogo :team-id="teamId" :size="150" />
         <div>
-          <h1 class="display-6 fw-bold jersey-team">{{ team?.title }}</h1>
+          <h1 class="display-2 fw-bold jersey-team">{{ team?.title }}</h1>
           <div class="hstack gap-2">
             <template v-for="stat in stats" :key="stat.key">
               <div class="vstack gap-2 justify-content-between text-center">

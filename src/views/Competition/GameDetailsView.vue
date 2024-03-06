@@ -34,7 +34,7 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
   }) as CompetitionTeam[]
 })
 interface BoxScoreByTeam {
-  teamId: TeamId,
+  teamId: TeamId
   boxscore: GameBoxScore
 }
 const teamsBoxscores = computed<BoxScoreByTeam[]>(() => {
@@ -43,16 +43,15 @@ const teamsBoxscores = computed<BoxScoreByTeam[]>(() => {
         const players: CompetitionPlayer[] = getCompetitionTeam(teamId)?.players || []
         return {
           teamId,
-          boxscore: players
-            .reduce((boxscore: GameBoxScore, player: CompetitionPlayer) => {
-              return {
-                ...boxscore,
-                [player.id]: gameComputed.value?.boxScore[player.id] as PlayerBoxScore
-              }
-            }, {} as GameBoxScore)
-        } 
+          boxscore: players.reduce((boxscore: GameBoxScore, player: CompetitionPlayer) => {
+            return {
+              ...boxscore,
+              [player.id]: gameComputed.value?.boxScore[player.id] as PlayerBoxScore
+            }
+          }, {} as GameBoxScore)
+        }
       })
-    : [] as BoxScoreByTeam[]
+    : ([] as BoxScoreByTeam[])
 })
 </script>
 <template>
