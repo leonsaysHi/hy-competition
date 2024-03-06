@@ -56,11 +56,13 @@ const es = {
     rankingStats: {
       text: {
         pos: 'Pos',
-        gp: 'GP'
+        gp: 'GP',
+        ptsAvg: 'Pts ave.',
       },
       long: {
         pos: 'Posición',
-        gp: 'Partidos jugados'
+        gp: 'Partidos jugados',
+        ptsAvg: 'Puntos por partido',
       }
     },
     standingStats: {
@@ -115,7 +117,6 @@ const es = {
     team: 'Equipo | Equipos',
     player: 'Jugador | Jugadores',
     statistic: 'Estadística | Estadísticas',
-    result: 'Resultado | Resultados',
     total: 'Total | Totals',
     date: 'Fecha | Fechas',
     previous: 'Ultimo | Ultimos',

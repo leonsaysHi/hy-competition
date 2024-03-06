@@ -23,7 +23,7 @@ const { isReady: isTeamComputedReady, rows } = useTeamComputed(teamId)
 const team = computed(() => getTeam(teamId))
 const fields = computed(() => [
   { key: 'competition', label: t('global.competition', 2) },
-  { key: 'rank', label: t('global.result', 2) },
+  { key: 'rank', label: t('options.standingStats.text.pos') },
   ...teamStandingKeys.map((opt: Option) => ({
     key: opt.value,
     label: opt.text,
@@ -82,16 +82,16 @@ const items = computed(() => {
           <h1 class="display-6 fw-bold jersey-team">{{ team?.title }}</h1>
           <div class="hstack gap-2">
             <template v-for="stat in stats" :key="stat.key">
-              <div class="vstack gap-2 text-center">
-                <strong class="px-4">{{ stat.text }}</strong>
+              <div class="vstack gap-2 justify-content-between text-center">
+                <strong class="px-4 lh-1">{{ stat.text }}</strong>
                 <strong class="display-3">{{ stat.total }}</strong>
               </div>
               <div class="vr"></div>
             </template>
             <div class="vstack gap-2 text-center">
-              <div class="vstack gap-2 text-center">
-                <strong class="px-4">Last 5</strong>
-                <div class="flex-grow-1 d-flex align-items-center">
+              <div class="vstack gap-2 justify-content-between text-center">
+                <strong class="px-4 lh-1">Last 5</strong>
+                <div class="flex-grow-1 d-flex justify-content-center align-items-center">
                   <LastGames :items="hist" :length="5" />
                 </div>
               </div>
