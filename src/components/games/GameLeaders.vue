@@ -62,7 +62,7 @@ const getStatShort = (key: PlayerStatKey): string =>
 <template>
   <div class="row row-cols-1 row-cols-md-2 g-2">
     <template v-for="(items, key) in leadersBystats" :key="key">
-      <div class="col d-flex">
+      <div class="col">
         <div class="card card-sm">
           <div class="card-body d-flex">
             <div class="vstack gap-1">

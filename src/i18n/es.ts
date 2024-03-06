@@ -1,4 +1,4 @@
-const messages = {
+const es = {
   sections: {
     home: 'Inicio',
     about: 'Nosotros',
@@ -92,7 +92,7 @@ const messages = {
   //
   global: {
     competition: 'Liga | Ligas',
-    group: 'Grupo' | 'Grupos',
+    group: 'Grupo | Grupos',
     standing: 'Clasificación',
     ranking: 'Líderes',
     game: 'Juego | Juegos',
@@ -125,4 +125,4 @@ const messages = {
   }
 }
 
-export default messages
+export default es

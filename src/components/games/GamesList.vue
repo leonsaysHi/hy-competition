@@ -15,29 +15,31 @@
           </div>
 
           <div class="">
-          <template v-if="gameComputed.isFinished">
-            <div class="vstack gap-1">
-              <small class="text-center text-body-secondary">{{ gameComputed.date?.short }}</small>
-              <div class="hstack gap-2 justify-content-center">
-                <template v-for="(team, idx) in gameComputed.scores" :key="idx">
-                  <div
-                    class="flex-grow-1 p-2 border border-3 rounded-2"
-                    :class="[team.winner ? 'border-win' : 'border-loss']"
-                  >
-                    <strong class="jersey-score fs-3 lh-1 pt-1">{{ team.finalScore }}</strong>
-                  </div>
-                </template>
+            <template v-if="gameComputed.isFinished">
+              <div class="vstack gap-1">
+                <small class="text-center text-body-secondary">{{
+                  gameComputed.date?.short
+                }}</small>
+                <div class="hstack gap-2 justify-content-center">
+                  <template v-for="(team, idx) in gameComputed.scores" :key="idx">
+                    <div
+                      class="flex-grow-1 p-2 border border-3 rounded-2"
+                      :class="[team.winner ? 'border-win' : 'border-loss']"
+                    >
+                      <strong class="jersey-score fs-3 lh-1 pt-1">{{ team.finalScore }}</strong>
+                    </div>
+                  </template>
+                </div>
               </div>
-            </div>
-          </template>
+            </template>
 
-          <template v-else>
-            <div class="vstack gap-1 align-items-center justify-content-center">
-              <strong>{{ gameComputed.date?.long }}</strong>
-              <small class="text-body-secondary">{{ gameComputed.date?.time }}</small>
-            </div>
-          </template>
-        </div>
+            <template v-else>
+              <div class="vstack gap-1 align-items-center justify-content-center">
+                <strong>{{ gameComputed.date?.long }}</strong>
+                <small class="text-body-secondary">{{ gameComputed.date?.time }}</small>
+              </div>
+            </template>
+          </div>
 
           <div class="team vstack align-items-center">
             <strong class="jersey-team fs-6">{{ gameComputed.scores[1].title }}</strong>
@@ -70,7 +72,7 @@ const computedGames = computed<ComputedGame[]>(() => {
 })
 </script>
 <style lang="scss" scoped>
-  .team {
-    flex: 1;
-  }
+.team {
+  flex: 1;
+}
 </style>

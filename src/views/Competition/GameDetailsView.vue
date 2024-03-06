@@ -33,18 +33,26 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
     return getCompetitionTeam(teamId)
   }) as CompetitionTeam[]
 })
-const teamsBoxscores = computed<GameBoxScore[]>(() => {
+interface BoxScoreByTeam {
+  teamId: TeamId,
+  boxscore: GameBoxScore
+}
+const teamsBoxscores = computed<BoxScoreByTeam[]>(() => {
   return Array.isArray(row.value?.teams)
     ? row.value.teams.map((teamId: TeamId) => {
-        const players: CompetitionPlayer[] = getCompetitionTeam(teamId).players
-        return players.reduce((boxscore: GameBoxScore, player: CompetitionPlayer) => {
-          return {
-            ...boxscore,
-            [player.id]: gameComputed.value?.boxScore[player.id] as PlayerBoxScore
-          }
-        }, {} as GameBoxScore)
+        const players: CompetitionPlayer[] = getCompetitionTeam(teamId)?.players || []
+        return {
+          teamId,
+          boxscore: players
+            .reduce((boxscore: GameBoxScore, player: CompetitionPlayer) => {
+              return {
+                ...boxscore,
+                [player.id]: gameComputed.value?.boxScore[player.id] as PlayerBoxScore
+              }
+            }, {} as GameBoxScore)
+        } 
       })
-    : []
+    : [] as BoxScoreByTeam[]
 })
 </script>
 <template>
@@ -129,13 +137,16 @@ const teamsBoxscores = computed<GameBoxScore[]>(() => {
         </ul>
         <template v-if="statView === 0">
           <div class="row gap-2">
-            <template v-for="(boxscore, idx) in teamsBoxscores" :key="idx">
+            <template v-for="(team, idx) in teamsBoxscores" :key="team.teamId">
               <div class="col">
-                <GameLeaders :boxscore="boxscore" />
+                <div class="mb-2 d-flex justify-content-center">
+                  <TeamLogo :team-id="team.teamId" :size="50" />
+                </div>
+                <GameLeaders :boxscore="team.boxscore" />
               </div>
-              <template v-if="idx === 0"
-                ><div class="col col-auto px-0 border-start"></div
-              ></template>
+              <template v-if="idx === 0">
+                <div class="col col-auto px-0 border-start"></div>
+              </template>
             </template>
           </div>
         </template>

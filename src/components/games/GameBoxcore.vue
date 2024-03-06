@@ -12,6 +12,7 @@ import type { GameBoxScore } from '@/types/games'
 import type { PlayerStatKey } from '@/types/stats'
 
 import { useI18n } from 'vue-i18n'
+import TeamLogo from '../teams/TeamLogo.vue'
 const { t } = useI18n()
 interface IProps {
   boxscore: GameBoxScore
@@ -77,10 +78,12 @@ const totalsItem = computed<TableItem>(() => ({
           class="nav-link"
           :class="[currentTeamId === team.id && 'active']"
           :aria-current="currentTeamId === team.id ? 'page' : false"
-          href="#"
           @click="currentTeamId = team.id"
-          >{{ getTeamName(team.id) }}</a
         >
+          <div class="vstack align-items-center">
+            <TeamLogo :team-id="team.id" :size="50" />
+          </div>
+        </a>
       </li>
     </template>
   </ul>

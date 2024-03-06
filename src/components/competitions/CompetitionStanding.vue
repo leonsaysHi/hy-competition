@@ -72,7 +72,6 @@ const items = computed(() => {
         <strong class="jersey-team fs-6">{{ getTeamName(value) }}</strong>
       </RouterLink>
     </template>
-    <template #hist="{ value }"
-      ><LastGames :items="value" :length="5" /></template>
+    <template #hist="{ value }"><LastGames :items="value" :length="5" /></template>
   </TableComp>
 </template>
