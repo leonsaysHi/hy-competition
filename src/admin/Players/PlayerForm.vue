@@ -44,12 +44,8 @@ const { genders: genderOptions } = useOptionsLib()
 const errors = ref<{ [key: string]: undefined | string }>({})
 watch(
   () => props.row,
-  (player) => {
-    if (player?.id) {
-      data.value = { ...getDefaultData(), ...player }
-    } else if (player === undefined) {
-      data.value = { ...getDefaultData() }
-    }
+  (row) => {
+    data.value = { ...getDefaultData(), ...(row?.id ? row : {}) }
   }
 )
 const handleSubmit = async (ev: Event) => {

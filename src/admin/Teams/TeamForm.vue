@@ -43,10 +43,8 @@ const errors: Ref<{ [key: string]: undefined | string }> = ref({})
 
 watch(
   () => props.row,
-  (team) => {
-    if (team?.id) {
-      data.value = { ...getDefaultData(), ...team }
-    }
+  (row) => {
+    data.value = { ...getDefaultData(), ...(row?.id ? row : {}) }
   }
 )
 const handleSubmit = (ev: Event) => {

@@ -61,7 +61,13 @@ const groupGames = computed<Game[]>(() => {
     .filter((game: Game) =>
       currentGamesView.value === 'prev' ? game.isFinished : !game.isFinished
     )
-    .slice(0, Math.round(selectedGroup.value.standing.length * 0.5))
+    .slice(
+      0,
+      Math.max(
+        Math.round(selectedGroup.value.standing.length * 0.5),
+        Math.max(4, selectedGroup.value.standing.length)
+      )
+    )
 })
 </script>
 <template>

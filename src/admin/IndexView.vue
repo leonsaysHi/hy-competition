@@ -6,18 +6,14 @@ import SpinnerComp from '@/components/SpinnerComp.vue'
 const { isReady: isLibsReady } = useLibs()
 </script>
 <template>
-  <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-    <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-      <li class="nav-item">
-        <RouterLink :to="{ name: 'admin' }" class="nav-link">Competitions</RouterLink>
-      </li>
-      <li class="nav-item">
-        <RouterLink :to="{ name: 'admin-teams' }" class="nav-link">Teams</RouterLink>
-      </li>
-      <li class="nav-item">
-        <RouterLink :to="{ name: 'admin-players' }" class="nav-link">Players</RouterLink>
-      </li>
-    </ul>
+  <header class="bd-header bg-primary py-3 d-flex align-items-stretch text-bg-dark">
+    <div class="container d-flex align-items-center">
+      <nav class="nav nav-masthead justify-content-center ms-auto">
+        <RouterLink :to="{ name: 'admin' }" class="nav-link text-white">Competitions</RouterLink>
+        <RouterLink :to="{ name: 'admin-teams' }" class="nav-link text-white">Teams</RouterLink>
+        <RouterLink :to="{ name: 'admin-players' }" class="nav-link text-white">Players</RouterLink>
+      </nav>
+    </div>
   </header>
   <main>
     <section class="py-5 container">

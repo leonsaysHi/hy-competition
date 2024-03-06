@@ -1,7 +1,6 @@
 const es = {
   sections: {
     home: 'Inicio',
-    about: 'Nosotros',
     competition: 'Liga | Ligas',
     team: 'Equipo | Equipos',
     player: 'Jugadore | Jugadores'
@@ -26,10 +25,10 @@ const es = {
         pts: 'Pts',
         reb: 'Reb',
         ast: 'Ast',
-        stl: 'Stl',
-        blk: 'Blk',
-        to: 'TO',
-        pf: 'PF',
+        stl: 'Rob',
+        blk: 'Blq',
+        to: 'Per',
+        pf: 'FP',
         m3pts: '3Pts'
       },
       long: {
