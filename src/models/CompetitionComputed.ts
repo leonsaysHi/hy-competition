@@ -25,7 +25,7 @@ import type {
   CompetitionStandingComputed
 } from '@/types/computed'
 
-const { statsKeys, teamStandingKeys } = useOptionsLib() // !gp !awards
+const { playerStatsKeys, teamStandingKeys } = useOptionsLib() // !gp !awards
 
 export const getTeamStatsFromGames = (teamId: TeamId, games: Game[] = []): TeamStats => {
   const getEmptyStanding = () => ({
@@ -74,7 +74,7 @@ const getTeamPhaseStanding = (teamId: TeamId, games: Game[]): TeamStats => {
 }
 export const getPlayerStatsFromGames = (playerId: PlayerId, games: Game[]): PlayerStats => {
   const getEmptyStats = (): PlayerStats =>
-    statsKeys.reduce((stats: PlayerStats, opt: Option) => {
+    playerStatsKeys.reduce((stats: PlayerStats, opt: Option) => {
       return {
         ...stats,
         [opt.value]: 0
@@ -86,7 +86,7 @@ export const getPlayerStatsFromGames = (playerId: PlayerId, games: Game[]): Play
     )
     .reduce((ranking: PlayerStats, game: Game) => {
       const { dnp, ...stats } = game.boxscore[playerId]
-      statsKeys
+      playerStatsKeys
         .map((opt: Option) => opt.value as PlayerStatKey)
         .forEach((key: PlayerStatKey) => {
           ranking[key] += stats[key] || 0

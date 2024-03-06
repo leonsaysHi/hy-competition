@@ -9,7 +9,7 @@ import type { CompetitionStanding } from '@/types/computed'
 import { useRoute } from 'vue-router'
 import { getOrd } from '@/utils/maths'
 
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 const { teamStandingKeys } = useOptionsLibs()
 const route = useRoute()
@@ -30,15 +30,21 @@ const fields = [
     tdClass: 'text-center fw-bold pe-2'
   },
   { label: t('global.team', 2), key: 'teamId' },
-  ...(teamStandingKeys
-    .map((opt: Option): TableField => ({
+  ...teamStandingKeys.map(
+    (opt: Option): TableField => ({
       key: opt.value,
       label: opt.text,
       sortable: true,
       thClass: 'text-end',
       tdClass: 'text-end'
-    }))),
-  { label: t('options.standingStats.text.hist'), key: 'hist', thClass: 'text-center', tdClass: 'text-end' }
+    })
+  ),
+  {
+    label: t('options.standingStats.text.hist'),
+    key: 'hist',
+    thClass: 'text-center',
+    tdClass: 'text-end'
+  }
 ]
 const items = computed(() => {
   const items = props.value.slice()

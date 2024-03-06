@@ -9,7 +9,7 @@ import type { Team } from '@/types/teams'
 import { stringIncludes } from '@/utils/strings'
 import { computed, ref } from 'vue'
 
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 const { rows: teamsLib } = useTeamsLib()
@@ -35,15 +35,14 @@ const items = computed<TableItem[]>(() => {
 </script>
 <template>
   <div>
-    <h1>{{ t('global.team', 2)}}</h1>
+    <h1>{{ t('global.team', 2) }}</h1>
     <div class="mb-2 d-flex justify-content-end">
       <InputComp v-model="searchStr" :placeholder="`${t('global.search')}...`" />
     </div>
     <TableComp :fields="fields" :items="items" :per-page="perPage" :current-page="currentPage">
       <template #id="{ value, item }">
         <RouterLink
-          class="d-flex align-items-center gap-3 link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" 
-          
+          class="d-flex align-items-center gap-3 link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
           :to="{ name: 'team', params: { teamId: value } }"
         >
           <TeamLogo :team-id="value" :size="23" />

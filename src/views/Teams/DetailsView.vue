@@ -12,7 +12,7 @@ import LastGames from '@/components/games/LastGames.vue'
 import type { CompetitionStandingComputed } from '@/types/computed'
 import type { GamesHist, TeamStatKey } from '@/types/stats'
 import { getOrd } from '@/utils/maths'
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 const route = useRoute()
 const { teamId } = route.params as { teamId: TeamId }

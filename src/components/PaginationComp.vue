@@ -7,8 +7,12 @@
           :class="{ active: pageItems.length && model === page, disabled: !pageItems.length }"
           :aria-current="model === page ? 'page' : false"
         >
-          <template v-if="model === page"><span class="page-link">{{ page }}</span></template>
-          <template v-else><a class="page-link" href="#" @click="model = page">{{ page }}</a></template>
+          <template v-if="model === page"
+            ><span class="page-link">{{ page }}</span></template
+          >
+          <template v-else
+            ><a class="page-link" href="#" @click="model = page">{{ page }}</a></template
+          >
         </li>
       </template>
     </ul>

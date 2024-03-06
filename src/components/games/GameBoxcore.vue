@@ -11,7 +11,7 @@ import type { CompetitionPlayer } from '@/types/players'
 import type { GameBoxScore } from '@/types/games'
 import type { PlayerStatKey } from '@/types/stats'
 
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 interface IProps {
   boxscore: GameBoxScore
@@ -23,14 +23,14 @@ const { competitionId } = route.params as { competitionId: string }
 const props = withDefaults(defineProps<IProps>(), {})
 
 const { getTeamName, getPlayerName, getCompetition } = useLibs()
-const { statsKeys } = useOptionsLibs()
+const { playerStatsKeys } = useOptionsLibs()
 
 const row = getCompetition(competitionId)
 
 const fields = computed(() => [
   { label: '#', key: 'number' },
   { label: 'Player', key: 'id', tdClass: 'fw-bold' },
-  ...statsKeys.reduce((fields: TableField[], opt): TableField[] => {
+  ...playerStatsKeys.reduce((fields: TableField[], opt): TableField[] => {
     if (row?.trackedStats.includes(opt.value)) {
       return [
         ...fields,
@@ -62,7 +62,7 @@ const boxScoreItems = computed(() => {
 const totalsItem = computed<TableItem>(() => ({
   number: '',
   id: '',
-  ...statsKeys.reduce((item: TableItem, opt: Option): TableItem => {
+  ...playerStatsKeys.reduce((item: TableItem, opt: Option): TableItem => {
     const key = opt.value as PlayerStatKey
     item[key] = boxScoreItems.value?.reduce((tot: number, row) => tot + row[key], 0) || 0
     return item
@@ -104,6 +104,8 @@ const totalsItem = computed<TableItem>(() => ({
         {{ getPlayerName(value) }}
       </RouterLink></template
     >
-    <template #footerid><span class="fw-lighter">{{ t('global.total', 2) }}</span></template>
+    <template #footerid
+      ><span class="fw-lighter">{{ t('global.total', 2) }}</span></template
+    >
   </TableComp>
 </template>

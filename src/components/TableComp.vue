@@ -149,7 +149,7 @@ const computedItems = computed(() => {
 })
 const handleSort = (key: string) => {
   const { ascOnly, descOnly } = props
-  console.log(key, sortedDirection.value, sortedKey.value, )
+  console.log(key, sortedDirection.value, sortedKey.value)
   sortedDirection.value = ascOnly
     ? 'asc'
     : descOnly

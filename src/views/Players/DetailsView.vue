@@ -11,7 +11,7 @@ import TeamLogo from '@/components/teams/TeamLogo.vue'
 import type { CompetitionRankingComputed } from '@/models/CompetitionComputed'
 import type { PlayerRankingKey, PlayerStatKey } from '@/types/stats'
 import type { Option } from '@/types/comp-fields'
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 const route = useRoute()
 const { playerId } = route.params as { playerId: PlayerId }

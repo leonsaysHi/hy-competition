@@ -24,7 +24,9 @@ const { isReady, rows: competitions } = useCompetitionsLib()
                 >
               </div>
               <div class="card-footer">
-                <small class="text-body-secondary">{{ $t('home.lastUpdate') }} {{ formatDistanceToNow(row.lastUpdate) }}</small>
+                <small class="text-body-secondary"
+                  >{{ $t('home.lastUpdate') }} {{ formatDistanceToNow(row.lastUpdate) }}</small
+                >
               </div>
             </div>
           </div>

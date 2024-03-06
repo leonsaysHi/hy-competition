@@ -3,10 +3,7 @@ import { useRoute } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import useCompetition from '@/composable/useCompetition'
 import { computed, ref } from 'vue'
-import type {
-  CompetitionGroupComputed,
-  CompetitionPhaseComputed
-} from '@/types/computed'
+import type { CompetitionGroupComputed, CompetitionPhaseComputed } from '@/types/computed'
 import type { Option } from '@/types/comp-fields'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
@@ -15,8 +12,7 @@ import CompetitionRanking from '@/components/competitions/CompetitionRanking.vue
 import GamesList from '@/components/games/GamesList.vue'
 import type { Game } from '@/types/games'
 
-
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 const route = useRoute()
@@ -46,7 +42,7 @@ const groupsOptions = computed<Option[] | undefined>(() =>
     ? selectedPhase.value?.groups.map(
         (row: CompetitionGroupComputed, idx): Option => ({
           value: idx.toString(),
-          text: t('global.group') + ` ${idx+1}`
+          text: t('global.group') + ` ${idx + 1}`
         })
       )
     : undefined

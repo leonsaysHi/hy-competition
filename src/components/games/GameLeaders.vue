@@ -12,11 +12,11 @@ import useCompetition from '@/composable/useCompetition'
 const route = useRoute()
 const { competitionId } = route.params
 const { row: competition, getCompetitionPlayer } = useCompetition(competitionId)
-const { statsKeys: statsOptions } = useOptionsLib()
+const { playerStatsKeys } = useOptionsLib()
 const { getPlayerName } = useLibs()
 
 const competitionStatsKeys = computed<PlayerStatKey[]>(() => {
-  return statsOptions
+  return playerStatsKeys
     .filter((opt: Option) => competition.value?.trackedStats.includes(opt.value))
     .map((opt: Option) => opt.value as PlayerStatKey)
 })
@@ -57,7 +57,7 @@ const leadersBystats = computed<StatLeaders>(() => {
   }, {} as StatLeaders)
 })
 const getStatShort = (key: PlayerStatKey): string =>
-  statsOptions.find((opt: Option) => opt.value === key)?.text as string
+  playerStatsKeys.find((opt: Option) => opt.value === key)?.text as string
 </script>
 <template>
   <div class="row row-cols-1 row-cols-md-2 g-2">

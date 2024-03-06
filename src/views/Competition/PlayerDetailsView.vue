@@ -19,13 +19,13 @@ import type { CompetitionRanking } from '@/types/computed'
 import type { PlayerStatKey } from '@/types/stats'
 import { getAvg } from '@/utils/maths'
 
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 const route = useRoute()
 const { competitionId, playerId } = route.params as { competitionId: string; playerId: string }
 
 const { getPlayerName } = useLibs()
-const { playerRankingKeys, statsKeys } = useOptionsLib()
+const { playerRankingKeys, playerStatsKeys } = useOptionsLib()
 const {
   isReady: isCompetitionReady,
   getCompetitionPlayer,
@@ -65,20 +65,20 @@ const competitionComputed = computed<CompetitionRanking | undefined>(() => {
 })
 const statsItem = computed<TableItem[]>(() => {
   const row = competitionComputed.value
-  return competitionComputed.value 
-  ? [
-      {
-        ...row,
-        ...statsKeys
-          .filter((opt: Option) => competition.value?.trackedStats.includes(opt.value))
-          .reduce((result:TableItem, opt:Option) => {
-            const key = opt.value as PlayerStatKey
-            result[key] = getAvg(row[key], row.gp)
-            return result
-          }, {})
-      }
-  ] 
-  : []
+  return competitionComputed.value
+    ? [
+        {
+          ...row,
+          ...playerStatsKeys
+            .filter((opt: Option) => competition.value?.trackedStats.includes(opt.value))
+            .reduce((result: TableItem, opt: Option) => {
+              const key = opt.value as PlayerStatKey
+              result[key] = getAvg(row[key], row.gp)
+              return result
+            }, {})
+        }
+      ]
+    : []
 })
 </script>
 <template>

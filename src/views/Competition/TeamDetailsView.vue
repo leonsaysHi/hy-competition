@@ -16,7 +16,7 @@ import type { Option } from '@/types/comp-fields'
 import LastGames from '@/components/games/LastGames.vue'
 import type { CompetitionTeam } from '@/types/teams'
 
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 const route = useRoute()
 const { competitionId, teamId } = route.params as { competitionId: string; teamId: string }
@@ -45,14 +45,20 @@ const teamGames = computed<Game[]>(() =>
     : []
 )
 const statsFields: TableField[] = [
-  ...(teamStandingKeys
-    .map((opt: Option): TableField => ({
+  ...teamStandingKeys.map(
+    (opt: Option): TableField => ({
       key: opt.value,
       label: opt.text,
       thClass: 'text-end',
       tdClass: 'text-end'
-    }))),
-  { label: t('options.standingStats.text.hist'), key: 'hist', thClass: 'text-center', tdClass: 'text-end' }
+    })
+  ),
+  {
+    label: t('options.standingStats.text.hist'),
+    key: 'hist',
+    thClass: 'text-center',
+    tdClass: 'text-end'
+  }
 ]
 </script>
 <template>

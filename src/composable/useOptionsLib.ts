@@ -3,7 +3,7 @@ import type { GenderKey } from '@/types/players'
 import type { PlayerStatKey, TeamStatKey, PlayerRankingKey, AwardKey } from '@/types/stats'
 import i18n from '@/i18n'
 
-const t = (path: string):string => i18n.global.t(path)
+const t = (path: string): string => i18n.global.t(path)
 
 export default function usePlayersLib() {
   const competitionSports: { value: CompetitionSport; text: string }[] = [
@@ -18,48 +18,63 @@ export default function usePlayersLib() {
   const getCategory = (value: CompetitionCategorie) =>
     competitionCategories.find((row) => row.value === value)
 
-  const genders: { value: GenderKey; text: string; long: string }[] = [ 
-    'm', 'f' 
-  ].map((key: string) => ({ 
-    text: t(`options.genders.text.${key}`), 
-    long: t(`options.genders.long.${key}`), 
-    value: key as GenderKey
-  }))
+  const genders: { value: GenderKey; text: string; long: string }[] = ['m', 'f'].map(
+    (key: string) => ({
+      text: t(`options.genders.text.${key}`),
+      long: t(`options.genders.long.${key}`),
+      value: key as GenderKey
+    })
+  )
   const getGender = (value: GenderKey) => genders.find((row) => row.value === value)
 
   const competitionPhases: { value: PhaseType; text: string }[] = [
     { text: t('options.phases.groups'), value: 'groups' },
     { text: t('options.phases.playoffs'), value: 'playoffs' }
   ]
-  const statsKeys: { value: PlayerStatKey; text: string; long: string }[] = [
-    'pts', 'reb','ast', 'stl', 'blk', 'to', 'pf', 'm3pts'
-  ].map((key: string) => ({ 
-      text: t(`options.playerStats.text.${key}`), 
-      long: t(`options.playerStats.long.${key}`), 
-      value: key as PlayerStatKey
-    }))
-
-  const awardsKeys: { value: AwardKey; text: string; long: string }[] = [ 
-    'mvp', 'def' 
-  ].map((key: string) => ({ 
-    text: t(`options.awards.text.${key}`), 
-    long: t(`options.awards.long.${key}`), 
-    value: key as AwardKey
+  const playerStatsKeys: { value: PlayerStatKey; text: string; long: string }[] = [
+    'pts',
+    'reb',
+    'ast',
+    'stl',
+    'blk',
+    'to',
+    'pf',
+    'm3pts'
+  ].map((key: string) => ({
+    text: t(`options.playerStats.text.${key}`),
+    long: t(`options.playerStats.long.${key}`),
+    value: key as PlayerStatKey
   }))
-  const getAward = (value: AwardKey) => awardsKeys.find((row) => row.value === value)
-
   const playerRankingKeys: { value: PlayerRankingKey; text: string; long: string }[] = [
-    { text: t('options.rankingStats.text.gp'), long: t('options.rankingStats.long.gp'), value: 'gp' },
-    ...statsKeys
+    {
+      text: t('options.rankingStats.text.gp'),
+      long: t('options.rankingStats.long.gp'),
+      value: 'gp'
+    },
+    ...playerStatsKeys
     // awards[]
   ]
+
+  const awardsKeys: { value: AwardKey; text: string; long: string }[] = ['mvp', 'def'].map(
+    (key: string) => ({
+      text: t(`options.awards.text.${key}`),
+      long: t(`options.awards.long.${key}`),
+      value: key as AwardKey
+    })
+  )
+  const getAward = (value: AwardKey) => awardsKeys.find((row) => row.value === value)
+
   const teamStandingKeys: { value: TeamStatKey; text: string; long: string }[] = [
-    { text: t('options.rankingStats.text.gp'), long: t('options.rankingStats.long.gp'), value: 'gp' },
-    ...(['wins', 'ptspos', 'ptsneg'].map((key: string) => ({ 
-      text: t(`options.standingStats.text.${key}`), 
-      long: t(`options.standingStats.long.${key}`), 
+    {
+      text: t('options.rankingStats.text.gp'),
+      long: t('options.rankingStats.long.gp'),
+      value: 'gp'
+    },
+    ...['wins', 'ptspos', 'ptsneg'].map((key: string) => ({
+      text: t(`options.standingStats.text.${key}`),
+      long: t(`options.standingStats.long.${key}`),
       value: key as TeamStatKey
-    })))
+    }))
   ]
 
   return {
@@ -72,7 +87,7 @@ export default function usePlayersLib() {
     getCategory,
     getAward,
 
-    statsKeys,
+    playerStatsKeys,
     awardsKeys,
     playerRankingKeys,
     teamStandingKeys

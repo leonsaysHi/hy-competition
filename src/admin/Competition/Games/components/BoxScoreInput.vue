@@ -18,7 +18,7 @@ const { competitionId } = route.params
 
 const { getPlayerName } = useLibs()
 const { getPlayerNumber } = useCompetition(competitionId)
-const { statsKeys: statsFieldsAll } = useOptionsLib()
+const { playerStatsKeys } = useOptionsLib()
 
 interface IProps {
   modelValue: GameBoxScore
@@ -31,7 +31,7 @@ const props = withDefaults(defineProps<IProps>(), {
 })
 
 const statsFields = computed(() =>
-  statsFieldsAll
+  playerStatsKeys
     .filter((opt) => Array.isArray(props.trackedStats) && props.trackedStats.includes(opt.value))
     .map((opt) => ({
       key: opt.value,
