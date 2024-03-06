@@ -10,7 +10,7 @@ import type { TableField, TableItem } from '@/types/comp-table'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
-import { useI18n } from 'vue-i18n'
+import { useI18n } from "vue-i18n"
 const { t } = useI18n()
 
 interface PlayerGameComputed extends PlayerBoxScore {
@@ -29,7 +29,7 @@ interface IProps {
 const props = withDefaults(defineProps<IProps>(), {})
 
 const { getTeamName, getCompetition } = useLibs()
-const { statsKeys } = useOptionsLib()
+const { playerStatsKeys } = useOptionsLib()
 const { getPlayerCompetitionTeam } = useCompetition(competitionId)
 
 const row = getCompetition(competitionId)
@@ -37,7 +37,7 @@ const fields = computed(() => [
   { key: 'datetime', label: t('global.date') },
   { key: 'opp', label: t('global.gameDetails.opponent.text') },
   { key: 'isWin', label: '', tdClass: 'text-center' },
-  ...statsKeys
+  ...playerStatsKeys
     .filter((opt: Option) => row?.trackedStats.includes(opt.value))
     .map(
       (opt: Option): TableField =>
@@ -67,7 +67,7 @@ const computedGames = computed<TableItem[]>(() => {
 </script>
 
 <template>
-  <TableComp :fields="fields" :items="computedGames">
+  <TableComp :fields="fields" :items="computedGames" small>
     <template #isWin="{ value }">
       <span :class="value ? 'text-win' : 'text-loss'">{{ value ? 'W' : 'L' }}</span>
     </template>

@@ -1,5 +1,5 @@
 <template>
-  <table class="table" :class="{ 'table-sm': small, 'table-xs': xSmall }">
+  <table class="table" :class="{ 'table-sm': small }">
     <thead class="table-light">
       <tr>
         <template v-for="({ label, sortable, thClass, key }, hIdx) in fields" :key="hIdx">
@@ -89,7 +89,6 @@ interface IProps {
   perPage?: number
   currentPage?: number
   small?: boolean
-  xSmall?: boolean
   isBusy?: boolean
   showEmpty?: boolean
   ascOnly?: boolean
@@ -102,7 +101,6 @@ const props = withDefaults(defineProps<IProps>(), {
   perPage: 0,
   currentPage: 1,
   small: false,
-  xSmall: false,
   isBusy: false,
   showEmpty: false,
   ascOnly: false,

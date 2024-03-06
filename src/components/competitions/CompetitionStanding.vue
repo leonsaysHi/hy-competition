@@ -55,12 +55,12 @@ const items = computed(() => {
   <TableComp :fields="fields" :items="items" sorted-key="pos" sorted-direction="asc" small>
     <template #pos="{ value, item }">
       <template v-if="Number(item.pos) <= items.length">
-        <span :class="`fs-${2 + Math.min(value, 3)}`"
+        <span :class="`fs-${4 + Math.min(value, 2)}`"
           >{{ value }}<sup class="fw-normal">{{ getOrd(value) }}</sup></span
         >
       </template>
       <template v-else>
-        <span class="fs-5 fw-normal">-</span>
+        <span class="fs-6 fw-normal">-</span>
       </template>
     </template>
     <template #teamId="{ value }">
@@ -68,8 +68,8 @@ const items = computed(() => {
         class="d-flex align-items-center gap-2 link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
         :to="{ name: 'competition-team', params: { competitionId: competitionId, teamId: value } }"
       >
-        <TeamLogo :team-id="value" :size="40" />
-        <strong class="jersey-team fs-5">{{ getTeamName(value) }}</strong>
+        <TeamLogo :team-id="value" :size="35" />
+        <strong class="jersey-team fs-6">{{ getTeamName(value) }}</strong>
       </RouterLink>
     </template>
     <template #hist="{ value }"

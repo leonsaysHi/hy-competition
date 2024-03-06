@@ -5,7 +5,10 @@
     </template>
     <template v-else>
       <template v-for="gameComputed in computedGames" :key="gameComputed.id">
-        <RouterLink class="list-group-item list-group-item-action game" :to="gameComputed.to">
+        <RouterLink 
+          class="list-group-item list-group-item-action game" 
+          :to="gameComputed.to"
+        >
           <template v-if="gameComputed.isFinished">
             <div class="date d-flex flex-column align-items-center justify-content-center lh-1">
               <span>{{ gameComputed.date?.short }}</span>
@@ -14,15 +17,15 @@
           <template v-for="(team, idx) in gameComputed.scores" :key="idx">
             <div class="team">
               <div class="name">
-                <strong class="jersey-team fs-5">{{ team.title }}</strong>
-                <TeamLogo :team-id="team.id" :size="54" />
+                <strong class="jersey-team fs-6 lh-1">{{ team.title }}</strong>
+                <TeamLogo :team-id="team.id" :size="50" />
               </div>
               <template v-if="gameComputed.isFinished">
                 <div
                   class="score border border-3 rounded-2"
                   :class="[team.winner ? 'border-win' : 'border-loss']"
                 >
-                  <strong class="jersey-score fs-2 lh-1 pt-1">{{ team.finalScore }}</strong>
+                  <strong class="jersey-score fs-3 lh-1 pt-1">{{ team.finalScore }}</strong>
                 </div>
               </template>
             </div>
@@ -68,13 +71,13 @@ const computedGames = computed<ComputedGame[]>(() => {
     flex: 1;
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: .5rem;
     .name {
       flex-grow: 1;
       display: flex;
       align-items: center;
       justify-content: end;
-      gap: 1rem;
+      gap: .5rem;
     }
     .score {
       display: flex;

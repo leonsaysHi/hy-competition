@@ -250,7 +250,7 @@ export default class CompetitionClass {
     const getEmptyRankingStats = (): PlayerRankingStats => ({
       gp: 0,
       awards: [],
-      ...statsKeys.reduce((stats: PlayerStats, opt: Option) => {
+      ...playerStatsKeys.reduce((stats: PlayerStats, opt: Option) => {
         return {
           ...stats,
           [opt.value]: 0
@@ -272,7 +272,7 @@ export default class CompetitionClass {
                     id: this.row.id,
                     ...getEmptyRankingStats()
                   }
-            statsKeys.forEach((opt: Option) => {
+            playerStatsKeys.forEach((opt: Option) => {
               const key = opt.value as PlayerStatKey
               newRank[key] += rank[key] || 0
             })

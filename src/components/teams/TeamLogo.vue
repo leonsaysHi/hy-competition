@@ -1,7 +1,10 @@
 <template>
   <div class="ratio ratio-1x1" :style="styleObj">
     <div>
-      <div class="position-relative d-flex overflow-hidden w-100 h-100 border rounded-4">
+      <div 
+        class="position-relative d-flex overflow-hidden w-100 h-100 rounded-4" 
+        :class="{ border: border }"
+      >
         <template v-if="url">
           <ImageComp class="logo" :src="url" :width="size" :title="title" square />
         </template>
@@ -26,9 +29,11 @@ import ImageComp from '../ImageComp.vue'
 interface IProps {
   teamId: TeamId
   size?: number
+  border?: false
 }
 const props = withDefaults(defineProps<IProps>(), {
-  size: 50
+  size: 50,
+  border: false,
 })
 
 const { getTeam } = useLibs()

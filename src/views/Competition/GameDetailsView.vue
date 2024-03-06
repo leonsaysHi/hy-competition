@@ -55,13 +55,12 @@ const teamsBoxscores = computed<GameBoxScore[]>(() => {
     <template v-else>
       <div class="d-flex gap-2 align-items-start">
         <div
-          class="flex-grow-1 d-flex flex-column-reverse justify-content-start align-items-center gap-2"
+          class="flex-grow-1 d-flex flex-column-reverse justify-content-start align-items-center gap-1"
         >
-          <strong class="fs-3 jersey-team text-center lh-1">{{
+          <strong class="fs-6 jersey-team text-center lh-1">{{
             gameComputed.scores[0].title
           }}</strong>
-          <TeamLogo :team-id="gameComputed.scores[0].id" :size="100" class="d-none d-md-block" />
-          <TeamLogo :team-id="gameComputed.scores[0].id" :size="60" class="d-md-none" />
+          <TeamLogo :team-id="gameComputed.scores[0].id" :size="60" />
         </div>
         <div>
           <template v-if="gameComputed.isFinished">
@@ -90,9 +89,9 @@ const teamsBoxscores = computed<GameBoxScore[]>(() => {
           </template>
         </div>
         <div
-          class="flex-grow-1 d-flex flex-column-reverse justify-content-start align-items-center gap-2"
+          class="flex-grow-1 d-flex flex-column-reverse justify-content-start align-items-center gap-1"
         >
-          <strong class="jersey-team fs-3 text-center lh-1">{{
+          <strong class="jersey-team fs-6 text-center lh-1">{{
             gameComputed.scores[1].title
           }}</strong>
           <TeamLogo :team-id="gameComputed.scores[1].id" :size="100" class="d-none d-md-block" />

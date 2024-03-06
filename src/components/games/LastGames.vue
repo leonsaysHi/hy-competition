@@ -1,7 +1,7 @@
 <template>
   <div class="d-inline-flex gap-1 small">
     <template v-for="(colorclass, idx) in items" :key="idx">
-      <i class="bi bi-circle-fill" :class="colorclass"></i>
+      <i class="bi bi-circle-fill" :class="[colorclass, idx<2 && 'd-none d-lg-block']"></i>
     </template>
   </div>
 </template>

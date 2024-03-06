@@ -70,7 +70,7 @@ const messages = {
         wins: 'W',
         ptspos: 'Pts+',
         ptsneg: 'Pts-',
-        hist: 'Ú5'
+        hist: 'Últimos'
       },
       long: {
         pos: 'Posición',
@@ -78,7 +78,7 @@ const messages = {
         wins: 'Ganados',
         ptspos: 'Puntos anotados',
         ptsneg: 'Puntos encajados',
-        hist: 'Últimos 5 juegos'
+        hist: 'Últimos juegos'
       }
     }
   },
