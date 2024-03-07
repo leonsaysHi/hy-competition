@@ -15,6 +15,10 @@ const items = computed(()=> rows.value?.filter((row: Competition) => row.isActiv
         <SpinnerComp />
       </template>
       <template v-else>
+        <template v-if="!items?.length">
+          <p>Ningun liga ahora.</p>
+        </template>
+        <template v-else>
         <template v-for="row in items" :key="row.id">
           <div class="col">
             <div class="card h-100">
@@ -33,6 +37,7 @@ const items = computed(()=> rows.value?.filter((row: Competition) => row.isActiv
               </div>
             </div>
           </div>
+        </template>
         </template>
       </template>
     </div>
