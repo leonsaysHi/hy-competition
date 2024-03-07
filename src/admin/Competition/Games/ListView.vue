@@ -19,7 +19,6 @@ import useCompetition from '@/composable/useCompetition'
 
 const route = useRoute()
 const { competitionId } = route.params
-
 const { isReady: isLibsReady, getTeam, getTeamName } = useLibs()
 
 const { row } = useCompetition(competitionId)
@@ -75,9 +74,14 @@ const teamsOptions = computed((): Option[] => {
     : []
 })
 
+const isBusy = ref(false)
 // Add game
 const handleAddGame = async (data) => {
+  isBusy.value = true
   await addCompetitionGame(data)
+  setTimeout(() => {
+    isBusy.value = false
+  }, 150)
 }
 
 // Delete game
@@ -88,9 +92,13 @@ const handleConfirmDeleteGame = (row: TableItem) => {
   deleteModal.value?.show()
 }
 const handleDelete = async () => {
+  isBusy.value = true
   await deleteCompetitionGame({ ...deleteGame.value })
-  deleteGame.value = undefined
-  deleteModal.value?.hide()
+  setTimeout(() => {
+    isBusy.value = false
+    deleteGame.value = undefined
+    deleteModal.value?.hide()
+  }, 150)
 }
 </script>
 <template>
@@ -128,7 +136,7 @@ const handleDelete = async () => {
         </template>
       </TableComp>
       <h5>Add game</h5>
-      <AddGameForm :teamsOptions="teamsOptions" @submit="handleAddGame" />
+      <AddGameForm :teamsOptions="teamsOptions" :is-busy="isBusy" @submit="handleAddGame" />
       <ModalComp ref="deleteModal" title="Confirm detetion" ok-title="Delete" ok-variant="danger">
         <p>
           Sure to delete game

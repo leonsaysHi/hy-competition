@@ -49,7 +49,7 @@ const es = {
       },
       long: {
         mvp: 'Mejor jugador',
-        m: 'Mejor defensor'
+        def: 'Mejor defensor'
       }
     },
     rankingStats: {

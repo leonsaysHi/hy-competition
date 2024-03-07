@@ -3,7 +3,7 @@ import { RouterView } from 'vue-router'
 import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
 import SpinnerComp from '@/components/SpinnerComp.vue'
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import AlertComp from '@/components/AlertComp.vue'
 
 const route = useRoute()
@@ -13,6 +13,15 @@ const teamsListMinLength = computed(
   () => Array.isArray(row?.value?.teams) && row.value.teams.length >= 2
 )
 const hasCurrentPhase = computed(() => Array.isArray(row?.value?.phases) && row.value.phases.length)
+watch(
+  () => row.value,
+  (row) => {
+    if (row && isReady.value) {
+      console.log('new row', row, row?.games.length, row?.teams.length)
+    }
+  },
+  { deep: true }
+)
 </script>
 <template>
   <h1>{{ row?.title || '...' }}</h1>

@@ -24,9 +24,11 @@ const { t } = useI18n()
           <RouterLink :to="{ name: 'teams' }" class="nav-link text-white fw-bold text-uppercase">{{
             t('sections.team', 2)
           }}</RouterLink>
-          <RouterLink :to="{ name: 'players' }" class="nav-link text-white fw-bold text-uppercase">{{
-            t('sections.player', 2)
-          }}</RouterLink>
+          <RouterLink
+            :to="{ name: 'players' }"
+            class="nav-link text-white fw-bold text-uppercase"
+            >{{ t('sections.player', 2) }}</RouterLink
+          >
         </nav>
       </div>
     </header>

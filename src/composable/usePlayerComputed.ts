@@ -4,7 +4,7 @@ import { collection } from 'firebase/firestore'
 import type { PlayerId } from '@/types/players'
 import { computed, type Ref } from 'vue'
 import { computedRankingConverter } from '@/utils/firestore-converters'
-import type { CompetitionRankingComputed } from '@/models/CompetitionComputed'
+import type { CompetitionRankingComputed } from '@/types/computed'
 
 export default function usePlayerComputed(playerId: PlayerId) {
   const computedCompetitionsCollection = collection(

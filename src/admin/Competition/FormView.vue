@@ -11,7 +11,6 @@ const route = useRoute()
 const { competitionId } = route.params as { competitionId: CompetitionId }
 const { isReady, row } = useCompetition(competitionId)
 const { writeCompetitionDoc } = useCompetitionAdmin(competitionId)
-
 const isBusy = ref(false)
 const handleSubmit = async (values: CompetitionDoc) => {
   const payload = {

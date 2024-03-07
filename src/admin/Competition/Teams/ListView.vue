@@ -16,7 +16,6 @@ import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
 const route = useRoute()
 const { competitionId } = route.params
 const { isReady: isLibsReady, teamsRows: teamsLib, getTeam } = useLibs()
-
 const { isReady: isRowReady, row } = useCompetition(competitionId)
 const { writeTeamDoc: addCompetitionTeam, deleteTeam: deleteCompetitionTeam } =
   useCompetitionAdmin(competitionId)
@@ -60,8 +59,10 @@ const handleConfirmDeleteTeam = (row: TableItem) => {
 const handleRemove = async () => {
   deletePlayerIsBusy.value = true
   await deleteCompetitionTeam(deleteTeam.value)
-  deletePlayerIsBusy.value = false
-  deleteModal.value?.hide()
+  setTimeout(() => {
+    deletePlayerIsBusy.value = false
+    deleteModal.value?.hide()
+  }, 150)
 }
 </script>
 <template>
