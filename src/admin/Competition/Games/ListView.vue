@@ -16,6 +16,7 @@ import useLibs from '@/composable/useLibs'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import PhaseMenu from './components/PhaseMenu.vue'
 import useCompetition from '@/composable/useCompetition'
+import { formatDate } from '@/utils/dates'
 
 const route = useRoute()
 const { competitionId } = route.params
@@ -114,6 +115,12 @@ const handleDelete = async () => {
     <template v-else>
       <PhaseMenu v-model="selectedPhase" :phases="row?.phases" class="mb-2" />
       <TableComp :fields="fields" :items="gamesItems">
+        <template #datetime="{ value }">
+          <div class="vstack">
+            <span>{{ formatDate(value).short }}</span>
+            <span>{{ formatDate(value).time }}</span>
+          </div>
+        </template>
         <template #game="{ item }">
           <div class="score-col">
             <template v-for="(score, teamId) in item.game" :key="teamId">

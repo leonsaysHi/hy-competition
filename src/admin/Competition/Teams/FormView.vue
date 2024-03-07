@@ -31,7 +31,6 @@ const handleSubmit = async (payload: CompetitionTeam) => {
     sponsorUpload: MediaSource | undefined
     competitionTeamDoc: CompetitionTeamDoc
   } = payload
-  console.log(payload)
   if (sponsorUpload) {
     competitionTeamDoc.sponsor = await uploadTeamSponsor(
       sponsorUpload,

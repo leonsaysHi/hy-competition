@@ -7,7 +7,7 @@ import useOptionsLibs from '@/composable/useOptionsLib'
 import type { CompetitionRanking } from '@/types/computed'
 import { useRoute } from 'vue-router'
 import type { TableField } from '@/types/comp-table'
-import { getOrd, getAvg } from '@/utils/maths'
+import { getOrd, getAvg, formatAvg } from '@/utils/maths'
 import type { PlayerStats } from '@/types/stats'
 import type { Option } from '@/types/comp-fields'
 
@@ -46,7 +46,8 @@ const fields = computed(() => [
         label: opt.text,
         sortable: true,
         thClass: 'text-end',
-        tdClass: 'text-end'
+        tdClass: 'text-end',
+        formatter: (value) => formatAvg(value)
       })
     )
 ])
@@ -71,7 +72,7 @@ const items = computed(() =>
   <TableComp
     :fields="fields"
     :items="items"
-    :sorted-key="playerRankingKeys[0].value"
+    :sorted-key="playerRankingKeys[1].value"
     :per-page="5"
     small
     show-empty

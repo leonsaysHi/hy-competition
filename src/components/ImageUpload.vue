@@ -33,7 +33,7 @@ const props = withDefaults(defineProps<IProps>(), {
 })
 
 const emit = defineEmits(['update:modelValue'])
-const f = ref()
+const f = ref('')
 const handleSelectLogo = (ev: Event) => {
   const reader = new FileReader()
   const file = ev.target?.files[0]

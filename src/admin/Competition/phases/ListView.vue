@@ -4,7 +4,7 @@ import useLibs from '@/composable/useLibs'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import { useRoute, RouterLink } from 'vue-router'
 import PhaseGroups from './components/PhaseGroups.vue'
-
+import { formatDate } from '@/utils/dates'
 const route = useRoute()
 const { competitionId } = route.params
 const { isReady: isLibsReady } = useLibs()
@@ -27,7 +27,7 @@ const { isReady: isRowReady, row } = useCompetition(competitionId)
             <template v-if="idx === row.phases.length - 1">
               <div class="card-header d-flex justify-content-between align-items-end">
                 <h5 class="mb-0">Current phase</h5>
-                <small>Started on {{ phase.datetime }}</small>
+                <small>Started on {{ formatDate(phase.datetime).full }}</small>
               </div>
             </template>
             <div class="card-body">

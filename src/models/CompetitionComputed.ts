@@ -96,7 +96,7 @@ export const getPlayerStatsFromGames = (playerId: PlayerId, games: Game[]): Play
 }
 const getPlayerPhaseRankingStats = (playerId: PlayerId, games: Game[]): PlayerRankingStats => {
   const playedgames = games.filter(
-    (game: Game) => game.isFinished && game.boxscore[playerId] && ~game.boxscore[playerId].dnp
+    (game: Game) => game.isFinished && game.boxscore[playerId] && !game.boxscore[playerId].dnp
   )
   const playerStats: PlayerStats = getPlayerStatsFromGames(playerId, playedgames)
   const playerAwards: AwardItem[] = playedgames.reduce((awards: AwardItem[], game: Game) => {
