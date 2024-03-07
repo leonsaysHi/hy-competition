@@ -16,10 +16,10 @@ import useLibs from '@/composable/useLibs'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import PhaseMenu from './components/PhaseMenu.vue'
 import useCompetition from '@/composable/useCompetition'
+import { formatDate } from '@/utils/dates'
 
 const route = useRoute()
 const { competitionId } = route.params
-
 const { isReady: isLibsReady, getTeam, getTeamName } = useLibs()
 
 const { row } = useCompetition(competitionId)
@@ -75,9 +75,14 @@ const teamsOptions = computed((): Option[] => {
     : []
 })
 
+const isBusy = ref(false)
 // Add game
 const handleAddGame = async (data) => {
+  isBusy.value = true
   await addCompetitionGame(data)
+  setTimeout(() => {
+    isBusy.value = false
+  }, 150)
 }
 
 // Delete game
@@ -88,9 +93,13 @@ const handleConfirmDeleteGame = (row: TableItem) => {
   deleteModal.value?.show()
 }
 const handleDelete = async () => {
+  isBusy.value = true
   await deleteCompetitionGame({ ...deleteGame.value })
-  deleteGame.value = undefined
-  deleteModal.value?.hide()
+  setTimeout(() => {
+    isBusy.value = false
+    deleteGame.value = undefined
+    deleteModal.value?.hide()
+  }, 150)
 }
 </script>
 <template>
@@ -106,6 +115,12 @@ const handleDelete = async () => {
     <template v-else>
       <PhaseMenu v-model="selectedPhase" :phases="row?.phases" class="mb-2" />
       <TableComp :fields="fields" :items="gamesItems">
+        <template #datetime="{ value }">
+          <div class="vstack">
+            <span>{{ formatDate(value).short }}</span>
+            <span>{{ formatDate(value).time }}</span>
+          </div>
+        </template>
         <template #game="{ item }">
           <div class="score-col">
             <template v-for="(score, teamId) in item.game" :key="teamId">
@@ -128,7 +143,7 @@ const handleDelete = async () => {
         </template>
       </TableComp>
       <h5>Add game</h5>
-      <AddGameForm :teamsOptions="teamsOptions" @submit="handleAddGame" />
+      <AddGameForm :teamsOptions="teamsOptions" :is-busy="isBusy" @submit="handleAddGame" />
       <ModalComp ref="deleteModal" title="Confirm detetion" ok-title="Delete" ok-variant="danger">
         <p>
           Sure to delete game

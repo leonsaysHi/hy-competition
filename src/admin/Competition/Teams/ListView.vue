@@ -4,6 +4,7 @@ import type { TableField, TableItem } from '@/types/comp-table'
 import ButtonComp from '@/components/ButtonComp.vue'
 import TableComp from '@/components/TableComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
+import AlertComp from '@/components/AlertComp.vue'
 import type { CompetitionTeam, Team, TeamId } from '@/types/teams'
 import type { Option } from '@/types/comp-fields'
 
@@ -16,7 +17,6 @@ import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
 const route = useRoute()
 const { competitionId } = route.params
 const { isReady: isLibsReady, teamsRows: teamsLib, getTeam } = useLibs()
-
 const { isReady: isRowReady, row } = useCompetition(competitionId)
 const { writeTeamDoc: addCompetitionTeam, deleteTeam: deleteCompetitionTeam } =
   useCompetitionAdmin(competitionId)
@@ -42,6 +42,7 @@ const addTeamsOptions = computed((): Option[] => {
       )
     : []
 })
+const addTeamDisabled = computed(() => Array.isArray(row?.value?.phases) && row.value.phases.length > 0)
 const addTeamIsBusy = ref(false)
 const handleAddTeam = async (payload) => {
   addTeamIsBusy.value = true
@@ -60,8 +61,10 @@ const handleConfirmDeleteTeam = (row: TableItem) => {
 const handleRemove = async () => {
   deletePlayerIsBusy.value = true
   await deleteCompetitionTeam(deleteTeam.value)
-  deletePlayerIsBusy.value = false
-  deleteModal.value?.hide()
+  setTimeout(() => {
+    deletePlayerIsBusy.value = false
+    deleteModal.value?.hide()
+  }, 150)
 }
 </script>
 <template>
@@ -75,6 +78,10 @@ const handleRemove = async () => {
       <SpinnerComp />
     </template>
     <template v-else>
+
+      <template v-if="addTeamDisabled">
+        <AlertComp variant="warning">Competition as started, you can't add/remove teams anymore.</AlertComp>
+      </template>
       <TableComp :fields="fields" :items="row?.teams">
         <template #id="{ item }">
           {{ getTeam(item.id).title }}
@@ -89,7 +96,11 @@ const handleRemove = async () => {
               :to="{ name: 'admin-competition-edit-team', params: { teamId: item.id } }"
               >Edit</RouterLink
             >
-            <ButtonComp variant="danger" size="sm" @click="handleConfirmDeleteTeam(item)"
+            <ButtonComp 
+            variant="danger" 
+            size="sm" 
+            :disabled="addTeamDisabled"
+            @click="handleConfirmDeleteTeam(item)" 
               >Remove</ButtonComp
             >
           </div>
@@ -98,6 +109,7 @@ const handleRemove = async () => {
       <h5>Add team</h5>
       <AddTeamForm
         :is-busy="addTeamIsBusy"
+        :disabled="addTeamDisabled"
         :teams-options="addTeamsOptions"
         @submit="handleAddTeam"
       />

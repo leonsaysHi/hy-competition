@@ -55,7 +55,7 @@ const gamesViewOptions: Option[] = [
   { text: t('global.previous', 2), value: 'prev' },
   { text: t('global.upcoming', 2), value: 'next' }
 ]
-const currentGamesView = ref<'prev' | 'next'>(gamesViewOptions[1].value)
+const currentGamesView = ref<'prev' | 'next'>(gamesViewOptions[gamesViewOptions.length -1].value)
 const groupGames = computed<Game[]>(() => {
   return selectedGroup.value.games
     .filter((game: Game) =>
@@ -119,7 +119,7 @@ const groupGames = computed<Game[]>(() => {
                   :aria-current="currentGamesView === opt.value ? 'page' : false"
                   href="#"
                   @click="currentGamesView = opt.value"
-                  >{{ t(opt.text, 2) }}</a
+                  >{{ opt.text }}</a
                 >
               </li>
             </template>

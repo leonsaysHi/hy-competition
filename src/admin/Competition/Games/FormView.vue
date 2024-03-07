@@ -11,7 +11,6 @@ const { isReady: isLibsReady, getTeamName } = useLibs()
 
 const route = useRoute()
 const { competitionId, gameId } = route.params
-
 const { isReady, row: competition, getGame } = useCompetition(competitionId)
 const { writeGame: updateCompetitionGameDoc } = useCompetitionAdmin(competitionId)
 
@@ -51,4 +50,3 @@ const handleSubmit = async (payload) => {
     />
   </template>
 </template>
-@/composable/useTeams

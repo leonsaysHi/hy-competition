@@ -3,16 +3,30 @@ import { RouterView } from 'vue-router'
 import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
 import SpinnerComp from '@/components/SpinnerComp.vue'
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import AlertComp from '@/components/AlertComp.vue'
+import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
 
 const route = useRoute()
 const { competitionId } = route.params
 const { isReady, row } = useCompetition(competitionId)
+const { updateCompetitionComputeds } = useCompetitionAdmin(competitionId)
 const teamsListMinLength = computed(
   () => Array.isArray(row?.value?.teams) && row.value.teams.length >= 2
 )
 const hasCurrentPhase = computed(() => Array.isArray(row?.value?.phases) && row.value.phases.length)
+
+// Updates computed on compatition update
+watch(
+  () => row.value?.lastUpdate,
+  (val, oldVal) => {
+    if (row.value && val && oldVal && val !== oldVal) {
+      console.log(row.value)
+      updateCompetitionComputeds(row.value)
+    }
+  },
+  { deep: true }
+)
 </script>
 <template>
   <h1>{{ row?.title || '...' }}</h1>

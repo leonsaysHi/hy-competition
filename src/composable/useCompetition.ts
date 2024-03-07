@@ -20,7 +20,7 @@ import type {
   CompetitionPhaseComputed,
   CompetitionStandingComputed,
   CompetitionRankingComputed
-} from '@/models/CompetitionComputed'
+} from '@/types/computed'
 
 export default function useCompetition(competitionId: CompetitionId | undefined) {
   const { isReady: isLibsReady, getCompetition } = useLibs()

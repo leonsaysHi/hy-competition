@@ -1,21 +1,17 @@
-import { doc, collection, writeBatch, WriteBatch } from 'firebase/firestore'
+import { doc, collection, writeBatch, WriteBatch, setDoc } from 'firebase/firestore'
 import {
   db,
-  competitionsColl,
+  competitionsName,
   teamsName,
   gamesName,
   playersName,
   playerCompetitionsComputedName,
+  competitionsColl,
   playersColl,
   teamsColl,
   teamCompetitionsComputedName
 } from '@/firebase-firestore.js'
-import type { Competition, CompetitionDoc, CompetitionId } from '@/types/competitions'
-import CompetitionClass from '@/models/CompetitionComputed'
-import type { CompetitionTeam, CompetitionTeamDoc, TeamId } from '@/types/teams'
-import type { Game, GameId } from '@/types/games'
-import type { CompetitionPlayer, PlayerId } from '@/types/players'
-
+import { dateToTimeStamp } from '@/utils/dates'
 import {
   gameConverter,
   competitionTeamConverter,
@@ -23,12 +19,15 @@ import {
   computedRankingConverter,
   computedStandingConverter
 } from '@/utils/firestore-converters'
-import type {
-  CompetitionRankingComputed,
-  CompetitionStandingComputed
-} from '@/models/CompetitionComputed'
 
-export default function useCompetition(competitionId: CompetitionId | undefined) {
+import type { Competition, CompetitionDoc, CompetitionId } from '@/types/competitions'
+import CompetitionClass from '@/models/CompetitionComputed'
+import type { CompetitionTeam, CompetitionTeamDoc, TeamId } from '@/types/teams'
+import type { Game, GameId } from '@/types/games'
+import type { CompetitionPlayer, PlayerId } from '@/types/players'
+import type { CompetitionRankingComputed, CompetitionStandingComputed } from '@/types/computed'
+
+export default function useCompetitionAdmin(competitionId: CompetitionId | undefined) {
   const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`).withConverter(
     gameConverter
   )
@@ -41,6 +40,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   // Admin game
   const writeGame = async (payload: Game) => {
     const batch = writeGameBatch(payload)
+    updateCompetitionLastUpdate(batch)
     await batch.commit()
   }
   const writeGameBatch = (row: Game, batch: WriteBatch = writeBatch(db)): WriteBatch => {
@@ -182,11 +182,16 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   }
 
   // Admin Competition Doc
+  const updateCompetitionLastUpdate = async (batch: WriteBatch = writeBatch(db)) => {
+    const docRef = doc(db, `${competitionsName}/${competitionId}`)
+    batch.set(docRef, { lastUpdate: dateToTimeStamp(new Date()) }, { merge: true })
+    return batch
+  }
+
   const writeCompetitionDoc = async (payload: Competition) => {
     const batch = writeCompetitionDocBatch(payload)
-    const computedClass = new CompetitionClass(payload)
-    writePlayersCompetitionComputed(computedClass.competitionRankings, batch)
-    writeTeamsCompetitionComputed(computedClass.competitionStandings, batch)
+    console.log('update computed')
+    updateCompetitionLastUpdate(batch)
     await batch.commit()
   }
   const writeCompetitionDocBatch = (
@@ -209,39 +214,36 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     return batch
   }
 
-  /*const writeCompetition = async (payload: Competition) => {
-    const batch = writeCompetitionBatch(payload)
-    const computedClass = new CompetitionClass(payload)
-    console.log('hip')
-    writePlayersCompetitionComputed(computedClass.competitionRankings, batch)
-    writeTeamsCompetitionComputed(computedClass.competitionStandings, batch)
+  const updateCompetitionComputeds = async (
+    payload: Competition
+  ) => {
+    const batch:WriteBatch = writeBatch(db)
+    if (payload.isActive) {
+      const computedClass = new CompetitionClass(payload)
+      writePlayersCompetitionComputed(computedClass.competitionRankings, batch)
+      writeTeamsCompetitionComputed(computedClass.competitionStandings, batch)
+    } else {
+      const { id: competitionId } = payload
+      payload.teams.forEach((team: CompetitionTeam) => {
+        team.players.forEach((player: CompetitionPlayer) => {
+          const computedRef = doc(
+            collection(doc(playersColl, player.id), playerCompetitionsComputedName),
+            competitionId
+          )
+          console.log('delete', computedRef)
+          batch.delete(computedRef)
+        })
+        const computedRef = doc(
+          collection(doc(teamsColl, team.id), teamCompetitionsComputedName),
+          competitionId
+        )
+        console.log('delete', computedRef)
+        batch.delete(computedRef)
+      })
+    }
     await batch.commit()
-  }*/
-  /*const writeCompetitionBatch = (
-    row: Competition,
-    batch: WriteBatch = writeBatch(db)
-  ): WriteBatch => {
-    const {
-      id,
-      games,
-      teams,
-      ...competitionDoc
-    }: {
-      id: CompetitionId
-      games: Game[]
-      teams: CompetitionTeam[]
-      competitionDoc: CompetitionDoc
-    } = row
-    const competitionRef = id ? doc(competitionsColl, id) : doc(competitionsColl)
-    batch.set(competitionRef, competitionDoc)
-    games.forEach((row: Game) => {
-      writeGameBatch(row, batch)
-    })
-    teams.forEach((row: CompetitionTeam) => {
-      writeTeamBatch(row, batch)
-    })
-    return batch
-  }*/
+    return 
+  }
 
   const writePlayersCompetitionComputed = (
     rows: CompetitionRankingComputed[],
@@ -278,6 +280,8 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     // Admin competition
     // writeCompetition,
     writeCompetitionDoc,
+    updateCompetitionLastUpdate,
+    updateCompetitionComputeds,
 
     // Admin game
     writeGame,

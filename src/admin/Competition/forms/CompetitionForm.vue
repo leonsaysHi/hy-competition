@@ -7,10 +7,10 @@ import type {
   Competition,
   CompetitionCategorie,
   CompetitionDoc,
-  CompetitionGender,
   CompetitionSport,
   Phase
 } from '@/types/competitions'
+
 import SelectComp from '@/components/SelectComp.vue'
 import CheckComp from '@/components/CheckComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
@@ -19,7 +19,7 @@ import type { AwardItem, PlayerStatKey } from '@/types/stats'
 import AwardsInput from '../components/AwardsInput.vue'
 import useCompetition from '@/composable/useCompetition'
 import useLibs from '@/composable/useLibs'
-import type { PlayerId } from '@/types/players'
+import type { PlayerId, GenderKey } from '@/types/players'
 
 interface IProps {
   value: Competition
@@ -34,7 +34,7 @@ type FormData = {
   date?: string
   sport?: CompetitionSport
   category?: CompetitionCategorie
-  gender?: CompetitionGender
+  gender?: GenderKey
   phases: Phase[]
   trackedStats: PlayerStatKey[]
   awards: AwardItem[]
@@ -44,7 +44,7 @@ const {
   competitionSports: sportsOptions,
   competitionCategories: categoriesOptions,
   genders: gendersOptions,
-  playerRankingKeys: playerRankingKeys
+  playerStatsKeys
 } = useOptionsLib()
 const { getPlayerName } = useLibs()
 const { allPlayers } = useCompetition(props.value.id)
@@ -107,7 +107,7 @@ const handleSubmit = (ev: Event) => {
     <FieldComp label="Tracked stats">
       <CheckGroupComp
         v-model="data.trackedStats"
-        :options="playerRankingKeys"
+        :options="playerStatsKeys"
         :disabled="isBusy"
         buttons
       />

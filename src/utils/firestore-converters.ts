@@ -9,7 +9,7 @@ import { add } from './maths'
 import type {
   CompetitionRankingComputed,
   CompetitionStandingComputed
-} from '@/models/CompetitionComputed'
+} from '@/types/computed'
 
 const dateFromFirestore = (ts: Timestamp): Date => {
   return ts.toDate()
@@ -21,7 +21,6 @@ const dateToFireStore = (date: Date): Timestamp => {
 
 export const competitionConverter = {
   toFirestore: (row: Competition): DocumentData => {
-    const lastUpdate = dateToFireStore(new Date())
     const payload = {
       ...row,
       phases: Array.isArray(row.phases)
@@ -30,7 +29,7 @@ export const competitionConverter = {
             groups: phase.groups.map((group: TeamId[]) => group.join(';'))
           }))
         : [],
-      lastUpdate
+      lastUpdate: dateToFireStore(new Date())
     }
     return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null)) as DocumentData
   },

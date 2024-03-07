@@ -44,7 +44,7 @@ const competitionPlayer = computed<CompetitionPlayer | undefined>(() =>
 const playerGames = computed<Game[]>(() => {
   return Array.isArray(games.value) && competitionTeam.value?.id
     ? games.value.filter((game: Game) => {
-        return Object.keys(game.boxscore).includes(playerId) && !game.boxscore[playerId].dnp
+        return game.isFinished && Object.keys(game.boxscore).includes(playerId) && !game.boxscore[playerId].dnp
       })
     : []
 })
