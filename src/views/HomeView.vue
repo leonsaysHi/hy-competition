@@ -1,8 +1,11 @@
 <script lang="ts" setup>
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import useCompetitionsLib from '@/composable/useCompetitionsLib'
+import type { Competition } from '@/types/competitions';
 import { formatDistanceToNow } from 'date-fns'
-const { isReady, rows: competitions } = useCompetitionsLib()
+import { computed } from 'vue';
+const { isReady, rows } = useCompetitionsLib()
+const items = computed(()=> rows.value?.filter((row: Competition) => row.isActive))
 </script>
 <template>
   <div>
@@ -12,7 +15,7 @@ const { isReady, rows: competitions } = useCompetitionsLib()
         <SpinnerComp />
       </template>
       <template v-else>
-        <template v-for="row in competitions" :key="row.id">
+        <template v-for="row in items" :key="row.id">
           <div class="col">
             <div class="card h-100">
               <div class="card-body">
