@@ -8,7 +8,7 @@ export interface AwardItem {
   gameId?: GameId
   competitionId?: CompetitionId
   id: PlayerId
-  value: Award
+  value: AwardKey
 }
 
 export interface PlayerStats {

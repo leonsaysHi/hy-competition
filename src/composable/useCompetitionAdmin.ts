@@ -214,10 +214,8 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
     return batch
   }
 
-  const updateCompetitionComputeds = async (
-    payload: Competition
-  ) => {
-    const batch:WriteBatch = writeBatch(db)
+  const updateCompetitionComputeds = async (payload: Competition) => {
+    const batch: WriteBatch = writeBatch(db)
     if (payload.isActive) {
       const computedClass = new CompetitionClass(payload)
       writePlayersCompetitionComputed(computedClass.competitionRankings, batch)
@@ -242,7 +240,7 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
       })
     }
     await batch.commit()
-    return 
+    return
   }
 
   const writePlayersCompetitionComputed = (

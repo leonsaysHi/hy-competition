@@ -55,7 +55,7 @@ const gamesViewOptions: Option[] = [
   { text: t('global.previous', 2), value: 'prev' },
   { text: t('global.upcoming', 2), value: 'next' }
 ]
-const currentGamesView = ref<'prev' | 'next'>(gamesViewOptions[gamesViewOptions.length -1].value)
+const currentGamesView = ref<'prev' | 'next'>(gamesViewOptions[gamesViewOptions.length - 1].value)
 const groupGames = computed<Game[]>(() => {
   return selectedGroup.value.games
     .filter((game: Game) =>
