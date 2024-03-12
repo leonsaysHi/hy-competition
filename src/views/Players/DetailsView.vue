@@ -17,15 +17,14 @@ const { t } = useI18n()
 const route = useRoute()
 const { playerId } = route.params as { playerId: PlayerId }
 
-const { playerStatsKeys, getPlayerTrackedRankingKeys, getCategory } = useOptionsLib()
+const { playerStatsKeys, playerRankingKeys, getCategory } = useOptionsLib()
 const { isReady, getPlayer, getCompetition, getTeamName } = useLibs()
 const { isReady: isPlayerComputedReady, rows } = usePlayerComputed(playerId)
 const player = computed(() => getPlayer(playerId))
-const playerTrackedRankingKeys = getPlayerTrackedRankingKeys()
 const fields = computed(() => [
   { key: 'competition', label: t('global.competition', 2) },
   { key: 'teamId', label: t('global.team', 2) },
-  ...playerTrackedRankingKeys.map((opt: Option) => ({
+  ...playerRankingKeys.map((opt: Option) => ({
     key: opt.value,
     label: opt.text,
     thClass: 'text-end',

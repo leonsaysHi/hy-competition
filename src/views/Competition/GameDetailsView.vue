@@ -9,11 +9,12 @@ import SpinnerComp from '@/components/SpinnerComp.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import GameComputed from '@/models/GameComputed'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
-import type { Game, PlayerBoxScore, GameBoxScore } from '@/types/games'
+import type { Game, GameDocBoxScore } from '@/types/games'
 import type { CompetitionPlayer } from '@/types/players'
 import AwardsList from '@/components/competitions/AwardsList.vue'
 
 import { useI18n } from 'vue-i18n'
+import type { PlayerBoxScore } from '@/types/stats'
 const { t } = useI18n()
 const route = useRoute()
 const { competitionId, gameId } = route.params as { competitionId: string; gameId: string }
@@ -35,7 +36,7 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
 })
 interface BoxScoreByTeam {
   teamId: TeamId
-  boxscore: GameBoxScore
+  boxscore: GameDocBoxScore
 }
 const teamsBoxscores = computed<BoxScoreByTeam[]>(() => {
   return Array.isArray(row.value?.teams)
@@ -43,12 +44,12 @@ const teamsBoxscores = computed<BoxScoreByTeam[]>(() => {
         const players: CompetitionPlayer[] = getCompetitionTeam(teamId)?.players || []
         return {
           teamId,
-          boxscore: players.reduce((boxscore: GameBoxScore, player: CompetitionPlayer) => {
+          boxscore: players.reduce((boxscore: GameDocBoxScore, player: CompetitionPlayer) => {
             return {
               ...boxscore,
               [player.id]: gameComputed.value?.boxScore[player.id] as PlayerBoxScore
             }
-          }, {} as GameBoxScore)
+          }, {} as GameDocBoxScore)
         }
       })
     : ([] as BoxScoreByTeam[])
@@ -150,7 +151,7 @@ const teamsBoxscores = computed<BoxScoreByTeam[]>(() => {
           </div>
         </template>
         <template v-if="statView === 1">
-          <GameBoxcore :boxscore="row.boxscore" :teams="competitionTeams" />
+          <GameBoxcore :boxscore="gameComputed.boxScore" :teams="competitionTeams" />
         </template>
       </template>
     </template>

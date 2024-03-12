@@ -31,14 +31,19 @@ export interface PlayerStats {
 }
 export type PlayerStatKey = keyof PlayerStats
 
-
-export interface PlayerRankingStats extends PlayerStats {
-  gp: number
-  ftadv: number
-  fgadv: number
-  fg3adv: number
+export interface PlayerBoxScore extends PlayerStats {
+  dnp: boolean
+  ftprc: number
+  fgprc: number
+  fg3prc: number
+  pts: number
+  reb: number
   pir: number
   awards: AwardItem[]
+}
+
+export interface PlayerRankingStats extends PlayerBoxScore {
+  gp: number
 }
 export type PlayerRankingKey = keyof PlayerRankingStats
 

@@ -117,10 +117,7 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
     const batch = writeTeamBatch(payload)
     await batch.commit()
   }
-  const writeTeamBatch = (
-    row: CompetitionTeam,
-    batch: WriteBatch = writeBatch(db)
-  ): WriteBatch => {
+  const writeTeamBatch = (row: CompetitionTeam, batch: WriteBatch = writeBatch(db)): WriteBatch => {
     const {
       id,
       players,

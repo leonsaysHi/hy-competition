@@ -54,13 +54,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { GameScores } from '@/types/games'
+import type { GameDocScores } from '@/types/games'
 import InputComp from '@/components/InputComp.vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import type { TeamId } from '@/types/teams'
 
 interface IProps {
-  modelValue: GameScores
+  modelValue: GameDocScores
   teams: TeamId[]
   disabled?: boolean
 }
@@ -70,8 +70,8 @@ const props = withDefaults(defineProps<IProps>(), {
 
 const emit = defineEmits(['update:modelValue', 'input'])
 const model = computed({
-  get: (): GameScores => props.modelValue,
-  set: (val: GameScores) => emit('update:modelValue', val)
+  get: (): GameDocScores => props.modelValue,
+  set: (val: GameDocScores) => emit('update:modelValue', val)
 })
 const getTotal = (arr: number[]) => {
   return arr.reduce((tot, n) => tot + n, 0)

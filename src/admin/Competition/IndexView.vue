@@ -29,7 +29,7 @@ watch(
 )
 </script>
 <template>
-   <template v-if="isReady">
+  <template v-if="isReady">
     <h1>{{ row?.title }}</h1>
   </template>
   <template v-if="isReady && !teamsListMinLength">

@@ -3,7 +3,7 @@ import useLibs from '@/composable/useLibs'
 import type { Option } from '@/types/comp-fields'
 import { computed } from 'vue'
 import type { PlayerRankingKey, PlayerStatKey } from '@/types/stats'
-import type { GameBoxScore, PlayerBoxScore } from '@/types/games'
+import type { GameDocBoxScore, PlayerBoxScore } from '@/types/games'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import { useRoute } from 'vue-router'
 import useOptionsLib from '@/composable/useOptionsLib'
@@ -23,7 +23,7 @@ const competitionStatsKeys = computed<PlayerStatKey[]>(() => {
 })
 
 interface IProps {
-  boxscore: GameBoxScore
+  boxscore: GameDocBoxScore
 }
 
 const props = withDefaults(defineProps<IProps>(), {})

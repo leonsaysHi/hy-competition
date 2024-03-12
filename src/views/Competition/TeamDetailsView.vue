@@ -17,6 +17,7 @@ import LastGames from '@/components/games/LastGames.vue'
 import type { CompetitionTeam } from '@/types/teams'
 
 import { useI18n } from 'vue-i18n'
+import GameComputedClass from '@/models/GameComputed'
 const { t } = useI18n()
 const route = useRoute()
 const { competitionId, teamId } = route.params as { competitionId: string; teamId: string }
@@ -37,11 +38,11 @@ const statsItem = computed<TableItem[]>(() => {
 const competitionTeam = computed(() => {
   return teams.value?.find((team: CompetitionTeam) => team.id === teamId)
 })
-const teamGames = computed<Game[]>(() =>
+const teamGames = computed<GameComputedClass[]>(() =>
   Array.isArray(games.value)
     ? games.value
-        .filter((game: Game) => game.teams.includes(teamId))
-        .filter((game: Game) => game.isFinished)
+        .filter((game: Game) => game.teams.includes(teamId) && game.isFinished)
+        .map((game: Game) => new GameComputedClass(competitionId, game))
     : []
 )
 const statsFields: TableField[] = [

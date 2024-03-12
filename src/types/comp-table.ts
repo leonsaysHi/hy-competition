@@ -6,7 +6,7 @@ export interface TableField {
   thClass?: string
   tfClass?: string
   sortByFormatted?: boolean
-  formatter?: (value: string | undefined) => any
+  formatter?: (value: string | undefined, item: {}, idx: number) => any
 }
 export interface TableItem {
   [key: string]: string | boolean | number | {} | []

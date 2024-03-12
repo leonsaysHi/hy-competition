@@ -13,6 +13,7 @@ import GamesList from '@/components/games/GamesList.vue'
 import type { Game } from '@/types/games'
 
 import { useI18n } from 'vue-i18n'
+import type GameComputedClass from '@/models/GameComputed'
 const { t } = useI18n()
 
 const route = useRoute()
@@ -58,7 +59,7 @@ const gamesViewOptions: Option[] = [
 const currentGamesView = ref<'prev' | 'next'>(gamesViewOptions[gamesViewOptions.length - 1].value)
 const groupGames = computed<Game[]>(() => {
   return selectedGroup.value.games
-    .filter((game: Game) =>
+    .filter((game: GameComputedClass) =>
       currentGamesView.value === 'prev' ? game.isFinished : !game.isFinished
     )
     .slice(

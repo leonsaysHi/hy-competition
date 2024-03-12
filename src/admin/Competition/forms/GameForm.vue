@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Game, GameBoxScore, GameScores } from '@/types/games'
+import type { Game, GameDocBoxScore, GameDocScores } from '@/types/games'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import { ref, computed } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
@@ -34,8 +34,8 @@ type FormData = {
   id: string
   teams: TeamId[]
   datetime: string
-  scores: GameScores
-  boxscore: GameBoxScore
+  scores: GameDocScores
+  boxscore: GameDocBoxScore
   awards: AwardItem[]
 }
 
@@ -49,7 +49,6 @@ const getDefaultGame = (): Game => ({
   isFinished: false
 })
 
-
 const data = ref<FormData>({
   ...getDefaultGame(),
   ...props.value,
@@ -57,12 +56,12 @@ const data = ref<FormData>({
 })
 
 const boxscoreByTeams = computed({
-  get: (): { [key: TeamId]: GameBoxScore } => {
+  get: (): { [key: TeamId]: GameDocBoxScore } => {
     return data.value.teams.reduce((acc, teamId) => {
       const team: CompetitionTeam = props.competitionTeams.find((t) => t.id === teamId)
       return {
         ...acc,
-        [teamId]: team.players.reduce((boxscore: GameBoxScore, player) => {
+        [teamId]: team.players.reduce((boxscore: GameDocBoxScore, player) => {
           return {
             ...boxscore,
             [player.id]: data.value.boxscore[player.id]
@@ -73,7 +72,7 @@ const boxscoreByTeams = computed({
   },
   set: (val) => {
     data.value.boxscore = val.reduce(
-      (boxscore: GameBoxScore, bs: GameBoxScore) => ({
+      (boxscore: GameDocBoxScore, bs: GameDocBoxScore) => ({
         ...boxscore,
         ...bs
       }),

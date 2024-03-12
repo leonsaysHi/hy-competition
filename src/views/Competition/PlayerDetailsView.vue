@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import TableComp from '@/components/TableComp.vue'
+import StatsTableComp from '@/components/StatsTableComp.vue'
 import type { CompetitionTeam } from '@/types/teams'
 import type { CompetitionPlayer } from '@/types/players'
 import useLibs from '@/composable/useLibs'
@@ -17,20 +18,20 @@ import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
 import type { CompetitionRanking } from '@/types/computed'
 import type { PlayerStatKey } from '@/types/stats'
-import { getAvg } from '@/utils/maths'
+import { formatPerc, getAvg } from '@/utils/maths'
 
 import { useI18n } from 'vue-i18n'
+import GameComputedClass from '@/models/GameComputed'
 const { t } = useI18n()
 const route = useRoute()
 const { competitionId, playerId } = route.params as { competitionId: string; playerId: string }
 
 const { getPlayerName } = useLibs()
-const { getPlayerTrackedRankingKeys } = useOptionsLib()
+const { playerRankingKeys, isPercStatsKey } = useOptionsLib()
 const {
   isReady: isCompetitionReady,
   getCompetitionPlayer,
   getPlayerCompetitionTeam,
-  row: competition,
   games,
   competitionRankings
 } = useCompetition(competitionId)
@@ -41,42 +42,49 @@ const competitionTeam = computed<CompetitionTeam | undefined>(() =>
 const competitionPlayer = computed<CompetitionPlayer | undefined>(() =>
   getCompetitionPlayer(playerId)
 )
-const playerGames = computed<Game[]>(() => {
+const playerGames = computed<GameComputedClass[]>(() => {
   return Array.isArray(games.value) && competitionTeam.value?.id
-    ? games.value.filter((game: Game) => {
-        return (
-          game.isFinished &&
-          Object.keys(game.boxscore).includes(playerId) &&
-          !game.boxscore[playerId].dnp
-        )
-      })
+    ? games.value
+        .filter((game: Game) => {
+          return (
+            game.isFinished &&
+            Object.keys(game.boxscore).includes(playerId) &&
+            !game.boxscore[playerId].dnp
+          )
+        })
+        .map((game: Game) => new GameComputedClass(competitionId, game))
     : []
 })
 
-const trackedPlayerStatsKeys = computed(() => getPlayerTrackedRankingKeys(competition.value?.trackedStats))
 const statsFields = computed<TableField[]>(() =>
-  trackedPlayerStatsKeys.value.map((opt: Option) => ({
-    key: opt.value,
-    label: opt.text,
-    thClass: 'text-center',
-    tdClass: 'text-center'
-  }))
+  playerRankingKeys
+    .reduce(
+      (fields: TableField[], opt): TableField[] => [
+        ...fields,
+        {
+          key: opt.value,
+          label: opt.text,
+          sortable: true,
+          thClass: 'text-end',
+          tdClass: 'text-end',
+          tfClass: 'text-end fw-bold'
+        }
+      ],
+      []
+    )
 )
-const competitionComputed = computed<CompetitionRanking | undefined>(() => {
-  return competitionRankings.value?.find((rank: CompetitionRanking) => rank.playerId === playerId)
-})
+
 const statsItem = computed<TableItem[]>(() => {
-  const row = competitionComputed.value
-  return competitionComputed.value
+  const rank = competitionRankings.value?.find((rank: CompetitionRanking) => rank.playerId === playerId)
+  return rank
     ? [
         {
-          ...row,
-          ...trackedPlayerStatsKeys.value
-            .reduce((result: TableItem, opt: Option) => {
-              const key = opt.value as PlayerStatKey
-              result[key] = getAvg(row[key], row.gp)
-              return result
-            }, {})
+          ...rank,
+          ...playerRankingKeys.reduce((result: TableItem, opt: Option) => {
+            const key = opt.value as PlayerStatKey
+            result[key] = rank[key]
+            return result
+          }, {})
         }
       ]
     : []
@@ -104,7 +112,7 @@ const statsItem = computed<TableItem[]>(() => {
           </div>
         </div>
       </div>
-      <TableComp :fields="statsFields" :items="statsItem"></TableComp>
+      <StatsTableComp :fields="statsFields" :items="statsItem"></StatsTableComp>
       <hr />
       <h3>{{ t('global.game', 2) }}</h3>
       <PlayerGamesList :items="playerGames" />

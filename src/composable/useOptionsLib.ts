@@ -1,6 +1,7 @@
 import type { CompetitionCategorie, CompetitionSport, PhaseType } from '@/types/competitions'
 import type { GenderKey } from '@/types/players'
 import type { PlayerStatKey, TeamStatKey, PlayerRankingKey, AwardKey } from '@/types/stats'
+import type { Option } from '@/types/comp-fields'
 import i18n from '@/i18n'
 
 const t = (path: string): string => i18n.global.t(path)
@@ -31,7 +32,7 @@ export default function usePlayersLib() {
     { text: t('options.phases.groups'), value: 'groups' },
     { text: t('options.phases.playoffs'), value: 'playoffs' }
   ]
-  
+
   const playerStatsKeys: { value: PlayerStatKey; text: string; long: string }[] = [
     'sec',
     'ftm',
@@ -54,38 +55,36 @@ export default function usePlayersLib() {
     long: t(`options.playerStats.long.${key}`),
     value: key as PlayerStatKey
   }))
+  const isPlayerStatsKey = (key: string) =>
+    playerStatsKeys.findIndex((opt: Option) => opt.value === key) > -1
 
-  const getPlayerTrackedRankingKeys = (trackedStats: PlayerStatKey[] | undefined = undefined) => ([
+  const playerRankingKeys: { value: PlayerRankingKey; text: string; long: string }[] = [
     {
-      text: t('options.rankingStats.text.gp'),
-      long: t('options.rankingStats.long.gp'),
+      text: t('options.playerStats.text.gp'),
+      long: t('options.playerStats.long.gp'),
       value: 'gp'
     },
-    ...(playerStatsKeys.reduce((result: { value: PlayerRankingKey; text: string; long: string }[], opt: Option) => {
-      const key = opt.value as PlayerStatKey
-      if (!trackedStats || trackedStats.includes(key)) {
+    ...playerStatsKeys.reduce(
+      (result: { value: PlayerRankingKey; text: string; long: string }[], opt: Option) => {
+        const key = opt.value as PlayerStatKey
         result.push(opt)
-        const inserKey: PlayerRankingKey | undefined = key === 'fta' 
-          ? 'ftadv'
-          : key === 'fga'
-          ? 'fgadv'
-          : key === 'fg3a'
-          ? 'fg3adv'
-          : undefined
+        const inserKey: PlayerRankingKey | undefined =
+          key === 'fta' ? 'ftprc' : key === 'fga' ? 'fgprc' : key === 'fg3a' ? 'fg3prc' : undefined
         if (inserKey) {
-            result.push({
-              text: t(`options.playerStats.text.${inserKey}`),
-              long: t(`options.playerStats.long.${inserKey}`),
-              value: inserKey
-            })
+          result.push({
+            text: t(`options.playerStats.text.${inserKey}`),
+            long: t(`options.playerStats.long.${inserKey}`),
+            value: inserKey
+          })
         }
-      }
-      return result
-    }, []))
+        return result
+      },
+      []
+    )
     // awards[]
-  ])
-
-  
+  ]
+  const isPercStatsKey = (key: string) => key.substr(-3) === 'prc'
+    
 
   const awardsKeys: { value: AwardKey; text: string; long: string }[] = ['mvp', 'def'].map(
     (key: string) => ({
@@ -98,8 +97,8 @@ export default function usePlayersLib() {
 
   const teamStandingKeys: { value: TeamStatKey; text: string; long: string }[] = [
     {
-      text: t('options.rankingStats.text.gp'),
-      long: t('options.rankingStats.long.gp'),
+      text: t('options.standingStats.text.gp'),
+      long: t('options.standingStats.long.gp'),
       value: 'gp'
     },
     ...['wins', 'ptsfv', 'ptsag'].map((key: string) => ({
@@ -120,8 +119,10 @@ export default function usePlayersLib() {
     getAward,
 
     playerStatsKeys,
+    playerRankingKeys,
+    isPlayerStatsKey,
+    isPercStatsKey,
     awardsKeys,
-    getPlayerTrackedRankingKeys,
     teamStandingKeys
   }
 }

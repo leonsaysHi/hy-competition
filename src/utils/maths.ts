@@ -11,10 +11,10 @@ export function formatAvg(num: number) {
   return numeral(num).format('0.0')
 }
 export function getPerc(total: number, success: number) {
-  return numeral(success).divide(total).value()
+  return total ? numeral(success).divide(total).value() : 0
 }
 export function formatPerc(num: number) {
-  return numeral(num).multiply(100).format('(0.0)%')
+  return numeral(num).multiply(100).format('(0.0)')
 }
 
 export function getOrd(num: number) {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { GameBoxScore } from '@/types/games'
+import type { GameDocBoxScore } from '@/types/games'
 import TableComp from '@/components/TableComp.vue'
 import type { TableField, TableItem } from '@/types/comp-table'
 import InputComp from '@/components/InputComp.vue'
@@ -21,7 +21,7 @@ const { getPlayerNumber } = useCompetition(competitionId)
 const { playerStatsKeys } = useOptionsLib()
 
 interface IProps {
-  modelValue: GameBoxScore
+  modelValue: GameDocBoxScore
   trackedStats?: PlayerStatKey[]
   disabled?: boolean
 }
@@ -48,8 +48,8 @@ const fields = computed<TableField[]>(() => [
 const emit = defineEmits(['update:modelValue', 'input'])
 
 const model = computed({
-  get: (): GameBoxScore => props.modelValue,
-  set: (val: GameBoxScore) => emit('update:modelValue', val)
+  get: (): GameDocBoxScore => props.modelValue,
+  set: (val: GameDocBoxScore) => emit('update:modelValue', val)
 })
 
 const items = computed((): TableItem[][] => {
@@ -119,7 +119,7 @@ const items = computed((): TableItem[][] => {
         :disabled="model[item.id].dnp || disabled"
       />
     </template>
-    <template #fgm3="{ key, item }">
+    <template #fg3m="{ key, item }">
       <InputComp
         v-model.number="model[item.id][key]"
         type="number"

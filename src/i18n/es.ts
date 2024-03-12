@@ -22,16 +22,18 @@ const es = {
     },
     playerStats: {
       text: {
+        gp: 'GP',
         sec: 'Min',
         ftm: 'FTM',
         fta: 'FTA',
-        ftadv: 'FT%',
+        ftprc: 'FT%',
         fgm: 'FGM',
         fga: 'FGA',
-        fgadv: '2P%',
+        fgprc: '2P%',
         fg3m: '3PM',
         fg3a: '3PA',
-        fg3adv: '3P%',
+        fg3prc: '3P%',
+        reb: 'Reb',
         dreb: 'DReb',
         oreb: 'OReb',
         ast: 'Ast',
@@ -42,21 +44,24 @@ const es = {
         fcm: 'FC',
         fdr: 'FD',
         pir: 'PIR',
-        pts: 'Pts'
+        pts: 'Pts',
+        ptsavg: 'Pts avg.'
       },
       long: {
+        gp: 'Juegos',
         sec: 'Minutos',
         ftm: 'Tiros libres conv.',
         fta: 'Tiros libres int.',
-        ftadv: '% tiros libres',
+        ftprc: '% tiros libres',
         fgm: '2pts conv.',
         fga: '2pts int.',
-        fgadv: '% 2pts',
+        fgprc: '% 2pts',
         fg3m: '3pts conv.',
         fg3a: '3pts int.',
-        fg3adv: '% 3pts',
-        dreb: 'Rebode def.',
-        oreb: 'Rebote off.',
+        fg3prc: '% 3pts',
+        reb: 'Rebotes tot.',
+        dreb: 'Rebotes def.',
+        oreb: 'Rebotes off.',
         ast: 'Asistencias',
         stl: 'Robos',
         blk: 'Bloqueos',
@@ -65,7 +70,8 @@ const es = {
         fcm: 'Faltas personales cometidas',
         fdr: 'Faltas personales señaladas',
         pir: 'Índice de rendimiento',
-        pts: 'Points'
+        pts: 'Puntos',
+        ptsavg: 'Puntos prom.'
       }
     },
     awards: {
@@ -80,14 +86,10 @@ const es = {
     },
     rankingStats: {
       text: {
-        pos: 'Pos',
-        gp: 'GP',
-        ptsAvg: 'Pts ave.'
+        pos: 'Pos'
       },
       long: {
-        pos: 'Posición',
-        gp: 'Partidos jugados',
-        ptsAvg: 'Puntos por partido'
+        pos: 'Posición'
       }
     },
     standingStats: {
