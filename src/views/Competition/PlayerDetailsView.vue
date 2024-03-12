@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
-import TableComp from '@/components/TableComp.vue'
 import StatsTableComp from '@/components/StatsTableComp.vue'
 import type { CompetitionTeam } from '@/types/teams'
 import type { CompetitionPlayer } from '@/types/players'
@@ -18,7 +17,6 @@ import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
 import type { CompetitionRanking } from '@/types/computed'
 import type { PlayerStatKey } from '@/types/stats'
-import { formatPerc, getAvg } from '@/utils/maths'
 
 import { useI18n } from 'vue-i18n'
 import GameComputedClass from '@/models/GameComputed'
@@ -27,7 +25,7 @@ const route = useRoute()
 const { competitionId, playerId } = route.params as { competitionId: string; playerId: string }
 
 const { getPlayerName } = useLibs()
-const { playerRankingKeys, isPercStatsKey } = useOptionsLib()
+const { playerRankingKeys } = useOptionsLib()
 const {
   isReady: isCompetitionReady,
   getCompetitionPlayer,

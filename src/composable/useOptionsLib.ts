@@ -55,9 +55,7 @@ export default function usePlayersLib() {
     long: t(`options.playerStats.long.${key}`),
     value: key as PlayerStatKey
   }))
-  const isPlayerStatsKey = (key: string) =>
-    playerStatsKeys.findIndex((opt: Option) => opt.value === key) > -1
-
+  
   const playerRankingKeys: { value: PlayerRankingKey; text: string; long: string }[] = [
     {
       text: t('options.playerStats.text.gp'),
@@ -83,8 +81,6 @@ export default function usePlayersLib() {
     )
     // awards[]
   ]
-  const isPercStatsKey = (key: string) => key.substr(-3) === 'prc'
-    
 
   const awardsKeys: { value: AwardKey; text: string; long: string }[] = ['mvp', 'def'].map(
     (key: string) => ({
@@ -120,8 +116,6 @@ export default function usePlayersLib() {
 
     playerStatsKeys,
     playerRankingKeys,
-    isPlayerStatsKey,
-    isPercStatsKey,
     awardsKeys,
     teamStandingKeys
   }

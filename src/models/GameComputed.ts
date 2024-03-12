@@ -13,7 +13,7 @@ import type { PlayerId } from '@/types/players'
 import type { GameBoxScoreComputed } from '@/types/computed'
 import type { Option } from '@/types/comp-fields'
 
-const { playerStatsKeys, playerRankingKeys, isPercStatsKey } = useOptionsLib()
+const { playerStatsKeys } = useOptionsLib()
 export interface ScoresComputed extends Team {
   id: TeamId
   title: string

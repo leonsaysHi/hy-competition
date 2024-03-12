@@ -23,8 +23,6 @@ const { playerRankingKeys  } = useOptionsLib()
 const { getPlayerCompetitionTeam } = useCompetition(competitionId)
 
 const boxScoreKeys: Option[] = playerRankingKeys.filter((opt: Option) => !['gp'].includes(opt.value))
-
-
 const fields = computed(() => [
   { key: 'datetime', label: t('global.date'), tdClass: 'lh-1' },
   { key: 'opp', label: t('global.gameDetails.opponent.text') },
