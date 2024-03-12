@@ -29,7 +29,7 @@ const messages = {
         stl: 'Stl',
         blk: 'Blk',
         to: 'TO',
-        pf: 'PF',
+        fcm: 'fcm',
         m3pts: '3Pts'
       },
       long: {
@@ -39,7 +39,7 @@ const messages = {
         stl: 'Robos',
         blk: 'Bloqueos',
         to: 'Pérdidas de balón',
-        pf: 'Faltas personales',
+        fcm: 'Faltas personales',
         m3pts: 'Triples realizados'
       }
     },
@@ -64,13 +64,13 @@ const messages = {
     standingStats: {
       text: {
         wins: 'W',
-        ptspos: 'Pts+',
-        ptsneg: 'Pts-'
+        ptsfv: 'Pts+',
+        ptsag: 'Pts-'
       },
       long: {
         wins: 'Ganados',
-        ptspos: 'Puntos anotados',
-        ptsneg: 'Puntos encajados'
+        ptsfv: 'Puntos anotados',
+        ptsag: 'Puntos encajados'
       }
     }
   },

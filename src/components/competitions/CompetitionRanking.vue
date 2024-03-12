@@ -26,9 +26,9 @@ const props = withDefaults(defineProps<IProps>(), {
 })
 
 const { getTeamName, getPlayerName, getCompetition } = useLibs()
-const { playerRankingKeys, playerStatsKeys } = useOptionsLibs()
+const { getPlayerTrackedRankingKeys } = useOptionsLibs()
 const competition = getCompetition(competitionId)
-
+const playerTrackedRankingKeys = getPlayerTrackedRankingKeys(competition?.trackedStats)
 const fields = computed(() => [
   {
     label: t('options.rankingStats.text.pos'),
@@ -38,8 +38,7 @@ const fields = computed(() => [
   },
   { label: t('global.player', 2), key: 'playerId' },
   { label: t('global.team', 2), key: 'teamId' },
-  ...playerRankingKeys
-    .filter((opt: Option) => competition?.trackedStats.includes(opt.value))
+  ...playerTrackedRankingKeys
     .map(
       (opt: Option): TableField => ({
         key: opt.value,
@@ -57,8 +56,7 @@ const items = computed(() =>
         .filter((row: CompetitionRanking) => row.gp > 0)
         .map((row: CompetitionRanking) => ({
           ...row,
-          ...playerStatsKeys
-            .filter((opt: Option) => competition?.trackedStats.includes(opt.value))
+          ...playerTrackedRankingKeys
             .reduce((result: PlayerStats, opt: Option) => {
               const key = opt.value as PlayerStatKey
               result[key] = getAvg(row[key], row.gp)
@@ -72,7 +70,7 @@ const items = computed(() =>
   <TableComp
     :fields="fields"
     :items="items"
-    :sorted-key="playerRankingKeys[1].value"
+    :sorted-key="playerTrackedRankingKeys[1].value"
     :per-page="5"
     small
     show-empty

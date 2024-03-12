@@ -7,7 +7,7 @@ export type GameId = string
 export interface PlayerBoxScore extends PlayerStats {
   dnp: boolean
 }
-export type PlayerBoxScoreKey = keyof PlayerBoxScore
+
 export type GameBoxScore = { [key: PlayerId]: PlayerBoxScore }
 export type GameScores = { [key: TeamId]: number[] }
 

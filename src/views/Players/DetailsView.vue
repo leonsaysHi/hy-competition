@@ -9,7 +9,7 @@ import usePlayerComputed from '@/composable/usePlayerComputed'
 import useOptionsLib from '@/composable/useOptionsLib'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import type { CompetitionRankingComputed } from '@/types/computed'
-import type { PlayerRankingKey, PlayerStatKey } from '@/types/stats'
+import type { PlayerStatKey } from '@/types/stats'
 import type { Option } from '@/types/comp-fields'
 import { useI18n } from 'vue-i18n'
 import { getAvg } from '@/utils/maths'
@@ -17,14 +17,15 @@ const { t } = useI18n()
 const route = useRoute()
 const { playerId } = route.params as { playerId: PlayerId }
 
-const { playerStatsKeys, playerRankingKeys, getCategory } = useOptionsLib()
+const { playerStatsKeys, getPlayerTrackedRankingKeys, getCategory } = useOptionsLib()
 const { isReady, getPlayer, getCompetition, getTeamName } = useLibs()
 const { isReady: isPlayerComputedReady, rows } = usePlayerComputed(playerId)
 const player = computed(() => getPlayer(playerId))
+const playerTrackedRankingKeys = getPlayerTrackedRankingKeys()
 const fields = computed(() => [
   { key: 'competition', label: t('global.competition', 2) },
   { key: 'teamId', label: t('global.team', 2) },
-  ...playerRankingKeys.map((opt: Option) => ({
+  ...playerTrackedRankingKeys.map((opt: Option) => ({
     key: opt.value,
     label: opt.text,
     thClass: 'text-end',

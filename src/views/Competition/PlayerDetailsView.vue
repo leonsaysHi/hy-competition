@@ -25,7 +25,7 @@ const route = useRoute()
 const { competitionId, playerId } = route.params as { competitionId: string; playerId: string }
 
 const { getPlayerName } = useLibs()
-const { playerRankingKeys, playerStatsKeys } = useOptionsLib()
+const { getPlayerTrackedRankingKeys } = useOptionsLib()
 const {
   isReady: isCompetitionReady,
   getCompetitionPlayer,
@@ -53,11 +53,9 @@ const playerGames = computed<Game[]>(() => {
     : []
 })
 
-const trackedPlayerRankingKeys = computed<Option[]>(() =>
-  playerRankingKeys.filter((opt: Option) => competition.value?.trackedStats.includes(opt.value))
-)
+const trackedPlayerStatsKeys = computed(() => getPlayerTrackedRankingKeys(competition.value?.trackedStats))
 const statsFields = computed<TableField[]>(() =>
-  trackedPlayerRankingKeys.value.map((opt: Option) => ({
+  trackedPlayerStatsKeys.value.map((opt: Option) => ({
     key: opt.value,
     label: opt.text,
     thClass: 'text-center',
@@ -73,8 +71,7 @@ const statsItem = computed<TableItem[]>(() => {
     ? [
         {
           ...row,
-          ...playerStatsKeys
-            .filter((opt: Option) => competition.value?.trackedStats.includes(opt.value))
+          ...trackedPlayerStatsKeys.value
             .reduce((result: TableItem, opt: Option) => {
               const key = opt.value as PlayerStatKey
               result[key] = getAvg(row[key], row.gp)

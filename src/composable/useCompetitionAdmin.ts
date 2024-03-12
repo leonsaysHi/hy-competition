@@ -1,4 +1,4 @@
-import { doc, collection, writeBatch, WriteBatch, setDoc } from 'firebase/firestore'
+import { doc, collection, writeBatch, WriteBatch } from 'firebase/firestore'
 import {
   db,
   competitionsName,
@@ -117,7 +117,7 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
     const batch = writeTeamBatch(payload)
     await batch.commit()
   }
-  const writeTeamBatch = async (
+  const writeTeamBatch = (
     row: CompetitionTeam,
     batch: WriteBatch = writeBatch(db)
   ): WriteBatch => {

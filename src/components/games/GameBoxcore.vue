@@ -23,7 +23,7 @@ const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
 const props = withDefaults(defineProps<IProps>(), {})
 
-const { getTeamName, getPlayerName, getCompetition } = useLibs()
+const { getPlayerName, getCompetition } = useLibs()
 const { playerStatsKeys } = useOptionsLibs()
 
 const row = getCompetition(competitionId)

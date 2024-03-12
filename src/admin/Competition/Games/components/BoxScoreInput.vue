@@ -71,7 +71,7 @@ const items = computed((): TableItem[][] => {
     <template #name="{ value }"
       ><div class="lh-1">{{ value }}</div></template
     >
-    <template #pts="{ key, item }">
+    <template #sec="{ key, item }">
       <InputComp
         v-model.number="model[item.id][key]"
         type="number"
@@ -79,7 +79,7 @@ const items = computed((): TableItem[][] => {
         :disabled="model[item.id].dnp || disabled"
       />
     </template>
-    <template #m3pts="{ key, item }">
+    <template #fta="{ key, item }">
       <InputComp
         v-model.number="model[item.id][key]"
         type="number"
@@ -87,7 +87,55 @@ const items = computed((): TableItem[][] => {
         :disabled="model[item.id].dnp || disabled"
       />
     </template>
-    <template #reb="{ key, item }">
+    <template #ftm="{ key, item }">
+      <InputComp
+        v-model.number="model[item.id][key]"
+        type="number"
+        size="sm"
+        :disabled="model[item.id].dnp || disabled"
+      />
+    </template>
+    <template #fga="{ key, item }">
+      <InputComp
+        v-model.number="model[item.id][key]"
+        type="number"
+        size="sm"
+        :disabled="model[item.id].dnp || disabled"
+      />
+    </template>
+    <template #fgm="{ key, item }">
+      <InputComp
+        v-model.number="model[item.id][key]"
+        type="number"
+        size="sm"
+        :disabled="model[item.id].dnp || disabled"
+      />
+    </template>
+    <template #fg3a="{ key, item }">
+      <InputComp
+        v-model.number="model[item.id][key]"
+        type="number"
+        size="sm"
+        :disabled="model[item.id].dnp || disabled"
+      />
+    </template>
+    <template #fgm3="{ key, item }">
+      <InputComp
+        v-model.number="model[item.id][key]"
+        type="number"
+        size="sm"
+        :disabled="model[item.id].dnp || disabled"
+      />
+    </template>
+    <template #dreb="{ key, item }">
+      <InputComp
+        v-model.number="model[item.id][key]"
+        type="number"
+        size="sm"
+        :disabled="model[item.id].dnp || disabled"
+      />
+    </template>
+    <template #oreb="{ key, item }">
       <InputComp
         v-model.number="model[item.id][key]"
         type="number"
@@ -119,7 +167,7 @@ const items = computed((): TableItem[][] => {
         :disabled="model[item.id].dnp || disabled"
       />
     </template>
-    <template #to="{ key, item }">
+    <template #tov="{ key, item }">
       <InputComp
         v-model.number="model[item.id][key]"
         type="number"
@@ -127,7 +175,7 @@ const items = computed((): TableItem[][] => {
         :disabled="model[item.id].dnp || disabled"
       />
     </template>
-    <template #pf="{ key, item }">
+    <template #fcm="{ key, item }">
       <InputComp
         v-model.number="model[item.id][key]"
         type="number"

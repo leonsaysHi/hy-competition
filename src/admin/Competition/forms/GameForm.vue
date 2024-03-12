@@ -8,7 +8,7 @@ import InputComp from '@/components/InputComp.vue'
 import ScoresInput from '@/admin/competition/games/components/ScoresInput.vue'
 import BoxScoreInput from '@/admin/competition/games/components/BoxScoreInput.vue'
 import AwardsInput from '@/admin/competition/components/AwardsInput.vue'
-import type { AwardItem, PlayerBoxScore } from '@/types/stats'
+import type { AwardItem } from '@/types/stats'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
@@ -45,46 +45,14 @@ const getDefaultGame = (): Game => ({
   datetime: '',
   scores: {},
   boxscore: {},
-  awards: []
+  awards: [],
+  isFinished: false
 })
-const getDefaultPlayerBoxScore = (): PlayerBoxScore => ({
-  pts: 0,
-  reb: 0,
-  ast: 0,
-  stl: 0,
-  blk: 0,
-  to: 0,
-  pf: 0,
-  m3pts: 0,
-  dnp: false
-})
+
 
 const data = ref<FormData>({
   ...getDefaultGame(),
   ...props.value,
-  scores: Array.isArray(props.value.teams)
-    ? props.value.teams.reduce(
-        (scores: GameScores, teamId: TeamId) => ({
-          ...scores,
-          [teamId]: props.value.scores[teamId] || [0]
-        }),
-        {}
-      )
-    : {},
-  boxscore: Object.values(props.value.teams).reduce((boxscore: GameBoxScore, teamId: TeamId) => {
-    const team: CompetitionTeam =
-      props.competitionTeams.find((t: CompetitionTeam) => t.id === teamId) ||
-      ({} as CompetitionTeam)
-    const players: PlayerId[] =
-      team.players.map((player: CompetitionPlayer): PlayerId => player.id) || []
-    players.forEach((playerId: PlayerId) => {
-      boxscore[playerId] = {
-        ...getDefaultPlayerBoxScore(),
-        ...(props.value.boxscore[playerId] || {})
-      }
-    })
-    return boxscore
-  }, {}),
   awards: props.value.awards
 })
 

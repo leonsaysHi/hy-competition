@@ -2,7 +2,7 @@
 import useLibs from '@/composable/useLibs'
 import type { Option } from '@/types/comp-fields'
 import { computed } from 'vue'
-import type { PlayerStatKey } from '@/types/stats'
+import type { PlayerRankingKey, PlayerStatKey } from '@/types/stats'
 import type { GameBoxScore, PlayerBoxScore } from '@/types/games'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import { useRoute } from 'vue-router'
@@ -11,13 +11,14 @@ import useCompetition from '@/composable/useCompetition'
 
 const route = useRoute()
 const { competitionId } = route.params
-const { row: competition, getCompetitionPlayer } = useCompetition(competitionId)
+const { getCompetitionPlayer } = useCompetition(competitionId)
 const { playerStatsKeys } = useOptionsLib()
 const { getPlayerName } = useLibs()
 
 const competitionStatsKeys = computed<PlayerStatKey[]>(() => {
+  const keys: PlayerRankingKey[] = ['fgm', 'fg3m', 'dreb', 'oreb', 'ast', 'blk', 'pir']
   return playerStatsKeys
-    .filter((opt: Option) => competition.value?.trackedStats.includes(opt.value))
+    .filter((opt: Option) => keys.includes(opt.value as PlayerRankingKey))
     .map((opt: Option) => opt.value as PlayerStatKey)
 })
 

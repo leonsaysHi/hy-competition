@@ -31,29 +31,61 @@ export default function usePlayersLib() {
     { text: t('options.phases.groups'), value: 'groups' },
     { text: t('options.phases.playoffs'), value: 'playoffs' }
   ]
+  
   const playerStatsKeys: { value: PlayerStatKey; text: string; long: string }[] = [
-    'pts',
-    'reb',
+    'sec',
+    'ftm',
+    'fta',
+    'fgm',
+    'fga',
+    'fg3m',
+    'fg3a',
+    'dreb',
+    'oreb',
     'ast',
     'stl',
     'blk',
-    'to',
-    'pf',
-    'm3pts'
+    'blka',
+    'tov',
+    'fcm',
+    'fdr'
   ].map((key: string) => ({
     text: t(`options.playerStats.text.${key}`),
     long: t(`options.playerStats.long.${key}`),
     value: key as PlayerStatKey
   }))
-  const playerRankingKeys: { value: PlayerRankingKey; text: string; long: string }[] = [
+
+  const getPlayerTrackedRankingKeys = (trackedStats: PlayerStatKey[] | undefined = undefined) => ([
     {
       text: t('options.rankingStats.text.gp'),
       long: t('options.rankingStats.long.gp'),
       value: 'gp'
     },
-    ...playerStatsKeys
+    ...(playerStatsKeys.reduce((result: { value: PlayerRankingKey; text: string; long: string }[], opt: Option) => {
+      const key = opt.value as PlayerStatKey
+      if (!trackedStats || trackedStats.includes(key)) {
+        result.push(opt)
+        const inserKey: PlayerRankingKey | undefined = key === 'fta' 
+          ? 'ftadv'
+          : key === 'fga'
+          ? 'fgadv'
+          : key === 'fg3a'
+          ? 'fg3adv'
+          : undefined
+        if (inserKey) {
+            result.push({
+              text: t(`options.playerStats.text.${inserKey}`),
+              long: t(`options.playerStats.long.${inserKey}`),
+              value: inserKey
+            })
+        }
+      }
+      return result
+    }, []))
     // awards[]
-  ]
+  ])
+
+  
 
   const awardsKeys: { value: AwardKey; text: string; long: string }[] = ['mvp', 'def'].map(
     (key: string) => ({
@@ -70,7 +102,7 @@ export default function usePlayersLib() {
       long: t('options.rankingStats.long.gp'),
       value: 'gp'
     },
-    ...['wins', 'ptspos', 'ptsneg'].map((key: string) => ({
+    ...['wins', 'ptsfv', 'ptsag'].map((key: string) => ({
       text: t(`options.standingStats.text.${key}`),
       long: t(`options.standingStats.long.${key}`),
       value: key as TeamStatKey
@@ -89,7 +121,7 @@ export default function usePlayersLib() {
 
     playerStatsKeys,
     awardsKeys,
-    playerRankingKeys,
+    getPlayerTrackedRankingKeys,
     teamStandingKeys
   }
 }

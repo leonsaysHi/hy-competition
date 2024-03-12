@@ -29,7 +29,9 @@ watch(
 )
 </script>
 <template>
-  <h1>{{ row?.title || '...' }}</h1>
+   <template v-if="isReady">
+    <h1>{{ row?.title }}</h1>
+  </template>
   <template v-if="isReady && !teamsListMinLength">
     <AlertComp variant="warning"> You should add at least 2 teams to the competition. </AlertComp>
   </template>
@@ -73,7 +75,7 @@ watch(
       >
     </li>
   </ul>
-  <template v-if="!isReady">
+  <template v-if="!isReady || !row?.trackedStats">
     <SpinnerComp />
   </template>
   <template v-else>

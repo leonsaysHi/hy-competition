@@ -10,10 +10,11 @@ import type {
   PlayerStats,
   PlayerStatKey,
   TeamStatKey,
-  GamesHist
+  GamesHist,
+  TeamStandingStats
 } from '@/types/stats'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
-import { add } from '@/utils/maths'
+import { add, getPerc } from '@/utils/maths'
 import useOptionsLib from '@/composable/useOptionsLib'
 import GameComputedClass, { type ScoresComputed } from './GameComputed'
 import type {
@@ -37,7 +38,7 @@ export const getTeamStatsFromGames = (teamId: TeamId, games: Game[] = []): TeamS
     }, {} as TeamStats)
   })
   games.sort((a: Game, b: Game) => compareAsc(a.datetime, b.datetime))
-  const { gp, wins, ptspos, ptsneg }: TeamStats = games.reduce(
+  const { gp, wins, ptsfv, ptsag }: TeamStats = games.reduce(
     (result: TeamStats, game: Game): TeamStats => {
       const oppId: TeamId = Object.keys(game.scores).filter((tId: TeamId) => tId !== teamId)[0]
       const teamScore = game.scores[teamId].reduce(add, 0)
@@ -46,8 +47,8 @@ export const getTeamStatsFromGames = (teamId: TeamId, games: Game[] = []): TeamS
       return {
         gp: result.gp + 1,
         wins: result.wins + (diff > 0 ? 1 : 0),
-        ptspos: result.ptspos + teamScore,
-        ptsneg: result.ptsneg + oppScore
+        ptsfv: result.ptsfv + teamScore,
+        ptsag: result.ptsag + oppScore
       }
     },
     getEmptyStanding()
@@ -55,20 +56,20 @@ export const getTeamStatsFromGames = (teamId: TeamId, games: Game[] = []): TeamS
   return {
     gp,
     wins,
-    ptspos,
-    ptsneg
+    ptsfv,
+    ptsag
   }
 }
 const getTeamPhaseStanding = (teamId: TeamId, games: Game[]): TeamStats => {
-  const { gp, wins, ptspos, ptsneg }: TeamStats = getTeamStatsFromGames(
+  const { gp, wins, ptsfv, ptsag }: TeamStats = getTeamStatsFromGames(
     teamId,
     games.filter((game: Game) => game.isFinished)
   )
   const result: TeamStats = {
     gp,
     wins,
-    ptspos,
-    ptsneg
+    ptsfv,
+    ptsag
   }
   return result
 }
@@ -107,9 +108,20 @@ const getPlayerPhaseRankingStats = (playerId: PlayerId, games: Game[]): PlayerRa
         .map((row: AwardItem) => ({ ...row, gameId: game.id }))
     ]
   }, [])
+  const { fta, ftm, fga, fgm, fg3a, fg3m, oreb, dreb, ast, stl, blk, blka, fdr, fcm, tov } = playerStats
+  const ftadv = getPerc(fta, ftm)
+  const fgadv = getPerc(fga, fgm)
+  const fg3adv = getPerc(fg3a, fg3m)
+  const pts = ftm + 2*fgm + 3*fg3m
+  const reb = oreb + dreb
+  const pir = (pts + reb + ast + stl + blk + fdr) - ((fga - fgm) + (fg3a - fg3m) + (fta - ftm) + tov + blka + fcm)  
   return {
     // PlayerRankingStats
     gp: playedgames.length,
+    ftadv,
+    fgadv,
+    fg3adv,
+    pir,
     awards: playerAwards,
     ...playerStats
   }
@@ -177,7 +189,7 @@ export default class CompetitionClass {
         )
         standing.sort((a: CompetitionStanding, b: CompetitionStanding) => {
           const getPct = (st: CompetitionStanding) => st.gp / st.wins
-          const getDiff = (st: CompetitionStanding) => st.ptspos - st.ptsneg
+          const getDiff = (st: CompetitionStanding) => st.ptsfv - st.ptsag
           const aPct = getPct(a)
           const bPct = getPct(b)
           const bestWinningPerc = aPct - bPct
@@ -249,6 +261,10 @@ export default class CompetitionClass {
   get competitionRankings(): CompetitionRankingComputed[] {
     const getEmptyRankingStats = (): PlayerRankingStats => ({
       gp: 0,
+      ftadv: 0,
+      fgadv: 0,
+      fg3adv: 0,
+      pir: 0,
       awards: [],
       ...playerStatsKeys.reduce((stats: PlayerStats, opt: Option) => {
         return {
@@ -294,15 +310,14 @@ export default class CompetitionClass {
 
   // each teams overall stats
   get competitionStandings(): CompetitionStandingComputed[] {
-    const getEmptyStandingStats = (): PlayerRankingStats => ({
-      gp: 0,
-      awards: [],
-      ...teamStandingKeys.reduce((stats: PlayerStats, opt: Option) => {
+    const getEmptyStandingStats = (): TeamStandingStats => ({
+      ...teamStandingKeys.reduce((stats: TeamStats, opt: Option) => {
         return {
           ...stats,
           [opt.value]: 0
         }
-      }, {} as PlayerStats)
+      }, {} as TeamStats),
+      hist: []
     })
     return this.computedPhases.reduce(
       (standingList: CompetitionStandingComputed[], phase: CompetitionPhaseComputed) => {

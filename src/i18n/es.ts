@@ -22,24 +22,50 @@ const es = {
     },
     playerStats: {
       text: {
-        pts: 'Pts',
-        reb: 'Reb',
+        sec: 'Min',
+        ftm: 'FTM',
+        fta: 'FTA',
+        ftadv: 'FT%',
+        fgm: 'FGM',
+        fga: 'FGA',
+        fgadv: '2P%',
+        fg3m: '3PM',
+        fg3a: '3PA',
+        fg3adv: '3P%',
+        dreb: 'DReb',
+        oreb: 'OReb',
         ast: 'Ast',
-        stl: 'Rob',
-        blk: 'Blq',
-        to: 'Per',
-        pf: 'FP',
-        m3pts: '3Pts'
+        stl: 'Stl',
+        blk: 'Blk',
+        blka: 'BlkAg',
+        tov: 'TOv',
+        fcm: 'FC',
+        fdr: 'FD',
+        pir: 'PIR',
+        pts: 'Pts'
       },
       long: {
-        pts: 'Puntos anotados',
-        reb: 'Rebotes',
+        sec: 'Minutos',
+        ftm: 'Tiros libres conv.',
+        fta: 'Tiros libres int.',
+        ftadv: '% tiros libres',
+        fgm: '2pts conv.',
+        fga: '2pts int.',
+        fgadv: '% 2pts',
+        fg3m: '3pts conv.',
+        fg3a: '3pts int.',
+        fg3adv: '% 3pts',
+        dreb: 'Rebode def.',
+        oreb: 'Rebote off.',
         ast: 'Asistencias',
         stl: 'Robos',
         blk: 'Bloqueos',
-        to: 'Pérdidas de balón',
-        pf: 'Faltas personales',
-        m3pts: 'Triples realizados'
+        blka: 'Bloqueos en contra',
+        tov: 'Pérdidas de balón',
+        fcm: 'Faltas personales cometidas',
+        fdr: 'Faltas personales señaladas',
+        pir: 'Índice de rendimiento',
+        pts: 'Points'
       }
     },
     awards: {
@@ -69,16 +95,16 @@ const es = {
         pos: 'Pos',
         gp: 'GP',
         wins: 'W',
-        ptspos: 'Pts+',
-        ptsneg: 'Pts-',
+        ptsfv: 'Pts+',
+        ptsag: 'Pts-',
         hist: 'Últimos'
       },
       long: {
         pos: 'Posición',
         gp: 'Partidos jugados',
         wins: 'Ganados',
-        ptspos: 'Puntos anotados',
-        ptsneg: 'Puntos encajados',
+        ptsfv: 'Puntos anotados',
+        ptsag: 'Puntos encajados',
         hist: 'Últimos juegos'
       }
     }
