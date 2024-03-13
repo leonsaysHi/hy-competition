@@ -11,13 +11,24 @@
             <span :class="value ? 'text-win' : 'text-loss'">{{ value ? 'W' : 'L' }}</span>
         </template>
         <template #teamId="{ value }">
-            <span class="jersey-team">{{ getTeamName(value) }}</span>
-        </template>
-        <template #opp="{ value }">
-            <div class="d-flex gap-2">
-                <TeamLogo :team-id="value" :size="30" />
-                <strong class="jersey-team lh-1">{{ getTeamName(value) }}</strong>
+            <div class="d-flex gap-2 align-items-center lh-1">
+                <template v-if="showLogo">
+                    <TeamLogo :team-id="value" :size="35" />
+                </template>
+                <span class="jersey-team">{{ getTeamName(value) }}</span>
             </div>
+        </template>
+        <template #competitionId="{ value }">
+          <RouterLink
+            class="d-flex flex-column align-items-start text-decoration-none"
+            :to="{ name: 'competition', params: { competitionId: value } }"
+          >
+            <div>{{ getCompetition(value)?.title }}</div>
+            <div class="d-flex gap-3 small text-body-secondary text-nowrap">
+              <small>{{ getCompetition(value)?.date }}</small>
+              <small>{{ getCategory(getCompetition(value)?.category)?.text }}</small>
+            </div>
+          </RouterLink>
         </template>
         <template #number="{ value }"><span class="text-body-secondary jersey-number">#{{ value }}</span></template>
         <template #id="{ value }"
@@ -137,20 +148,22 @@ const { t } = useI18n()
 interface IProps {
   fields: TableField[]
   items: TableItem[]
+  showLogo?: boolean
   showTotal?: boolean
   sortedKey?: string | undefined
   sortedDirection?: "asc" | "desc" | undefined
 }
 const props = withDefaults(defineProps<IProps>(), {
     showTotal: false,
+    showLogo: false,
     sortedKey: undefined,
     sortedDirection: undefined,
 })
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string; }
-const { getTeamName, getPlayerName } = useLibs()
-const { playerRankingKeys } = useOptionsLib()
+const { getTeamName, getPlayerName, getCompetition } = useLibs()
+const { playerRankingKeys, getCategory } = useOptionsLib()
 const getCalculated = (item) => {
     console.log(item)
     const { fta, ftm, fga, fgm, fg3a, fg3m, oreb, dreb, ast, stl, blk, blka, fdr, fcm, tov } = item

@@ -25,7 +25,7 @@ const { getPlayerCompetitionTeam } = useCompetition(competitionId)
 const boxScoreKeys: Option[] = playerRankingKeys.filter((opt: Option) => !['gp'].includes(opt.value))
 const fields = computed(() => [
   { key: 'datetime', label: t('global.date'), tdClass: 'lh-1' },
-  { key: 'opp', label: t('global.gameDetails.opponent.text') },
+  { key: 'teamId', label: t('global.gameDetails.opponent.text') },
   { key: 'isWin', label: '', tdClass: 'text-center' },
   ...boxScoreKeys
     .reduce(
@@ -51,7 +51,7 @@ const computedGames = computed<TableItem[]>(() => {
       datetime: game.date.short,
       isFinished: game.isFinished,
       isWin: !opp?.winner,
-      opp: opp?.id,
+      teamId: opp?.id,
       ...game.boxScore[playerId]
     }
   })
@@ -59,7 +59,7 @@ const computedGames = computed<TableItem[]>(() => {
 </script>
 
 <template>
-  <StatsTableComp :fields="fields" :items="computedGames"></StatsTableComp>
+  <StatsTableComp :fields="fields" :items="computedGames" show-logo></StatsTableComp>
 </template>
 
 <style lang="scss" scoped>
