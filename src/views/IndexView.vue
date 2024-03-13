@@ -34,7 +34,7 @@ const { t } = useI18n()
     </header>
 
     <main>
-      <section class="py-4 container">
+      <section class="py-4 container-xl">
         <RouterView />
       </section>
     </main>

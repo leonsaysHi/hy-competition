@@ -21,7 +21,7 @@ watch(
   () => row.value?.lastUpdate,
   (val, oldVal) => {
     if (row.value && val && oldVal && val !== oldVal) {
-      console.log(row.value)
+      console.log('Update computed...')
       updateCompetitionComputeds(row.value)
     }
   },
@@ -29,7 +29,9 @@ watch(
 )
 </script>
 <template>
-  <h1>{{ row?.title || '...' }}</h1>
+  <template v-if="isReady">
+    <h1>{{ row?.title }}</h1>
+  </template>
   <template v-if="isReady && !teamsListMinLength">
     <AlertComp variant="warning"> You should add at least 2 teams to the competition. </AlertComp>
   </template>

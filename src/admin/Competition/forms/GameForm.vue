@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Game, GameBoxScore, GameScores } from '@/types/games'
+import type { Game, GameDocBoxScore, GameDocScores } from '@/types/games'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import { ref, computed } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
@@ -8,7 +8,7 @@ import InputComp from '@/components/InputComp.vue'
 import ScoresInput from '@/admin/competition/games/components/ScoresInput.vue'
 import BoxScoreInput from '@/admin/competition/games/components/BoxScoreInput.vue'
 import AwardsInput from '@/admin/competition/components/AwardsInput.vue'
-import type { AwardItem, PlayerBoxScore } from '@/types/stats'
+import type { AwardItem } from '@/types/stats'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
@@ -34,8 +34,8 @@ type FormData = {
   id: string
   teams: TeamId[]
   datetime: string
-  scores: GameScores
-  boxscore: GameBoxScore
+  scores: GameDocScores
+  boxscore: GameDocBoxScore
   awards: AwardItem[]
 }
 
@@ -45,56 +45,23 @@ const getDefaultGame = (): Game => ({
   datetime: '',
   scores: {},
   boxscore: {},
-  awards: []
-})
-const getDefaultPlayerBoxScore = (): PlayerBoxScore => ({
-  pts: 0,
-  reb: 0,
-  ast: 0,
-  stl: 0,
-  blk: 0,
-  to: 0,
-  pf: 0,
-  m3pts: 0,
-  dnp: false
+  awards: [],
+  isFinished: false
 })
 
 const data = ref<FormData>({
   ...getDefaultGame(),
   ...props.value,
-  scores: Array.isArray(props.value.teams)
-    ? props.value.teams.reduce(
-        (scores: GameScores, teamId: TeamId) => ({
-          ...scores,
-          [teamId]: props.value.scores[teamId] || [0]
-        }),
-        {}
-      )
-    : {},
-  boxscore: Object.values(props.value.teams).reduce((boxscore: GameBoxScore, teamId: TeamId) => {
-    const team: CompetitionTeam =
-      props.competitionTeams.find((t: CompetitionTeam) => t.id === teamId) ||
-      ({} as CompetitionTeam)
-    const players: PlayerId[] =
-      team.players.map((player: CompetitionPlayer): PlayerId => player.id) || []
-    players.forEach((playerId: PlayerId) => {
-      boxscore[playerId] = {
-        ...getDefaultPlayerBoxScore(),
-        ...(props.value.boxscore[playerId] || {})
-      }
-    })
-    return boxscore
-  }, {}),
   awards: props.value.awards
 })
 
 const boxscoreByTeams = computed({
-  get: (): { [key: TeamId]: GameBoxScore } => {
+  get: (): { [key: TeamId]: GameDocBoxScore } => {
     return data.value.teams.reduce((acc, teamId) => {
       const team: CompetitionTeam = props.competitionTeams.find((t) => t.id === teamId)
       return {
         ...acc,
-        [teamId]: team.players.reduce((boxscore: GameBoxScore, player) => {
+        [teamId]: team.players.reduce((boxscore: GameDocBoxScore, player) => {
           return {
             ...boxscore,
             [player.id]: data.value.boxscore[player.id]
@@ -105,7 +72,7 @@ const boxscoreByTeams = computed({
   },
   set: (val) => {
     data.value.boxscore = val.reduce(
-      (boxscore: GameBoxScore, bs: GameBoxScore) => ({
+      (boxscore: GameDocBoxScore, bs: GameDocBoxScore) => ({
         ...boxscore,
         ...bs
       }),
@@ -146,31 +113,30 @@ const handleSubmit = (ev: Event) => {
       <InputComp v-model="data.datetime" type="datetime-local" :disabled="isBusy" required />
     </FieldComp>
     <hr />
-    <FieldComp label="Scores">
-      <ScoresInput v-model="data.scores" :teams="data.teams" :disabled="isBusy">
-        <template #team1>
-          <template v-for="(scores, teamId, idx) in data.scores">
-            <template v-if="!idx">{{ getTeamName(teamId) }}</template>
+    <template v-if="row?.statsInput === 'sheet'">
+      <FieldComp label="Scores">
+        <ScoresInput v-model="data.scores" :teams="data.teams" :disabled="isBusy">
+          <template #team1>
+            <template v-for="(scores, teamId, idx) in data.scores">
+              <template v-if="!idx">{{ getTeamName(teamId) }}</template>
+            </template>
           </template>
-        </template>
-        <template #team2>
-          <template v-for="(scores, teamId, idx) in data.scores">
-            <template v-if="idx">{{ getTeamName(teamId) }}</template>
+          <template #team2>
+            <template v-for="(scores, teamId, idx) in data.scores">
+              <template v-if="idx">{{ getTeamName(teamId) }}</template>
+            </template>
           </template>
+        </ScoresInput>
+      </FieldComp>
+      <hr />
+      <FieldComp label="Boxscore">
+        <template v-for="(boxscore, teamId) in boxscoreByTeams" :key="teamId">
+          <h3 class="mb-0">{{ getTeamName(teamId) }}</h3>
+          <BoxScoreInput v-model="boxscoreByTeams[teamId]" :disabled="isBusy" />
         </template>
-      </ScoresInput>
-    </FieldComp>
-    <hr />
-    <FieldComp label="Boxscore">
-      <template v-for="(boxscore, teamId) in boxscoreByTeams" :key="teamId">
-        <h3 class="mb-0">{{ getTeamName(teamId) }}</h3>
-        <BoxScoreInput
-          v-model="boxscoreByTeams[teamId]"
-          :trackedStats="row?.trackedStats"
-          :disabled="isBusy"
-        />
-      </template>
-    </FieldComp>
+      </FieldComp>
+    </template>
+    <template v-else> Play by Play </template>
     <hr />
     <FieldComp label="Awards">
       <AwardsInput v-model="data.awards" :players-options="playersOptions" :disabled="isBusy" />

@@ -69,7 +69,7 @@ const { competitionId, teamId } = route.params
 const { isReady: isLibsReady, playersRows: playersLib, getPlayer } = useLibs()
 
 const { row: competition } = useCompetition(competitionId)
-const { writePlayer: addPlayer, deletePlayer: removePlayer } = useCompetitionAdmin(competitionId)
+const { writePlayer: addPlayer, removePlayer } = useCompetitionAdmin(competitionId)
 
 const playersOptions = computed((): Option[] => {
   const competitionOtherPlayers: PlayerId[] = competition?.value?.teams

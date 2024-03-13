@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { GameBoxScore } from '@/types/games'
+import type { GameDocBoxScore } from '@/types/games'
 import TableComp from '@/components/TableComp.vue'
 import type { TableField, TableItem } from '@/types/comp-table'
 import InputComp from '@/components/InputComp.vue'
@@ -10,7 +10,6 @@ import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import type { PlayerId } from '@/types/players'
 import { useRoute } from 'vue-router'
-import type { PlayerStatKey } from '@/types/stats'
 import useOptionsLib from '@/composable/useOptionsLib'
 
 const route = useRoute()
@@ -21,22 +20,18 @@ const { getPlayerNumber } = useCompetition(competitionId)
 const { playerStatsKeys } = useOptionsLib()
 
 interface IProps {
-  modelValue: GameBoxScore
-  trackedStats?: PlayerStatKey[]
+  modelValue: GameDocBoxScore
   disabled?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
-  trackedStats: () => [],
   disabled: false
 })
 
 const statsFields = computed(() =>
-  playerStatsKeys
-    .filter((opt) => Array.isArray(props.trackedStats) && props.trackedStats.includes(opt.value))
-    .map((opt) => ({
-      key: opt.value,
-      label: opt.text
-    }))
+  playerStatsKeys.map((opt) => ({
+    key: opt.value,
+    label: opt.text
+  }))
 )
 const fields = computed<TableField[]>(() => [
   { key: 'number', label: '#' },
@@ -48,8 +43,8 @@ const fields = computed<TableField[]>(() => [
 const emit = defineEmits(['update:modelValue', 'input'])
 
 const model = computed({
-  get: (): GameBoxScore => props.modelValue,
-  set: (val: GameBoxScore) => emit('update:modelValue', val)
+  get: (): GameDocBoxScore => props.modelValue,
+  set: (val: GameDocBoxScore) => emit('update:modelValue', val)
 })
 
 const items = computed((): TableItem[][] => {
@@ -71,25 +66,73 @@ const items = computed((): TableItem[][] => {
     <template #name="{ value }"
       ><div class="lh-1">{{ value }}</div></template
     >
-    <template #pts="{ key, item }">
+    <template #sec="{ key, item }">
       <InputComp
-        v-model.number="model[item.id][key]"
+        v-model="model[item.id][key]"
         type="number"
         size="sm"
         :disabled="model[item.id].dnp || disabled"
       />
     </template>
-    <template #m3pts="{ key, item }">
+    <template #fta="{ key, item }">
       <InputComp
-        v-model.number="model[item.id][key]"
+        v-model="model[item.id][key]"
         type="number"
         size="sm"
         :disabled="model[item.id].dnp || disabled"
       />
     </template>
-    <template #reb="{ key, item }">
+    <template #ftm="{ key, item }">
       <InputComp
-        v-model.number="model[item.id][key]"
+        v-model="model[item.id][key]"
+        type="number"
+        size="sm"
+        :disabled="model[item.id].dnp || disabled"
+      />
+    </template>
+    <template #fga="{ key, item }">
+      <InputComp
+        v-model="model[item.id][key]"
+        type="number"
+        size="sm"
+        :disabled="model[item.id].dnp || disabled"
+      />
+    </template>
+    <template #fgm="{ key, item }">
+      <InputComp
+        v-model="model[item.id][key]"
+        type="number"
+        size="sm"
+        :disabled="model[item.id].dnp || disabled"
+      />
+    </template>
+    <template #fg3a="{ key, item }">
+      <InputComp
+        v-model="model[item.id][key]"
+        type="number"
+        size="sm"
+        :disabled="model[item.id].dnp || disabled"
+      />
+    </template>
+    <template #fg3m="{ key, item }">
+      <InputComp
+        v-model="model[item.id][key]"
+        type="number"
+        size="sm"
+        :disabled="model[item.id].dnp || disabled"
+      />
+    </template>
+    <template #dreb="{ key, item }">
+      <InputComp
+        v-model="model[item.id][key]"
+        type="number"
+        size="sm"
+        :disabled="model[item.id].dnp || disabled"
+      />
+    </template>
+    <template #oreb="{ key, item }">
+      <InputComp
+        v-model="model[item.id][key]"
         type="number"
         size="sm"
         :disabled="model[item.id].dnp || disabled"
@@ -97,7 +140,7 @@ const items = computed((): TableItem[][] => {
     </template>
     <template #ast="{ key, item }">
       <InputComp
-        v-model.number="model[item.id][key]"
+        v-model="model[item.id][key]"
         type="number"
         size="sm"
         :disabled="model[item.id].dnp || disabled"
@@ -105,7 +148,7 @@ const items = computed((): TableItem[][] => {
     </template>
     <template #stl="{ key, item }">
       <InputComp
-        v-model.number="model[item.id][key]"
+        v-model="model[item.id][key]"
         type="number"
         size="sm"
         :disabled="model[item.id].dnp || disabled"
@@ -113,23 +156,39 @@ const items = computed((): TableItem[][] => {
     </template>
     <template #blk="{ key, item }">
       <InputComp
-        v-model.number="model[item.id][key]"
+        v-model="model[item.id][key]"
         type="number"
         size="sm"
         :disabled="model[item.id].dnp || disabled"
       />
     </template>
-    <template #to="{ key, item }">
+    <template #blka="{ key, item }">
       <InputComp
-        v-model.number="model[item.id][key]"
+        v-model="model[item.id][key]"
         type="number"
         size="sm"
         :disabled="model[item.id].dnp || disabled"
       />
     </template>
-    <template #pf="{ key, item }">
+    <template #tov="{ key, item }">
       <InputComp
-        v-model.number="model[item.id][key]"
+        v-model="model[item.id][key]"
+        type="number"
+        size="sm"
+        :disabled="model[item.id].dnp || disabled"
+      />
+    </template>
+    <template #fcm="{ key, item }">
+      <InputComp
+        v-model="model[item.id][key]"
+        type="number"
+        size="sm"
+        :disabled="model[item.id].dnp || disabled"
+      />
+    </template>
+    <template #fdr="{ key, item }">
+      <InputComp
+        v-model="model[item.id][key]"
         type="number"
         size="sm"
         :disabled="model[item.id].dnp || disabled"

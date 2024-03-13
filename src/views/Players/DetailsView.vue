@@ -2,31 +2,40 @@
 import { useRoute } from 'vue-router'
 import useLibs from '@/composable/useLibs'
 import SpinnerComp from '@/components/SpinnerComp.vue'
-import TableComp from '@/components/TableComp.vue'
 import { computed } from 'vue'
 import type { PlayerId } from '@/types/players'
 import usePlayerComputed from '@/composable/usePlayerComputed'
-import useOptionsLib from '@/composable/useOptionsLib'
-import TeamLogo from '@/components/teams/TeamLogo.vue'
 import type { CompetitionRankingComputed } from '@/types/computed'
-import type { PlayerRankingKey, PlayerStatKey } from '@/types/stats'
-import type { Option } from '@/types/comp-fields'
+import type { PlayerRankingKey } from '@/types/stats'
 import { useI18n } from 'vue-i18n'
-import { getAvg } from '@/utils/maths'
+import { getAvg, formatAvg } from '@/utils/maths'
+import StatsTableComp from '@/components/StatsTableComp.vue'
 const { t } = useI18n()
 const route = useRoute()
 const { playerId } = route.params as { playerId: PlayerId }
 
-const { playerStatsKeys, playerRankingKeys, getCategory } = useOptionsLib()
-const { isReady, getPlayer, getCompetition, getTeamName } = useLibs()
+const { isReady, getPlayer } = useLibs()
 const { isReady: isPlayerComputedReady, rows } = usePlayerComputed(playerId)
 const player = computed(() => getPlayer(playerId))
+
+const fieldsKeys: PlayerRankingKey[] = [
+  'gp',
+  'pir',
+  'pts',
+  'fgprc',
+  'fg3prc',
+  'reb',
+  'ast',
+  'blk',
+  'stl'
+]
+
 const fields = computed(() => [
-  { key: 'competition', label: t('global.competition', 2) },
-  { key: 'teamId', label: t('global.team', 2) },
-  ...playerRankingKeys.map((opt: Option) => ({
-    key: opt.value,
-    label: opt.text,
+  { key: 'competitionId', label: t('global.competition', 2) },
+  { key: 'teamId', label: t('global.team') },
+  ...fieldsKeys.map((key: PlayerRankingKey) => ({
+    key,
+    label: t(`options.playerStats.text.${key}`),
     thClass: 'text-end',
     tdClass: 'text-end'
   }))
@@ -42,34 +51,36 @@ const stats = computed(() => {
         0
       )
     : 0
+  const pir = Array.isArray(rows.value)
+    ? rows.value?.reduce(
+        (total: number, item: CompetitionRankingComputed) => (total += item.pir * item.gp),
+        0
+      )
+    : 0
   return [
     {
       key: 'gp',
-      text: t('options.rankingStats.long.gp'),
+      text: t('options.playerStats.long.gp'),
       value: gp
     },
     {
       key: 'pts',
-      text: t('options.rankingStats.long.ptsAvg'),
-      value: getAvg(pts, gp)
+      text: t('options.playerStats.long.ptsavg'),
+      value: formatAvg(getAvg(pts, gp))
+    },
+    {
+      key: 'pir',
+      text: t('options.playerStats.long.pir'),
+      value: formatAvg(getAvg(pir, gp))
     }
   ]
 })
 const items = computed(() => {
   return rows.value?.map((row: CompetitionRankingComputed) => {
-    const competition = getCompetition(row.id)
-
     return {
       ...row,
-      competition,
-      gp: row.gp,
-      ...playerStatsKeys.reduce((stats, opt: Option) => {
-        const key = opt.value as PlayerStatKey
-        return {
-          ...stats,
-          [key]: competition?.trackedStats.includes(key) ? getAvg(row[key], row.gp) : undefined
-        }
-      }, {})
+      competitionId: row.id,
+      gp: row.gp
     }
   })
 })
@@ -97,26 +108,7 @@ const items = computed(() => {
           </template>
         </div>
       </div>
-      <TableComp :fields="fields" :items="items">
-        <template #competition="{ value }">
-          <RouterLink
-            class="d-flex flex-column align-items-start text-decoration-none"
-            :to="{ name: 'competition', params: { competitionId: value.id } }"
-          >
-            <div>{{ value.title }}</div>
-            <div class="d-flex gap-3 small text-body-secondary text-nowrap">
-              <small>{{ value.date }}</small>
-              <small>{{ getCategory(value.category)?.text }}</small>
-            </div>
-          </RouterLink>
-        </template>
-        <template #teamId="{ value }">
-          <div class="d-flex align-items-center gap-2">
-            <TeamLogo :team-id="value" />
-            <span class="jersey-team lh-1">{{ getTeamName(value) }}</span>
-          </div>
-        </template>
-      </TableComp>
+      <StatsTableComp :fields="fields" :items="items" show-logo></StatsTableComp>
     </template>
   </div>
 </template>

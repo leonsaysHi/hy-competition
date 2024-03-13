@@ -1,10 +1,10 @@
 <template>
   <ul class="list-group list-group-flush border-top border-bottom">
-    <template v-if="!computedGames.length">
+    <template v-if="!items.length">
       <div class="list-group-item text-center text-body-secondary">No games.</div>
     </template>
     <template v-else>
-      <template v-for="gameComputed in computedGames" :key="gameComputed.id">
+      <template v-for="gameComputed in items" :key="gameComputed.id">
         <RouterLink
           class="hstack gap-2 list-group-item list-group-item-action lh-1"
           :to="gameComputed.to"
@@ -53,23 +53,12 @@
 
 <script lang="ts" setup>
 import TeamLogo from '@/components/teams/TeamLogo.vue'
-import type ComputedGame from '@/models/GameComputed'
 import GameComputedClass from '@/models/GameComputed'
-import type { Game } from '@/types/games'
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-
-const route = useRoute()
-const { competitionId } = route.params
 
 interface IProps {
-  items: Game[]
+  items: GameComputedClass[]
 }
-const props = withDefaults(defineProps<IProps>(), {})
-
-const computedGames = computed<ComputedGame[]>(() => {
-  return props.items.map((game: Game) => new GameComputedClass(competitionId, game))
-})
+withDefaults(defineProps<IProps>(), {})
 </script>
 <style lang="scss" scoped>
 .team {

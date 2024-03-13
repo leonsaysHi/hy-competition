@@ -42,7 +42,9 @@ const addTeamsOptions = computed((): Option[] => {
       )
     : []
 })
-const addTeamDisabled = computed(() => Array.isArray(row?.value?.phases) && row.value.phases.length > 0)
+const addTeamDisabled = computed(
+  () => Array.isArray(row?.value?.phases) && row.value.phases.length > 0
+)
 const addTeamIsBusy = ref(false)
 const handleAddTeam = async (payload) => {
   addTeamIsBusy.value = true
@@ -78,9 +80,10 @@ const handleRemove = async () => {
       <SpinnerComp />
     </template>
     <template v-else>
-
       <template v-if="addTeamDisabled">
-        <AlertComp variant="warning">Competition as started, you can't add/remove teams anymore.</AlertComp>
+        <AlertComp variant="warning"
+          >Competition as started, you can't add/remove teams anymore.</AlertComp
+        >
       </template>
       <TableComp :fields="fields" :items="row?.teams">
         <template #id="{ item }">
@@ -96,11 +99,11 @@ const handleRemove = async () => {
               :to="{ name: 'admin-competition-edit-team', params: { teamId: item.id } }"
               >Edit</RouterLink
             >
-            <ButtonComp 
-            variant="danger" 
-            size="sm" 
-            :disabled="addTeamDisabled"
-            @click="handleConfirmDeleteTeam(item)" 
+            <ButtonComp
+              variant="danger"
+              size="sm"
+              :disabled="addTeamDisabled"
+              @click="handleConfirmDeleteTeam(item)"
               >Remove</ButtonComp
             >
           </div>

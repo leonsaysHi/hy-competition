@@ -11,7 +11,7 @@ export function formatDate(date: Date): DateFormats {
   const time = format(date, 'h') + (min !== '00' ? ':' + min : '') + format(date, 'aa')
   const short = format(date, 'do LLL')
   const long = format(date, 'iii, do LLL')
-  const full = [long, time].join(' ')  
+  const full = [long, time].join(' ')
   return {
     num: format(date, 'P'),
     short,

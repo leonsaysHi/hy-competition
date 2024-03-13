@@ -1,6 +1,13 @@
-import type { CompetitionCategorie, CompetitionSport, PhaseType } from '@/types/competitions'
+import type {
+  CompetitionCategorie,
+  CompetitionSport,
+  PhaseType,
+  StatsInputType,
+  StatsType
+} from '@/types/competitions'
 import type { GenderKey } from '@/types/players'
 import type { PlayerStatKey, TeamStatKey, PlayerRankingKey, AwardKey } from '@/types/stats'
+import type { Option } from '@/types/comp-fields'
 import i18n from '@/i18n'
 
 const t = (path: string): string => i18n.global.t(path)
@@ -31,27 +38,58 @@ export default function usePlayersLib() {
     { text: t('options.phases.groups'), value: 'groups' },
     { text: t('options.phases.playoffs'), value: 'playoffs' }
   ]
+
+  const competitionStatsInput: { value: StatsInputType; text: string }[] = [
+    { text: t('options.stats.sheet'), value: 'sheet' },
+    { text: t('options.stats.playbyplay'), value: 'playByPlay' }
+  ]
+
   const playerStatsKeys: { value: PlayerStatKey; text: string; long: string }[] = [
-    'pts',
-    'reb',
+    'sec',
+    'ftm',
+    'fta',
+    'fgm',
+    'fga',
+    'fg3m',
+    'fg3a',
+    'dreb',
+    'oreb',
     'ast',
     'stl',
     'blk',
-    'to',
-    'pf',
-    'm3pts'
+    'blka',
+    'tov',
+    'fcm',
+    'fdr'
   ].map((key: string) => ({
     text: t(`options.playerStats.text.${key}`),
     long: t(`options.playerStats.long.${key}`),
     value: key as PlayerStatKey
   }))
+
   const playerRankingKeys: { value: PlayerRankingKey; text: string; long: string }[] = [
     {
-      text: t('options.rankingStats.text.gp'),
-      long: t('options.rankingStats.long.gp'),
+      text: t('options.playerStats.text.gp'),
+      long: t('options.playerStats.long.gp'),
       value: 'gp'
     },
-    ...playerStatsKeys
+    ...playerStatsKeys.reduce(
+      (result: { value: PlayerRankingKey; text: string; long: string }[], opt: Option) => {
+        const key = opt.value as PlayerStatKey
+        result.push(opt)
+        const inserKey: PlayerRankingKey | undefined =
+          key === 'fta' ? 'ftprc' : key === 'fga' ? 'fgprc' : key === 'fg3a' ? 'fg3prc' : undefined
+        if (inserKey) {
+          result.push({
+            text: t(`options.playerStats.text.${inserKey}`),
+            long: t(`options.playerStats.long.${inserKey}`),
+            value: inserKey
+          })
+        }
+        return result
+      },
+      []
+    )
     // awards[]
   ]
 
@@ -66,11 +104,11 @@ export default function usePlayersLib() {
 
   const teamStandingKeys: { value: TeamStatKey; text: string; long: string }[] = [
     {
-      text: t('options.rankingStats.text.gp'),
-      long: t('options.rankingStats.long.gp'),
+      text: t('options.standingStats.text.gp'),
+      long: t('options.standingStats.long.gp'),
       value: 'gp'
     },
-    ...['wins', 'ptspos', 'ptsneg'].map((key: string) => ({
+    ...['wins', 'ptsfv', 'ptsag'].map((key: string) => ({
       text: t(`options.standingStats.text.${key}`),
       long: t(`options.standingStats.long.${key}`),
       value: key as TeamStatKey
@@ -81,6 +119,7 @@ export default function usePlayersLib() {
     competitionSports,
     competitionCategories,
     competitionPhases,
+    competitionStatsInput,
     genders,
 
     getGender,
@@ -88,8 +127,8 @@ export default function usePlayersLib() {
     getAward,
 
     playerStatsKeys,
-    awardsKeys,
     playerRankingKeys,
+    awardsKeys,
     teamStandingKeys
   }
 }

@@ -36,10 +36,17 @@ const handleSubmit = async (ev: Event) => {
 <template>
   <form @submit="handleSubmit" class="d-flex align-items-end gap-2">
     <FieldComp label="Team" class="flex-grow-1">
-      <TypeaheadSelectComp v-model="data.id" :options="teamsOptions" :disabled="isBusy || disabled" required />
+      <TypeaheadSelectComp
+        v-model="data.id"
+        :options="teamsOptions"
+        :disabled="isBusy || disabled"
+        required
+      />
     </FieldComp>
     <div class="mb-3">
-      <ButtonComp variant="primary" type="submit" :disabled="disabled" :is-busy="isBusy">Add</ButtonComp>
+      <ButtonComp variant="primary" type="submit" :disabled="disabled" :is-busy="isBusy"
+        >Add</ButtonComp
+      >
     </div>
   </form>
 </template>

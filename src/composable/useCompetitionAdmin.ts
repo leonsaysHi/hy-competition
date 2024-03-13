@@ -1,4 +1,4 @@
-import { doc, collection, writeBatch, WriteBatch, setDoc } from 'firebase/firestore'
+import { doc, collection, writeBatch, WriteBatch } from 'firebase/firestore'
 import {
   db,
   competitionsName,
@@ -92,11 +92,11 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
     batch.set(playerRef, playerDoc)
     return batch
   }
-  const deletePlayer = async (teamId: TeamId, payload: CompetitionPlayer) => {
-    const batch = deletePlayerBatch(teamId, payload)
+  const removePlayer = async (teamId: TeamId, payload: CompetitionPlayer) => {
+    const batch = removePlayerBatch(teamId, payload)
     await batch.commit()
   }
-  const deletePlayerBatch = (
+  const removePlayerBatch = (
     teamId: TeamId,
     row: CompetitionPlayer,
     batch: WriteBatch = writeBatch(db)
@@ -109,6 +109,7 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
     } = row
     const playerRef = doc(playerCollRef, id)
     batch.delete(playerRef)
+    deletePlayerCompetitionComputed(id, competitionId, batch)
     return batch
   }
 
@@ -117,10 +118,7 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
     const batch = writeTeamBatch(payload)
     await batch.commit()
   }
-  const writeTeamBatch = async (
-    row: CompetitionTeam,
-    batch: WriteBatch = writeBatch(db)
-  ): WriteBatch => {
+  const writeTeamBatch = (row: CompetitionTeam, batch: WriteBatch = writeBatch(db)): WriteBatch => {
     const {
       id,
       players,
@@ -175,7 +173,7 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
     } = row
     const teamRef = doc(teamsCollRef, id)
     players.forEach((row: CompetitionPlayer) => {
-      deletePlayerBatch(id, row, batch)
+      removePlayerBatch(id, row, batch)
     })
     batch.delete(teamRef)
     return batch
@@ -214,10 +212,8 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
     return batch
   }
 
-  const updateCompetitionComputeds = async (
-    payload: Competition
-  ) => {
-    const batch:WriteBatch = writeBatch(db)
+  const updateCompetitionComputeds = async (payload: Competition) => {
+    const batch: WriteBatch = writeBatch(db)
     if (payload.isActive) {
       const computedClass = new CompetitionClass(payload)
       writePlayersCompetitionComputed(computedClass.competitionRankings, batch)
@@ -226,23 +222,13 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
       const { id: competitionId } = payload
       payload.teams.forEach((team: CompetitionTeam) => {
         team.players.forEach((player: CompetitionPlayer) => {
-          const computedRef = doc(
-            collection(doc(playersColl, player.id), playerCompetitionsComputedName),
-            competitionId
-          )
-          console.log('delete', computedRef)
-          batch.delete(computedRef)
+          deletePlayerCompetitionComputed(player.id, competitionId, batch)
         })
-        const computedRef = doc(
-          collection(doc(teamsColl, team.id), teamCompetitionsComputedName),
-          competitionId
-        )
-        console.log('delete', computedRef)
-        batch.delete(computedRef)
+        deleteTeamCompetitionComputed(team.id, competitionId, batch)
       })
     }
     await batch.commit()
-    return 
+    return
   }
 
   const writePlayersCompetitionComputed = (
@@ -260,6 +246,18 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
     })
     return batch
   }
+  const deletePlayerCompetitionComputed = (
+    playerId: PlayerId,
+    competitionId: CompetitionId,
+    batch: WriteBatch = writeBatch(db)
+  ) => {
+    const computedRef = doc(
+      collection(doc(playersColl, playerId), playerCompetitionsComputedName),
+      competitionId
+    )
+    batch.delete(computedRef)
+    return batch
+  }
   const writeTeamsCompetitionComputed = (
     rows: CompetitionStandingComputed[],
     batch: WriteBatch = writeBatch(db)
@@ -273,6 +271,18 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
       const computedRef = doc(computedCollection, id)
       batch.set(computedRef, row)
     })
+    return batch
+  }
+  const deleteTeamCompetitionComputed = (
+    teamId: TeamId,
+    competitionId: CompetitionId,
+    batch: WriteBatch = writeBatch(db)
+  ) => {
+    const computedRef = doc(
+      collection(doc(teamsColl, teamId), teamCompetitionsComputedName),
+      competitionId
+    )
+    batch.delete(computedRef)
     return batch
   }
 
@@ -292,6 +302,6 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
     writeTeamDoc,
     writePlayer,
     deleteTeam,
-    deletePlayer
+    removePlayer
   }
 }

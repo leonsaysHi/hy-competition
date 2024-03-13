@@ -20,26 +20,62 @@ const es = {
       groups: 'Grupos',
       playoffs: 'Playoffs'
     },
+    stats: {
+      sheet: 'Stats sheet',
+      playbyplay: 'Play-by-Play'
+    },
     playerStats: {
       text: {
-        pts: 'Pts',
+        gp: 'GP',
+        sec: 'Min',
+        ftm: 'FTM',
+        fta: 'FTA',
+        ftprc: 'FT%',
+        fgm: 'FGM',
+        fga: 'FGA',
+        fgprc: '2P%',
+        fg3m: '3PM',
+        fg3a: '3PA',
+        fg3prc: '3P%',
         reb: 'Reb',
+        dreb: 'DReb',
+        oreb: 'OReb',
         ast: 'Ast',
-        stl: 'Rob',
-        blk: 'Blq',
-        to: 'Per',
-        pf: 'FP',
-        m3pts: '3Pts'
+        stl: 'Stl',
+        blk: 'Blk',
+        blka: 'BlkAg',
+        tov: 'TOv',
+        fcm: 'FCo',
+        fdr: 'FDr',
+        pir: 'PIR',
+        pts: 'Pts',
+        ptsavg: 'Pts avg.'
       },
       long: {
-        pts: 'Puntos anotados',
-        reb: 'Rebotes',
+        gp: 'Juegos',
+        sec: 'Minutos',
+        ftm: 'Tiros libres conv.',
+        fta: 'Tiros libres int.',
+        ftprc: '% tiros libres',
+        fgm: '2pts conv.',
+        fga: '2pts int.',
+        fgprc: '% 2pts',
+        fg3m: '3pts conv.',
+        fg3a: '3pts int.',
+        fg3prc: '% 3pts',
+        reb: 'Rebotes tot.',
+        dreb: 'Rebotes def.',
+        oreb: 'Rebotes off.',
         ast: 'Asistencias',
         stl: 'Robos',
         blk: 'Bloqueos',
-        to: 'Pérdidas de balón',
-        pf: 'Faltas personales',
-        m3pts: 'Triples realizados'
+        blka: 'Bloqueos en contra',
+        tov: 'Pérdidas de balón',
+        fcm: 'Faltas personales cometidas',
+        fdr: 'Faltas personales señaladas',
+        pir: 'Índice de rendimiento',
+        pts: 'Puntos',
+        ptsavg: 'Puntos prom.'
       }
     },
     awards: {
@@ -54,14 +90,10 @@ const es = {
     },
     rankingStats: {
       text: {
-        pos: 'Pos',
-        gp: 'GP',
-        ptsAvg: 'Pts ave.'
+        pos: 'Pos'
       },
       long: {
-        pos: 'Posición',
-        gp: 'Partidos jugados',
-        ptsAvg: 'Puntos por partido'
+        pos: 'Posición'
       }
     },
     standingStats: {
@@ -69,16 +101,16 @@ const es = {
         pos: 'Pos',
         gp: 'GP',
         wins: 'W',
-        ptspos: 'Pts+',
-        ptsneg: 'Pts-',
+        ptsfv: 'Pts+',
+        ptsag: 'Pts-',
         hist: 'Últimos'
       },
       long: {
         pos: 'Posición',
         gp: 'Partidos jugados',
         wins: 'Ganados',
-        ptspos: 'Puntos anotados',
-        ptsneg: 'Puntos encajados',
+        ptsfv: 'Puntos anotados',
+        ptsag: 'Puntos encajados',
         hist: 'Últimos juegos'
       }
     }

@@ -8,24 +8,42 @@ export interface AwardItem {
   gameId?: GameId
   competitionId?: CompetitionId
   id: PlayerId
-  value: Award
+  value: AwardKey
 }
 
 export interface PlayerStats {
-  pts: number
-  reb: number
+  sec: number
+  ftm: number
+  fta: number
+  fgm: number
+  fga: number
+  fg3m: number
+  fg3a: number
+  dreb: number
+  oreb: number
   ast: number
   stl: number
   blk: number
-  to: number
-  pf: number
-  m3pts: number
+  blka: number
+  tov: number
+  fcm: number
+  fdr: number
 }
 export type PlayerStatKey = keyof PlayerStats
 
-export interface PlayerRankingStats extends PlayerStats {
-  gp: number
+export interface PlayerBoxScore extends PlayerStats {
+  dnp: boolean
+  ftprc: number
+  fgprc: number
+  fg3prc: number
+  pts: number
+  reb: number
+  pir: number
   awards: AwardItem[]
+}
+
+export interface PlayerRankingStats extends PlayerBoxScore {
+  gp: number
 }
 export type PlayerRankingKey = keyof PlayerRankingStats
 
@@ -33,8 +51,8 @@ export type PlayerRankingKey = keyof PlayerRankingStats
 export interface TeamStats {
   gp: number
   wins: number
-  ptspos: number
-  ptsneg: number
+  ptsfv: number
+  ptsag: number
 }
 export type TeamStatKey = keyof TeamStats
 

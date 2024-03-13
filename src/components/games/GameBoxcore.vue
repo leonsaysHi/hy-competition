@@ -1,39 +1,37 @@
 <script lang="ts" setup>
 import { computed, ref, watchEffect } from 'vue'
-import TableComp from '@/components/TableComp.vue'
+import StatsTableComp from '@/components/StatsTableComp.vue'
 
-import useLibs from '@/composable/useLibs'
 import useOptionsLibs from '@/composable/useOptionsLib'
-import { useRoute } from 'vue-router'
-import type { TableField, TableItem } from '@/types/comp-table'
+import type { Option } from '@/types/comp-fields'
+import type { TableField } from '@/types/comp-table'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import type { CompetitionPlayer } from '@/types/players'
-import type { GameBoxScore } from '@/types/games'
 import type { PlayerStatKey } from '@/types/stats'
 
-import { useI18n } from 'vue-i18n'
 import TeamLogo from '../teams/TeamLogo.vue'
+import type { GameBoxScoreComputed } from '@/types/computed'
+import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 interface IProps {
-  boxscore: GameBoxScore
+  boxscore: GameBoxScoreComputed
   teams: CompetitionTeam[]
 }
 
-const route = useRoute()
-const { competitionId } = route.params as { competitionId: string }
 const props = withDefaults(defineProps<IProps>(), {})
 
-const { getTeamName, getPlayerName, getCompetition } = useLibs()
-const { playerStatsKeys } = useOptionsLibs()
+const { playerRankingKeys } = useOptionsLibs()
 
-const row = getCompetition(competitionId)
+const boxScoreKeys: Option[] = playerRankingKeys.filter(
+  (opt: Option) => !['gp'].includes(opt.value)
+)
 
-const fields = computed(() => [
-  { label: '#', key: 'number' },
-  { label: 'Player', key: 'id', tdClass: 'fw-bold' },
-  ...playerStatsKeys.reduce((fields: TableField[], opt): TableField[] => {
-    if (row?.trackedStats.includes(opt.value)) {
-      return [
+const fields = computed(() => {
+  const fields = [
+    { label: '#', key: 'number' },
+    { label: t('global.player'), key: 'id', tdClass: 'fw-bold' },
+    ...boxScoreKeys.reduce(
+      (fields: TableField[], opt): TableField[] => [
         ...fields,
         {
           key: opt.value,
@@ -43,11 +41,33 @@ const fields = computed(() => [
           tdClass: 'text-end',
           tfClass: 'text-end fw-bold'
         }
-      ]
+      ],
+      []
+    )
+  ]
+  const minIdx = fields.findIndex((field) => field.key === 'sec')
+  fields.splice(
+    minIdx + 1,
+    0,
+    {
+      key: 'pts',
+      label: t('options.playerStats.text.pts'),
+      sortable: true,
+      thClass: 'text-end',
+      tdClass: 'text-end',
+      tfClass: 'text-end fw-bold'
+    },
+    {
+      key: 'pir',
+      label: t('options.playerStats.text.pir'),
+      sortable: true,
+      thClass: 'text-end',
+      tdClass: 'text-end',
+      tfClass: 'text-end fw-bold'
     }
-    return fields
-  }, [])
-])
+  )
+  return fields
+})
 
 const currentTeamId = ref<TeamId | undefined>()
 watchEffect(() => {
@@ -60,15 +80,6 @@ const boxScoreItems = computed(() => {
     ...props.boxscore[player.id]
   }))
 })
-const totalsItem = computed<TableItem>(() => ({
-  number: '',
-  id: '',
-  ...playerStatsKeys.reduce((item: TableItem, opt: Option): TableItem => {
-    const key = opt.value as PlayerStatKey
-    item[key] = boxScoreItems.value?.reduce((tot: number, row) => tot + row[key], 0) || 0
-    return item
-  }, {})
-}))
 </script>
 <template>
   <ul class="mb-3 nav nav-underline justify-content-center">
@@ -87,28 +98,11 @@ const totalsItem = computed<TableItem>(() => ({
       </li>
     </template>
   </ul>
-  <TableComp
+  <StatsTableComp
     :fields="fields"
     :items="boxScoreItems"
-    :footer="totalsItem"
     sorted-key="pts"
     sorted-direction="desc"
-    small
-  >
-    <template #number="{ value }">#{{ value }}</template>
-    <template #id="{ value }"
-      ><RouterLink
-        class="d-flex align-items-center gap-2 link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
-        :to="{
-          name: 'competition-player',
-          params: { competitionId: competitionId, playerId: value }
-        }"
-      >
-        {{ getPlayerName(value) }}
-      </RouterLink></template
-    >
-    <template #footerid
-      ><span class="fw-lighter">{{ t('global.total', 2) }}</span></template
-    >
-  </TableComp>
+    show-total
+  ></StatsTableComp>
 </template>

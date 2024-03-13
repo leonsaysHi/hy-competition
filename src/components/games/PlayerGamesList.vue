@@ -1,83 +1,87 @@
 <script lang="ts" setup>
-import TeamLogo from '@/components/teams/TeamLogo.vue'
-import GameComputedClass, { type ScoresComputed } from '@/models/GameComputed'
-import type { Game, PlayerBoxScore } from '@/types/games'
+import GameComputedClass from '@/models/GameComputed'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import TableComp from '../TableComp.vue'
+import StatsTableComp from '@/components/StatsTableComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
-import useLibs from '@/composable/useLibs'
+import type { Option } from '@/types/comp-fields'
 import useCompetition from '@/composable/useCompetition'
-import type { CompetitionTeam, TeamId } from '@/types/teams'
+import type { CompetitionTeam } from '@/types/teams'
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
-
-interface PlayerGameComputed extends PlayerBoxScore {
-  datetime: string
-  isFinished: boolean
-  isWin: boolean
-  oppId: TeamId
-}
 
 const route = useRoute()
 const { competitionId, playerId } = route.params
 
 interface IProps {
-  items: Game[]
+  items: GameComputedClass[]
 }
 const props = withDefaults(defineProps<IProps>(), {})
 
-const { getTeamName, getCompetition } = useLibs()
-const { playerStatsKeys } = useOptionsLib()
+const { playerRankingKeys } = useOptionsLib()
 const { getPlayerCompetitionTeam } = useCompetition(competitionId)
 
-const row = getCompetition(competitionId)
-const fields = computed(() => [
-  { key: 'datetime', label: t('global.date') },
-  { key: 'opp', label: t('global.gameDetails.opponent.text') },
-  { key: 'isWin', label: '', tdClass: 'text-center' },
-  ...playerStatsKeys
-    .filter((opt: Option) => row?.trackedStats.includes(opt.value))
-    .map(
-      (opt: Option): TableField =>
-        ({
+const boxScoreKeys: Option[] = playerRankingKeys.filter(
+  (opt: Option) => !['gp'].includes(opt.value)
+)
+const fields = computed(() => {
+  const fields = [
+    { key: 'datetime', label: t('global.date'), tdClass: 'lh-1' },
+    { key: 'teamId', label: t('global.gameDetails.opponent.text') },
+    { key: 'isWin', label: '', tdClass: 'text-center' },
+    ...boxScoreKeys.reduce(
+      (fields: TableField[], opt): TableField[] => [
+        ...fields,
+        {
           key: opt.value,
           label: opt.text,
+          sortable: true,
           thClass: 'text-end',
           tdClass: 'text-end'
-        }) as TableField
+        }
+      ],
+      []
     )
-])
+  ]
+  const minIdx = fields.findIndex((field) => field.key === 'sec')
+  fields.splice(
+    minIdx + 1,
+    0,
+    {
+      key: 'pts',
+      label: t('options.playerStats.text.pts'),
+      sortable: true,
+      thClass: 'text-end',
+      tdClass: 'text-end'
+    },
+    {
+      key: 'pir',
+      label: t('options.playerStats.text.pir'),
+      sortable: true,
+      thClass: 'text-end',
+      tdClass: 'text-end'
+    }
+  )
+  return fields
+})
 const computedGames = computed<TableItem[]>(() => {
-  return props.items.map((game: Game) => {
-    const computedGame = new GameComputedClass(competitionId, game)
+  return props.items.map((game: GameComputedClass) => {
     const team = getPlayerCompetitionTeam(playerId) as CompetitionTeam
-    const opp = computedGame.scores.find((score: ScoresComputed) => score.id !== team?.id)
-    const result: PlayerGameComputed = {
-      datetime: computedGame.date.short,
+    const opp = game.getOppScore(team?.id)
+    return {
+      datetime: game.date.short,
       isFinished: game.isFinished,
       isWin: !opp?.winner,
-      opp: opp?.id,
-      ...game.boxscore[playerId]
+      teamId: opp?.id,
+      ...game.boxScore[playerId]
     }
-    return result as TableItem
   })
 })
 </script>
 
 <template>
-  <TableComp :fields="fields" :items="computedGames" small>
-    <template #isWin="{ value }">
-      <span :class="value ? 'text-win' : 'text-loss'">{{ value ? 'W' : 'L' }}</span>
-    </template>
-    <template #opp="{ value }">
-      <div class="d-flex gap-3">
-        <TeamLogo :team-id="value" :size="25" />
-        <strong class="jersey-team">{{ getTeamName(value) }}</strong>
-      </div>
-    </template>
-  </TableComp>
+  <StatsTableComp :fields="fields" :items="computedGames" show-logo></StatsTableComp>
 </template>
 
 <style lang="scss" scoped>

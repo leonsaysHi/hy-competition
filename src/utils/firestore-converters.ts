@@ -6,10 +6,7 @@ import { dateToTimeStamp } from '@/utils/dates'
 import type { CompetitionTeamDoc, TeamDoc, TeamId } from '@/types/teams'
 import type { GameDoc } from '@/types/games'
 import { add } from './maths'
-import type {
-  CompetitionRankingComputed,
-  CompetitionStandingComputed
-} from '@/types/computed'
+import type { CompetitionRankingComputed, CompetitionStandingComputed } from '@/types/computed'
 
 const dateFromFirestore = (ts: Timestamp): Date => {
   return ts.toDate()

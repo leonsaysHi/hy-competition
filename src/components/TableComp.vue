@@ -120,8 +120,8 @@ const computedItems = computed(() => {
   if (typeof key === 'string') {
     const field = props.fields.find((field: TableField) => field.key === key)
     results.sort((a, b) => {
-      const aVal = field?.sortByFormatted && field?.formatter ? field.formatter(a[key]) : a[key]
-      const bVal = field?.sortByFormatted && field?.formatter ? field.formatter(b[key]) : b[key]
+      const aVal = field?.sortByFormatted && field?.formatter ? field.formatter(a[key], a) : a[key]
+      const bVal = field?.sortByFormatted && field?.formatter ? field.formatter(b[key], b) : b[key]
       const compared =
         typeof aVal === 'string' && typeof bVal === 'string'
           ? aVal.localeCompare(bVal)
@@ -138,9 +138,9 @@ const computedItems = computed(() => {
   const sliceEnd =
     props.perPage > 0 ? Math.min(results.length, sliceFirstIdx + props.perPage) : results.length
   return results.slice(sliceFirstIdx, sliceEnd).map((row: TableItem) => {
-    return Object.keys(row).reduce((item: TableItem, key: string) => {
+    return Object.keys(row).reduce((item: TableItem, key: string, idx: number) => {
       const field = props.fields.find((field: TableField) => field.key === key)
-      item[key] = field?.formatter ? field.formatter(row[key]) : row[key]
+      item[key] = field?.formatter ? field.formatter(row[key], row, idx) : row[key]
       return item
     }, {})
   })

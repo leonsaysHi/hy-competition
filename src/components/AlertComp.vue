@@ -13,11 +13,13 @@ import { computed } from 'vue'
 interface IProps {
   modelValue?: boolean
   variant?: string
+  size?: 'sm' | 'md' | 'lg'
   dismissible?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
   modelValue: true,
   variant: 'light',
+  size: 'md',
   dismissible: false
 })
 
@@ -32,6 +34,9 @@ const computedClass = computed(() => {
   }
   if (props.dismissible) {
     list.push('alert-dismissible')
+  }
+  if (props.size === 'sm') {
+    list.push('p-2')
   }
   return list
 })
