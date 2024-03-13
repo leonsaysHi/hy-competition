@@ -8,14 +8,15 @@ import type {
   CompetitionCategorie,
   CompetitionDoc,
   CompetitionSport,
-  Phase
+  Phase,
+  StatsInputType
 } from '@/types/competitions'
 
 import SelectComp from '@/components/SelectComp.vue'
 import CheckComp from '@/components/CheckComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
-import CheckGroupComp from '@/components/CheckGroupComp.vue'
-import type { AwardItem, PlayerStatKey } from '@/types/stats'
+import RadioGroupComp from '@/components/RadioGroupComp.vue'
+import type { AwardItem } from '@/types/stats'
 import AwardsInput from '../components/AwardsInput.vue'
 import useCompetition from '@/composable/useCompetition'
 import useLibs from '@/composable/useLibs'
@@ -36,7 +37,7 @@ type FormData = {
   category?: CompetitionCategorie
   gender?: GenderKey
   phases: Phase[]
-  trackedStats: PlayerStatKey[]
+  statsInput: StatsInputType
   awards: AwardItem[]
   isActive?: Boolean
 }
@@ -44,7 +45,7 @@ const {
   competitionSports: sportsOptions,
   competitionCategories: categoriesOptions,
   genders: gendersOptions,
-  playerStatsKeys
+  competitionStatsInput: statsInputOptions
 } = useOptionsLib()
 const { getPlayerName } = useLibs()
 const { allPlayers } = useCompetition(props.value.id)
@@ -56,11 +57,11 @@ const data = ref<FormData>({
   gender: undefined,
   category: undefined,
   isActive: false,
+  statsInput: statsInputOptions[0],
 
   ...props.value,
 
-  awards: Array.isArray(props.value.awards) ? props.value.awards : [],
-  trackedStats: Array.isArray(props.value.trackedStats) ? props.value.trackedStats : ['pts']
+  awards: Array.isArray(props.value.awards) ? props.value.awards : []
 })
 
 const playersOptions = computed(() =>
@@ -104,10 +105,10 @@ const handleSubmit = (ev: Event) => {
         required
       />
     </FieldComp>
-    <FieldComp label="Tracked stats">
-      <CheckGroupComp
-        v-model="data.trackedStats"
-        :options="playerStatsKeys"
+    <FieldComp label="Stats input">
+      <RadioGroupComp
+        v-model="data.statsInput"
+        :options="statsInputOptions"
         :disabled="isBusy"
         buttons
       />

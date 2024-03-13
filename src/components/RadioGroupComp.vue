@@ -1,27 +1,24 @@
 <template>
-  <template v-for="opt in options" :key="opt.value">
-    <div :class="computedWrapperClass">
-      <input
-        :class="computedInputClass"
-        type="radio"
-        :name="`radio-input-${$.uid}`"
-        :id="`radio-input-${$.uid}-${opt.value}`"
+  <div :class="computedWrapperClass">
+    <template v-for="opt in options" :key="opt.value">
+      <RadioComp
+        v-model="model"
+        :value="opt.value"
         :disabled="disabled"
-        :checked="model === opt.value"
-        @click="() => handleSelect(opt.value)"
-      />
-      <label :class="computedLabelClass" :for="`radio-input-${$.uid}-${opt.value}`">
-        {{ opt.text }}
-      </label>
-    </div>
-  </template>
+        :buttons="buttons"
+        button-size="lg"
+        :button-variant="opt.value === model ? 'primary' : 'outline-secondary'"
+      >{{opt.text}}</RadioComp>
+    </template>
+  </div>
 </template>
 
 <script setup lang="ts">
+import RadioComp from '@/components/RadioComp.vue'
 import type { Option } from '@/types/comp-fields'
 import { computed } from 'vue'
 interface IProps {
-  modelValue: string
+  modelValue: string | undefined
   options: Option[]
   placeholder?: string
   readonly?: boolean
@@ -43,6 +40,16 @@ const props = withDefaults(defineProps<IProps>(), {
   isInvalid: false
 })
 
+const computedWrapperClass = computed(() => {
+  const result = []
+  if (props.buttons) {
+    result.push('d-flex gap-1')
+  } else if (props.stacked) {
+    result.push('vstack gap-1')
+  }
+  return result
+})
+
 const emit = defineEmits(['update:modelValue', 'change', 'validate'])
 const model = computed({
   get: () => props.modelValue,
@@ -53,29 +60,4 @@ const model = computed({
 const handleSelect = (val) => {
   model.value = val
 }
-const computedWrapperClass = computed(() => {
-  const result: string[] = []
-  if (props.stacked) {
-    result.push('form-check')
-  }
-  return result
-})
-const computedInputClass = computed(() => {
-  const result: string[] = []
-  if (props.buttons) {
-    result.push('btn-check')
-  } else if (props.stacked) {
-    result.push('form-check-input')
-  }
-  return result
-})
-const computedLabelClass = computed(() => {
-  const result: string[] = []
-  if (props.buttons) {
-    result.push('btn btn-sm')
-  } else if (props.stacked) {
-    result.push('form-check-label')
-  }
-  return result
-})
 </script>

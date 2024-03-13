@@ -6,6 +6,7 @@
         :sorted-key="sortedKey"
         :sorted-direction="sortedDirection" 
         small
+        showEmpty
     >
         <template #isWin="{ value }">
             <span :class="value ? 'text-win' : 'text-loss'">{{ value ? 'W' : 'L' }}</span>

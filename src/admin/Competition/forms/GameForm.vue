@@ -113,31 +113,36 @@ const handleSubmit = (ev: Event) => {
       <InputComp v-model="data.datetime" type="datetime-local" :disabled="isBusy" required />
     </FieldComp>
     <hr />
-    <FieldComp label="Scores">
-      <ScoresInput v-model="data.scores" :teams="data.teams" :disabled="isBusy">
-        <template #team1>
-          <template v-for="(scores, teamId, idx) in data.scores">
-            <template v-if="!idx">{{ getTeamName(teamId) }}</template>
+    <template v-if="row?.statsInput==='sheet'">
+      <FieldComp label="Scores">
+        <ScoresInput v-model="data.scores" :teams="data.teams" :disabled="isBusy">
+          <template #team1>
+            <template v-for="(scores, teamId, idx) in data.scores">
+              <template v-if="!idx">{{ getTeamName(teamId) }}</template>
+            </template>
           </template>
-        </template>
-        <template #team2>
-          <template v-for="(scores, teamId, idx) in data.scores">
-            <template v-if="idx">{{ getTeamName(teamId) }}</template>
+          <template #team2>
+            <template v-for="(scores, teamId, idx) in data.scores">
+              <template v-if="idx">{{ getTeamName(teamId) }}</template>
+            </template>
           </template>
+        </ScoresInput>
+      </FieldComp>
+      <hr />
+      <FieldComp label="Boxscore">
+        <template v-for="(boxscore, teamId) in boxscoreByTeams" :key="teamId">
+          <h3 class="mb-0">{{ getTeamName(teamId) }}</h3>
+          <BoxScoreInput
+            v-model="boxscoreByTeams[teamId]"
+            :trackedStats="row?.trackedStats"
+            :disabled="isBusy"
+          />
         </template>
-      </ScoresInput>
-    </FieldComp>
-    <hr />
-    <FieldComp label="Boxscore">
-      <template v-for="(boxscore, teamId) in boxscoreByTeams" :key="teamId">
-        <h3 class="mb-0">{{ getTeamName(teamId) }}</h3>
-        <BoxScoreInput
-          v-model="boxscoreByTeams[teamId]"
-          :trackedStats="row?.trackedStats"
-          :disabled="isBusy"
-        />
-      </template>
-    </FieldComp>
+      </FieldComp>
+    </template>
+    <template v-else>
+      Play by Play
+    </template>
     <hr />
     <FieldComp label="Awards">
       <AwardsInput v-model="data.awards" :players-options="playersOptions" :disabled="isBusy" />

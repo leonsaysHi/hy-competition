@@ -44,13 +44,16 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   >
   const playersLists = ref<{ [key: TeamId]: CompetitionPlayer[] }>({})
   watch(
-    () => competitionTeams.value,
+    () => competitionTeams.value?.length,
     (value) => {
-      if (Array.isArray(value) && !Object.keys(playersLists.value).length) {
-        value.forEach((team: CompetitionTeam) => {
+      console.log('new team', value)
+      if (Array.isArray(competitionTeams.value)) {
+        competitionTeams.value.forEach((team: CompetitionTeam) => {
           const teamId = team.id
           if (!playersLists.value[teamId]) {
+            console.log('new team', teamId, '...')
             playersLists.value[teamId] = useFirestore(getPlayersColl(teamId), undefined)
+            console.log(playersLists.value)
           }
         })
       }

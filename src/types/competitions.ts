@@ -7,6 +7,7 @@ export type CompetitionSport = 'basketball5x5' | 'basketball3x3'
 export type CompetitionCategorie = 'u17' | 'u21' | 'senior' | '+35'
 
 export type PhaseType = 'groups' | 'playins' | 'playoffs' | undefined
+export type StatsInputType = 'sheet' | 'play-by-play' | undefined
 export interface Phase {
   type: PhaseType
   groups: TeamId[][]
@@ -24,7 +25,7 @@ export interface CompetitionDoc {
   isActive: boolean
   isOver: boolean
   phases: Phase[]
-  trackedStats: PlayerStatKey[]
+  statsInput: StatsInputType
   lastUpdate: Date
 }
 

@@ -21,7 +21,7 @@ watch(
   () => row.value?.lastUpdate,
   (val, oldVal) => {
     if (row.value && val && oldVal && val !== oldVal) {
-      console.log(row.value)
+      console.log('Update computed...')
       updateCompetitionComputeds(row.value)
     }
   },
@@ -75,7 +75,7 @@ watch(
       >
     </li>
   </ul>
-  <template v-if="!isReady || !row?.trackedStats">
+  <template v-if="!isReady">
     <SpinnerComp />
   </template>
   <template v-else>

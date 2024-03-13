@@ -20,6 +20,10 @@ const es = {
       groups: 'Grupos',
       playoffs: 'Playoffs'
     },
+    stats: {
+      sheet: 'Stats sheet',
+      playbyplay: 'Play-by-Play'
+    },
     playerStats: {
       text: {
         gp: 'GP',

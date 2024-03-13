@@ -63,15 +63,16 @@ const fields: TableField[] = [
   { key: 'actions', label: '' }
 ]
 
-const teamsOptions = computed((): Option[] => {
-  return Array.isArray(row?.value?.teams)
-    ? row?.value?.teams?.map((row: CompetitionTeam): Option => {
-        const team = getTeam(row.id)
-        return {
-          value: team.id,
-          text: team.title
-        }
-      })
+const teamsOptionsByGroups = computed((): Option[][] => {
+  const currentPhase = row.value?.phases[row.value?.phases.length -1]
+  const groups = currentPhase?.groups
+  return Array.isArray(groups) && groups.length 
+    ? groups?.map((group: TeamId[]) => ([
+        ...group.map((teamId: TeamId) => ({
+          value: teamId,
+          text: getTeam(teamId)?.title
+        }))
+      ]))
     : []
 })
 
@@ -143,7 +144,7 @@ const handleDelete = async () => {
         </template>
       </TableComp>
       <h5>Add game</h5>
-      <AddGameForm :teamsOptions="teamsOptions" :is-busy="isBusy" @submit="handleAddGame" />
+      <AddGameForm :teamsOptionsByGroups="teamsOptionsByGroups" :is-busy="isBusy" @submit="handleAddGame" />
       <ModalComp ref="deleteModal" title="Confirm detetion" ok-title="Delete" ok-variant="danger">
         <p>
           Sure to delete game

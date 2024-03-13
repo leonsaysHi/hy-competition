@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import useCompetition from '@/composable/useCompetition'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { CompetitionGroupComputed, CompetitionPhaseComputed } from '@/types/computed'
 import type { Option } from '@/types/comp-fields'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
@@ -17,6 +17,7 @@ import type GameComputedClass from '@/models/GameComputed'
 const { t } = useI18n()
 
 const route = useRoute()
+const router = useRouter()
 const { competitionId } = route.params as { competitionId: string }
 
 const { competitionPhases, getGender, getCategory } = useOptionsLib()
@@ -33,11 +34,17 @@ const phasesOptions = computed<Option[] | undefined>(() =>
       )
     : undefined
 )
-const selectedPhaseIdx = ref('0')
+const selectedPhaseIdx = ref(0)
 const selectedPhase = computed<CompetitionPhaseComputed>(
   () => computedPhases.value[Number(selectedPhaseIdx.value)] as CompetitionPhaseComputed
 )
-const selectedGroupIdx = ref('0')
+const selectedGroupIdx = ref(route.hash ? route.hash.substring(1) : '0')
+watch(
+  () => selectedGroupIdx.value,
+  (val:number) => {
+    router.replace({ ...route, hash: `#${val}` })
+  }
+)
 const groupsOptions = computed<Option[] | undefined>(() =>
   Array.isArray(selectedPhase.value?.groups)
     ? selectedPhase.value?.groups.map(
@@ -106,6 +113,7 @@ const groupGames = computed<Game[]>(() => {
       <template v-if="groupsOptions">
         <template v-if="groupsOptions.length > 1">
           <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons />
+          <hr />
         </template>
         <h3>{{ t('global.standing') }}</h3>
         <CompetitionStanding :value="selectedGroup.standing" />
