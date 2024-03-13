@@ -31,7 +31,7 @@ const router = createRouter({
           component: CompetitionView,
           children: [
             {
-              path: '',
+              path: ':phase?',
               name: 'competition',
               component: CompetitionDetailsView
             },

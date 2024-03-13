@@ -17,7 +17,7 @@ const es = {
       }
     },
     phases: {
-      groups: 'Grupos',
+      groups: 'Phase regulares',
       playoffs: 'Playoffs'
     },
     stats: {

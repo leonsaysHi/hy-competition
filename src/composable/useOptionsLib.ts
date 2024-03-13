@@ -2,9 +2,7 @@ import type {
   CompetitionCategorie,
   CompetitionSport,
   PhaseType,
-  StatsInputType,
-  StatsType
-} from '@/types/competitions'
+  StatsInputType} from '@/types/competitions'
 import type { GenderKey } from '@/types/players'
 import type { PlayerStatKey, TeamStatKey, PlayerRankingKey, AwardKey } from '@/types/stats'
 import type { Option } from '@/types/comp-fields'

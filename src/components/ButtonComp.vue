@@ -12,20 +12,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import SpinnerComp from './SpinnerComp.vue'
+import type { Size, Variant } from '@/types/comp-fields';
 
 interface IProps {
   type?: 'button' | 'submit' | 'reset'
-  variant?:
-    | 'primary'
-    | 'outline-primary'
-    | 'secondary'
-    | 'outline-secondary'
-    | 'light'
-    | 'danger'
-    | 'warning'
-    | 'success'
-    | 'link'
-  size?: 'lg' | 'md' | 'sm'
+  variant?: Variant
+  size?: Size
   pill?: boolean
   disabled?: boolean
   isBusy?: boolean
