@@ -93,14 +93,14 @@ const handleSubmit = async (ev: Event) => {
         is-edit
       />
     </FieldComp>
-    
+
     <div class="d-flex justify-content-end align-items-center gap-3">
       <template v-if="!!unassignedTeamsOptions.length">
-        <AlertComp variant="warning" size="sm" class="mb-0">{{ unassignedTeamsOptions.length }} unassigned teams.</AlertComp>
+        <AlertComp variant="warning" size="sm" class="mb-0"
+          >{{ unassignedTeamsOptions.length }} unassigned teams.</AlertComp
+        >
       </template>
-      <ButtonComp type="submit" variant="primary"
-        >Start new phase</ButtonComp
-      >
+      <ButtonComp type="submit" variant="primary">Start new phase</ButtonComp>
     </div>
   </form>
 </template>

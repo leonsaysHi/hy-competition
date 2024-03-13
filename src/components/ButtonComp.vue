@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import SpinnerComp from './SpinnerComp.vue'
-import type { Size, Variant } from '@/types/comp-fields';
+import type { Size, Variant } from '@/types/comp-fields'
 
 interface IProps {
   type?: 'button' | 'submit' | 'reset'

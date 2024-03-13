@@ -7,7 +7,7 @@ import TableComp from '@/components/TableComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import type { Option } from '@/types/comp-fields'
-import type { CompetitionTeam, TeamId } from '@/types/teams'
+import type { TeamId } from '@/types/teams'
 import type { Game } from '@/types/games'
 import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
 import AddGameForm from '@/admin/competition/forms/AddGameForm.vue'
@@ -132,6 +132,13 @@ const handleDelete = async () => {
         </template>
         <template #actions="{ item }">
           <div class="d-flex justify-content-end gap-1">
+            <template v-if="!item.isFinished">
+              <RouterLink
+                class="btn btn-primary btn-sm"
+                :to="{ name: 'play-by-play', params: { competitionId, gameId: item.id } }"
+                >Play-by-play</RouterLink
+              >
+            </template>
             <RouterLink
               class="btn btn-light btn-sm"
               :to="{ name: 'admin-competition-edit-game', params: { gameId: item.id } }"

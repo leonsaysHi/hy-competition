@@ -19,7 +19,7 @@ const { t } = useI18n()
 
 const route = useRoute()
 const router = useRouter()
-const { competitionId, phase } = route.params as { competitionId: string, phase: string }
+const { competitionId, phase } = route.params as { competitionId: string; phase: string }
 
 const { competitionPhases, getGender, getCategory } = useOptionsLib()
 
@@ -28,13 +28,13 @@ const { isReady, row, computedPhases } = useCompetition(competitionId)
 const selectedPhaseIdx = ref<string | undefined>(phase || undefined)
 const selectedGroupIdx = ref<string | undefined>(route.hash?.substring(1) || undefined)
 
-const selectedPhase = computed<CompetitionPhaseComputed | undefined>(
-  () => Array.isArray(computedPhases?.value) && selectedPhaseIdx.value 
-    ? computedPhases.value[Number(selectedPhaseIdx.value)] as CompetitionPhaseComputed
+const selectedPhase = computed<CompetitionPhaseComputed | undefined>(() =>
+  Array.isArray(computedPhases?.value) && selectedPhaseIdx.value
+    ? (computedPhases.value[Number(selectedPhaseIdx.value)] as CompetitionPhaseComputed)
     : undefined
 )
-const selectedGroup = computed<CompetitionGroupComputed | undefined>(
-  () => Array.isArray(selectedPhase.value?.groups) && selectedGroupIdx.value
+const selectedGroup = computed<CompetitionGroupComputed | undefined>(() =>
+  Array.isArray(selectedPhase.value?.groups) && selectedGroupIdx.value
     ? selectedPhase.value?.groups[Number(selectedGroupIdx.value)]
     : undefined
 )
@@ -60,17 +60,21 @@ const groupsOptions = computed<Option[] | undefined>(() =>
     : undefined
 )
 
-watchEffect( () => {
+watchEffect(() => {
   if (selectedPhaseIdx.value === undefined) {
-    selectedPhaseIdx.value = Array.isArray(phasesOptions.value) ? phasesOptions.value[phasesOptions.value.length -1 ].value : undefined
+    selectedPhaseIdx.value = Array.isArray(phasesOptions.value)
+      ? phasesOptions.value[phasesOptions.value.length - 1].value
+      : undefined
     selectedGroupIdx.value = '0'
   }
 })
-watchEffect( () => {
-  router.replace({ ...route, params: { phase: selectedPhaseIdx.value }, hash: `#${selectedGroupIdx.value}` })
+watchEffect(() => {
+  router.replace({
+    ...route,
+    params: { phase: selectedPhaseIdx.value },
+    hash: `#${selectedGroupIdx.value}`
+  })
 })
-
-
 
 const gamesViewOptions: Option[] = [
   { text: t('global.previous', 2), value: 'prev' },
@@ -108,13 +112,13 @@ const groupGames = computed<Game[]>(() => {
     </template>
     <template v-else>
       <div class="mb-3 hstack gap-3">
-        <DropdownComp 
-          v-model="selectedPhaseIdx" 
-          :options="phasesOptions" 
-          variant="light" 
+        <DropdownComp
+          v-model="selectedPhaseIdx"
+          :options="phasesOptions"
+          variant="light"
           size="lg"
-          class="fw-bold fz-5" 
-          :disabled="phasesOptions.length ===1"
+          class="fw-bold fz-5"
+          :disabled="phasesOptions.length === 1"
         />
         <template v-if="groupsOptions.length > 1">
           <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons />

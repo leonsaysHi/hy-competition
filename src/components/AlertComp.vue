@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Size, Variant } from '@/types/comp-fields';
+import type { Size, Variant } from '@/types/comp-fields'
 import { computed } from 'vue'
 
 interface IProps {
