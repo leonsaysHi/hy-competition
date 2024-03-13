@@ -35,9 +35,10 @@ const data = ref<FormData>(getDefaultData())
 const { getTeamName } = useLibs()
 const gameTeamsOptions = computed(() => {
   const selectedTeamId = data.value.teams.find(Boolean)
-  const selectedGroup = props.teamsOptionsByGroups
-    .find((group: Option[]) => group.find((opt: Option) => opt.value === selectedTeamId))
-  return !selectedGroup 
+  const selectedGroup = props.teamsOptionsByGroups.find((group: Option[]) =>
+    group.find((opt: Option) => opt.value === selectedTeamId)
+  )
+  return !selectedGroup
     ? props.teamsOptionsByGroups.flat()
     : selectedGroup.filter((opt: Option) => !data.value.teams.includes(opt.value))
 })

@@ -31,16 +31,15 @@ const fields = computed(() => [
   },
   { label: t('global.player', 2), key: 'id' },
   { label: t('global.team', 2), key: 'teamId' },
-  ...rankingKeys
-    .map(
-        (key: PlayerRankingKey): TableField => ({
-          key,
-          label: t(`options.playerStats.text.${key}`),
-          sortable: true,
-          thClass: 'text-end',
-          tdClass: 'text-end',
-        })
-      )
+  ...rankingKeys.map(
+    (key: PlayerRankingKey): TableField => ({
+      key,
+      label: t(`options.playerStats.text.${key}`),
+      sortable: true,
+      thClass: 'text-end',
+      tdClass: 'text-end'
+    })
+  )
 ])
 const items = computed(() =>
   Array.isArray(props.value)
@@ -54,10 +53,10 @@ const items = computed(() =>
 )
 </script>
 <template>
-  <StatsTableComp 
-    :fields="fields" 
+  <StatsTableComp
+    :fields="fields"
     :items="items"
     sorted-key="pts"
-    sorted-direction="desc" 
+    sorted-direction="desc"
   ></StatsTableComp>
 </template>

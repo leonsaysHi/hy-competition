@@ -45,8 +45,8 @@ const es = {
         blk: 'Blk',
         blka: 'BlkAg',
         tov: 'TOv',
-        fcm: 'FC',
-        fdr: 'FD',
+        fcm: 'FCo',
+        fdr: 'FDr',
         pir: 'PIR',
         pts: 'Pts',
         ptsavg: 'Pts avg.'

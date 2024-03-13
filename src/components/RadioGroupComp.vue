@@ -8,7 +8,8 @@
         :buttons="buttons"
         button-size="lg"
         :button-variant="opt.value === model ? 'primary' : 'outline-secondary'"
-      >{{opt.text}}</RadioComp>
+        >{{ opt.text }}</RadioComp
+      >
     </template>
   </div>
 </template>

@@ -1,4 +1,10 @@
-import type { CompetitionCategorie, CompetitionSport, PhaseType, StatsInputType, StatsType } from '@/types/competitions'
+import type {
+  CompetitionCategorie,
+  CompetitionSport,
+  PhaseType,
+  StatsInputType,
+  StatsType
+} from '@/types/competitions'
 import type { GenderKey } from '@/types/players'
 import type { PlayerStatKey, TeamStatKey, PlayerRankingKey, AwardKey } from '@/types/stats'
 import type { Option } from '@/types/comp-fields'
@@ -60,7 +66,7 @@ export default function usePlayersLib() {
     long: t(`options.playerStats.long.${key}`),
     value: key as PlayerStatKey
   }))
-  
+
   const playerRankingKeys: { value: PlayerRankingKey; text: string; long: string }[] = [
     {
       text: t('options.playerStats.text.gp'),

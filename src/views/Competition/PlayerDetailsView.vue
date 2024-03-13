@@ -54,26 +54,46 @@ const playerGames = computed<GameComputedClass[]>(() => {
     : []
 })
 
-const statsFields = computed<TableField[]>(() =>
-  playerRankingKeys
-    .reduce(
-      (fields: TableField[], opt): TableField[] => [
-        ...fields,
-        {
-          key: opt.value,
-          label: opt.text,
-          sortable: true,
-          thClass: 'text-end',
-          tdClass: 'text-end',
-          tfClass: 'text-end fw-bold'
-        }
-      ],
-      []
-    )
-)
+const statsFields = computed<TableField[]>(() => {
+  const fields = playerRankingKeys.reduce(
+    (fields: TableField[], opt): TableField[] => [
+      ...fields,
+      {
+        key: opt.value,
+        label: opt.text,
+        sortable: true,
+        thClass: 'text-end',
+        tdClass: 'text-end'
+      }
+    ],
+    []
+  )
+  const minIdx = fields.findIndex((field) => field.key === 'sec')
+  fields.splice(
+    minIdx + 1,
+    0,
+    {
+      key: 'pts',
+      label: t('options.playerStats.text.pts'),
+      sortable: true,
+      thClass: 'text-end',
+      tdClass: 'text-end'
+    },
+    {
+      key: 'pir',
+      label: t('options.playerStats.text.pir'),
+      sortable: true,
+      thClass: 'text-end',
+      tdClass: 'text-end'
+    }
+  )
+  return fields
+})
 
 const statsItem = computed<TableItem[]>(() => {
-  const rank = competitionRankings.value?.find((rank: CompetitionRanking) => rank.playerId === playerId)
+  const rank = competitionRankings.value?.find(
+    (rank: CompetitionRanking) => rank.playerId === playerId
+  )
   return rank
     ? [
         {

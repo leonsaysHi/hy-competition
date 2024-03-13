@@ -20,16 +20,17 @@ interface IProps {
 
 const props = withDefaults(defineProps<IProps>(), {})
 
+const { playerRankingKeys } = useOptionsLibs()
 
-const {  playerRankingKeys } = useOptionsLibs()
+const boxScoreKeys: Option[] = playerRankingKeys.filter(
+  (opt: Option) => !['gp'].includes(opt.value)
+)
 
-const boxScoreKeys: Option[] = playerRankingKeys.filter((opt: Option) => !['gp'].includes(opt.value))
-
-const fields = computed(() => [
-  { label: '#', key: 'number' },
-  { label: t('global.player'), key: 'id', tdClass: 'fw-bold' },
-  ...boxScoreKeys
-    .reduce(
+const fields = computed(() => {
+  const fields = [
+    { label: '#', key: 'number' },
+    { label: t('global.player'), key: 'id', tdClass: 'fw-bold' },
+    ...boxScoreKeys.reduce(
       (fields: TableField[], opt): TableField[] => [
         ...fields,
         {
@@ -42,16 +43,31 @@ const fields = computed(() => [
         }
       ],
       []
-    ),
-  { 
-    label: 'Pts', 
-    key: 'pts', 
-    sortable: true,
-    thClass: 'text-end',
-    tdClass: 'text-end',
-    tfClass: 'text-end fw-bold', 
-  }
-])
+    )
+  ]
+  const minIdx = fields.findIndex((field) => field.key === 'sec')
+  fields.splice(
+    minIdx + 1,
+    0,
+    {
+      key: 'pts',
+      label: t('options.playerStats.text.pts'),
+      sortable: true,
+      thClass: 'text-end',
+      tdClass: 'text-end',
+      tfClass: 'text-end fw-bold'
+    },
+    {
+      key: 'pir',
+      label: t('options.playerStats.text.pir'),
+      sortable: true,
+      thClass: 'text-end',
+      tdClass: 'text-end',
+      tfClass: 'text-end fw-bold'
+    }
+  )
+  return fields
+})
 
 const currentTeamId = ref<TeamId | undefined>()
 watchEffect(() => {
@@ -64,7 +80,6 @@ const boxScoreItems = computed(() => {
     ...props.boxscore[player.id]
   }))
 })
-
 </script>
 <template>
   <ul class="mb-3 nav nav-underline justify-content-center">
@@ -83,12 +98,11 @@ const boxScoreItems = computed(() => {
       </li>
     </template>
   </ul>
-  <StatsTableComp 
-    :fields="fields" 
+  <StatsTableComp
+    :fields="fields"
     :items="boxScoreItems"
     sorted-key="pts"
-    sorted-direction="desc" 
+    sorted-direction="desc"
     show-total
   ></StatsTableComp>
-
 </template>

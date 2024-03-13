@@ -41,7 +41,7 @@ const selectedPhase = computed<CompetitionPhaseComputed>(
 const selectedGroupIdx = ref(route.hash ? route.hash.substring(1) : '0')
 watch(
   () => selectedGroupIdx.value,
-  (val:number) => {
+  (val: number) => {
     router.replace({ ...route, hash: `#${val}` })
   }
 )
@@ -95,11 +95,11 @@ const groupGames = computed<Game[]>(() => {
     </template>
     <template v-else>
       <template v-if="phasesOptions.length > 1">
-        <ul class="nav nav-tabs">
+        <ul class="mb-3 nav nav-tabs">
           <template v-for="opt in phasesOptions" :key="opt.value">
             <li class="nav-item">
               <a
-                class="nav-link active"
+                class="nav-link"
                 :class="{ active: selectedPhaseIdx === opt.value }"
                 :aria-current="selectedPhaseIdx === opt.value ? 'page' : false"
                 @click="selectedPhaseIdx = opt.value"

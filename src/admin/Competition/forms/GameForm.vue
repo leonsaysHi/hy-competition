@@ -113,7 +113,7 @@ const handleSubmit = (ev: Event) => {
       <InputComp v-model="data.datetime" type="datetime-local" :disabled="isBusy" required />
     </FieldComp>
     <hr />
-    <template v-if="row?.statsInput==='sheet'">
+    <template v-if="row?.statsInput === 'sheet'">
       <FieldComp label="Scores">
         <ScoresInput v-model="data.scores" :teams="data.teams" :disabled="isBusy">
           <template #team1>
@@ -132,17 +132,11 @@ const handleSubmit = (ev: Event) => {
       <FieldComp label="Boxscore">
         <template v-for="(boxscore, teamId) in boxscoreByTeams" :key="teamId">
           <h3 class="mb-0">{{ getTeamName(teamId) }}</h3>
-          <BoxScoreInput
-            v-model="boxscoreByTeams[teamId]"
-            :trackedStats="row?.trackedStats"
-            :disabled="isBusy"
-          />
+          <BoxScoreInput v-model="boxscoreByTeams[teamId]" :disabled="isBusy" />
         </template>
       </FieldComp>
     </template>
-    <template v-else>
-      Play by Play
-    </template>
+    <template v-else> Play by Play </template>
     <hr />
     <FieldComp label="Awards">
       <AwardsInput v-model="data.awards" :players-options="playersOptions" :disabled="isBusy" />

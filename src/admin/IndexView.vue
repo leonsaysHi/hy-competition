@@ -16,7 +16,7 @@ const { isReady: isLibsReady } = useLibs()
     </div>
   </header>
   <main>
-    <section class="py-5 container">
+    <section class="py-5 container-xl">
       <template v-if="!isLibsReady">
         <SpinnerComp />
       </template>

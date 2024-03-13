@@ -105,7 +105,7 @@ const items = computed(() => {
             class="text-decoration-none d-flex flex-column align-items-start"
             :to="{ name: 'competition', params: { competitionId: value.id } }"
           >
-            <div>{{ value.title }}</div>
+            <div class="fw-bold">{{ value.title }}</div>
             <div class="d-flex gap-3 small text-body-secondary">
               <small>{{ value.date }}</small>
               <small>{{ getCategory(value.category)?.text }}</small>

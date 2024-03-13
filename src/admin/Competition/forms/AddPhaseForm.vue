@@ -9,6 +9,7 @@ import type { PhaseType } from '@/types/competitions'
 import type { TeamId } from '@/types/teams'
 import ButtonComp from '@/components/ButtonComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
+import AlertComp from '@/components/AlertComp.vue'
 
 interface IProps {
   teamsOptions: Option[]
@@ -92,8 +93,12 @@ const handleSubmit = async (ev: Event) => {
         is-edit
       />
     </FieldComp>
-    <div class="d-flex justify-content-end">
-      <ButtonComp type="submit" variant="primary" :disabled="!!unassignedTeamsOptions.length"
+    
+    <div class="d-flex justify-content-end align-items-center gap-3">
+      <template v-if="!!unassignedTeamsOptions.length">
+        <AlertComp variant="warning" size="sm" class="mb-0">{{ unassignedTeamsOptions.length }} unassigned teams.</AlertComp>
+      </template>
+      <ButtonComp type="submit" variant="primary"
         >Start new phase</ButtonComp
       >
     </div>

@@ -8,7 +8,7 @@ import usePlayerComputed from '@/composable/usePlayerComputed'
 import type { CompetitionRankingComputed } from '@/types/computed'
 import type { PlayerRankingKey } from '@/types/stats'
 import { useI18n } from 'vue-i18n'
-import { getAvg } from '@/utils/maths'
+import { getAvg, formatAvg } from '@/utils/maths'
 import StatsTableComp from '@/components/StatsTableComp.vue'
 const { t } = useI18n()
 const route = useRoute()
@@ -18,7 +18,17 @@ const { isReady, getPlayer } = useLibs()
 const { isReady: isPlayerComputedReady, rows } = usePlayerComputed(playerId)
 const player = computed(() => getPlayer(playerId))
 
-const fieldsKeys: PlayerRankingKey[] = ['gp', 'pir', 'pts', 'fgprc', 'fg3prc', 'reb', 'ast', 'blk', 'stl']
+const fieldsKeys: PlayerRankingKey[] = [
+  'gp',
+  'pir',
+  'pts',
+  'fgprc',
+  'fg3prc',
+  'reb',
+  'ast',
+  'blk',
+  'stl'
+]
 
 const fields = computed(() => [
   { key: 'competitionId', label: t('global.competition', 2) },
@@ -41,6 +51,12 @@ const stats = computed(() => {
         0
       )
     : 0
+  const pir = Array.isArray(rows.value)
+    ? rows.value?.reduce(
+        (total: number, item: CompetitionRankingComputed) => (total += item.pir * item.gp),
+        0
+      )
+    : 0
   return [
     {
       key: 'gp',
@@ -50,13 +66,17 @@ const stats = computed(() => {
     {
       key: 'pts',
       text: t('options.playerStats.long.ptsavg'),
-      value: getAvg(pts, gp)
+      value: formatAvg(getAvg(pts, gp))
+    },
+    {
+      key: 'pir',
+      text: t('options.playerStats.long.pir'),
+      value: formatAvg(getAvg(pir, gp))
     }
   ]
 })
 const items = computed(() => {
   return rows.value?.map((row: CompetitionRankingComputed) => {
-
     return {
       ...row,
       competitionId: row.id,

@@ -19,16 +19,18 @@ interface IProps {
 }
 const props = withDefaults(defineProps<IProps>(), {})
 
-const { playerRankingKeys  } = useOptionsLib()
+const { playerRankingKeys } = useOptionsLib()
 const { getPlayerCompetitionTeam } = useCompetition(competitionId)
 
-const boxScoreKeys: Option[] = playerRankingKeys.filter((opt: Option) => !['gp'].includes(opt.value))
-const fields = computed(() => [
-  { key: 'datetime', label: t('global.date'), tdClass: 'lh-1' },
-  { key: 'teamId', label: t('global.gameDetails.opponent.text') },
-  { key: 'isWin', label: '', tdClass: 'text-center' },
-  ...boxScoreKeys
-    .reduce(
+const boxScoreKeys: Option[] = playerRankingKeys.filter(
+  (opt: Option) => !['gp'].includes(opt.value)
+)
+const fields = computed(() => {
+  const fields = [
+    { key: 'datetime', label: t('global.date'), tdClass: 'lh-1' },
+    { key: 'teamId', label: t('global.gameDetails.opponent.text') },
+    { key: 'isWin', label: '', tdClass: 'text-center' },
+    ...boxScoreKeys.reduce(
       (fields: TableField[], opt): TableField[] => [
         ...fields,
         {
@@ -36,13 +38,33 @@ const fields = computed(() => [
           label: opt.text,
           sortable: true,
           thClass: 'text-end',
-          tdClass: 'text-end',
-          tfClass: 'text-end fw-bold'
+          tdClass: 'text-end'
         }
       ],
       []
     )
-])
+  ]
+  const minIdx = fields.findIndex((field) => field.key === 'sec')
+  fields.splice(
+    minIdx + 1,
+    0,
+    {
+      key: 'pts',
+      label: t('options.playerStats.text.pts'),
+      sortable: true,
+      thClass: 'text-end',
+      tdClass: 'text-end'
+    },
+    {
+      key: 'pir',
+      label: t('options.playerStats.text.pir'),
+      sortable: true,
+      thClass: 'text-end',
+      tdClass: 'text-end'
+    }
+  )
+  return fields
+})
 const computedGames = computed<TableItem[]>(() => {
   return props.items.map((game: GameComputedClass) => {
     const team = getPlayerCompetitionTeam(playerId) as CompetitionTeam

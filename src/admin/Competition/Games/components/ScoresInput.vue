@@ -34,7 +34,7 @@
         </div>
         <div>
           <InputComp
-            v-model.number="model[teamId][periodIdx]"
+            v-model="model[teamId][periodIdx]"
             type="number"
             :disabled="disabled"
             @update="(v) => handleInput(teamId, periodIdx, v)"
