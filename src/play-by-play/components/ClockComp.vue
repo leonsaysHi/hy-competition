@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import numeral from 'numeral'
 import ButtonComp from '@/components/ButtonComp.vue'
-import { computed, ref, watch, watchEffect } from 'vue'
+import { computed, ref } from 'vue'
 
 interface IProps {
   modelValue: number
@@ -12,86 +11,103 @@ const props = withDefaults(defineProps<IProps>(), {
   gameLength: 4 * 10 * 60 * 1000,
   nbPeriods: 4
 })
+
 const emit = defineEmits(['update:modelValue', 'stopped'])
 const model = computed({
   get: (): number => props.modelValue,
   set: (val: number) => emit('update:modelValue', val)
 })
-const startTime = ref<number>(0)
-const isRunning = ref<boolean>(false)
-const intervalId = ref<NodeJS.Timeout>()
 
-const pauseTimestamp = ref<number | undefined>()
-const handleStart = () => {
-  if (isRunning.value) {
-    return
-  }
-  isRunning.value = true
-  if (pauseTimestamp.value) {
-    startTime.value += Date.now() - pauseTimestamp.value
-    pauseTimestamp.value = undefined
-  } else {
-    startTime.value = Date.now()
-  }
-  updateTimer()
-}
-
-const handlePause = () => {
-  if (isRunning.value && intervalId.value) {
-    clearInterval(intervalId.value)
-    pauseTimestamp.value = Date.now()
-  } else if (pauseTimestamp.value) {
-    startTime.value += Date.now() - pauseTimestamp.value
-    pauseTimestamp.value = undefined
-    updateTimer()
-  }
-  isRunning.value = !isRunning.value
-}
-
-const updateTimer = () => {
-  intervalId.value = setInterval(() => {
-    if (isRunning.value) {
-      const currentTime = Date.now()
-      model.value = currentTime - startTime.value
-      console.log(model.value % periodLength.value, periodIdx.value)
+const now: number = Date.now()
+const startTime = ref<number>(now)
+const pauseTime = ref<number>(now)
+const currentPeriodIdx = ref<number>(0)
+const animationFrame = ref<number | null>(null)
+const isRunning = computed({
+  get: (): boolean => !!animationFrame.value,
+  set: (val: boolean) => {
+    if (val && !animationFrame.value) {
+      runningTime()
+    } else if (!val && !!animationFrame.value) {
+      cancelAnimationFrame(animationFrame.value)
+      animationFrame.value = null
     }
-  }, 100)
-}
-
-const periodLength = computed<number>(() =>
-  numeral(props.gameLength).divide(props.nbPeriods).value()
-)
-const currentPeriodMil = computed(() => model.value % periodLength.value)
-const periodIdx = computed(() => {
-  return Math.floor(numeral(model.value).divide(periodLength.value).value())
+  }
 })
-watch(
-  () => currentPeriodMil.value,
-  (val, oldVal) => {
-    if (isRunning.value && val < oldVal) {
-      model.value = periodIdx.value * periodLength.value
-      handlePause()
-      emit('stopped')
-    }
+const handleStart = () => {
+  if (!isRunning.value) {
+    startTime.value += Date.now() - pauseTime.value
+    isRunning.value = true
   }
+}
+const handlePause = () => {
+  if (isRunning.value) {
+    isRunning.value = false
+    pauseTime.value = Math.min(Date.now(), currentPeriodEndTime.value)
+  }
+}
+
+const handleJump = (sec: number) => {
+  handlePause()
+  // can't jump outside the current period:
+  const jumpTime = Math.max(
+    -inPeriodTime.value,
+    Math.min(
+      sec * 1000,
+      periodLength.value - inPeriodTime.value
+    )
+  )
+  startTime.value = startTime.value - jumpTime
+  model.value = pauseTime.value - startTime.value
+}
+
+const handleNextPeriod = () => {
+  currentPeriodIdx.value += 1
+}
+const runningTime = () => {
+  const newTime = Math.min(
+    Date.now() - startTime.value, 
+    currentPeriodEndTime.value - startTime.value
+  )
+  model.value = newTime
+  if (startTime.value + newTime === currentPeriodEndTime.value) {
+    handlePause()
+  } else {
+    animationFrame.value = requestAnimationFrame(runningTime)
+  }
+}
+
+const periodLength = computed<number>(() => props.gameLength / props.nbPeriods)
+const currentPeriodStartTime = computed<number>(() => startTime.value + (currentPeriodIdx.value * periodLength.value))
+const currentPeriodEndTime = computed<number>(() => startTime.value + ((currentPeriodIdx.value + 1) * periodLength.value))
+const isStartOfCurrentPeriod = computed<boolean>(() => inPeriodTime.value === 0)
+const isEndOfCurrentPeriod = computed<boolean>(() => inPeriodTime.value === periodLength.value)
+const isEndOfGame = computed<boolean>(() => isEndOfCurrentPeriod.value && currentPeriodIdx.value === props.nbPeriods - 1)
+
+const periodItems = computed<(-1 | 0 | 1)[]>(() =>
+  new Array(props.nbPeriods)
+    .fill(null)
+    .map((p, idx) =>
+      idx < currentPeriodIdx.value || (idx === currentPeriodIdx.value && inPeriodTime.value > 0)
+        ? 1
+        : idx > currentPeriodIdx.value
+          ? -1
+          : 0
+    )
 )
-const periods = computed(() =>
-  new Array(props.nbPeriods).fill(null).map((p, idx) => idx <= periodIdx.value)
-)
+const inPeriodTime = computed(() => model.value - (currentPeriodIdx.value * periodLength.value))
 const minutes = computed<string>(() => {
-  const mil = numeral(periodLength.value).subtract(currentPeriodMil.value).value()
+  const mil = periodLength.value - inPeriodTime.value
   const value = Math.floor(mil / 60000)
   return value > 10 ? value.toString() : `0${value}`
 })
 const secondes = computed<string>(() => {
-  const mil = numeral(periodLength.value).subtract(currentPeriodMil.value).value()
+  const mil = periodLength.value - inPeriodTime.value
   const value = Math.floor(Math.ceil(mil % 60000) / 1000)
   return value < 10 ? `0${value}` : value < 60 ? value.toString() : '00'
 })
 const tenths = computed<string>(() => {
-  const value = numeral(10)
-    .subtract(Math.floor((currentPeriodMil.value % 1000) / 100))
-    .value()
+  const value = 10 - Math.floor((inPeriodTime.value % 1000) / 100)
   return value < 10 ? value.toString() : '0'
 })
 </script>
@@ -106,14 +122,26 @@ const tenths = computed<string>(() => {
         <span class="display-5">{{ tenths }}</span>
       </div>
       <div class="hstack gap-2 justify-content-center">
-        <template v-for="(p, idx) in periods" :key="idx">
-          <i class="bi bi-circle-fill" :class="p ? 'text-warning' : 'text-secondary'"></i>
+        <template v-for="(p, idx) in periodItems" :key="idx">
+          <i
+            class="bi bi-circle-fill"
+            :class="p === 1 ? 'text-warning' : p === 0 ? 'text-white' : 'text-secondary'"
+          ></i>
         </template>
       </div>
+      <div>{{ inPeriodTime }} ... {{ currentPeriodStartTime }} < {{ isRunning ? Date.now() : pauseTime }} < {{ currentPeriodEndTime }}</div>
     </div>
-    <div class="vstack">
-      <ButtonComp @click="handleStart()">Start</ButtonComp>
-      <ButtonComp @click="handlePause()">Stop</ButtonComp>
+    <div class="hstack gap-1 p-1">
+      <div class="vstack gap-1">
+        <ButtonComp @click="() => handleJump(-1)" :disabled="isStartOfCurrentPeriod"><i class="bi bi-rewind-fill"></i></ButtonComp>
+        <ButtonComp @click="() => handleJump(1)" :disabled="isEndOfCurrentPeriod"><i class="bi bi-fast-forward-fill"></i></ButtonComp>
+      </div>
+      <div class="hstack align-items-stretch">
+        <template v-if="isEndOfGame"><ButtonComp disabled variant="success"><i class="bi bi-check-square-fill"></i></ButtonComp></template>
+        <template v-else-if="isEndOfCurrentPeriod"><ButtonComp @click="handleNextPeriod()" variant="primary"><i class="bi bi-check-square-fill"></i></ButtonComp></template>
+        <template v-else-if="!isRunning"><ButtonComp @click="handleStart()"><i class="bi bi-play-fill"></i></ButtonComp></template>
+        <template v-else><ButtonComp @click="handlePause()"><i class="bi bi-pause-fill"></i></ButtonComp></template>
+      </div>
     </div>
   </div>
 </template>

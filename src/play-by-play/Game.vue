@@ -12,7 +12,7 @@ const { competitionId, gameId } = route.params
 const { isReady, row } = useCompetition(competitionId)
 const { getTeamName } = useLibs()
 const game = computed(() => row.value?.games.find((game: Game) => game.id === gameId))
-const sec = ref(0)
+const milli = ref(0)
 
 const handleClosePeriod = () => {
   console.log('stopped')
@@ -24,19 +24,21 @@ const handleClosePeriod = () => {
   </template>
   <template v-else>
     <div class="wrapper vstack">
-      <div class="vstack border-bottom">
+      <div class="flex-grow-0 vstack border-bottom">
         <small>{{ row?.title }}</small>
         <div class="jersey-team">{{ game.teams.map(getTeamName).join('&times;') }}</div>
       </div>
+      <div class="flex-grow-1 vstack justify-content-center align-items-center">
+        <small>{{ Math.floor(milli / 1000) }}</small>
+      </div>
       <div>
         <Clock
-          v-model="sec"
-          :game-length="20 * 1000"
-          :nb-periods="2"
+          v-model="milli"
+          :game-length="9 * 1000"
+          :nb-periods="3"
           @stopped="handleClosePeriod"
         />
       </div>
-      <small>{{ sec }}</small>
     </div>
   </template>
 </template>
