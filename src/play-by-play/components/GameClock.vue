@@ -54,10 +54,7 @@ const handleJump = (sec: number) => {
   // can't jump outside the current period:
   const jumpTime = Math.max(
     -inPeriodTime.value,
-    Math.min(
-      sec * 1000,
-      periodLength.value - inPeriodTime.value
-    )
+    Math.min(sec * 1000, periodLength.value - inPeriodTime.value)
   )
   startTime.value = startTime.value - jumpTime
   model.value = pauseTime.value - startTime.value
@@ -68,7 +65,7 @@ const handleNextPeriod = () => {
 }
 const runningTime = () => {
   const newTime = Math.min(
-    Date.now() - startTime.value, 
+    Date.now() - startTime.value,
     currentPeriodEndTime.value - startTime.value
   )
   model.value = newTime
@@ -80,11 +77,14 @@ const runningTime = () => {
 }
 
 const periodLength = computed<number>(() => props.gameLength / props.nbPeriods)
-const currentPeriodStartTime = computed<number>(() => startTime.value + (currentPeriodIdx.value * periodLength.value))
-const currentPeriodEndTime = computed<number>(() => startTime.value + ((currentPeriodIdx.value + 1) * periodLength.value))
+const currentPeriodEndTime = computed<number>(
+  () => startTime.value + (currentPeriodIdx.value + 1) * periodLength.value
+)
 const isStartOfCurrentPeriod = computed<boolean>(() => inPeriodTime.value === 0)
 const isEndOfCurrentPeriod = computed<boolean>(() => inPeriodTime.value === periodLength.value)
-const isEndOfGame = computed<boolean>(() => isEndOfCurrentPeriod.value && currentPeriodIdx.value === props.nbPeriods - 1)
+const isEndOfGame = computed<boolean>(
+  () => isEndOfCurrentPeriod.value && currentPeriodIdx.value === props.nbPeriods - 1
+)
 
 const periodItems = computed<(-1 | 0 | 1)[]>(() =>
   new Array(props.nbPeriods)
@@ -97,7 +97,7 @@ const periodItems = computed<(-1 | 0 | 1)[]>(() =>
           : 0
     )
 )
-const inPeriodTime = computed(() => model.value - (currentPeriodIdx.value * periodLength.value))
+const inPeriodTime = computed(() => model.value - currentPeriodIdx.value * periodLength.value)
 const minutes = computed<string>(() => {
   const mil = periodLength.value - inPeriodTime.value
   const value = Math.floor(mil / 60000)
@@ -134,14 +134,30 @@ const tenths = computed<string>(() => {
     </div>
     <div class="hstack gap-1">
       <div class="vstack gap-1">
-        <ButtonComp @click="() => handleJump(-1)" :disabled="disabled || isStartOfCurrentPeriod"><i class="bi bi-rewind-fill"></i></ButtonComp>
-        <ButtonComp @click="() => handleJump(1)" :disabled="disabled || isEndOfCurrentPeriod"><i class="bi bi-fast-forward-fill"></i></ButtonComp>
+        <ButtonComp @click="() => handleJump(-1)" :disabled="disabled || isStartOfCurrentPeriod"
+          ><i class="bi bi-rewind-fill"></i
+        ></ButtonComp>
+        <ButtonComp @click="() => handleJump(1)" :disabled="disabled || isEndOfCurrentPeriod"
+          ><i class="bi bi-fast-forward-fill"></i
+        ></ButtonComp>
       </div>
       <div class="hstack align-items-stretch">
-        <template v-if="isEndOfGame"><ButtonComp disabled variant="success"><i class="bi bi-check-square-fill"></i></ButtonComp></template>
-        <template v-else-if="isEndOfCurrentPeriod"><ButtonComp @click="handleNextPeriod()" variant="primary" :disabled="disabled"><i class="bi bi-check-square-fill"></i></ButtonComp></template>
-        <template v-else-if="!isRunning"><ButtonComp @click="handleStart()" :disabled="disabled"><i class="bi bi-play-fill"></i></ButtonComp></template>
-        <template v-else><ButtonComp @click="handlePause()" :disabled="disabled"><i class="bi bi-pause-fill"></i></ButtonComp></template>
+        <template v-if="isEndOfGame"
+          ><ButtonComp disabled variant="success"
+            ><i class="bi bi-check-square-fill"></i></ButtonComp
+        ></template>
+        <template v-else-if="isEndOfCurrentPeriod"
+          ><ButtonComp @click="handleNextPeriod()" variant="primary" :disabled="disabled"
+            ><i class="bi bi-check-square-fill"></i></ButtonComp
+        ></template>
+        <template v-else-if="!isRunning"
+          ><ButtonComp @click="handleStart()" :disabled="disabled"
+            ><i class="bi bi-play-fill"></i></ButtonComp
+        ></template>
+        <template v-else
+          ><ButtonComp @click="handlePause()" :disabled="disabled"
+            ><i class="bi bi-pause-fill"></i></ButtonComp
+        ></template>
       </div>
     </div>
   </div>

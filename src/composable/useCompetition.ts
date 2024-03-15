@@ -45,7 +45,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   const playersLists = ref<{ [key: TeamId]: CompetitionPlayer[] }>({})
   watch(
     () => competitionTeams.value?.length,
-    (value) => {
+    () => {
       if (Array.isArray(competitionTeams.value)) {
         competitionTeams.value.forEach((team: CompetitionTeam) => {
           const teamId = team.id

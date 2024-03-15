@@ -58,7 +58,4 @@ const model = computed({
     emit('update:modelValue', val)
   }
 })
-const handleSelect = (val) => {
-  model.value = val
-}
 </script>

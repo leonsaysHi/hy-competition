@@ -2,11 +2,9 @@
 import { computed } from 'vue'
 import StatsTableComp from '@/components/StatsTableComp.vue'
 
-import useOptionsLibs from '@/composable/useOptionsLib'
 import type { CompetitionRanking } from '@/types/computed'
 import type { TableField } from '@/types/comp-table'
-import { getAvg, formatAvg } from '@/utils/maths'
-import type { PlayerRankingKey, PlayerStats } from '@/types/stats'
+import type { PlayerRankingKey } from '@/types/stats'
 
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
