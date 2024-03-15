@@ -8,14 +8,14 @@ import { computed } from 'vue'
 
 const route = useRoute()
 const { competitionId, gameId } = route.params
-const { isReady, row } = useCompetition(competitionId)
-const game = computed(() => row.value?.games.find((game: Game) => game.id === gameId))
+const { isReady, row:competition } = useCompetition(competitionId)
+const game = computed(() => competition.value?.games.find((game: Game) => game.id === gameId))
 </script>
 <template>
   <template v-if="!isReady || !game">
     <SpinnerComp />
   </template>
   <template v-else>
-    <RouterView />
+    <RouterView :competition="competition" :game="game" />
   </template>
 </template>

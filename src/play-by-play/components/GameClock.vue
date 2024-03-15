@@ -6,10 +6,12 @@ interface IProps {
   modelValue: number
   gameLength?: number
   nbPeriods?: number
+  disabled?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
   gameLength: 4 * 10 * 60 * 1000,
-  nbPeriods: 4
+  nbPeriods: 4,
+  disabled: false
 })
 
 const emit = defineEmits(['update:modelValue', 'stopped'])
@@ -113,7 +115,7 @@ const tenths = computed<string>(() => {
 </script>
 <template>
   <div class="hstack text-white bg-dark">
-    <div class="vstack py-2">
+    <div class="vstack">
       <div class="hstack justify-content-center align-items-end display-2 lh-1 font-monospace">
         <span>{{ minutes }}</span>
         <span>:</span>
@@ -129,18 +131,17 @@ const tenths = computed<string>(() => {
           ></i>
         </template>
       </div>
-      <div>{{ inPeriodTime }} ... {{ currentPeriodStartTime }} < {{ isRunning ? Date.now() : pauseTime }} < {{ currentPeriodEndTime }}</div>
     </div>
-    <div class="hstack gap-1 p-1">
+    <div class="hstack gap-1">
       <div class="vstack gap-1">
-        <ButtonComp @click="() => handleJump(-1)" :disabled="isStartOfCurrentPeriod"><i class="bi bi-rewind-fill"></i></ButtonComp>
-        <ButtonComp @click="() => handleJump(1)" :disabled="isEndOfCurrentPeriod"><i class="bi bi-fast-forward-fill"></i></ButtonComp>
+        <ButtonComp @click="() => handleJump(-1)" :disabled="disabled || isStartOfCurrentPeriod"><i class="bi bi-rewind-fill"></i></ButtonComp>
+        <ButtonComp @click="() => handleJump(1)" :disabled="disabled || isEndOfCurrentPeriod"><i class="bi bi-fast-forward-fill"></i></ButtonComp>
       </div>
       <div class="hstack align-items-stretch">
         <template v-if="isEndOfGame"><ButtonComp disabled variant="success"><i class="bi bi-check-square-fill"></i></ButtonComp></template>
-        <template v-else-if="isEndOfCurrentPeriod"><ButtonComp @click="handleNextPeriod()" variant="primary"><i class="bi bi-check-square-fill"></i></ButtonComp></template>
-        <template v-else-if="!isRunning"><ButtonComp @click="handleStart()"><i class="bi bi-play-fill"></i></ButtonComp></template>
-        <template v-else><ButtonComp @click="handlePause()"><i class="bi bi-pause-fill"></i></ButtonComp></template>
+        <template v-else-if="isEndOfCurrentPeriod"><ButtonComp @click="handleNextPeriod()" variant="primary" :disabled="disabled"><i class="bi bi-check-square-fill"></i></ButtonComp></template>
+        <template v-else-if="!isRunning"><ButtonComp @click="handleStart()" :disabled="disabled"><i class="bi bi-play-fill"></i></ButtonComp></template>
+        <template v-else><ButtonComp @click="handlePause()" :disabled="disabled"><i class="bi bi-pause-fill"></i></ButtonComp></template>
       </div>
     </div>
   </div>
