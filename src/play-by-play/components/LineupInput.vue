@@ -3,13 +3,16 @@ import ButtonComp from '@/components/ButtonComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
 import type { PlayerId } from '@/types/players'
 import { computed, ref } from 'vue'
-import type { LineUpItem, Roster } from '../Game.vue'
+import type { LineUpItem, Roster } from '../GameInput.vue'
 
 interface IProps {
   modelValue: LineUpItem[]
   roster: Roster
   length?: number
 }
+const props = withDefaults(defineProps<IProps>(), {
+  length: 5
+})
 
 const emit = defineEmits(['update:modelValue'])
 const model = computed({
@@ -17,9 +20,6 @@ const model = computed({
   set: (val: LineUpItem[]) => emit('update:modelValue', val)
 })
 
-const props = withDefaults(defineProps<IProps>(), {
-  length: 5
-})
 const spots = computed<LineUpItem[]>(() => {
   const result = new Array(props.length)
     .fill(undefined)

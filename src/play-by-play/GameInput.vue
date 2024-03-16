@@ -21,10 +21,11 @@ export interface Roster {
 export interface Rosters {
   [key: TeamId]: Roster
 }
+export type PlayKey = (PlayerStatKey | 'subout' | 'subin')
 export interface Play {
-  time: number,
-  playerId: PlayerId, 
-  actionKey: PlayerStatKey  
+  time: number
+  playerId: PlayerId
+  actionKey: PlayKey
 }
 export type PlayByPlay = Play[]
 
@@ -35,7 +36,7 @@ interface IProps {
 const props = withDefaults(defineProps<IProps>(), {})
 
 const { getPlayer, getTeamName } = useLibs()
-const sec = ref(0)
+const time = ref(0)
 const lineups = ref<LineUps>({})
 const rosters = computed(() => {
   return props.game.teams.reduce((rosters: Rosters, teamId: TeamId) => {
@@ -55,11 +56,12 @@ const rosters = computed(() => {
 })
 
 const isLineupsReady = computed(() => {
-  return Object.keys(lineups.value).length === 2 && Object.keys(lineups.value)
-    .every(
-      (teamId: TeamId) =>
-        Array.isArray(lineups.value[teamId]) && lineups.value[teamId].length === 1 // props.length
+  return (
+    Object.keys(lineups.value).length === 2 &&
+    Object.keys(lineups.value).every(
+      (teamId: TeamId) => Array.isArray(lineups.value[teamId]) && lineups.value[teamId].length === 1 // props.length
     )
+  )
 })
 const isGameReady = computed(() => {
   return isLineupsReady.value
@@ -70,7 +72,6 @@ const handleClosePeriod = () => {
 }
 
 const data = ref<PlayByPlay>([])
-
 </script>
 <template>
   <div class="wrapper vstack">
@@ -83,19 +84,14 @@ const data = ref<PlayByPlay>([])
     </div>
     <div class="flex-grow-1 vstack gap-3 px-1 py-3">
       <template v-if="!isLineupsReady">
-        <LineupsSelect 
-          v-model="lineups" 
-          :rosters="rosters"
-          :length="5"
-         />
-        
+        <LineupsSelect v-model="lineups" :rosters="rosters" :length="5" />
       </template>
       <template v-if="isGameReady">
-        <PlaysInput v-model="data" :sec="sec" :lineups="lineups" />
+        <PlaysInput v-model="data" :time="time" :lineups="lineups" :rosters="rosters" />
       </template>
     </div>
     <GameClock
-      v-model="sec"
+      v-model="time"
       class="p-1"
       :game-length="9 * 1000"
       :nb-periods="3"
