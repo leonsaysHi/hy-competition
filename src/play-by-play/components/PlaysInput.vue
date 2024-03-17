@@ -19,10 +19,15 @@ import type { TeamId } from '@/types/teams'
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
+type GetPlayerKey =
+  | 'team' // lineupe
+  | 'teammate' // lineup but player
+  | 'opp' // opponent lineup
+  | 'roster' // roster but lineup
 interface ActionMapItem {
   actionKey: PlayKey
   from?: PlayKey[]
-  getPlayer?: 'team' | 'opp' | 'roster'
+  getPlayer?: GetPlayerKey
   timeOffset?: number
   force?: boolean // force next action selection
 }
@@ -79,7 +84,7 @@ const actionsMap: ActionMapItem[] = [
   { actionKey: 'dreb', getPlayer: 'opp', from: ['fta', 'fga', 'fg3a'], timeOffset: 1 },
   { actionKey: 'blk', getPlayer: 'opp', from: ['fga', 'fg3a'], timeOffset: 1 },
   { actionKey: 'fg3m', from: ['fg3a'] },
-  { actionKey: 'ast', getPlayer: 'team', from: ['fgm', 'fg3m'] },
+  { actionKey: 'ast', getPlayer: 'teammate', from: ['fgm', 'fg3m'] },
 
   { actionKey: 'fcm' },
   { actionKey: 'fdr', getPlayer: 'opp', from: ['fcm'] },
@@ -116,7 +121,7 @@ const pushAction = async () => {
       const playerId: PlayerId =
         prevAction.value?.playerId && !action.getPlayer
           ? prevAction.value.playerId
-          : await selectPlayer(teamId)
+          : await selectPlayer(teamId, action.getPlayer)
       const playObj: Play = {
         actionKey,
         time: time + (action.timeOffset ? action.timeOffset * 750 : 0),
@@ -130,7 +135,7 @@ const pushAction = async () => {
       }
     } catch (val) {
       console.log('Canceled Player', val)
-      handleRemovelAction()
+      pushAction()
     }
   } catch (val) {
     if (val === 'submit') {
@@ -164,13 +169,18 @@ const getActionsOptions = (
         }
         return (
           action.from?.includes(fromKey) &&
-          ((tId === teamId && (!action.getPlayer || action.getPlayer === 'team')) ||
+          ((tId === teamId &&
+            (!action.getPlayer ||
+              action.getPlayer === 'team' ||
+              action.getPlayer === 'teammate' ||
+              action.getPlayer === 'roster')) ||
             (tId !== teamId && action.getPlayer === 'opp'))
         )
       })
       .map((act) => ({
         value: act.actionKey,
-        text: t(`options.playerStats.text.${act.actionKey}`)
+        text: t(`options.playerStats.text.${act.actionKey}`),
+        disabled: false
       }))
     return result
   }, {})
@@ -193,26 +203,24 @@ const selectActionKey = (): Promise<{ actionKey: PlayKey; teamId?: TeamId }> => 
     }
   })
 }
-const getPlayersOption = (
-  teamId: TeamId,
-  excludeId: PlayerId | undefined = undefined
-): PlayersOptions[] =>
-  props.lineups[teamId].map((playerId: LineUpItem) => {
+
+const selectPlayer = (teamId: TeamId, getPlayerKey: GetPlayerKey): Promise<PlayerId> => {
+  const list = getPlayerKey === 'roster' ? props.rosters[teamId] : props.lineups[teamId]
+  const prevPlayerId: PlayerId = prevAction.value?.playerId as PlayerId
+  const options = list.map((playerId: LineUpItem) => {
     return {
       value: playerId as PlayerId,
       text: `${props.rosters[teamId][playerId].fname} ${props.rosters[teamId][playerId].lname}`,
       row: props.rosters[teamId][playerId],
-      disabled: !excludeId && playerId === excludeId
+      disabled:
+        (getPlayerKey === 'teammate' && playerId === prevPlayerId) ||
+        (getPlayerKey === 'roster' && !props.lineups[teamId].includes(playerId))
     }
   })
-const selectPlayer = (
-  teamId: TeamId,
-  excludeId: PlayerId | undefined = undefined
-): Promise<PlayerId> => {
   return new Promise((res, rej) => {
     selectComponent.value = {
       is: SelectPlayer,
-      options: getPlayersOption(teamId, excludeId),
+      options,
       hideSubmit: true,
       hideCancel: false,
       onSelect: res,

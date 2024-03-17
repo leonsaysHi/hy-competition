@@ -10,7 +10,7 @@
           <div class="vstack gap-1">
             <template v-for="opt in options[teamId]" :key="opt.value">
               <ButtonComp
-                variant="outline-primary"
+                variant="primary"
                 size="lg"
                 @click="() => handleSelect(teamId, opt.value)"
                 >{{ opt.text }}</ButtonComp

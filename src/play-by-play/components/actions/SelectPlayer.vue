@@ -2,7 +2,13 @@
   <div class="vstack gap-3">
     <div class="vstack gap-1">
       <template v-for="opt in options" :key="opt.value">
-        <ButtonComp variant="outline-primary" size="lg" @click="() => handleSelect(opt.value)">
+        <ButtonComp
+          :variant="opt.disabled ? 'light' : 'primary'"
+          :class="opt.disabled && 'border'"
+          size="lg"
+          :disabled="opt.disabled"
+          @click="() => handleSelect(opt.value)"
+        >
           <span class="jersey-number">#{{ opt.row.number }}</span>
           <span class="vr" />
           <span class="jersey-name">{{ opt.text }}</span>

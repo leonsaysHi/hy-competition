@@ -76,38 +76,30 @@ const handleClosePeriod = () => {
 const data = ref<PlayByPlay>([])
 </script>
 <template>
-  <div class="wrapper vstack">
-    <div class="flex-grow-0 hstack justify-content-between border-bottom p-1">
-      <div>
-        <small>{{ competition?.title }}</small>
-        <div class="jersey-team">{{ game.teams.map(getTeamName).join('&times;') }}</div>
-      </div>
-      <div>Score</div>
-    </div>
+  <div class="flex-grow-0 hstack justify-content-between border-bottom p-1">
     <div>
-      <ActionsDisplay :items="data" :rosters="rosters" compact />
+      <small>{{ competition?.title }}</small>
+      <div class="jersey-team">{{ game.teams.map(getTeamName).join('&times;') }}</div>
     </div>
-    <div class="flex-grow-1 vstack gap-3 px-1 py-3">
-      <template v-if="!isLineupsReady">
-        <LineupsSelect v-model="lineups" :rosters="rosters" :length="5" />
-      </template>
-      <template v-if="isGameReady">
-        <PlaysInput v-model="data" :time="time" :lineups="lineups" :rosters="rosters" />
-      </template>
-    </div>
-    <GameClock
-      v-model="time"
-      class="p-1"
-      :game-length="9 * 1000"
-      :nb-periods="3"
-      :disabled="!isGameReady"
-      @stopped="handleClosePeriod"
-    />
+    <div>Score</div>
   </div>
+  <div>
+    <ActionsDisplay :items="data" :rosters="rosters" compact />
+  </div>
+  <div class="flex-grow-1 vstack gap-3 px-1 py-3">
+    <template v-if="!isLineupsReady">
+      <LineupsSelect v-model="lineups" :rosters="rosters" :length="5" />
+    </template>
+    <template v-if="isGameReady">
+      <PlaysInput v-model="data" :time="time" :lineups="lineups" :rosters="rosters" />
+    </template>
+  </div>
+  <GameClock
+    v-model="time"
+    class="p-1"
+    :game-length="9 * 1000"
+    :nb-periods="3"
+    :disabled="!isGameReady"
+    @stopped="handleClosePeriod"
+  />
 </template>
-<style scoped lang="scss">
-.wrapper {
-  min-height: 100vh;
-}
-</style>
-./components/LineUpsSelect.vue
