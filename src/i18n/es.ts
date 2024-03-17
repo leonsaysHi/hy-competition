@@ -80,6 +80,33 @@ const es = {
         ptsavg: 'Puntos prom.',
         subout: 'Sustitución sale',
         subin: 'Sustitución entra'
+      },
+      playByPlay: {
+        sec: 'Minutos',
+        ftm: 'Tiros libres conv.',
+        fta: 'Tiros libres int.',
+        ftprc: '% tiros libres',
+        fgm: '2pts conv.',
+        fga: '2pts int.',
+        fgprc: '% 2pts',
+        fg3m: '3pts conv.',
+        fg3a: '3pts int.',
+        fg3prc: '% 3pts',
+        reb: 'Rebotes tot.',
+        dreb: 'Rebotes def.',
+        oreb: 'Rebotes off.',
+        ast: 'Asistencias',
+        stl: 'Robos',
+        blk: 'Bloqueos',
+        blka: 'Bloqueos en contra',
+        tov: 'Pérdidas de balón',
+        fcm: 'Faltas personales cometidas',
+        fdr: 'Faltas personales señaladas',
+        pir: 'Índice de rendimiento',
+        pts: 'Puntos',
+        ptsavg: 'Puntos prom.',
+        subout: 'Sustitución sale',
+        subin: 'Sustitución entra'
       }
     },
     awards: {
@@ -120,6 +147,8 @@ const es = {
     }
   },
   cta: {
+    cancel: 'Cancelar',
+    submit: 'Guardar',
     view: 'ver'
   },
   home: {
@@ -157,7 +186,9 @@ const es = {
     previous: 'Ultimo | Ultimos',
     upcoming: 'Proximo | Proximos',
     search: 'Buscar',
-    backToTop: 'Volver arriba'
+    backToTop: 'Volver arriba',
+    open: 'Open',
+    close: 'Close'
   }
 }
 

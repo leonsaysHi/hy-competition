@@ -9,6 +9,7 @@ import type { CompetitionTeam, TeamId } from '@/types/teams'
 import type { CompetitionPlayer, PlayerDoc, PlayerId } from '@/types/players'
 import type { Competition } from '@/types/competitions'
 import type { PlayerStatKey } from '@/types/stats'
+import ActionsDisplay from './components/ActionsDisplay.vue'
 
 export type LineUpItem = PlayerId | undefined
 export interface LineUps {
@@ -21,13 +22,14 @@ export interface Roster {
 export interface Rosters {
   [key: TeamId]: Roster
 }
-export type PlayKey = (PlayerStatKey | 'subout' | 'subin')
+export type PlayKey = PlayerStatKey | 'subout' | 'subin'
 export interface Play {
   time: number
   playerId: PlayerId
   actionKey: PlayKey
 }
-export type PlayByPlay = Play[]
+export type PlayByPlayStack = Play[]
+export type PlayByPlay = PlayByPlayStack[]
 
 interface IProps {
   competition: Competition
@@ -59,7 +61,7 @@ const isLineupsReady = computed(() => {
   return (
     Object.keys(lineups.value).length === 2 &&
     Object.keys(lineups.value).every(
-      (teamId: TeamId) => Array.isArray(lineups.value[teamId]) && lineups.value[teamId].length === 1 // props.length
+      (teamId: TeamId) => Array.isArray(lineups.value[teamId]) && lineups.value[teamId].length > 0 // props.length
     )
   )
 })
@@ -81,6 +83,9 @@ const data = ref<PlayByPlay>([])
         <div class="jersey-team">{{ game.teams.map(getTeamName).join('&times;') }}</div>
       </div>
       <div>Score</div>
+    </div>
+    <div>
+      <ActionsDisplay :items="data" :rosters="rosters" compact />
     </div>
     <div class="flex-grow-1 vstack gap-3 px-1 py-3">
       <template v-if="!isLineupsReady">
