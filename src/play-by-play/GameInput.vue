@@ -6,7 +6,7 @@ import GameClock from './components/GameClock.vue'
 import GameScores from './components/GameScores.vue'
 import LineupsSelect from './components/LineupsSelect.vue'
 import PlaysInput from './components/PlaysInput.vue'
-import type { CompetitionTeam, TeamId } from '@/types/teams'
+import type { TeamId } from '@/types/teams'
 import type { CompetitionPlayer, PlayerDoc, PlayerId } from '@/types/players'
 import type { Competition, CompetitionConfig, CompetitionId } from '@/types/competitions'
 import type { PlayerStatKey } from '@/types/stats'
@@ -40,7 +40,7 @@ export type PlayByPlay = PlayStack[]
 
 interface IProps {
   competition: Competition
-  competitionTeams: CompetitionTeam[]
+  rosters: Rosters
   competitionConfig: CompetitionConfig
   game: Game
   data?: PlayByPlay
@@ -53,31 +53,13 @@ const props = withDefaults(defineProps<IProps>(), {
 const route = useRoute()
 const { competitionId, gameId } = route.params as { competitionId: CompetitionId, gameId: GameId }
 const { writeStack } = usePlayByPlay(competitionId, gameId)
-const { getPlayer, getTeamName } = useLibs()
+const { getTeamName } = useLibs()
 const { gameLength, nbPeriods, oTLength, lineupLength } = props.competitionConfig
 
 const data = ref<PlayByPlay>(props.data)
 
-const rosters = ref(props.game.teams
-  .reduce((rosters: Rosters, teamId: TeamId) => {
-      const { players } = props.competitionTeams.find(
-        (team: CompetitionTeam) => team.id === teamId
-      ) as CompetitionTeam
-      rosters[teamId] = players.reduce((result: Roster, player: CompetitionPlayer) => {
-        const playerId: PlayerId = player.id
-        result[playerId] = {
-          ...player,
-          ...getPlayer(playerId)
-        } as RosterPlayer
-        return result
-      }, {})
-      return rosters
-    }, {}
-  )
-)
-
 const playByPlay = ref<PlayByPlayModel>(
-  new PlayByPlayModel(props.game.id, props.competitionConfig, data.value, rosters.value)
+  new PlayByPlayModel(props.game.id, props.competitionConfig, data.value, props.rosters)
 )
 
 const time = ref(playByPlay.value?.time || 0)
@@ -133,7 +115,7 @@ watch(
       props.game.id,
       props.competitionConfig,
       data.value,
-      rosters.value
+      props.rosters
     )
   }
 )
@@ -155,9 +137,6 @@ watch(
     :disabled="!isGameReady"
     @stopped="handleClosePeriod"
   />
-  <div class="pb-3 border-bottom">
-    <ActionsDisplay :items="data" :rosters="rosters" :length="1" compact />
-  </div>
   <div class="flex-grow-1 vstack gap-3 px-1 py-3">
     <template v-if="!isLineupsReady">
       <LineupsSelect :rosters="rosters" :length="lineupLength" @confirmed="handleInitLineups" />
@@ -165,5 +144,8 @@ watch(
     <template v-if="isGameReady">
       <PlaysInput v-model="data" :time="time" :lineups="lineups" :rosters="rosters" />
     </template>
+  </div>
+  <div class="pb-3 border-bottom">
+    <ActionsDisplay :items="data" :rosters="rosters" :length="1" compact />
   </div>
 </template>

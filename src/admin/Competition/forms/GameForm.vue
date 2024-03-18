@@ -6,6 +6,7 @@ import ButtonComp from '@/components/ButtonComp.vue'
 import FieldComp from '@/components/FieldComp.vue'
 import InputComp from '@/components/InputComp.vue'
 import ScoresInput from '@/admin/competition/games/components/ScoresInput.vue'
+import PlayByPlayField from '@/admin/competition/games/components/PlayByPlayField.vue'
 import BoxScoreInput from '@/admin/competition/games/components/BoxScoreInput.vue'
 import AwardsInput from '@/admin/competition/components/AwardsInput.vue'
 import type { AwardItem } from '@/types/stats'
@@ -29,7 +30,6 @@ const props = withDefaults(defineProps<IProps>(), {
   isBusy: false,
   competitionTeams: () => []
 })
-const { deleteRow } = usePlayByPlay(competitionId, props.value.id)
 
 type FormData = {
   id: string
@@ -39,7 +39,6 @@ type FormData = {
   boxscore: GameDocBoxScore
   awards: AwardItem[]
 }
-
 const getDefaultGame = (): Game => ({
   id: '',
   teams: [],
@@ -139,14 +138,8 @@ const handleSubmit = (ev: Event) => {
     </template>
     <template v-else>
       <FieldComp label="Play-by-play link">
-        <div>
-          <RouterLink
-            class="btn btn-primary btn-sm"
-            :to="{ name: 'play-by-play', params: { competitionId, gameId: data.id } }"
-            >Play-by-play</RouterLink
-          >
-        </div>
-        </FieldComp>
+        <PlayByPlayField />
+      </FieldComp>
     </template>
     <hr />
     <FieldComp label="Awards">

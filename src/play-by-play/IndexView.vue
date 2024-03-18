@@ -6,17 +6,17 @@ import usePlayByPlay from '@/composable/usePlayByPlay'
 
 const route = useRoute()
 const { competitionId, gameId } = route.params
-const { isReady: isPlayByPlayReady, competition, game, teams, config, row: playByPlay } = usePlayByPlay(competitionId, gameId)
+const { isReady: isPlayByPlayReady, competition, game, rosters, config, row: playByPlay } = usePlayByPlay(competitionId, gameId)
 </script>
 <template>
   <div class="wrapper vstack justify-content-around">
-    <template v-if="!isPlayByPlayReady || !game || !teams || !config">
+    <template v-if="!isPlayByPlayReady || !game || !rosters || !config">
       <SpinnerComp />
     </template>
     <template v-else>
       <RouterView
         :competition="competition"
-        :competition-teams="teams"
+        :rosters="rosters"
         :competition-config="config"
         :game="game"
         :data="playByPlay"
