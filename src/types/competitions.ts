@@ -13,6 +13,13 @@ export interface Phase {
   groups: TeamId[][]
   datetime: Date
 }
+
+export interface CompetitionConfig {
+  gameLength: number
+  nbPeriods: number
+  oTLength: number
+  lineupLength: number
+}
 // data
 export interface CompetitionDoc {
   id?: CompetitionId

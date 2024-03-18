@@ -1,6 +1,6 @@
 import { collection } from 'firebase/firestore'
 import { competitionsColl, teamsName, gamesName, playersName } from '@/firebase-firestore.js'
-import type { Competition, CompetitionId } from '@/types/competitions'
+import type { Competition, CompetitionConfig, CompetitionId } from '@/types/competitions'
 
 import { useFirestore } from '@vueuse/firebase/useFirestore'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
@@ -152,6 +152,17 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     return result.flat()
   })
 
+  const config = computed<CompetitionConfig | undefined>(() =>
+    row.value?.sport === 'basketball5x5'
+      ? {
+          gameLength: 1000 * 60 * 40,
+          nbPeriods: 4,
+          oTLength: 1000 * 60 * 5,
+          lineupLength: 5
+        }
+      : undefined
+  )
+
   const getCompetitionTeam = (teamId: TeamId): CompetitionTeam | undefined => {
     return row.value?.teams?.find((team: CompetitionTeam) => team.id === teamId)
   }
@@ -194,6 +205,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     row,
     games,
     teams,
+    config,
     allTeams,
     allPlayers,
 

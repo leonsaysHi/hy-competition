@@ -12,7 +12,7 @@ export interface AwardItem {
 }
 
 export interface PlayerStats {
-  sec: number
+  time: number
   ftm: number
   fta: number
   fgm: number

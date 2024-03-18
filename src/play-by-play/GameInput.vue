@@ -1,19 +1,19 @@
 <script lang="ts" setup>
 import type { Game } from '@/types/games'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import useLibs from '@/composable/useLibs'
 import GameClock from './components/GameClock.vue'
 import LineupsSelect from './components/LineupsSelect.vue'
 import PlaysInput from './components/PlaysInput.vue'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import type { CompetitionPlayer, PlayerDoc, PlayerId } from '@/types/players'
-import type { Competition } from '@/types/competitions'
+import type { Competition, CompetitionConfig, CompetitionId } from '@/types/competitions'
 import type { PlayerStatKey } from '@/types/stats'
 import ActionsDisplay from './components/ActionsDisplay.vue'
+import PlayByPlayModel from '@/models/PlayByPlay'
 
-export type LineUpItem = PlayerId | undefined
 export interface LineUps {
-  [key: TeamId]: LineUpItem[]
+  [key: TeamId]: PlayerId[]
 }
 export type RosterPlayer = CompetitionPlayer & PlayerDoc
 export interface Roster {
@@ -28,21 +28,25 @@ export interface Play {
   playerId: PlayerId
   actionKey: PlayKey
 }
-export type PlayByPlayStack = Play[]
-export type PlayByPlay = PlayByPlayStack[]
+export type PlayStack = Play[]
+export type PlayByPlay = PlayStack[]
 
 interface IProps {
   competition: Competition
+  competitionTeams: CompetitionTeam[]
+  competitionConfig: CompetitionConfig
   game: Game
 }
 const props = withDefaults(defineProps<IProps>(), {})
 
 const { getPlayer, getTeamName } = useLibs()
+
+const { gameLength, nbPeriods, oTLength, lineupLength } = props.competitionConfig
+
 const time = ref(0)
-const lineups = ref<LineUps>({})
 const rosters = computed(() => {
   return props.game.teams.reduce((rosters: Rosters, teamId: TeamId) => {
-    const { players } = props.competition.teams.find(
+    const { players } = props.competitionTeams.find(
       (team: CompetitionTeam) => team.id === teamId
     ) as CompetitionTeam
     rosters[teamId] = players.reduce((result: Roster, player: CompetitionPlayer) => {
@@ -57,11 +61,22 @@ const rosters = computed(() => {
   }, {})
 })
 
+const lineups = ref<LineUps>({})
+const handleInitLineups = (payload: LineUps) => {
+  const subins: Play[] = []
+  Object.keys(payload).forEach((teamId: TeamId) => {
+    payload[teamId].forEach((playerId: PlayerId) => {
+      subins.push({ time: 0, playerId, actionKey: 'subin' })
+    })
+  })
+  lineups.value = payload
+  data.value.push(subins)
+}
 const isLineupsReady = computed(() => {
   return (
     Object.keys(lineups.value).length === 2 &&
     Object.keys(lineups.value).every(
-      (teamId: TeamId) => Array.isArray(lineups.value[teamId]) && lineups.value[teamId].length > 0 // props.length
+      (teamId: TeamId) => Array.isArray(lineups.value[teamId]) && lineups.value[teamId].length > 0 // === lineupLength
     )
   )
 })
@@ -74,6 +89,32 @@ const handleClosePeriod = () => {
 }
 
 const data = ref<PlayByPlay>([])
+const playByPlay = ref<PlayByPlayModel>()
+watch(
+  () => data.value.length,
+  (val, oldVal) => {
+    if (val > oldVal) {
+      const lastAction = data.value[data.value.length - 1]
+      if (lastAction[0].actionKey === 'subout') {
+        const outPlayerId = lastAction[0].playerId
+        const inPlayerId = lastAction[1].playerId
+        Object.values(lineups.value).forEach((lineup: PlayerId[]) => {
+          const idx = lineup.findIndex((playerId: PlayerId) => playerId === outPlayerId)
+          if (idx > -1) {
+            lineup.splice(idx, 1, inPlayerId)
+            return
+          }
+        })
+      }
+    }
+    playByPlay.value = new PlayByPlayModel(
+      props.game.id,
+      props.competition.id,
+      data.value,
+      rosters.value
+    )
+  }
+)
 </script>
 <template>
   <div class="flex-grow-0 hstack justify-content-between border-bottom p-1">
@@ -81,25 +122,26 @@ const data = ref<PlayByPlay>([])
       <small>{{ competition?.title }}</small>
       <div class="jersey-team">{{ game.teams.map(getTeamName).join('&times;') }}</div>
     </div>
-    <div>Score</div>
+    <div>{{ playByPlay?.scores }}</div>
   </div>
+  <GameClock
+    v-model="time"
+    class="p-1"
+    :game-length="gameLength"
+    :nb-periods="nbPeriods"
+    :ot-length="oTLength"
+    :disabled="!isGameReady"
+    @stopped="handleClosePeriod"
+  />
   <div>
     <ActionsDisplay :items="data" :rosters="rosters" compact />
   </div>
   <div class="flex-grow-1 vstack gap-3 px-1 py-3">
     <template v-if="!isLineupsReady">
-      <LineupsSelect v-model="lineups" :rosters="rosters" :length="5" />
+      <LineupsSelect :rosters="rosters" :length="lineupLength" @confirmed="handleInitLineups" />
     </template>
     <template v-if="isGameReady">
       <PlaysInput v-model="data" :time="time" :lineups="lineups" :rosters="rosters" />
     </template>
   </div>
-  <GameClock
-    v-model="time"
-    class="p-1"
-    :game-length="9 * 1000"
-    :nb-periods="3"
-    :disabled="!isGameReady"
-    @stopped="handleClosePeriod"
-  />
 </template>

@@ -8,20 +8,24 @@ import useLibs from '@/composable/useLibs'
 import type { TeamId } from '@/types/teams'
 import type { PlayerId } from '@/types/players'
 
+export interface LineUpsSelect {
+  [key: TeamId]: (PlayerId | undefined)[]
+}
+
 interface IProps {
-  modelValue: LineUps
   rosters: Rosters
   length?: number
 }
+
 const props = withDefaults(defineProps<IProps>(), {
   length: 5
 })
 
 const { getTeamName } = useLibs()
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['confirmed'])
 
-const data = ref<LineUps>(
-  Object.keys(props.rosters).reduce((result: LineUps, teamId: TeamId) => {
+const data = ref<LineUpsSelect>(
+  Object.keys(props.rosters).reduce((result: LineUpsSelect, teamId: TeamId) => {
     result[teamId] = new Array(props.length).fill(undefined)
     /*
     result.sort((a, b) => {
@@ -31,7 +35,7 @@ const data = ref<LineUps>(
     })
     */
     return result
-  }, {} as LineUps)
+  }, {})
 )
 
 const teamsId = computed(() => Object.keys(props.rosters))
@@ -67,7 +71,7 @@ const lineupOptions = computed(() => {
 })
 const isLineupValid = computed(() =>
   Object.keys(data.value).every(
-    (teamId: TeamId) => Array.isArray(data.value[teamId]) && data.value[teamId].length > 0 // data.value[teamId].every(Boolean)
+    (teamId: TeamId) => Array.isArray(data.value[teamId]) && data.value[teamId].every(Boolean)
   )
 )
 const handleConfirmLineups = () => {
@@ -75,7 +79,7 @@ const handleConfirmLineups = () => {
   Object.keys(data.value).forEach((teamId: TeamId) => {
     result[teamId] = data.value[teamId].filter(Boolean)
   })
-  emit('update:modelValue', result)
+  emit('confirmed', result as LineUps)
 }
 </script>
 <template>

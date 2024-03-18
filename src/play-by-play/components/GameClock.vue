@@ -101,7 +101,7 @@ const inPeriodTime = computed(() => model.value - currentPeriodIdx.value * perio
 const minutes = computed<string>(() => {
   const mil = periodLength.value - inPeriodTime.value
   const value = Math.floor(mil / 60000)
-  return value > 10 ? value.toString() : `0${value}`
+  return value < 10 ? `0${value}` : value.toString()
 })
 const secondes = computed<string>(() => {
   const mil = periodLength.value - inPeriodTime.value

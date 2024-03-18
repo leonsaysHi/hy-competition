@@ -8,16 +8,21 @@ import { computed } from 'vue'
 
 const route = useRoute()
 const { competitionId, gameId } = route.params
-const { isReady, row: competition } = useCompetition(competitionId)
-const game = computed(() => competition.value?.games.find((game: Game) => game.id === gameId))
+const { isReady, row: competition, games, teams, config } = useCompetition(competitionId)
+const game = computed(() => games.value.find((game: Game) => game.id === gameId))
 </script>
 <template>
   <div class="wrapper vstack justify-content-around">
-    <template v-if="!isReady || !game">
+    <template v-if="!isReady || !game || !teams || !config">
       <SpinnerComp />
     </template>
     <template v-else>
-      <RouterView :competition="competition" :game="game" />
+      <RouterView
+        :competition="competition"
+        :competition-teams="teams"
+        :competition-config="config"
+        :game="game"
+      />
     </template>
   </div>
 </template>

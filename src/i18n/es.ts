@@ -27,7 +27,7 @@ const es = {
     playerStats: {
       text: {
         gp: 'GP',
-        sec: 'Min',
+        time: 'Min',
         ftm: 'FTM',
         fta: 'FTA',
         ftprc: 'FT%',
@@ -55,7 +55,7 @@ const es = {
       },
       long: {
         gp: 'Juegos',
-        sec: 'Minutos',
+        time: 'Minutos',
         ftm: 'Tiros libres conv.',
         fta: 'Tiros libres int.',
         ftprc: '% tiros libres',
@@ -82,7 +82,7 @@ const es = {
         subin: 'Sustitución entra'
       },
       playByPlay: {
-        sec: 'Minutos',
+        time: 'Minutos',
         ftm: 'Tiros libres conv.',
         fta: 'Tiros libres int.',
         ftprc: '% tiros libres',

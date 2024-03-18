@@ -1,7 +1,7 @@
 import numeral from 'numeral'
 // numeral.locale('es')
 
-export function add(total: number, a: number) {
+export function add(total: number, a: number): number {
   return total + a
 }
 export function getAvg(total: number, length: number) {

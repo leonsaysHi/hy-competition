@@ -5,11 +5,11 @@ import ActionsDisplay from '@/play-by-play/components/ActionsDisplay.vue'
 import { computed, ref, onMounted } from 'vue'
 import type { Component } from 'vue'
 import type {
-  LineUpItem,
   LineUps,
   Play,
   PlayByPlay,
   PlayKey,
+  PlayStack,
   RosterPlayer,
   Rosters
 } from '../GameInput.vue'
@@ -97,16 +97,16 @@ const actionsMap: ActionMapItem[] = [
   { actionKey: 'subout', force: true },
   { actionKey: 'subin', getPlayer: 'roster', from: ['subout'] }
 ]
-const actionsStack = ref<Play[]>([])
+const actionsStack = ref<PlayStack>([] as PlayStack)
 const selectComponent = ref<SelectComponent>()
 
 const prevAction = computed<Play | undefined>(() =>
   actionsStack.value.length > 0 ? actionsStack.value[actionsStack.value.length - 1] : undefined
 )
 const endAction = () => {
-  const plays = actionsStack.value.splice(0, actionsStack.value.length)
+  const playStack: PlayStack = actionsStack.value.splice(0, actionsStack.value.length)
+  model.value.push(playStack)
   selectComponent.value = undefined
-  model.value.push(plays)
   pushAction()
 }
 const pushAction = async () => {
@@ -142,7 +142,7 @@ const pushAction = async () => {
       endAction()
     } else {
       console.log('Canceled Action', val)
-      handleRemovelAction()
+      handleRemovelAction(undefined)
     }
   }
 }
@@ -205,9 +205,12 @@ const selectActionKey = (): Promise<{ actionKey: PlayKey; teamId?: TeamId }> => 
 }
 
 const selectPlayer = (teamId: TeamId, getPlayerKey: GetPlayerKey): Promise<PlayerId> => {
-  const list = getPlayerKey === 'roster' ? props.rosters[teamId] : props.lineups[teamId]
+  const playerIdList =
+    getPlayerKey === 'roster'
+      ? Object.keys(props.rosters[teamId]).map((playerId: PlayerId) => playerId)
+      : props.lineups[teamId]
   const prevPlayerId: PlayerId = prevAction.value?.playerId as PlayerId
-  const options = list.map((playerId: LineUpItem) => {
+  const options = playerIdList.map((playerId: PlayerId) => {
     return {
       value: playerId as PlayerId,
       text: `${props.rosters[teamId][playerId].fname} ${props.rosters[teamId][playerId].lname}`,

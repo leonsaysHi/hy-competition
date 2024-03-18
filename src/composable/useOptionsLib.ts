@@ -44,7 +44,7 @@ export default function usePlayersLib() {
   ]
 
   const playerStatsKeys: { value: PlayerStatKey; text: string; long: string }[] = [
-    'sec',
+    'time',
     'ftm',
     'fta',
     'fgm',
