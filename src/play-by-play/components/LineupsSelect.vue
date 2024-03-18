@@ -27,13 +27,6 @@ const emit = defineEmits(['confirmed'])
 const data = ref<LineUpsSelect>(
   Object.keys(props.rosters).reduce((result: LineUpsSelect, teamId: TeamId) => {
     result[teamId] = new Array(props.length).fill(undefined)
-    /*
-    result.sort((a, b) => {
-      const numA = props.roster[a as PlayerId].number
-      const numB = props.roster[b as PlayerId].number
-      return numA.localeCompare(numB)
-    })
-    */
     return result
   }, {})
 )
@@ -62,12 +55,20 @@ const lineupOptions = computed(() => {
     return []
   }
   const teamId = selectedTeamLineUp.value as TeamId
-  return Object.keys(props.rosters[teamId]).map((playerId: PlayerId) => ({
-    value: playerId,
-    text: `${props.rosters[teamId][playerId].fname} ${props.rosters[teamId][playerId].lname}`,
-    player: props.rosters[teamId][playerId],
-    disabled: data.value[teamId].includes(playerId)
-  }))
+  const result =  Object.keys(props.rosters[teamId])
+    .map((playerId: PlayerId) => ({
+      value: playerId,
+      text: `${props.rosters[teamId][playerId].fname} ${props.rosters[teamId][playerId].lname}`,
+      number: props.rosters[teamId][playerId].number,
+      disabled: data.value[teamId].includes(playerId)
+    }))
+
+  result.sort((a, b) => {
+      const numA = a.number
+      const numB = b.number
+      return numA.localeCompare(numB, undefined, {numeric: true, sensitivity: 'base'})
+    })
+    return result
 })
 const isLineupValid = computed(() =>
   Object.keys(data.value).every(
@@ -112,8 +113,8 @@ const handleConfirmLineups = () => {
     </template>
   </div>
   <div class="d-flex justify-content-center">
-    <ButtonComp variant="success" :disabled="!isLineupValid" @click="handleConfirmLineups">
-      Start game
+    <ButtonComp variant="success" size="lg" :disabled="!isLineupValid" @click="handleConfirmLineups">
+      Starting lineups are ready.
     </ButtonComp>
   </div>
   <ModalComp ref="lineupModalEl" title="Lineup" hide-footer>
@@ -125,7 +126,7 @@ const handleConfirmLineups = () => {
           class="text-start"
           @click="() => handleSelectRosterPlayer(opt.value)"
         >
-          <strong class="jersey-number">#{{ opt.player.number }}</strong>
+          <strong class="jersey-number">#{{ opt.number }}</strong>
           <span class="vr" />
           <span class="jersey-name">{{ opt.text }}</span>
         </ButtonComp>
@@ -133,4 +134,3 @@ const handleConfirmLineups = () => {
     </div>
   </ModalComp>
 </template>
-./LineupInput.vue

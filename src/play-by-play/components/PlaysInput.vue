@@ -42,23 +42,30 @@ interface IProps {
 export interface PlayersOptions {
   value: PlayerId
   text: string
-  row: RosterPlayer
+  number: string
   disabled: boolean
 }
 export type ActionsOptions = { [key: TeamId]: ActionsOptionItem[] }
 export interface ActionsOptionItem {
   value: PlayKey
   text: string
+  disabled?: boolean
+  variant?: 'success' | 'warning' | 'danger'
 }
 
 interface SelectComponent {
-  is: Component
-  options: ActionsOptions | PlayersOptions[]
+  key: 'actionKey' | 'playerId'
   onSelect: (payload?: any) => void
   onCancel: (reason?: any) => void
   onSubmit?: () => void
   hideSubmit?: boolean
   hideCancel?: boolean
+}
+interface SelectActionKey extends SelectComponent {
+  options: ActionsOptions
+}
+interface SelectPlayerId extends SelectComponent {
+  options: PlayersOptions[]
 }
 
 const props = withDefaults(defineProps<IProps>(), {
@@ -88,7 +95,7 @@ const actionsMap: ActionMapItem[] = [
 
   { actionKey: 'fcm' },
   { actionKey: 'fdr', getPlayer: 'opp', from: ['fcm'] },
-  { actionKey: 'fta', from: ['fdr'] },
+  { actionKey: 'fta', from: ['fdr', 'ftm'] },
   { actionKey: 'ftm', from: ['fta'] },
 
   { actionKey: 'tov' },
@@ -98,7 +105,7 @@ const actionsMap: ActionMapItem[] = [
   { actionKey: 'subin', getPlayer: 'roster', from: ['subout'] }
 ]
 const actionsStack = ref<PlayStack>([] as PlayStack)
-const selectComponent = ref<SelectComponent>()
+const selectComponent = ref<SelectActionKey | SelectPlayerId | undefined>()
 
 const prevAction = computed<Play | undefined>(() =>
   actionsStack.value.length > 0 ? actionsStack.value[actionsStack.value.length - 1] : undefined
@@ -161,31 +168,33 @@ const getActionsOptions = (
   const teamId = prevAction.value?.playerId
     ? getTeamIdFromPlayerId(prevAction.value.playerId)
     : undefined
-  const options = Object.keys(props.lineups).reduce((result: ActionsOptions, tId: TeamId) => {
-    result[tId] = actionsMap
-      .filter((action) => {
-        if (!fromKey) {
-          return !action.from
-        }
-        return (
-          action.from?.includes(fromKey) &&
-          ((tId === teamId &&
-            (!action.getPlayer ||
-              action.getPlayer === 'team' ||
-              action.getPlayer === 'teammate' ||
-              action.getPlayer === 'roster')) ||
-            (tId !== teamId && action.getPlayer === 'opp'))
-        )
-      })
-      .map((act) => ({
-        value: act.actionKey,
-        text: t(`options.playerStats.text.${act.actionKey}`),
-        disabled: false
-      }))
-    return result
-  }, {})
+  const options = Object.keys(props.lineups)
+    .reduce((result: ActionsOptions, tId: TeamId) => {
+      result[tId] = actionsMap
+        .filter((action) => {
+          if (!fromKey) {
+            return !action.from
+          }
+          return (
+            action.from?.includes(fromKey) &&
+            ((tId === teamId &&
+              (!action.getPlayer ||
+                action.getPlayer === 'team' ||
+                action.getPlayer === 'teammate' ||
+                action.getPlayer === 'roster')) ||
+              (tId !== teamId && action.getPlayer === 'opp'))
+          )
+        })
+        .map((act): ActionsOptionItem => ({
+          value: act.actionKey,
+          text: t(`options.playByPlay.text.${act.actionKey}`),
+          variant: ['ftm', 'fgm', 'fg3m'].includes(act.actionKey) ? 'success' : undefined
+        }))
+      return result
+    }, {})
   return Object.keys(options).some((teamId: TeamId) => options[teamId].length) ? options : undefined
 }
+
 const selectActionKey = (): Promise<{ actionKey: PlayKey; teamId?: TeamId }> => {
   const hideCancel = !actionsStack.value.length
   const hideSubmit =
@@ -194,7 +203,7 @@ const selectActionKey = (): Promise<{ actionKey: PlayKey; teamId?: TeamId }> => 
       ?.force
   return new Promise((res, rej) => {
     selectComponent.value = {
-      is: SelectAction,
+      key: 'actionKey',
       options: getActionsOptions(prevAction.value?.actionKey) as ActionsOptions,
       hideSubmit,
       hideCancel,
@@ -214,7 +223,7 @@ const selectPlayer = (teamId: TeamId, getPlayerKey: GetPlayerKey): Promise<Playe
     return {
       value: playerId as PlayerId,
       text: `${props.rosters[teamId][playerId].fname} ${props.rosters[teamId][playerId].lname}`,
-      row: props.rosters[teamId][playerId],
+      number: props.rosters[teamId][playerId].number,
       disabled:
         (getPlayerKey === 'teammate' && playerId === prevPlayerId) ||
         (getPlayerKey === 'roster' && !props.lineups[teamId].includes(playerId))
@@ -222,7 +231,7 @@ const selectPlayer = (teamId: TeamId, getPlayerKey: GetPlayerKey): Promise<Playe
   })
   return new Promise((res, rej) => {
     selectComponent.value = {
-      is: SelectPlayer,
+      key: 'playerId',
       options,
       hideSubmit: true,
       hideCancel: false,
@@ -242,9 +251,18 @@ const currentAction = computed(() => [actionsStack.value])
     @remove="handleRemovelAction"
   />
   <div class="vstack gap-3">
-    <template v-if="selectComponent">
-      <component
-        :is="{ ...selectComponent.is }"
+    <template v-if="selectComponent && selectComponent.key === 'actionKey'">
+      <SelectAction
+        :lineups="lineups"
+        :options="selectComponent.options"
+        :hide-submit="selectComponent.hideSubmit"
+        :hide-cancel="selectComponent.hideCancel"
+        @resolve="selectComponent.onSelect"
+        @reject="selectComponent.onCancel"
+      />
+    </template>
+    <template v-else-if="selectComponent && selectComponent.key === 'playerId'">
+      <SelectPlayer
         :lineups="lineups"
         :options="selectComponent.options"
         :hide-submit="selectComponent.hideSubmit"

@@ -29,6 +29,7 @@ export default class PlayByPlayModel {
 
   get boxScore(): GameDocBoxScore {
     const boxscores = this.data.reduce((boxscores: GameDocBoxScore, stack: PlayStack) => {
+      
       stack.forEach((play: Play) => {
         const { playerId, actionKey } = play
         if (!['subout', 'subin'].includes(actionKey)) {
@@ -36,6 +37,10 @@ export default class PlayByPlayModel {
           boxscores[playerId] = boxscores[playerId] || {}
           boxscores[playerId][statKey] = boxscores[playerId][statKey] || 0
           boxscores[playerId][statKey] += 1
+          if (statKey === 'blk') {
+            boxscores[stack[0].playerId].blka = boxscores[stack[0].playerId].blka || 0
+            boxscores[stack[0].playerId].blka += 1
+          }
         }
       })
       return boxscores
@@ -67,18 +72,24 @@ export default class PlayByPlayModel {
   }
 
   get scores(): GameDocScores {
-    return this.data.reduce((score: GameDocScores, stack: PlayStack) => {
-      const idx = stack.findIndex((play: Play) => ['ftm', 'fgm', 'fg3m'].includes(play.actionKey))
-      if (idx > -1) {
-        const { playerId, actionKey, time } = stack[idx]
-        const periodIdx = this.getPeriodIdxFromTime(time)
-        const teamId = this.getTeamIdFromPlayerId(playerId)
-        score[teamId] = score[teamId] || []
-        score[teamId][periodIdx] = score[teamId][periodIdx] || 0
-        score[teamId][periodIdx] += actionKey === 'fg3m' ? 1 : actionKey === 'fgm' ? 2 : 1
-      }
-      return score
+    const emptyValue = Object.keys(this.rosters).reduce((result: GameDocScores, teamId: TeamId) => {
+      result[teamId] = []
+      return result
     }, {})
+    return this.data.reduce((score: GameDocScores, stack: PlayStack) => {
+      stack
+        .forEach((play: Play) => {
+          if (['ftm', 'fgm', 'fg3m'].includes(play.actionKey)) {
+              const { playerId, actionKey, time } = play
+              const periodIdx = this.getPeriodIdxFromTime(time)
+              const teamId = this.getTeamIdFromPlayerId(playerId)
+              score[teamId][periodIdx] = score[teamId][periodIdx] || 0
+              score[teamId][periodIdx] += actionKey === 'fg3m' ? 3 : actionKey === 'fgm' ? 2 : 1
+            
+          }
+        })
+      return score
+    }, emptyValue)
   }
 
   getPeriodIdxFromTime = (time: number): number => {

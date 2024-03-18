@@ -3,11 +3,12 @@ import type { Game } from '@/types/games'
 import { computed, ref, watch } from 'vue'
 import useLibs from '@/composable/useLibs'
 import GameClock from './components/GameClock.vue'
+import GameScores from './components/GameScores.vue'
 import LineupsSelect from './components/LineupsSelect.vue'
 import PlaysInput from './components/PlaysInput.vue'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import type { CompetitionPlayer, PlayerDoc, PlayerId } from '@/types/players'
-import type { Competition, CompetitionConfig, CompetitionId } from '@/types/competitions'
+import type { Competition, CompetitionConfig } from '@/types/competitions'
 import type { PlayerStatKey } from '@/types/stats'
 import ActionsDisplay from './components/ActionsDisplay.vue'
 import PlayByPlayModel from '@/models/PlayByPlay'
@@ -80,6 +81,7 @@ const isLineupsReady = computed(() => {
     )
   )
 })
+
 const isGameReady = computed(() => {
   return isLineupsReady.value
 })
@@ -89,7 +91,9 @@ const handleClosePeriod = () => {
 }
 
 const data = ref<PlayByPlay>([])
-const playByPlay = ref<PlayByPlayModel>()
+const playByPlay = ref<PlayByPlayModel>(
+  new PlayByPlayModel(props.game.id, props.competitionConfig, data.value, rosters.value)
+)
 watch(
   () => data.value.length,
   (val, oldVal) => {
@@ -109,7 +113,7 @@ watch(
     }
     playByPlay.value = new PlayByPlayModel(
       props.game.id,
-      props.competition.id,
+      props.competitionConfig,
       data.value,
       rosters.value
     )
@@ -122,7 +126,7 @@ watch(
       <small>{{ competition?.title }}</small>
       <div class="jersey-team">{{ game.teams.map(getTeamName).join('&times;') }}</div>
     </div>
-    <div>{{ playByPlay?.scores }}</div>
+    <GameScores :scores="playByPlay?.scores" />
   </div>
   <GameClock
     v-model="time"
@@ -133,8 +137,8 @@ watch(
     :disabled="!isGameReady"
     @stopped="handleClosePeriod"
   />
-  <div>
-    <ActionsDisplay :items="data" :rosters="rosters" compact />
+  <div class="pb-3 border-bottom">
+    <ActionsDisplay :items="data" :rosters="rosters" :length="1" compact />
   </div>
   <div class="flex-grow-1 vstack gap-3 px-1 py-3">
     <template v-if="!isLineupsReady">

@@ -36,6 +36,7 @@ const isRunning = computed({
     }
   }
 })
+const buttonsVariant = computed(() => isRunning.value ? 'light' : 'primary')
 const handleStart = () => {
   if (!isRunning.value) {
     startTime.value += Date.now() - pauseTime.value
@@ -114,9 +115,17 @@ const tenths = computed<string>(() => {
 })
 </script>
 <template>
-  <div class="hstack text-white bg-dark">
+  <div class="hstack text-white bg-success" :class="!isRunning && 'bg-dark'">
+    <div class="flex-grow-0 vstack gap-1">
+        <ButtonComp @click="() => handleJump(-1)" :variant="buttonsVariant" size="lg" :disabled="disabled || isStartOfCurrentPeriod"
+          ><i class="bi bi-rewind-fill"></i
+        ></ButtonComp>
+        <ButtonComp @click="() => handleJump(1)" :variant="buttonsVariant" size="lg" :disabled="disabled || isEndOfCurrentPeriod"
+          ><i class="bi bi-fast-forward-fill"></i
+        ></ButtonComp>
+      </div>
     <div class="vstack">
-      <div class="hstack justify-content-center align-items-end display-2 lh-1 font-monospace">
+      <div class="hstack justify-content-center align-items-end display-2 lh-1 font-scoreboard">
         <span>{{ minutes }}</span>
         <span>:</span>
         <span>{{ secondes }}</span>
@@ -132,33 +141,23 @@ const tenths = computed<string>(() => {
         </template>
       </div>
     </div>
-    <div class="hstack gap-1">
-      <div class="vstack gap-1">
-        <ButtonComp @click="() => handleJump(-1)" :disabled="disabled || isStartOfCurrentPeriod"
-          ><i class="bi bi-rewind-fill"></i
-        ></ButtonComp>
-        <ButtonComp @click="() => handleJump(1)" :disabled="disabled || isEndOfCurrentPeriod"
-          ><i class="bi bi-fast-forward-fill"></i
-        ></ButtonComp>
-      </div>
-      <div class="hstack align-items-stretch">
-        <template v-if="isEndOfGame"
-          ><ButtonComp disabled variant="success"
-            ><i class="bi bi-check-square-fill"></i></ButtonComp
-        ></template>
-        <template v-else-if="isEndOfCurrentPeriod"
-          ><ButtonComp @click="handleNextPeriod()" variant="primary" :disabled="disabled"
-            ><i class="bi bi-check-square-fill"></i></ButtonComp
-        ></template>
-        <template v-else-if="!isRunning"
-          ><ButtonComp @click="handleStart()" :disabled="disabled"
-            ><i class="bi bi-play-fill"></i></ButtonComp
-        ></template>
-        <template v-else
-          ><ButtonComp @click="handlePause()" :disabled="disabled"
-            ><i class="bi bi-pause-fill"></i></ButtonComp
-        ></template>
-      </div>
+    <div class="hstack flex-grow-0 align-items-stretch">
+      <template v-if="isEndOfGame"
+        ><ButtonComp disabled variant="success" size="lg"
+          ><i class="bi bi-check-square-fill"></i></ButtonComp
+      ></template>
+      <template v-else-if="isEndOfCurrentPeriod"
+        ><ButtonComp @click="handleNextPeriod()" variant="primary" size="lg" :disabled="disabled"
+          ><i class="bi bi-check-square-fill"></i></ButtonComp
+      ></template>
+      <template v-else-if="!isRunning"
+        ><ButtonComp @click="handleStart()" :variant="buttonsVariant" size="lg" :disabled="disabled"
+          ><i class="bi bi-play-fill"></i></ButtonComp
+      ></template>
+      <template v-else
+        ><ButtonComp @click="handlePause()" :variant="buttonsVariant" size="lg" :disabled="disabled"
+          ><i class="bi bi-pause-fill"></i></ButtonComp
+      ></template>
     </div>
   </div>
 </template>

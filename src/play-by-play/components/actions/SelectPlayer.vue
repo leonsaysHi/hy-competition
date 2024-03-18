@@ -1,7 +1,7 @@
 <template>
   <div class="vstack gap-3">
     <div class="vstack gap-1">
-      <template v-for="opt in options" :key="opt.value">
+      <template v-for="opt in sortedOptions" :key="opt.value">
         <ButtonComp
           :variant="opt.disabled ? 'light' : 'primary'"
           :class="opt.disabled && 'border'"
@@ -9,7 +9,7 @@
           :disabled="opt.disabled"
           @click="() => handleSelect(opt.value)"
         >
-          <span class="jersey-number">#{{ opt.row.number }}</span>
+          <span class="jersey-number">#{{ opt.number }}</span>
           <span class="vr" />
           <span class="jersey-name">{{ opt.text }}</span>
         </ButtonComp>
@@ -38,6 +38,7 @@ import ButtonComp from '@/components/ButtonComp.vue'
 import type { PlayerId } from '@/types/players'
 import type { PlayersOptions } from '../PlaysInput.vue'
 import { useI18n } from 'vue-i18n'
+import { computed } from 'vue'
 
 const { t } = useI18n()
 interface IProps {
@@ -46,11 +47,21 @@ interface IProps {
   hideCancel?: boolean
 }
 
-withDefaults(defineProps<IProps>(), {
+const props = withDefaults(defineProps<IProps>(), {
   hideSubmit: false,
   hideCancel: false
 })
 const emit = defineEmits(['resolve', 'reject'])
+
+const sortedOptions = computed(() => {
+  const result = props.options.slice()
+  result.sort((a, b) => {
+    const numA = a.number
+    const numB = b.number
+    return numA.localeCompare(numB, undefined, {numeric: true, sensitivity: 'base'})
+  })
+  return result
+})
 
 const handleSelect = (playerId: PlayerId) => {
   emit('resolve', playerId)

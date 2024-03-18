@@ -12,12 +12,14 @@ const { t } = useI18n()
 interface IProps {
   items: PlayByPlay
   rosters: Rosters
+  length?: number
   compact?: boolean
   showRemove?: boolean
   disabled?: boolean
 }
 
 const props = withDefaults(defineProps<IProps>(), {
+  length: 0,
   disabled: false,
   compact: false,
   showRemove: false
@@ -30,7 +32,7 @@ const getTeamIdFromPlayerId = (playerId: PlayerId): TeamId => {
   ) as TeamId
 }
 const playByPlayStacks = computed(() => {
-  return props.items.map((stack: PlayStack) => {
+  const results = props.items.map((stack: PlayStack) => {
     return stack.map((play: Play) => {
       const player = Object.values(props.rosters)
         .map((roster: Roster) => Object.values(roster))
@@ -46,6 +48,7 @@ const playByPlayStacks = computed(() => {
       }
     })
   })
+  return props.length > 0 ? results.slice(results.length - props.length, results.length) : results
 })
 const handleRemove = (idx: number) => {
   emit('remove', idx)
@@ -65,7 +68,7 @@ const handleRemove = (idx: number) => {
             <span class="jersey-name">{{ act.player.fname }} {{ act.player.lname }}</span>
           </div>
           <div>
-            {{ t(`options.playerStats.playByPlay.${act.actionKey}`) }}
+            {{ t(`options.playByPlay.text.${act.actionKey}`) }}
           </div>
           <template v-if="showRemove">
             <ButtonComp class="ms-auto" variant="light" @click="handleRemove(idx)"

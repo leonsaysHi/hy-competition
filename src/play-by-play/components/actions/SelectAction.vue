@@ -10,7 +10,7 @@
           <div class="vstack gap-1">
             <template v-for="opt in options[teamId]" :key="opt.value">
               <ButtonComp
-                variant="primary"
+                :variant="opt.variant || 'primary'"
                 size="lg"
                 @click="() => handleSelect(teamId, opt.value)"
                 >{{ opt.text }}</ButtonComp
@@ -46,6 +46,7 @@ import type { PlayKey } from '@/play-by-play/GameInput.vue'
 import type { TeamId } from '@/types/teams'
 import type { ActionsOptions } from '../PlaysInput.vue'
 import { useI18n } from 'vue-i18n'
+import { computed } from 'vue'
 
 const { t } = useI18n()
 interface IProps {
@@ -60,7 +61,9 @@ const props = withDefaults(defineProps<IProps>(), {
 })
 const emit = defineEmits(['resolve', 'reject'])
 
-const teams = Object.keys(props.options).filter((teamId: TeamId) => props.options[teamId].length)
+const teams = computed(() => Object.keys(props.options)
+  .filter((teamId: TeamId) => props.options[teamId]?.length)
+)
 
 const handleSelect = (teamId: TeamId, actionKey: PlayKey) => {
   emit('resolve', { teamId, actionKey })
