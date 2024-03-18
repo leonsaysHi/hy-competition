@@ -119,7 +119,7 @@ const endAction = () => {
 const pushAction = async () => {
   try {
     const selection = await selectActionKey()
-    const time = props.time
+    const time = prevAction.value?.time || props.time
     const { teamId, actionKey } = selection
     const action: ActionMapItem = actionsMap.find(
       (action) => action.actionKey === actionKey
