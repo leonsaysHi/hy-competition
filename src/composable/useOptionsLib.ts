@@ -2,8 +2,7 @@ import type {
   CompetitionCategorie,
   CompetitionSport,
   PhaseType,
-  StatsInputType,
-  StatsType
+  StatsInputType
 } from '@/types/competitions'
 import type { GenderKey } from '@/types/players'
 import type { PlayerStatKey, TeamStatKey, PlayerRankingKey, AwardKey } from '@/types/stats'
@@ -45,7 +44,7 @@ export default function usePlayersLib() {
   ]
 
   const playerStatsKeys: { value: PlayerStatKey; text: string; long: string }[] = [
-    'sec',
+    'time',
     'ftm',
     'fta',
     'fgm',

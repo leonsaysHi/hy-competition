@@ -1,4 +1,4 @@
-import type { AwardItem, PlayerStatKey } from './stats'
+import type { AwardItem } from './stats'
 import type { CompetitionTeam, TeamId } from './teams'
 import type { Game } from './games'
 import type { GenderKey } from './players'
@@ -12,6 +12,13 @@ export interface Phase {
   type: PhaseType
   groups: TeamId[][]
   datetime: Date
+}
+
+export interface CompetitionConfig {
+  gameLength: number
+  nbPeriods: number
+  oTLength: number
+  lineupLength: number
 }
 // data
 export interface CompetitionDoc {

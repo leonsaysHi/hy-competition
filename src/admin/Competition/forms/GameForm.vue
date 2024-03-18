@@ -6,6 +6,7 @@ import ButtonComp from '@/components/ButtonComp.vue'
 import FieldComp from '@/components/FieldComp.vue'
 import InputComp from '@/components/InputComp.vue'
 import ScoresInput from '@/admin/competition/games/components/ScoresInput.vue'
+import PlayByPlayField from '@/admin/competition/games/components/PlayByPlayField.vue'
 import BoxScoreInput from '@/admin/competition/games/components/BoxScoreInput.vue'
 import AwardsInput from '@/admin/competition/components/AwardsInput.vue'
 import type { AwardItem } from '@/types/stats'
@@ -13,11 +14,11 @@ import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import { useRoute } from 'vue-router'
+import usePlayByPlay from '@/composable/usePlayByPlay'
 
 const route = useRoute()
 const { competitionId } = route.params
 const { row, getCompetitionTeam: getCompetitionTeam } = useCompetition(competitionId)
-
 const { getTeamName, getPlayerName } = useLibs()
 
 interface IProps {
@@ -38,7 +39,6 @@ type FormData = {
   boxscore: GameDocBoxScore
   awards: AwardItem[]
 }
-
 const getDefaultGame = (): Game => ({
   id: '',
   teams: [],
@@ -129,14 +129,18 @@ const handleSubmit = (ev: Event) => {
         </ScoresInput>
       </FieldComp>
       <hr />
-      <FieldComp label="Boxscore">
+      <FieldComp label="Boxscore sheet">
         <template v-for="(boxscore, teamId) in boxscoreByTeams" :key="teamId">
           <h3 class="mb-0">{{ getTeamName(teamId) }}</h3>
           <BoxScoreInput v-model="boxscoreByTeams[teamId]" :disabled="isBusy" />
         </template>
       </FieldComp>
     </template>
-    <template v-else> Play by Play </template>
+    <template v-else>
+      <FieldComp label="Play-by-play link">
+        <PlayByPlayField />
+      </FieldComp>
+    </template>
     <hr />
     <FieldComp label="Awards">
       <AwardsInput v-model="data.awards" :players-options="playersOptions" :disabled="isBusy" />

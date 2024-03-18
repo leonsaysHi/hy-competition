@@ -75,19 +75,21 @@
                     </ButtonComp>
                   </slot>
                 </template>
-                <slot
-                  name="modal-ok"
-                  v-bind="{
-                    hide,
-                    okTitle,
-                    okVariant,
-                    okDisabled
-                  }"
-                >
-                  <ButtonComp :variant="okVariant" :disabled="okDisabled" @click="handleOk">
-                    {{ okTitle }}
-                  </ButtonComp>
-                </slot>
+                <template v-if="!hideOk">
+                  <slot
+                    name="modal-ok"
+                    v-bind="{
+                      hide,
+                      okTitle,
+                      okVariant,
+                      okDisabled
+                    }"
+                  >
+                    <ButtonComp :variant="okVariant" :disabled="okDisabled" @click="handleOk">
+                      {{ okTitle }}
+                    </ButtonComp>
+                  </slot>
+                </template>
               </slot>
             </div>
           </template>
@@ -125,6 +127,7 @@ interface IProps {
   size?: 'lg' | 'md' | 'sm'
   hideHeader?: boolean
   hideFooter?: boolean
+  hideOk?: boolean
   hideCancel?: boolean
   hideClose?: boolean
   cancelTitle?: string
@@ -164,6 +167,7 @@ const props = withDefaults(defineProps<IProps>(), {
   size: 'md',
   hideHeader: false,
   hideFooter: false,
+  hideOk: false,
   hideCancel: false,
   hideClose: false,
   position: '',

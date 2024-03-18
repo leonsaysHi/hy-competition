@@ -7,7 +7,6 @@ import type { Option } from '@/types/comp-fields'
 import type { TableField } from '@/types/comp-table'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import type { CompetitionPlayer } from '@/types/players'
-import type { PlayerStatKey } from '@/types/stats'
 
 import TeamLogo from '../teams/TeamLogo.vue'
 import type { GameBoxScoreComputed } from '@/types/computed'
@@ -45,7 +44,7 @@ const fields = computed(() => {
       []
     )
   ]
-  const minIdx = fields.findIndex((field) => field.key === 'sec')
+  const minIdx = fields.findIndex((field) => field.key === 'time')
   fields.splice(
     minIdx + 1,
     0,

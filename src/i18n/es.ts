@@ -17,7 +17,7 @@ const es = {
       }
     },
     phases: {
-      groups: 'Grupos',
+      groups: 'Phase regulares',
       playoffs: 'Playoffs'
     },
     stats: {
@@ -27,7 +27,7 @@ const es = {
     playerStats: {
       text: {
         gp: 'GP',
-        sec: 'Min',
+        time: 'Min',
         ftm: 'FTM',
         fta: 'FTA',
         ftprc: 'FT%',
@@ -49,11 +49,11 @@ const es = {
         fdr: 'FDr',
         pir: 'PIR',
         pts: 'Pts',
-        ptsavg: 'Pts avg.'
+        ptsavg: 'Pts avg.',
       },
       long: {
         gp: 'Juegos',
-        sec: 'Minutos',
+        time: 'Minutos',
         ftm: 'Tiros libres conv.',
         fta: 'Tiros libres int.',
         ftprc: '% tiros libres',
@@ -75,8 +75,58 @@ const es = {
         fdr: 'Faltas personales señaladas',
         pir: 'Índice de rendimiento',
         pts: 'Puntos',
-        ptsavg: 'Puntos prom.'
-      }
+        ptsavg: 'Puntos prom.',
+      },
+    },
+    playByPlay: {
+      text: {
+        time: 'Min',
+        ftm: 'Anotó: 1Pt',
+        fta: 'Tiro Libre',
+        fgm: 'Anotó: 2Pts',
+        fga: 'Tiro 2Pts',
+        fg3m: 'Anotó: 3Pts',
+        fg3a: 'Tiro 3Pts',
+        reb: 'Reb',
+        dreb: 'Rebote def.',
+        oreb: 'Reb ofe.',
+        ast: 'Astencia',
+        stl: 'Robo',
+        blk: 'Bloqueo',
+        tov: 'Bal. perdido',
+        fcm: 'Falta',
+        fdr: 'Falta sobre',
+        subout: 'Sust. sale',
+        subin: 'Sust. entra'
+      },
+      long: {
+        gp: 'Juegos',
+        time: 'Minutos',
+        ftm: 'Tiros libres conv.',
+        fta: 'Tiros libres int.',
+        ftprc: '% tiros libres',
+        fgm: '2pts conv.',
+        fga: '2pts int.',
+        fgprc: '% 2pts',
+        fg3m: '3pts conv.',
+        fg3a: '3pts int.',
+        fg3prc: '% 3pts',
+        reb: 'Rebotes tot.',
+        dreb: 'Rebotes def.',
+        oreb: 'Rebotes off.',
+        ast: 'Asistencias',
+        stl: 'Robos',
+        blk: 'Bloqueos',
+        blka: 'Bloqueos en contra',
+        tov: 'Pérdidas de balón',
+        fcm: 'Faltas personales cometidas',
+        fdr: 'Faltas personales señaladas',
+        pir: 'Índice de rendimiento',
+        pts: 'Puntos',
+        ptsavg: 'Puntos prom.',
+        subout: 'Sustitución sale',
+        subin: 'Sustitución entra'
+      },
     },
     awards: {
       text: {
@@ -116,6 +166,8 @@ const es = {
     }
   },
   cta: {
+    cancel: 'Cancelar',
+    submit: 'Guardar',
     view: 'ver'
   },
   home: {
@@ -153,7 +205,9 @@ const es = {
     previous: 'Ultimo | Ultimos',
     upcoming: 'Proximo | Proximos',
     search: 'Buscar',
-    backToTop: 'Volver arriba'
+    backToTop: 'Volver arriba',
+    open: 'Open',
+    close: 'Close'
   }
 }
 

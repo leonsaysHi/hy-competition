@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { useRoute, useRouter } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
+import DropdownComp from '@/components/DropdownComp.vue'
 import useCompetition from '@/composable/useCompetition'
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import type { CompetitionGroupComputed, CompetitionPhaseComputed } from '@/types/computed'
 import type { Option } from '@/types/comp-fields'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
@@ -18,11 +19,25 @@ const { t } = useI18n()
 
 const route = useRoute()
 const router = useRouter()
-const { competitionId } = route.params as { competitionId: string }
+const { competitionId, phase } = route.params as { competitionId: string; phase: string }
 
 const { competitionPhases, getGender, getCategory } = useOptionsLib()
 
 const { isReady, row, computedPhases } = useCompetition(competitionId)
+
+const selectedPhaseIdx = ref<string | undefined>(phase || undefined)
+const selectedGroupIdx = ref<string | undefined>(route.hash?.substring(1) || undefined)
+
+const selectedPhase = computed<CompetitionPhaseComputed | undefined>(() =>
+  Array.isArray(computedPhases?.value) && selectedPhaseIdx.value
+    ? (computedPhases.value[Number(selectedPhaseIdx.value)] as CompetitionPhaseComputed)
+    : undefined
+)
+const selectedGroup = computed<CompetitionGroupComputed | undefined>(() =>
+  Array.isArray(selectedPhase.value?.groups) && selectedGroupIdx.value
+    ? selectedPhase.value?.groups[Number(selectedGroupIdx.value)]
+    : undefined
+)
 
 const phasesOptions = computed<Option[] | undefined>(() =>
   Array.isArray(computedPhases.value)
@@ -34,17 +49,6 @@ const phasesOptions = computed<Option[] | undefined>(() =>
       )
     : undefined
 )
-const selectedPhaseIdx = ref(0)
-const selectedPhase = computed<CompetitionPhaseComputed>(
-  () => computedPhases.value[Number(selectedPhaseIdx.value)] as CompetitionPhaseComputed
-)
-const selectedGroupIdx = ref(route.hash ? route.hash.substring(1) : '0')
-watch(
-  () => selectedGroupIdx.value,
-  (val: number) => {
-    router.replace({ ...route, hash: `#${val}` })
-  }
-)
 const groupsOptions = computed<Option[] | undefined>(() =>
   Array.isArray(selectedPhase.value?.groups)
     ? selectedPhase.value?.groups.map(
@@ -55,9 +59,22 @@ const groupsOptions = computed<Option[] | undefined>(() =>
       )
     : undefined
 )
-const selectedGroup = computed<CompetitionGroupComputed>(
-  () => selectedPhase.value.groups[Number(selectedGroupIdx.value)]
-)
+
+watchEffect(() => {
+  if (selectedPhaseIdx.value === undefined) {
+    selectedPhaseIdx.value = Array.isArray(phasesOptions.value)
+      ? phasesOptions.value[phasesOptions.value.length - 1].value
+      : undefined
+    selectedGroupIdx.value = '0'
+  }
+})
+watchEffect(() => {
+  router.replace({
+    ...route,
+    params: { phase: selectedPhaseIdx.value },
+    hash: `#${selectedGroupIdx.value}`
+  })
+})
 
 const gamesViewOptions: Option[] = [
   { text: t('global.previous', 2), value: 'prev' },
@@ -90,31 +107,25 @@ const groupGames = computed<Game[]>(() => {
     <template v-if="!isReady">
       <SpinnerComp />
     </template>
-    <template v-else-if="!phasesOptions">
+    <template v-else-if="!phasesOptions?.length || !groupsOptions?.length">
       <p>Error: No phase.</p>
     </template>
     <template v-else>
-      <template v-if="phasesOptions.length > 1">
-        <ul class="mb-3 nav nav-tabs">
-          <template v-for="opt in phasesOptions" :key="opt.value">
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                :class="{ active: selectedPhaseIdx === opt.value }"
-                :aria-current="selectedPhaseIdx === opt.value ? 'page' : false"
-                @click="selectedPhaseIdx = opt.value"
-                >{{ opt.text }}</a
-              >
-            </li>
-          </template>
-        </ul>
-      </template>
-
-      <template v-if="groupsOptions">
+      <div class="mb-3 hstack gap-3">
+        <DropdownComp
+          v-model="selectedPhaseIdx"
+          :options="phasesOptions"
+          variant="light"
+          size="lg"
+          class="fw-bold fz-5"
+          :disabled="phasesOptions.length === 1"
+        />
         <template v-if="groupsOptions.length > 1">
           <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons />
-          <hr />
         </template>
+      </div>
+      <hr />
+      <template v-if="selectedPhase && selectedGroup">
         <h3>{{ t('global.standing') }}</h3>
         <CompetitionStanding :value="selectedGroup.standing" />
         <div class="d-flex align-items-end justify-content-between">

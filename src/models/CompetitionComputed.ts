@@ -15,7 +15,7 @@ import type {
   PlayerBoxScore
 } from '@/types/stats'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
-import { add, getPerc } from '@/utils/maths'
+import { getPerc } from '@/utils/maths'
 import useOptionsLib from '@/composable/useOptionsLib'
 import GameComputedClass, { type ScoresComputed } from './GameComputed'
 import type {

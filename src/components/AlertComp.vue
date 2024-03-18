@@ -8,12 +8,13 @@
 </template>
 
 <script setup lang="ts">
+import type { Size, Variant } from '@/types/comp-fields'
 import { computed } from 'vue'
 
 interface IProps {
   modelValue?: boolean
-  variant?: string
-  size?: 'sm' | 'md' | 'lg'
+  variant?: Variant
+  size?: Size
   dismissible?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {

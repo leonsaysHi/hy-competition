@@ -68,7 +68,7 @@ const statsFields = computed<TableField[]>(() => {
     ],
     []
   )
-  const minIdx = fields.findIndex((field) => field.key === 'sec')
+  const minIdx = fields.findIndex((field) => field.key === 'time')
   fields.splice(
     minIdx + 1,
     0,

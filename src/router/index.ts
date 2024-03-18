@@ -13,6 +13,7 @@ import PlayersView from '@/views/players/IndexView.vue'
 import PlayersListView from '@/views/players/ListView.vue'
 import PlayerDetailsView from '@/views/players/DetailsView.vue'
 import adminRoutes from './admin'
+import playByPlayRoutes from './play-by-play'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -31,7 +32,7 @@ const router = createRouter({
           component: CompetitionView,
           children: [
             {
-              path: '',
+              path: ':phase?',
               name: 'competition',
               component: CompetitionDetailsView
             },
@@ -93,6 +94,11 @@ const router = createRouter({
           component: () => import('@/views/AboutView.vue')
         }
       ]
+    },
+    {
+      path: '/play-by-play',
+      component: () => import('@/play-by-play/IndexView.vue'),
+      children: playByPlayRoutes
     },
     {
       path: '/admin',
