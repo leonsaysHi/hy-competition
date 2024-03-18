@@ -1,7 +1,7 @@
-import type { Play, PlayByPlay, PlayStack, Rosters } from '@/play-by-play/GameInput.vue'
+import type { LineUps, Play, PlayByPlay, PlayStack, Rosters } from '@/play-by-play/GameInput.vue'
 import type { CompetitionConfig } from '@/types/competitions'
 import type { GameDocBoxScore, GameDocScores, GameId } from '@/types/games'
-import type { PlayerId } from '@/types/players'
+import type { Player, PlayerId } from '@/types/players'
 import type { PlayerStatKey } from '@/types/stats'
 import type { TeamId } from '@/types/teams'
 import { differenceInMilliseconds } from 'date-fns'
@@ -27,9 +27,42 @@ export default class PlayByPlayModel {
     return false
   }
 
+  get time(): number {
+    let result:number = 0
+    this.data
+      .forEach((stack: PlayStack) => {
+        stack.forEach((play: Play) => {
+          result = Math.max(result, play.time)
+        })
+      })
+    return result
+  }
+
+  get lineups(): LineUps {
+    const lineups = Object.keys(this.rosters).reduce((result: LineUps, teamId: TeamId) => {
+      result[teamId] = []
+      return result
+    }, {})
+    this.data
+      .forEach((stack: PlayStack) => {
+        if (['subout', 'subin'].includes(stack[0].actionKey)) {
+          stack.forEach((play: Play) => {
+            const { playerId, actionKey } = play
+            const teamId = this.getTeamIdFromPlayerId(playerId)
+            if (actionKey === 'subin') {
+              lineups[teamId].push(playerId)
+            } else if (actionKey === 'subout') {
+              const idx = lineups[teamId].findIndex((pId: PlayerId) => pId === playerId)
+              idx > -1 && lineups[teamId].splice(idx, 1, subinId)
+            }
+          })
+        }
+      })
+    return lineups
+  }
+
   get boxScore(): GameDocBoxScore {
     const boxscores = this.data.reduce((boxscores: GameDocBoxScore, stack: PlayStack) => {
-      
       stack.forEach((play: Play) => {
         const { playerId, actionKey } = play
         if (!['subout', 'subin'].includes(actionKey)) {

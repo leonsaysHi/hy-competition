@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Game } from '@/types/games'
+import type { Game, GameId } from '@/types/games'
 import { computed, ref, watch } from 'vue'
 import useLibs from '@/composable/useLibs'
 import GameClock from './components/GameClock.vue'
@@ -8,10 +8,12 @@ import LineupsSelect from './components/LineupsSelect.vue'
 import PlaysInput from './components/PlaysInput.vue'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import type { CompetitionPlayer, PlayerDoc, PlayerId } from '@/types/players'
-import type { Competition, CompetitionConfig } from '@/types/competitions'
+import type { Competition, CompetitionConfig, CompetitionId } from '@/types/competitions'
 import type { PlayerStatKey } from '@/types/stats'
 import ActionsDisplay from './components/ActionsDisplay.vue'
 import PlayByPlayModel from '@/models/PlayByPlay'
+import usePlayByPlay from '@/composable/usePlayByPlay'
+import { useRoute } from 'vue-router'
 
 export interface LineUps {
   [key: TeamId]: PlayerId[]
@@ -29,6 +31,10 @@ export interface Play {
   playerId: PlayerId
   actionKey: PlayKey
 }
+export interface PlayStackDoc { 
+  id?: number,
+  playStack: PlayStack
+}
 export type PlayStack = Play[]
 export type PlayByPlay = PlayStack[]
 
@@ -37,32 +43,54 @@ interface IProps {
   competitionTeams: CompetitionTeam[]
   competitionConfig: CompetitionConfig
   game: Game
+  data?: PlayByPlay
 }
-const props = withDefaults(defineProps<IProps>(), {})
-
-const { getPlayer, getTeamName } = useLibs()
-
-const { gameLength, nbPeriods, oTLength, lineupLength } = props.competitionConfig
-
-const time = ref(0)
-const rosters = computed(() => {
-  return props.game.teams.reduce((rosters: Rosters, teamId: TeamId) => {
-    const { players } = props.competitionTeams.find(
-      (team: CompetitionTeam) => team.id === teamId
-    ) as CompetitionTeam
-    rosters[teamId] = players.reduce((result: Roster, player: CompetitionPlayer) => {
-      const playerId: PlayerId = player.id
-      result[playerId] = {
-        ...player,
-        ...getPlayer(playerId)
-      } as RosterPlayer
-      return result
-    }, {})
-    return rosters
-  }, {})
+const props = withDefaults(defineProps<IProps>(), {
+  data: () => ([]),
+  time: 0
 })
 
-const lineups = ref<LineUps>({})
+const route = useRoute()
+const { competitionId, gameId } = route.params as { competitionId: CompetitionId, gameId: GameId }
+const { writeStack } = usePlayByPlay(competitionId, gameId)
+const { getPlayer, getTeamName } = useLibs()
+const { gameLength, nbPeriods, oTLength, lineupLength } = props.competitionConfig
+
+const data = ref<PlayByPlay>(props.data)
+
+const rosters = ref(props.game.teams
+  .reduce((rosters: Rosters, teamId: TeamId) => {
+      const { players } = props.competitionTeams.find(
+        (team: CompetitionTeam) => team.id === teamId
+      ) as CompetitionTeam
+      rosters[teamId] = players.reduce((result: Roster, player: CompetitionPlayer) => {
+        const playerId: PlayerId = player.id
+        result[playerId] = {
+          ...player,
+          ...getPlayer(playerId)
+        } as RosterPlayer
+        return result
+      }, {})
+      return rosters
+    }, {}
+  )
+)
+
+const playByPlay = ref<PlayByPlayModel>(
+  new PlayByPlayModel(props.game.id, props.competitionConfig, data.value, rosters.value)
+)
+
+const time = ref(playByPlay.value?.time || 0)
+const lineups = ref<LineUps>(playByPlay.value?.lineups || {})
+const isLineupsReady = computed(() => {
+  return (
+    Object.keys(lineups.value).length === 2 &&
+    Object.keys(lineups.value).every(
+      (teamId: TeamId) => Array.isArray(lineups.value[teamId]) && lineups.value[teamId].length === lineupLength
+    )
+  )
+})
+
 const handleInitLineups = (payload: LineUps) => {
   const subins: Play[] = []
   Object.keys(payload).forEach((teamId: TeamId) => {
@@ -73,14 +101,7 @@ const handleInitLineups = (payload: LineUps) => {
   lineups.value = payload
   data.value.push(subins)
 }
-const isLineupsReady = computed(() => {
-  return (
-    Object.keys(lineups.value).length === 2 &&
-    Object.keys(lineups.value).every(
-      (teamId: TeamId) => Array.isArray(lineups.value[teamId]) && lineups.value[teamId].length > 0 // === lineupLength
-    )
-  )
-})
+
 
 const isGameReady = computed(() => {
   return isLineupsReady.value
@@ -90,18 +111,14 @@ const handleClosePeriod = () => {
   console.log('stopped')
 }
 
-const data = ref<PlayByPlay>([])
-const playByPlay = ref<PlayByPlayModel>(
-  new PlayByPlayModel(props.game.id, props.competitionConfig, data.value, rosters.value)
-)
 watch(
   () => data.value.length,
-  (val, oldVal) => {
+  (val: number, oldVal: number) => {
     if (val > oldVal) {
-      const lastAction = data.value[data.value.length - 1]
-      if (lastAction[0].actionKey === 'subout') {
-        const outPlayerId = lastAction[0].playerId
-        const inPlayerId = lastAction[1].playerId
+      const newStack = data.value[data.value.length - 1]
+      if (newStack[0].actionKey === 'subout') {
+        const outPlayerId = newStack[0].playerId
+        const inPlayerId = newStack[1].playerId
         Object.values(lineups.value).forEach((lineup: PlayerId[]) => {
           const idx = lineup.findIndex((playerId: PlayerId) => playerId === outPlayerId)
           if (idx > -1) {
@@ -110,6 +127,7 @@ watch(
           }
         })
       }
+      writeStack(newStack)
     }
     playByPlay.value = new PlayByPlayModel(
       props.game.id,

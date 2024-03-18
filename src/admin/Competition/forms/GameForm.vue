@@ -13,11 +13,11 @@ import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import { useRoute } from 'vue-router'
+import usePlayByPlay from '@/composable/usePlayByPlay'
 
 const route = useRoute()
 const { competitionId } = route.params
 const { row, getCompetitionTeam: getCompetitionTeam } = useCompetition(competitionId)
-
 const { getTeamName, getPlayerName } = useLibs()
 
 interface IProps {
@@ -29,6 +29,7 @@ const props = withDefaults(defineProps<IProps>(), {
   isBusy: false,
   competitionTeams: () => []
 })
+const { deleteRow } = usePlayByPlay(competitionId, props.value.id)
 
 type FormData = {
   id: string
@@ -129,14 +130,24 @@ const handleSubmit = (ev: Event) => {
         </ScoresInput>
       </FieldComp>
       <hr />
-      <FieldComp label="Boxscore">
+      <FieldComp label="Boxscore sheet">
         <template v-for="(boxscore, teamId) in boxscoreByTeams" :key="teamId">
           <h3 class="mb-0">{{ getTeamName(teamId) }}</h3>
           <BoxScoreInput v-model="boxscoreByTeams[teamId]" :disabled="isBusy" />
         </template>
       </FieldComp>
     </template>
-    <template v-else> Play by Play </template>
+    <template v-else>
+      <FieldComp label="Play-by-play link">
+        <div>
+          <RouterLink
+            class="btn btn-primary btn-sm"
+            :to="{ name: 'play-by-play', params: { competitionId, gameId: data.id } }"
+            >Play-by-play</RouterLink
+          >
+        </div>
+        </FieldComp>
+    </template>
     <hr />
     <FieldComp label="Awards">
       <AwardsInput v-model="data.awards" :players-options="playersOptions" :disabled="isBusy" />

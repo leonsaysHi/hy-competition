@@ -1,19 +1,16 @@
 <script lang="ts" setup>
 import { RouterView } from 'vue-router'
 import { useRoute } from 'vue-router'
-import useCompetition from '@/composable/useCompetition'
 import SpinnerComp from '@/components/SpinnerComp.vue'
-import type { Game } from '@/types/games'
-import { computed } from 'vue'
+import usePlayByPlay from '@/composable/usePlayByPlay'
 
 const route = useRoute()
 const { competitionId, gameId } = route.params
-const { isReady, row: competition, games, teams, config } = useCompetition(competitionId)
-const game = computed(() => games.value.find((game: Game) => game.id === gameId))
+const { isReady: isPlayByPlayReady, competition, game, teams, config, row: playByPlay } = usePlayByPlay(competitionId, gameId)
 </script>
 <template>
   <div class="wrapper vstack justify-content-around">
-    <template v-if="!isReady || !game || !teams || !config">
+    <template v-if="!isPlayByPlayReady || !game || !teams || !config">
       <SpinnerComp />
     </template>
     <template v-else>
@@ -22,6 +19,7 @@ const game = computed(() => games.value.find((game: Game) => game.id === gameId)
         :competition-teams="teams"
         :competition-config="config"
         :game="game"
+        :data="playByPlay"
       />
     </template>
   </div>
