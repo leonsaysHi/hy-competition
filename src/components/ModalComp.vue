@@ -119,7 +119,7 @@ interface IProps {
   isCentered?: boolean
   isAnimated?: boolean
   modelValue?: boolean
-  show?: boolean,
+  show?: boolean
   title?: string | undefined
   size?: 'lg' | 'md' | 'sm'
   hideHeader?: boolean
@@ -217,7 +217,7 @@ onUnmounted(() => {
 })
 
 watch(
-  () => (props.modelValue || props.show),
+  () => props.modelValue || props.show,
   (val) => {
     console.log(val)
     if (!bsModal.value) {

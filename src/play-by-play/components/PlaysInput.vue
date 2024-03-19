@@ -227,7 +227,7 @@ const selectPlayer = (teamId: TeamId, getPlayerKey: GetPlayerKey): Promise<Playe
       number: props.rosters[teamId][playerId].number,
       disabled:
         (getPlayerKey === 'teammate' && playerId === prevPlayerId) ||
-        (getPlayerKey === 'roster' && !props.lineups[teamId].includes(playerId))
+        (getPlayerKey === 'roster' && props.lineups[teamId].includes(playerId))
     }
   })
   return new Promise((res, rej) => {

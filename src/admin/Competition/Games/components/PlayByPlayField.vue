@@ -16,7 +16,13 @@
         >
         <ButtonComp variant="danger" @click="handleDelete">Delete Play-by-play</ButtonComp>
         <template v-if="confirmDatas">
-          <ModalComp hide-heacer ok-variant="danger" @ok="confirmDatas.ok" @cancel="confirmDatas.cancel" show>
+          <ModalComp
+            hide-heacer
+            ok-variant="danger"
+            @ok="confirmDatas.ok"
+            @cancel="confirmDatas.cancel"
+            show
+          >
             Are you sure
           </ModalComp>
         </template>
@@ -36,27 +42,25 @@
 </template>
 
 <script setup lang="ts">
-import usePlayByPlay from '@/composable/usePlayByPlay';
-import type { TableField } from '@/types/comp-table';
-import { computed, ref } from 'vue';
+import usePlayByPlay from '@/composable/usePlayByPlay'
+import type { TableField } from '@/types/comp-table'
+import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import type { PlayerId } from '@/types/players';
-import useLibs from '@/composable/useLibs';
-import useOptionsLib from '@/composable/useOptionsLib';
-import StatsTableComp from '@/components/StatsTableComp.vue';
-import ButtonComp from '@/components/ButtonComp.vue';
-import ModalComp from '@/components/ModalComp.vue';
+import type { PlayerId } from '@/types/players'
+import useLibs from '@/composable/useLibs'
+import useOptionsLib from '@/composable/useOptionsLib'
+import StatsTableComp from '@/components/StatsTableComp.vue'
+import ButtonComp from '@/components/ButtonComp.vue'
+import ModalComp from '@/components/ModalComp.vue'
 const { t } = useI18n()
 
 const route = useRoute()
 const { competitionId, gameId } = route.params
 const { isReady, model, deletePlayStacks } = usePlayByPlay(competitionId, gameId)
 
-
 const { getPlayer } = useLibs()
 const { playerStatsKeys } = useOptionsLib()
-
 
 const fields = computed(() => {
   const fields = [
@@ -80,8 +84,7 @@ const fields = computed(() => {
   return fields
 })
 const boxScoreItems = computed(() => {
-  return Object.keys(model.value?.boxScore)
-    .map((playerId: PlayerId) => ({
+  return Object.keys(model.value?.boxScore).map((playerId: PlayerId) => ({
     ...getPlayer(playerId),
     ...model.value?.boxScore[playerId]
   }))
@@ -90,22 +93,21 @@ const boxScoreItems = computed(() => {
 const confirmDatas = ref()
 const handleConfirmDelete = () => {
   return new Promise((resolve) => {
-    const resp = (resp:boolean) => { 
-        resolve(resp) 
-        confirmDatas.value = undefined
-      }
+    const resp = (resp: boolean) => {
+      resolve(resp)
+      confirmDatas.value = undefined
+    }
     confirmDatas.value = {
       ok: () => resp(true),
-      cancel: () => resp(false) 
+      cancel: () => resp(false)
     }
   })
 }
-const handleDelete = async() => {
+const handleDelete = async () => {
   if (await handleConfirmDelete()) {
     deletePlayStacks()
-  } 
+  }
 }
-
 </script>
 
 <style scoped lang="scss"></style>

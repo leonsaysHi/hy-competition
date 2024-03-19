@@ -52,8 +52,8 @@
       {{ value }}
     </template>
     <template #time="{ value }">
-        {{ durationFormat(value) }}
-      </template>
+      {{ durationFormat(value) }}
+    </template>
     <template #pts="{ item }">
       {{
         item.gp
@@ -122,8 +122,8 @@
       <span class="fw-lighter">{{ t('global.total', 2) }}</span>
     </template>
     <template #footertime="{ value }">
-        {{ durationFormat(value) }}
-      </template>
+      {{ durationFormat(value) }}
+    </template>
     <template #footerftprc>
       {{ formatPerc(getCalculated(footerItem).ftprc) }}
     </template>
@@ -146,7 +146,7 @@
 </template>
 
 <script setup lang="ts">
-import { durationFormat }from '@/utils/dates'
+import { durationFormat } from '@/utils/dates'
 import type { TableField, TableItem } from '@/types/comp-table'
 import type { Option } from '@/types/comp-fields'
 import TableComp from '@/components/TableComp.vue'

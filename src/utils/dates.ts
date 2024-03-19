@@ -21,7 +21,7 @@ export function formatDate(date: Date): DateFormats {
   }
 }
 
-export function durationFormat(time: number):string {
-  const { minutes = 0, seconds=0 } = intervalToDuration({ start: 0, end: time})
-  return `${ minutes < 10 ? `0${minutes}` : minutes }:${ seconds < 10 ? `0${seconds}` : seconds }`
+export function durationFormat(time: number): string {
+  const { minutes = 0, seconds = 0 } = intervalToDuration({ start: 0, end: time })
+  return `${minutes < 10 ? `0${minutes}` : minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
 }

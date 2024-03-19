@@ -69,15 +69,18 @@ export default class PlayByPlayModel {
         stats[key] = 0
         return stats
       }, {} as PlayerStats)
-    const boxscores = Object.keys(this.rosters).reduce((boxscores: GameDocBoxScore, teamId: TeamId) => {
-      Object.keys(this.rosters[teamId]).forEach((playerId: PlayerId) => {
-        boxscores[playerId] = {
-          ...getEmptyBoxScore(),
-          dnp: true,
-        }
-      })
-      return boxscores
-    }, {})
+    const boxscores = Object.keys(this.rosters).reduce(
+      (boxscores: GameDocBoxScore, teamId: TeamId) => {
+        Object.keys(this.rosters[teamId]).forEach((playerId: PlayerId) => {
+          boxscores[playerId] = {
+            ...getEmptyBoxScore(),
+            dnp: true
+          }
+        })
+        return boxscores
+      },
+      {}
+    )
     // fill stats
     this.data.forEach((stack: PlayStack) => {
       stack.forEach((play: Play) => {
@@ -94,31 +97,32 @@ export default class PlayByPlayModel {
       })
     })
     // fill time
-    const subsByPlayers = this.data.reduce((subs: { [key: PlayerId]: number[] }, stack: PlayStack) => {
-      if (['subout', 'subin'].includes(stack[0].actionKey)) {
-        stack.forEach((play: Play) => {
-          const { playerId, time } = play
-          subs[playerId] = subs[playerId] || []
-          subs[playerId].push(time)
-        })
-      }
-      return subs
-    }, {})
+    const subsByPlayers = this.data.reduce(
+      (subs: { [key: PlayerId]: number[] }, stack: PlayStack) => {
+        if (['subout', 'subin'].includes(stack[0].actionKey)) {
+          stack.forEach((play: Play) => {
+            const { playerId, time } = play
+            subs[playerId] = subs[playerId] || []
+            subs[playerId].push(time)
+          })
+        }
+        return subs
+      },
+      {}
+    )
     const lastTimeStamp = this.data[this.data.length - 1][0].time
     Object.keys(subsByPlayers).forEach((playerId: PlayerId) => {
       const subsList = subsByPlayers[playerId]
       if (subsList.length % 2 === 0) subsList.push(lastTimeStamp)
       const playerTime = subsList
         .flatMap((_: any, idx: number, arr: []) => (idx % 2 ? [] : [arr.slice(idx, idx + 2)]))
-        .reduce(
-          (time: number, arr: number[]) => {
-            if (arr.length === 1) {
-              arr.push(lastTimeStamp)
-            }
-            time += (arr.length === 2 ? differenceInMilliseconds(arr[1], arr[0]) : 0)
-            return time
-          }, 0
-        )
+        .reduce((time: number, arr: number[]) => {
+          if (arr.length === 1) {
+            arr.push(lastTimeStamp)
+          }
+          time += arr.length === 2 ? differenceInMilliseconds(arr[1], arr[0]) : 0
+          return time
+        }, 0)
       boxscores[playerId] = boxscores[playerId] || {}
       boxscores[playerId].time = playerTime
       boxscores[playerId].dnp = false
