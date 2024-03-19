@@ -14,6 +14,7 @@ import ActionsDisplay from './components/ActionsDisplay.vue'
 import PlayByPlayModel from '@/models/PlayByPlay'
 import usePlayByPlay from '@/composable/usePlayByPlay'
 import { useRoute } from 'vue-router'
+import { add } from '@/utils/maths'
 
 export interface LineUps {
   [key: TeamId]: PlayerId[]
@@ -46,15 +47,14 @@ interface IProps {
   data?: PlayByPlay
 }
 const props = withDefaults(defineProps<IProps>(), {
-  data: () => [],
-  time: 0
+  data: () => []
 })
 
 const route = useRoute()
 const { competitionId, gameId } = route.params as { competitionId: CompetitionId; gameId: GameId }
 const { writePlayStacks } = usePlayByPlay(competitionId, gameId)
 const { getTeamName } = useLibs()
-const { gameLength, nbPeriods, oTLength, lineupLength } = props.competitionConfig
+const { gameLength, nbPeriods, otLength, lineupLength } = props.competitionConfig
 
 const data = ref<PlayByPlay>(props.data)
 
@@ -62,7 +62,29 @@ const playByPlay = ref<PlayByPlayModel>(
   new PlayByPlayModel(props.game.id, props.competitionConfig, data.value, props.rosters)
 )
 
-const time = ref(playByPlay.value?.time || 0)
+const time = ref<number>(playByPlay.value.time || 0)
+const periodIdx = ref<number>(
+  playByPlay.value.time <= gameLength 
+  ? Math.floor(playByPlay.value.time / (gameLength / nbPeriods))
+  : playByPlay.value.time <= gameLength
+  ? Math.floor((playByPlay.value.time - gameLength) / otLength)
+  : 0
+)
+const periodsLength = computed<number[]>(() => {
+  return new Array(Math.max(nbPeriods, periodIdx.value + 1))
+    .fill(null)
+    .map((length: number, idx: number) => {
+      return idx < nbPeriods ? gameLength / nbPeriods : otLength
+    })
+})
+const isGameTied = computed<boolean>(() => {
+  const scores = Object.values(playByPlay.value.scores).map((scores: number[]) =>
+    scores.reduce(add, 0)
+  )
+  return scores[0] === scores[1]
+})
+const isGameOver = computed<boolean>(() => periodIdx.value === periodsLength.value.length - 1)
+
 const lineups = ref<LineUps>(playByPlay.value?.lineups || {})
 const isLineupsReady = computed(() => {
   return (
@@ -73,6 +95,26 @@ const isLineupsReady = computed(() => {
     )
   )
 })
+const handleNextPeriod = () => {
+  periodIdx.value += 1
+}
+const handleEndOfPeriod = () => {
+  if (isGameOver.value) {
+    if (isGameTied.value) {
+      handleNextPeriod()
+    }
+    else {
+      const time = periodsLength.value.reduce(add, 0)
+      const subouts: Play[] = []
+      Object.values(playByPlay.value.lineups).forEach((lineup: PlayerId[]) => {
+        lineup.forEach((playerId: PlayerId) => {
+          subouts.push({ time, playerId, actionKey: 'subout' })
+        })
+      })
+      data.value.push(subouts)
+    }
+  }
+}
 
 const handleInitLineups = (payload: LineUps) => {
   const subins: Play[] = []
@@ -88,10 +130,6 @@ const handleInitLineups = (payload: LineUps) => {
 const isGameReady = computed(() => {
   return isLineupsReady.value
 })
-
-const handleClosePeriod = () => {
-  console.log('stopped')
-}
 
 watch(
   () => data.value.length,
@@ -125,11 +163,11 @@ watch(
   <GameClock
     v-model="time"
     class="p-1"
-    :game-length="gameLength"
-    :nb-periods="nbPeriods"
-    :ot-length="oTLength"
+    :period-idx="periodIdx"
+    :periods-length="periodsLength"
     :disabled="!isGameReady"
-    @stopped="handleClosePeriod"
+    @end-of-period="handleEndOfPeriod"
+    @next-period="handleNextPeriod"
   />
   <div class="flex-grow-1 vstack gap-3 px-1 py-3">
     <template v-if="!isLineupsReady">

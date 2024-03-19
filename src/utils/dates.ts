@@ -1,5 +1,5 @@
 import type { DateFormats } from '@/types/utils'
-import { isDate, parseISO, format } from 'date-fns'
+import { isDate, parseISO, format, intervalToDuration } from 'date-fns'
 import { Timestamp } from 'firebase/firestore'
 
 export function dateToTimeStamp(date: Date = new Date()) {
@@ -19,4 +19,9 @@ export function formatDate(date: Date): DateFormats {
     full,
     time
   }
+}
+
+export function durationFormat(time: number): string {
+  const { minutes = 0, seconds = 0 } = intervalToDuration({ start: 0, end: time })
+  return `${minutes < 10 ? `0${minutes}` : minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
 }

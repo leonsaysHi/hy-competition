@@ -6,7 +6,7 @@ import ButtonComp from '@/components/ButtonComp.vue'
 import FieldComp from '@/components/FieldComp.vue'
 import InputComp from '@/components/InputComp.vue'
 import ScoresInput from '@/admin/competition/games/components/ScoresInput.vue'
-import PlayByPlayField from '@/admin/competition/games/components/PlayByPlayField.vue'
+import PlayByPlayInput from '@/admin/competition/games/components/PlayByPlayInput.vue'
 import BoxScoreInput from '@/admin/competition/games/components/BoxScoreInput.vue'
 import AwardsInput from '@/admin/competition/components/AwardsInput.vue'
 import type { AwardItem } from '@/types/stats'
@@ -136,8 +136,8 @@ const handleSubmit = (ev: Event) => {
       </FieldComp>
     </template>
     <template v-else>
-      <FieldComp label="Play-by-play link">
-        <PlayByPlayField />
+      <FieldComp label="Play-by-play">
+        <PlayByPlayInput />
       </FieldComp>
     </template>
     <hr />

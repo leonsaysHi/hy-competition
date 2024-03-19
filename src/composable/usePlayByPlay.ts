@@ -43,9 +43,7 @@ export default function usePlayByPlay(competitionId: CompetitionId, gameId: Game
   ).withConverter(playByPlayStackConverter)
   */
 
-  const playByPlay = useFirestore(playByPlayDoc, undefined) as Ref<
-    PlayByPlay | undefined
-  >
+  const playByPlay = useFirestore(playByPlayDoc, undefined) as Ref<PlayByPlay | undefined>
 
   const game = computed(() => games.value.find((game: Game) => game.id === gameId))
   const isReady = computed<Boolean>(
@@ -92,8 +90,9 @@ export default function usePlayByPlay(competitionId: CompetitionId, gameId: Game
     const doc: PlayByPlayDoc = { id: gameId, playStacks: playByPlay }
     writeDocs([doc], playByPlayCollection)
   }
-  const deleteRow = () => {
+  const deletePlayStacks = () => {
     // deleteDocs
+    deleteDocs([playByPlayDoc])
   }
 
   return {
@@ -108,6 +107,6 @@ export default function usePlayByPlay(competitionId: CompetitionId, gameId: Game
 
     // Admin
     writePlayStacks,
-    deleteRow
+    deletePlayStacks
   }
 }

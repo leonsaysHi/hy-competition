@@ -1,29 +1,27 @@
 <script lang="ts" setup>
 import ButtonComp from '@/components/ButtonComp.vue'
+import { add } from '@/utils/maths'
 import { computed, ref } from 'vue'
 
 interface IProps {
   modelValue: number
-  gameLength?: number
-  nbPeriods?: number
+  periodIdx: number
+  periodsLength: number[]
   disabled?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
-  gameLength: 4 * 10 * 60 * 1000,
-  nbPeriods: 4,
   disabled: false
 })
 
-const emit = defineEmits(['update:modelValue', 'stopped'])
+const emit = defineEmits(['update:modelValue', 'end-of-period', 'next-period'])
 const model = computed({
   get: (): number => props.modelValue,
   set: (val: number) => emit('update:modelValue', val)
 })
 
 const now: number = Date.now()
-const startTime = ref<number>(now)
+const startTime = ref<number>(now - props.modelValue)
 const pauseTime = ref<number>(now)
-const currentPeriodIdx = ref<number>(0)
 const animationFrame = ref<number | null>(null)
 const isRunning = computed({
   get: (): boolean => !!animationFrame.value,
@@ -55,14 +53,14 @@ const handleJump = (sec: number) => {
   // can't jump outside the current period:
   const jumpTime = Math.max(
     -inPeriodTime.value,
-    Math.min(sec * 1000, periodLength.value - inPeriodTime.value)
+    Math.min(sec * 1000, props.periodsLength[props.periodIdx] - inPeriodTime.value)
   )
   startTime.value = startTime.value - jumpTime
   model.value = pauseTime.value - startTime.value
 }
 
 const handleNextPeriod = () => {
-  currentPeriodIdx.value += 1
+  emit('next-period')
 }
 const runningTime = () => {
   const newTime = Math.min(
@@ -72,40 +70,51 @@ const runningTime = () => {
   model.value = newTime
   if (startTime.value + newTime === currentPeriodEndTime.value) {
     handlePause()
+    emit('end-of-period')
   } else {
     animationFrame.value = requestAnimationFrame(runningTime)
   }
 }
 
-const periodLength = computed<number>(() => props.gameLength / props.nbPeriods)
-const currentPeriodEndTime = computed<number>(
-  () => startTime.value + (currentPeriodIdx.value + 1) * periodLength.value
-)
+const currentPeriodStartTime = computed<number>(() => {
+  const duration = props.periodsLength.slice(0, props.periodIdx).reduce(add, 0)
+  console.log('duration to period start', duration)
+  return startTime.value + duration
+})
+const currentPeriodEndTime = computed<number>(() => {
+  const duration = props.periodsLength[props.periodIdx]
+  console.log('duration to period end', duration)
+  return currentPeriodStartTime.value + duration
+})
+const inPeriodTime = computed(() => {
+  const duration = props.periodsLength.slice(0, props.periodIdx).reduce(add, 0)
+  return model.value - duration
+})
+
 const isStartOfCurrentPeriod = computed<boolean>(() => inPeriodTime.value === 0)
-const isEndOfCurrentPeriod = computed<boolean>(() => inPeriodTime.value === periodLength.value)
-const isEndOfGame = computed<boolean>(
-  () => isEndOfCurrentPeriod.value && currentPeriodIdx.value === props.nbPeriods - 1
+const isEndOfCurrentPeriod = computed<boolean>(
+  () => inPeriodTime.value === props.periodsLength[props.periodIdx]
+)
+const isGameOver = computed<boolean>(
+  () => isEndOfCurrentPeriod.value && props.periodsLength.length === props.periodIdx + 1
 )
 
 const periodItems = computed<(-1 | 0 | 1)[]>(() =>
-  new Array(props.nbPeriods)
-    .fill(null)
-    .map((p, idx) =>
-      idx < currentPeriodIdx.value || (idx === currentPeriodIdx.value && inPeriodTime.value > 0)
-        ? 1
-        : idx > currentPeriodIdx.value
-          ? -1
-          : 0
-    )
+  props.periodsLength.map((p, idx) =>
+    idx < props.periodIdx || (idx === props.periodIdx && inPeriodTime.value > 0)
+      ? 1
+      : idx > props.periodIdx
+        ? -1
+        : 0
+  )
 )
-const inPeriodTime = computed(() => model.value - currentPeriodIdx.value * periodLength.value)
 const minutes = computed<string>(() => {
-  const mil = periodLength.value - inPeriodTime.value
+  const mil = props.periodsLength[props.periodIdx] - inPeriodTime.value
   const value = Math.floor(mil / 60000)
   return value < 10 ? `0${value}` : value.toString()
 })
 const secondes = computed<string>(() => {
-  const mil = periodLength.value - inPeriodTime.value
+  const mil = props.periodsLength[props.periodIdx] - inPeriodTime.value
   const value = Math.floor(Math.ceil(mil % 60000) / 1000)
   return value < 10 ? `0${value}` : value < 60 ? value.toString() : '00'
 })
@@ -150,8 +159,8 @@ const tenths = computed<string>(() => {
       </div>
     </div>
     <div class="hstack flex-grow-0 align-items-stretch">
-      <template v-if="isEndOfGame"
-        ><ButtonComp disabled variant="success" size="lg"
+      <template v-if="isGameOver"
+        ><ButtonComp variant="success" size="lg" disabled
           ><i class="bi bi-check-square-fill"></i></ButtonComp
       ></template>
       <template v-else-if="isEndOfCurrentPeriod"

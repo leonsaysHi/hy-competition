@@ -1,11 +1,13 @@
+import useOptionsLib from '@/composable/useOptionsLib'
 import type { LineUps, Play, PlayByPlay, PlayStack, Rosters } from '@/play-by-play/GameInput.vue'
 import type { CompetitionConfig } from '@/types/competitions'
 import type { GameDocBoxScore, GameDocScores, GameId } from '@/types/games'
-import type { Player, PlayerId } from '@/types/players'
-import type { PlayerStatKey } from '@/types/stats'
+import type { PlayerId } from '@/types/players'
+import type { PlayerStatKey, PlayerStats } from '@/types/stats'
 import type { TeamId } from '@/types/teams'
 import { differenceInMilliseconds } from 'date-fns'
 
+const { playerStatsKeys } = useOptionsLib()
 export default class PlayByPlayModel {
   id: GameId
   config: CompetitionConfig
@@ -52,7 +54,7 @@ export default class PlayByPlayModel {
             lineups[teamId].push(playerId)
           } else if (actionKey === 'subout') {
             const idx = lineups[teamId].findIndex((pId: PlayerId) => pId === playerId)
-            idx > -1 && lineups[teamId].splice(idx, 1, subinId)
+            idx > -1 && lineups[teamId].splice(idx, 1)
           }
         })
       }
@@ -61,12 +63,30 @@ export default class PlayByPlayModel {
   }
 
   get boxScore(): GameDocBoxScore {
-    const boxscores = this.data.reduce((boxscores: GameDocBoxScore, stack: PlayStack) => {
+    const getEmptyBoxScore = (): PlayerStats =>
+      playerStatsKeys.reduce((stats: PlayerStats, opt: Option) => {
+        const key = opt.value as PlayerStatKey
+        stats[key] = 0
+        return stats
+      }, {} as PlayerStats)
+    const boxscores = Object.keys(this.rosters).reduce(
+      (boxscores: GameDocBoxScore, teamId: TeamId) => {
+        Object.keys(this.rosters[teamId]).forEach((playerId: PlayerId) => {
+          boxscores[playerId] = {
+            ...getEmptyBoxScore(),
+            dnp: true
+          }
+        })
+        return boxscores
+      },
+      {}
+    )
+    // fill stats
+    this.data.forEach((stack: PlayStack) => {
       stack.forEach((play: Play) => {
         const { playerId, actionKey } = play
         if (!['subout', 'subin'].includes(actionKey)) {
           const statKey = actionKey as PlayerStatKey
-          boxscores[playerId] = boxscores[playerId] || {}
           boxscores[playerId][statKey] = boxscores[playerId][statKey] || 0
           boxscores[playerId][statKey] += 1
           if (statKey === 'blk') {
@@ -75,31 +95,37 @@ export default class PlayByPlayModel {
           }
         }
       })
-      return boxscores
-    }, {})
-    // min
-    const subs = this.data.reduce((subs: { [key: PlayerId]: number[] }, stack: PlayStack) => {
-      if (['subout', 'subin'].includes(stack[0].actionKey)) {
-        stack.forEach((play: Play) => {
-          const { playerId, time } = play
-          subs[playerId] = subs[playerId] || []
-          subs[playerId].push(time)
-        })
-      }
-      return subs
-    }, {})
+    })
+    // fill time
+    const subsByPlayers = this.data.reduce(
+      (subs: { [key: PlayerId]: number[] }, stack: PlayStack) => {
+        if (['subout', 'subin'].includes(stack[0].actionKey)) {
+          stack.forEach((play: Play) => {
+            const { playerId, time } = play
+            subs[playerId] = subs[playerId] || []
+            subs[playerId].push(time)
+          })
+        }
+        return subs
+      },
+      {}
+    )
     const lastTimeStamp = this.data[this.data.length - 1][0].time
-    Object.keys(subs).forEach((playerId: PlayerId) => {
-      const subsList = subs[playerId]
+    Object.keys(subsByPlayers).forEach((playerId: PlayerId) => {
+      const subsList = subsByPlayers[playerId]
       if (subsList.length % 2 === 0) subsList.push(lastTimeStamp)
       const playerTime = subsList
         .flatMap((_: any, idx: number, arr: []) => (idx % 2 ? [] : [arr.slice(idx, idx + 2)]))
-        .reduce(
-          (time: number, arr: number[]) => (time += arr.length === 2 ? differenceInMilliseconds(arr[0], arr[1]) : 0),
-          0
-        )
+        .reduce((time: number, arr: number[]) => {
+          if (arr.length === 1) {
+            arr.push(lastTimeStamp)
+          }
+          time += arr.length === 2 ? differenceInMilliseconds(arr[1], arr[0]) : 0
+          return time
+        }, 0)
       boxscores[playerId] = boxscores[playerId] || {}
       boxscores[playerId].time = playerTime
+      boxscores[playerId].dnp = false
     })
     return boxscores
   }
@@ -124,10 +150,10 @@ export default class PlayByPlayModel {
   }
 
   getPeriodIdxFromTime = (time: number): number => {
-    const { gameLength, nbPeriods, oTLength } = this.config
+    const { gameLength, nbPeriods, otLength } = this.config
     return time <= gameLength
       ? Math.floor(time / (gameLength / nbPeriods))
-      : nbPeriods + Math.floor((time - gameLength) / oTLength)
+      : nbPeriods + Math.floor((time - gameLength) / otLength)
   }
   getTeamIdFromPlayerId = (playerId: PlayerId): TeamId => {
     return Object.keys(this.rosters).find((teamId: TeamId) =>
