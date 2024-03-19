@@ -49,7 +49,7 @@ const es = {
         fdr: 'FDr',
         pir: 'PIR',
         pts: 'Pts',
-        ptsavg: 'Pts avg.',
+        ptsavg: 'Pts avg.'
       },
       long: {
         gp: 'Juegos',
@@ -75,8 +75,8 @@ const es = {
         fdr: 'Faltas personales señaladas',
         pir: 'Índice de rendimiento',
         pts: 'Puntos',
-        ptsavg: 'Puntos prom.',
-      },
+        ptsavg: 'Puntos prom.'
+      }
     },
     playByPlay: {
       text: {
@@ -126,7 +126,7 @@ const es = {
         ptsavg: 'Puntos prom.',
         subout: 'Sustitución sale',
         subin: 'Sustitución entra'
-      },
+      }
     },
     awards: {
       text: {

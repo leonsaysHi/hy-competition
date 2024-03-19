@@ -14,7 +14,6 @@ import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import { useRoute } from 'vue-router'
-import usePlayByPlay from '@/composable/usePlayByPlay'
 
 const route = useRoute()
 const { competitionId } = route.params

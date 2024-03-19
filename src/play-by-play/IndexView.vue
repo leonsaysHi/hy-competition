@@ -6,7 +6,14 @@ import usePlayByPlay from '@/composable/usePlayByPlay'
 
 const route = useRoute()
 const { competitionId, gameId } = route.params
-const { isReady: isPlayByPlayReady, competition, game, rosters, config, row: playByPlay } = usePlayByPlay(competitionId, gameId)
+const {
+  isReady: isPlayByPlayReady,
+  competition,
+  game,
+  rosters,
+  config,
+  row: playByPlay
+} = usePlayByPlay(competitionId, gameId)
 </script>
 <template>
   <div class="wrapper vstack justify-content-around">

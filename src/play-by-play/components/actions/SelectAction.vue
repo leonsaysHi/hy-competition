@@ -61,8 +61,8 @@ const props = withDefaults(defineProps<IProps>(), {
 })
 const emit = defineEmits(['resolve', 'reject'])
 
-const teams = computed(() => Object.keys(props.options)
-  .filter((teamId: TeamId) => props.options[teamId]?.length)
+const teams = computed(() =>
+  Object.keys(props.options).filter((teamId: TeamId) => props.options[teamId]?.length)
 )
 
 const handleSelect = (teamId: TeamId, actionKey: PlayKey) => {

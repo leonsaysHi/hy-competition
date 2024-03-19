@@ -23,18 +23,18 @@ export default class PlayByPlayModel {
     this.data = playByPlay
     this.rosters = rosters
   }
+
   get isFinished(): boolean {
     return false
   }
 
   get time(): number {
-    let result:number = 0
-    this.data
-      .forEach((stack: PlayStack) => {
-        stack.forEach((play: Play) => {
-          result = Math.max(result, play.time)
-        })
+    let result: number = 0
+    this.data.forEach((stack: PlayStack) => {
+      stack.forEach((play: Play) => {
+        result = Math.max(result, play.time)
       })
+    })
     return result
   }
 
@@ -43,21 +43,20 @@ export default class PlayByPlayModel {
       result[teamId] = []
       return result
     }, {})
-    this.data
-      .forEach((stack: PlayStack) => {
-        if (['subout', 'subin'].includes(stack[0].actionKey)) {
-          stack.forEach((play: Play) => {
-            const { playerId, actionKey } = play
-            const teamId = this.getTeamIdFromPlayerId(playerId)
-            if (actionKey === 'subin') {
-              lineups[teamId].push(playerId)
-            } else if (actionKey === 'subout') {
-              const idx = lineups[teamId].findIndex((pId: PlayerId) => pId === playerId)
-              idx > -1 && lineups[teamId].splice(idx, 1, subinId)
-            }
-          })
-        }
-      })
+    this.data.forEach((stack: PlayStack) => {
+      if (['subout', 'subin'].includes(stack[0].actionKey)) {
+        stack.forEach((play: Play) => {
+          const { playerId, actionKey } = play
+          const teamId = this.getTeamIdFromPlayerId(playerId)
+          if (actionKey === 'subin') {
+            lineups[teamId].push(playerId)
+          } else if (actionKey === 'subout') {
+            const idx = lineups[teamId].findIndex((pId: PlayerId) => pId === playerId)
+            idx > -1 && lineups[teamId].splice(idx, 1, subinId)
+          }
+        })
+      }
+    })
     return lineups
   }
 
@@ -96,9 +95,10 @@ export default class PlayByPlayModel {
       const playerTime = subsList
         .flatMap((_: any, idx: number, arr: []) => (idx % 2 ? [] : [arr.slice(idx, idx + 2)]))
         .reduce(
-          (time: number, arr: number[]) => (time += differenceInMilliseconds(arr[0], arr[1])),
+          (time: number, arr: number[]) => (time += arr.length === 2 ? differenceInMilliseconds(arr[0], arr[1]) : 0),
           0
         )
+      boxscores[playerId] = boxscores[playerId] || {}
       boxscores[playerId].time = playerTime
     })
     return boxscores
@@ -110,17 +110,15 @@ export default class PlayByPlayModel {
       return result
     }, {})
     return this.data.reduce((score: GameDocScores, stack: PlayStack) => {
-      stack
-        .forEach((play: Play) => {
-          if (['ftm', 'fgm', 'fg3m'].includes(play.actionKey)) {
-              const { playerId, actionKey, time } = play
-              const periodIdx = this.getPeriodIdxFromTime(time)
-              const teamId = this.getTeamIdFromPlayerId(playerId)
-              score[teamId][periodIdx] = score[teamId][periodIdx] || 0
-              score[teamId][periodIdx] += actionKey === 'fg3m' ? 3 : actionKey === 'fgm' ? 2 : 1
-            
-          }
-        })
+      stack.forEach((play: Play) => {
+        if (['ftm', 'fgm', 'fg3m'].includes(play.actionKey)) {
+          const { playerId, actionKey, time } = play
+          const periodIdx = this.getPeriodIdxFromTime(time)
+          const teamId = this.getTeamIdFromPlayerId(playerId)
+          score[teamId][periodIdx] = score[teamId][periodIdx] || 0
+          score[teamId][periodIdx] += actionKey === 'fg3m' ? 3 : actionKey === 'fgm' ? 2 : 1
+        }
+      })
       return score
     }, emptyValue)
   }
