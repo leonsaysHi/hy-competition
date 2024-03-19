@@ -17,7 +17,7 @@ export interface Phase {
 export interface CompetitionConfig {
   gameLength: number
   nbPeriods: number
-  oTLength: number
+  otLength: number
   lineupLength: number
 }
 // data

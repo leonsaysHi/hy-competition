@@ -54,7 +54,7 @@ const route = useRoute()
 const { competitionId, gameId } = route.params as { competitionId: CompetitionId; gameId: GameId }
 const { writePlayStacks } = usePlayByPlay(competitionId, gameId)
 const { getTeamName } = useLibs()
-const { gameLength, nbPeriods, oTLength, lineupLength } = props.competitionConfig
+const { gameLength, nbPeriods, otLength, lineupLength } = props.competitionConfig
 
 const data = ref<PlayByPlay>(props.data)
 
@@ -127,9 +127,8 @@ watch(
     class="p-1"
     :game-length="gameLength"
     :nb-periods="nbPeriods"
-    :ot-length="oTLength"
+    :ot-length="otLength"
     :disabled="!isGameReady"
-    @stopped="handleClosePeriod"
   />
   <div class="flex-grow-1 vstack gap-3 px-1 py-3">
     <template v-if="!isLineupsReady">

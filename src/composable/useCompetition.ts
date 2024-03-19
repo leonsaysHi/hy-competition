@@ -157,7 +157,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
       ? {
           gameLength: 1000 * 60 * 40,
           nbPeriods: 4,
-          oTLength: 1000 * 60 * 5,
+          otLength: 1000 * 60 * 5,
           lineupLength: 5
         }
       : undefined

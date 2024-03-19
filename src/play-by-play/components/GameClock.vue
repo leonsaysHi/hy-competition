@@ -6,15 +6,17 @@ interface IProps {
   modelValue: number
   gameLength?: number
   nbPeriods?: number
+  otLength?: number
   disabled?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
   gameLength: 4 * 10 * 60 * 1000,
   nbPeriods: 4,
+  otLength: 5,
   disabled: false
 })
 
-const emit = defineEmits(['update:modelValue', 'stopped'])
+const emit = defineEmits(['update:modelValue'])
 const model = computed({
   get: (): number => props.modelValue,
   set: (val: number) => emit('update:modelValue', val)

@@ -146,10 +146,10 @@ export default class PlayByPlayModel {
   }
 
   getPeriodIdxFromTime = (time: number): number => {
-    const { gameLength, nbPeriods, oTLength } = this.config
+    const { gameLength, nbPeriods, otLength } = this.config
     return time <= gameLength
       ? Math.floor(time / (gameLength / nbPeriods))
-      : nbPeriods + Math.floor((time - gameLength) / oTLength)
+      : nbPeriods + Math.floor((time - gameLength) / otLength)
   }
   getTeamIdFromPlayerId = (playerId: PlayerId): TeamId => {
     return Object.keys(this.rosters).find((teamId: TeamId) =>
