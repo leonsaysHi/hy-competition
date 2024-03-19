@@ -14,6 +14,7 @@
           :to="{ name: 'play-by-play', params: { competitionId, gameId } }"
           >Resume recording Play-by-play</RouterLink
         >
+        <ButtonComp variant="success" @click="handlePublish">Publish results</ButtonComp>
         <ButtonComp class="ms-auto" variant="danger" @click="handleDelete">Delete Play-by-play</ButtonComp>
         <template v-if="confirmDatas">
           <ModalComp
@@ -117,6 +118,9 @@ const handleConfirmDelete = () => {
       cancel: () => resp(false)
     }
   })
+}
+const handlePublish = () => {
+  // TODO
 }
 const handleDelete = async () => {
   if (await handleConfirmDelete()) {
