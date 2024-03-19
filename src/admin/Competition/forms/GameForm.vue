@@ -136,7 +136,7 @@ const handleSubmit = (ev: Event) => {
       </FieldComp>
     </template>
     <template v-else>
-      <FieldComp label="Play-by-play link">
+      <FieldComp label="Play-by-play">
         <PlayByPlayField />
       </FieldComp>
     </template>

@@ -50,7 +50,7 @@ watch(
     <li class="nav-item">
       <RouterLink
         class="nav-link"
-        :class="{ active: route.name?.includes('phase'), disabled: !isReady }"
+        :class="{ active: route.name?.includes('phase'), disabled: !isReady || !teamsListMinLength }"
         :to="{ ...route, name: 'admin-competition-phases' }"
         >Phases</RouterLink
       >

@@ -101,17 +101,13 @@
 
 <script setup lang="ts">
 /*
-
-// Show/hide using trigger slot
-<Modal ref="myModalComponent" />
-
 // Show/hide modal using ref:
 <Modal ref="myModalComponent" />
 const myModalComponent = ref<Modal>()
 myModalComponent.value?.show() | myModalComponent.value?.hide()
 
-// Show/hide modal using v-modal:
-<Modal v-model="doShowModal" />
+// Show/hide modal using show props:
+<Modal show />
 
 */
 
@@ -123,6 +119,7 @@ interface IProps {
   isCentered?: boolean
   isAnimated?: boolean
   modelValue?: boolean
+  show?: boolean,
   title?: string | undefined
   size?: 'lg' | 'md' | 'sm'
   hideHeader?: boolean
@@ -165,6 +162,7 @@ interface IProps {
 const props = withDefaults(defineProps<IProps>(), {
   title: undefined,
   size: 'md',
+  show: false,
   hideHeader: false,
   hideFooter: false,
   hideOk: false,
@@ -206,6 +204,9 @@ onMounted(() => {
     modalEl.value.addEventListener('hidden.bs.modal', () => {
       isShown.value = false
     })
+    if (props.modelValue || props.show) {
+      show()
+    }
   }
 })
 
@@ -216,8 +217,9 @@ onUnmounted(() => {
 })
 
 watch(
-  () => props.modelValue,
+  () => (props.modelValue || props.show),
   (val) => {
+    console.log(val)
     if (!bsModal.value) {
       return
     }

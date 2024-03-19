@@ -92,8 +92,10 @@ export default function usePlayByPlay(competitionId: CompetitionId, gameId: Game
     const doc: PlayByPlayDoc = { id: gameId, playStacks: playByPlay }
     writeDocs([doc], playByPlayCollection)
   }
-  const deleteRow = () => {
+  const deletePlayStacks = () => {
     // deleteDocs
+    deleteDocs([playByPlayDoc])
+
   }
 
   return {
@@ -108,6 +110,6 @@ export default function usePlayByPlay(competitionId: CompetitionId, gameId: Game
 
     // Admin
     writePlayStacks,
-    deleteRow
+    deletePlayStacks,
   }
 }
