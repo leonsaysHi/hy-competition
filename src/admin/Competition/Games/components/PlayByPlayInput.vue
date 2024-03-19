@@ -14,7 +14,7 @@
           :to="{ name: 'play-by-play', params: { competitionId, gameId } }"
           >Resume recording Play-by-play</RouterLink
         >
-        <ButtonComp variant="danger" @click="handleDelete">Delete Play-by-play</ButtonComp>
+        <ButtonComp class="ms-auto" variant="danger" @click="handleDelete">Delete Play-by-play</ButtonComp>
         <template v-if="confirmDatas">
           <ModalComp
             hide-heacer
@@ -28,15 +28,18 @@
         </template>
       </template>
     </div>
-    <template v-if="isReady && model?.boxScore">
+    <template v-if="boxScoreItemsByTeam.length">
       <hr />
-      <StatsTableComp
-        :fields="fields"
-        :items="boxScoreItems"
-        sorted-key="pts"
-        sorted-direction="desc"
-        show-total
-      />
+        <template v-for="row in boxScoreItemsByTeam" :key="row.teamId">
+          <div class="jersey-team">{{ row.title }}</div>
+          <StatsTableComp
+            :fields="fields"
+            :items="row.items"
+            sorted-key="pts"
+            sorted-direction="desc"
+            show-total
+          />
+        </template>
     </template>
   </div>
 </template>
@@ -47,19 +50,21 @@ import type { TableField } from '@/types/comp-table'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import type { PlayerId } from '@/types/players'
+import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import useLibs from '@/composable/useLibs'
 import useOptionsLib from '@/composable/useOptionsLib'
 import StatsTableComp from '@/components/StatsTableComp.vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
+import type { Team, TeamId } from '@/types/teams'
+import type { PlayerStats } from '@/types/stats'
 const { t } = useI18n()
 
 const route = useRoute()
 const { competitionId, gameId } = route.params
 const { isReady, model, deletePlayStacks } = usePlayByPlay(competitionId, gameId)
 
-const { getPlayer } = useLibs()
+const { getPlayer, getTeam } = useLibs()
 const { playerStatsKeys } = useOptionsLib()
 
 const fields = computed(() => {
@@ -83,11 +88,21 @@ const fields = computed(() => {
   ]
   return fields
 })
-const boxScoreItems = computed(() => {
-  return Object.keys(model.value?.boxScore).map((playerId: PlayerId) => ({
-    ...getPlayer(playerId),
-    ...model.value?.boxScore[playerId]
-  }))
+const boxScoreItemsByTeam = computed(() => {
+  return model.value?.rosters 
+    ? Object.keys(model.value?.rosters)
+      .reduce((boxScoreItems: (Team & {items: PlayerStats & { dnp: boolean } & CompetitionPlayer})[], teamId: TeamId) => {
+        boxScoreItems.push({
+          ...getTeam(teamId),
+          items: Object.keys(model.value.rosters[teamId])
+            .map((playerId: PlayerId) => ({
+              ...getPlayer(playerId),
+              ...model.value?.boxScore[playerId]
+            }))
+        })
+        return boxScoreItems
+      }, [])
+    : []
 })
 
 const confirmDatas = ref()
