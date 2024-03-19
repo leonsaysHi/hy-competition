@@ -31,9 +31,9 @@ export interface Play {
   playerId: PlayerId
   actionKey: PlayKey
 }
-export interface PlayStackDoc { 
-  id?: number,
-  playStack: PlayStack
+export interface PlayByPlayDoc {
+  id?: GameId
+  playStacks: PlayByPlay
 }
 export type PlayStack = Play[]
 export type PlayByPlay = PlayStack[]
@@ -46,13 +46,13 @@ interface IProps {
   data?: PlayByPlay
 }
 const props = withDefaults(defineProps<IProps>(), {
-  data: () => ([]),
+  data: () => [],
   time: 0
 })
 
 const route = useRoute()
-const { competitionId, gameId } = route.params as { competitionId: CompetitionId, gameId: GameId }
-const { writeStack } = usePlayByPlay(competitionId, gameId)
+const { competitionId, gameId } = route.params as { competitionId: CompetitionId; gameId: GameId }
+const { writePlayStacks } = usePlayByPlay(competitionId, gameId)
 const { getTeamName } = useLibs()
 const { gameLength, nbPeriods, oTLength, lineupLength } = props.competitionConfig
 
@@ -68,7 +68,8 @@ const isLineupsReady = computed(() => {
   return (
     Object.keys(lineups.value).length === 2 &&
     Object.keys(lineups.value).every(
-      (teamId: TeamId) => Array.isArray(lineups.value[teamId]) && lineups.value[teamId].length === lineupLength
+      (teamId: TeamId) =>
+        Array.isArray(lineups.value[teamId]) && lineups.value[teamId].length === lineupLength
     )
   )
 })
@@ -83,7 +84,6 @@ const handleInitLineups = (payload: LineUps) => {
   lineups.value = payload
   data.value.push(subins)
 }
-
 
 const isGameReady = computed(() => {
   return isLineupsReady.value
@@ -109,14 +109,8 @@ watch(
           }
         })
       }
-      writeStack(newStack)
     }
-    playByPlay.value = new PlayByPlayModel(
-      props.game.id,
-      props.competitionConfig,
-      data.value,
-      props.rosters
-    )
+    writePlayStacks(data.value)
   }
 )
 </script>

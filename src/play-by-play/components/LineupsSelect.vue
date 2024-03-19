@@ -55,20 +55,19 @@ const lineupOptions = computed(() => {
     return []
   }
   const teamId = selectedTeamLineUp.value as TeamId
-  const result =  Object.keys(props.rosters[teamId])
-    .map((playerId: PlayerId) => ({
-      value: playerId,
-      text: `${props.rosters[teamId][playerId].fname} ${props.rosters[teamId][playerId].lname}`,
-      number: props.rosters[teamId][playerId].number,
-      disabled: data.value[teamId].includes(playerId)
-    }))
+  const result = Object.keys(props.rosters[teamId]).map((playerId: PlayerId) => ({
+    value: playerId,
+    text: `${props.rosters[teamId][playerId].fname} ${props.rosters[teamId][playerId].lname}`,
+    number: props.rosters[teamId][playerId].number,
+    disabled: data.value[teamId].includes(playerId)
+  }))
 
   result.sort((a, b) => {
-      const numA = a.number
-      const numB = b.number
-      return numA.localeCompare(numB, undefined, {numeric: true, sensitivity: 'base'})
-    })
-    return result
+    const numA = a.number
+    const numB = b.number
+    return numA.localeCompare(numB, undefined, { numeric: true, sensitivity: 'base' })
+  })
+  return result
 })
 const isLineupValid = computed(() =>
   Object.keys(data.value).every(
@@ -113,7 +112,12 @@ const handleConfirmLineups = () => {
     </template>
   </div>
   <div class="d-flex justify-content-center">
-    <ButtonComp variant="success" size="lg" :disabled="!isLineupValid" @click="handleConfirmLineups">
+    <ButtonComp
+      variant="success"
+      size="lg"
+      :disabled="!isLineupValid"
+      @click="handleConfirmLineups"
+    >
       Starting lineups are ready.
     </ButtonComp>
   </div>

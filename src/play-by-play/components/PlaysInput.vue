@@ -168,30 +168,31 @@ const getActionsOptions = (
   const teamId = prevAction.value?.playerId
     ? getTeamIdFromPlayerId(prevAction.value.playerId)
     : undefined
-  const options = Object.keys(props.lineups)
-    .reduce((result: ActionsOptions, tId: TeamId) => {
-      result[tId] = actionsMap
-        .filter((action) => {
-          if (!fromKey) {
-            return !action.from
-          }
-          return (
-            action.from?.includes(fromKey) &&
-            ((tId === teamId &&
-              (!action.getPlayer ||
-                action.getPlayer === 'team' ||
-                action.getPlayer === 'teammate' ||
-                action.getPlayer === 'roster')) ||
-              (tId !== teamId && action.getPlayer === 'opp'))
-          )
-        })
-        .map((act): ActionsOptionItem => ({
+  const options = Object.keys(props.lineups).reduce((result: ActionsOptions, tId: TeamId) => {
+    result[tId] = actionsMap
+      .filter((action) => {
+        if (!fromKey) {
+          return !action.from
+        }
+        return (
+          action.from?.includes(fromKey) &&
+          ((tId === teamId &&
+            (!action.getPlayer ||
+              action.getPlayer === 'team' ||
+              action.getPlayer === 'teammate' ||
+              action.getPlayer === 'roster')) ||
+            (tId !== teamId && action.getPlayer === 'opp'))
+        )
+      })
+      .map(
+        (act): ActionsOptionItem => ({
           value: act.actionKey,
           text: t(`options.playByPlay.text.${act.actionKey}`),
           variant: ['ftm', 'fgm', 'fg3m'].includes(act.actionKey) ? 'success' : undefined
-        }))
-      return result
-    }, {})
+        })
+      )
+    return result
+  }, {})
   return Object.keys(options).some((teamId: TeamId) => options[teamId].length) ? options : undefined
 }
 

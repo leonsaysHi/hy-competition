@@ -58,7 +58,7 @@ const sortedOptions = computed(() => {
   result.sort((a, b) => {
     const numA = a.number
     const numB = b.number
-    return numA.localeCompare(numB, undefined, {numeric: true, sensitivity: 'base'})
+    return numA.localeCompare(numB, undefined, { numeric: true, sensitivity: 'base' })
   })
   return result
 })
