@@ -85,7 +85,7 @@ const handleRemove = async () => {
           >Competition as started, you can't add/remove teams anymore.</AlertComp
         >
       </template>
-      <p class="text-end">{{ row?.teams || 0 }} teams.</p>
+      <p class="text-end">{{ row?.teams?.length || 0 }} teams.</p>
       <TableComp :fields="fields" :items="row?.teams">
         <template #id="{ item }">
           {{ getTeam(item.id).title }}
