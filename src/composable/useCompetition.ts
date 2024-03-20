@@ -155,8 +155,8 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   const config = computed<CompetitionConfig | undefined>(() =>
     row.value?.sport === 'basketball5x5'
       ? {
-          gameLength: 1000 * 60 * 40,
-          nbPeriods: 2,
+          gameLength: 1000 * 60 * 10 * 4,
+          nbPeriods: 4,
           otLength: 1000 * 60 * 5,
           lineupLength: 5
         }
