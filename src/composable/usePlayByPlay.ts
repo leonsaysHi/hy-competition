@@ -1,14 +1,13 @@
-import { collection, doc } from 'firebase/firestore'
+import { collection } from 'firebase/firestore'
 import { playByPlayColl } from '@/firebase-firestore'
 import type { CompetitionId } from '@/types/competitions'
 
 import { useFirestore } from '@vueuse/firebase/useFirestore'
 import type { Game, GameId } from '@/types/games'
 import type { Ref } from 'vue'
-import { computed, watch } from 'vue'
-import { playByPlayStackConverter, tmpStackConverter } from '@/utils/firestore-converters'
+import { computed } from 'vue'
+import { playByPlayStackConverter } from '@/utils/firestore-converters'
 import type {
-  Play,
   PlayStack,
   Roster,
   RosterPlayer,
@@ -40,23 +39,8 @@ export default function usePlayByPlay(competitionId: CompetitionId, gameId: Game
     `${gameId}/play-stacks`
   ).withConverter(playByPlayStackConverter)
   
-  
-  const tmpStacksCollection = collection(
-    playByPlayCollection,
-    `${gameId}/playStacks`
-  ).withConverter(tmpStackConverter)
-  
-
   const playByPlay = useFirestore(playByPlayStacksCollection, undefined) as Ref<PlayStack[] | undefined>
 
-  const tmpPlayByPlay = useFirestore(tmpStacksCollection, undefined) as Ref<PlayStack[] | undefined>
-  console.log('tmpPlayByPlay', tmpPlayByPlay.value)
-  watch(
-    () => tmpPlayByPlay.value,
-    (val) => {
-      console.log(val)
-    }
-  )
   const game = computed(() => games.value.find((game: Game) => game.id === gameId))
   const isReady = computed<Boolean>(
     () => isCompetitionReady.value && playByPlay.value !== undefined
@@ -64,10 +48,9 @@ export default function usePlayByPlay(competitionId: CompetitionId, gameId: Game
 
   const row: Ref<PlayStack[] | undefined> = computed(() => {
     const result = isReady.value ? playByPlay.value || [] : undefined
+    result?.sort((a, b) => a.time - b.time)
     return result
   })
-
-  
 
   const rosters = computed<Rosters | undefined>(() => {
     return game.value?.teams && teams.value
