@@ -177,18 +177,3 @@ export const playByPlayStackConverter = {
     }
   }
 }
-export const tmpStackConverter = {
-  toFirestore: (row: PlayStack): DocumentData => {
-    const payload = {
-      ...row
-    }
-    return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null))
-  },
-  fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions): PlayStack => {
-    const data = snapshot.data(options)!
-    return {
-      id: snapshot.id,
-      ...data,
-    }
-  }
-}

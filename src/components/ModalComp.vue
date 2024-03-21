@@ -219,7 +219,6 @@ onUnmounted(() => {
 watch(
   () => props.modelValue || props.show,
   (val) => {
-    console.log(val)
     if (!bsModal.value) {
       return
     }

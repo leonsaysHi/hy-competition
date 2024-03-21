@@ -204,7 +204,6 @@ const selectActionKey = (): Promise<{ actionKey: PlayKey; teamId?: TeamId }> => 
   const action = actionsMap.find((action: ActionMapItem) => action.actionKey === prevAction.value?.actionKey)
   const hideCancel = !currentPlayStack.value || !currentPlayStack.value.playStack.length
   const hideSubmit = hideCancel || !!action?.force
-  console.log('cancel', hideCancel, 'submit', hideSubmit)
   return new Promise((res, rej) => {
     selectComponent.value = {
       key: 'actionKey',
