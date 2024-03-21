@@ -1,4 +1,4 @@
-import { collection, doc } from 'firebase/firestore'
+import { collection } from 'firebase/firestore'
 import { playByPlayColl } from '@/firebase-firestore'
 import type { CompetitionId } from '@/types/competitions'
 
@@ -8,10 +8,7 @@ import type { Ref } from 'vue'
 import { computed } from 'vue'
 import { playByPlayStackConverter } from '@/utils/firestore-converters'
 import type {
-  PlayByPlay,
-  PlayByPlayDoc,
   PlayStack,
-  PlayStackDoc,
   Roster,
   RosterPlayer,
   Rosters
@@ -35,23 +32,23 @@ export default function usePlayByPlay(competitionId: CompetitionId, gameId: Game
   } = useCompetition(competitionId)
 
   const playByPlayCollection = playByPlayColl.withConverter(playByPlayStackConverter)
-  const playByPlayDoc = doc(playByPlayCollection, gameId)
-  /*
-  const playByPlayStackCollection = collection(
+  //const playByPlayDoc = doc(playByPlayCollection, gameId)
+  
+  const playByPlayStacksCollection = collection(
     playByPlayCollection,
-    `${gameId}/stacks`
+    `${gameId}/play-stacks`
   ).withConverter(playByPlayStackConverter)
-  */
-
-  const playByPlay = useFirestore(playByPlayDoc, undefined) as Ref<PlayByPlay | undefined>
+  
+  const playByPlay = useFirestore(playByPlayStacksCollection, undefined) as Ref<PlayStack[] | undefined>
 
   const game = computed(() => games.value.find((game: Game) => game.id === gameId))
   const isReady = computed<Boolean>(
     () => isCompetitionReady.value && playByPlay.value !== undefined
   )
 
-  const row: Ref<PlayByPlay | undefined> = computed(() => {
+  const row: Ref<PlayStack[] | undefined> = computed(() => {
     const result = isReady.value ? playByPlay.value || [] : undefined
+    result?.sort((a, b) => a.time - b.time)
     return result
   })
 
@@ -86,13 +83,12 @@ export default function usePlayByPlay(competitionId: CompetitionId, gameId: Game
       : undefined
   })
   // Admin
-  const writePlayStacks = (playByPlay: PlayByPlay) => {
-    const doc: PlayByPlayDoc = { id: gameId, playStacks: playByPlay }
-    writeDocs([doc], playByPlayCollection)
+  const writePlayStack = (playStack: PlayStack) => {
+    writeDocs([playStack], playByPlayStacksCollection)
   }
-  const deletePlayStacks = () => {
+  const deletePlayStack = () => {
     // deleteDocs
-    deleteDocs([playByPlayDoc])
+    // deleteDocs([playStack])
   }
 
   return {
@@ -106,7 +102,7 @@ export default function usePlayByPlay(competitionId: CompetitionId, gameId: Game
     config,
 
     // Admin
-    writePlayStacks,
-    deletePlayStacks
+    writePlayStack,
+    deletePlayStack
   }
 }

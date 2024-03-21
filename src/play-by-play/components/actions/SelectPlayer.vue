@@ -1,18 +1,21 @@
 <template>
   <div class="vstack gap-3">
-    <div class="vstack gap-1">
+    <TeamLogo class="align-self-center" :team-id="teamId" :size="45" />
+    <div class="flex-grow-0 row row-cols-2 g-1">
       <template v-for="opt in sortedOptions" :key="opt.value">
+        <div class="col">
         <ButtonComp
           :variant="opt.disabled ? 'light' : 'primary'"
-          :class="opt.disabled && 'border'"
+          :class="['w-100 vstack align-items-stretch', opt.disabled && 'border']"
           size="lg"
           :disabled="opt.disabled"
+          no-flex
           @click="() => handleSelect(opt.value)"
         >
-          <span class="jersey-number">#{{ opt.number }}</span>
-          <span class="vr" />
-          <span class="jersey-name">{{ opt.text }}</span>
+          <span class="display-2 mb-0 text-center jersey-number">#{{ opt.number }}</span>
+          <small class="jersey-name">{{ opt.text }}</small>
         </ButtonComp>
+      </div>
       </template>
     </div>
     <template v-if="!hideCancel || !hideSubmit">
@@ -34,15 +37,18 @@
 </template>
 
 <script setup lang="ts">
+import TeamLogo from '@/components/teams/TeamLogo.vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import type { PlayerId } from '@/types/players'
 import type { PlayersOptions } from '../PlaysInput.vue'
 import { useI18n } from 'vue-i18n'
 import { computed } from 'vue'
+import type { TeamId } from '@/types/teams'
 
 const { t } = useI18n()
 interface IProps {
   options: PlayersOptions[]
+  teamId: TeamId
   hideSubmit?: boolean
   hideCancel?: boolean
 }

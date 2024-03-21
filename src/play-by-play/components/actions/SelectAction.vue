@@ -1,9 +1,9 @@
 <template>
   <div class="vstack gap-3">
-    <div class="row gap-2">
+    <div class="flex-grow-0 row g-2">
       <template v-for="teamId in teams" :key="teamId">
         <div class="col">
-          <div class="vstack gap-1">
+          <div class="vstack align-items-center gap-1">
             <TeamLogo :team-id="teamId" :size="45" />
             <h3 class="jersey-team">{{ getTeamName(teamId) }}</h3>
           </div>
