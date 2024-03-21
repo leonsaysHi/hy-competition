@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { Game, GameId } from '@/types/games'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import useLibs from '@/composable/useLibs'
 import GameClock from './components/GameClock.vue'
 import GameScores from './components/GameScores.vue'
@@ -28,46 +28,34 @@ export interface Rosters {
 }
 export type PlayKey = PlayerStatKey | 'subout' | 'subin'
 export interface Play {
-  time: number
   playerId: PlayerId
   actionKey: PlayKey
 }
-export interface PlayByPlayDoc {
-  id?: GameId
-  playStacks: PlayByPlay
+export interface PlayStack {
+  id?: string
+  time: number
+  playStack: Play[]
 }
-export type PlayStack = Play[]
-export type PlayByPlay = PlayStack[]
 
 interface IProps {
   competition: Competition
-  rosters: Rosters
-  competitionConfig: CompetitionConfig
   game: Game
-  data?: PlayByPlay
+  model: PlayByPlayModel
 }
-const props = withDefaults(defineProps<IProps>(), {
-  data: () => []
-})
+const props = withDefaults(defineProps<IProps>(), {})
 
 const route = useRoute()
 const { competitionId, gameId } = route.params as { competitionId: CompetitionId; gameId: GameId }
-const { writePlayStacks } = usePlayByPlay(competitionId, gameId)
+const { writePlayStack  } = usePlayByPlay(competitionId, gameId)
 const { getTeamName } = useLibs()
-const { gameLength, nbPeriods, otLength, lineupLength } = props.competitionConfig
+const { gameLength, nbPeriods, otLength, lineupLength } = props.model.config
 
-const data = ref<PlayByPlay>(props.data)
-
-const playByPlay = ref<PlayByPlayModel>(
-  new PlayByPlayModel(props.game.id, props.competitionConfig, data.value, props.rosters)
-)
-
-const time = ref<number>(playByPlay.value.time || 0)
+const time = ref<number>(props.model.time || 0)
 const periodIdx = ref<number>(
-  playByPlay.value.time <= gameLength 
-  ? Math.floor(playByPlay.value.time / (gameLength / nbPeriods))
-  : playByPlay.value.time <= gameLength
-  ? Math.floor((playByPlay.value.time - gameLength) / otLength)
+  props.model.time <= gameLength 
+  ? Math.floor(props.model.time / (gameLength / nbPeriods))
+  : props.model.time <= gameLength
+  ? Math.floor((props.model.time - gameLength) / otLength)
   : 0
 )
 const periodsLength = computed<number[]>(() => {
@@ -78,14 +66,14 @@ const periodsLength = computed<number[]>(() => {
     })
 })
 const isGameTied = computed<boolean>(() => {
-  const scores = Object.values(playByPlay.value.scores).map((scores: number[]) =>
+  const scores = Object.values(props.model.scores).map((scores: number[]) =>
     scores.reduce(add, 0)
   )
   return scores[0] === scores[1]
 })
 const isGameOver = computed<boolean>(() => periodIdx.value === periodsLength.value.length - 1)
 
-const lineups = ref<LineUps>(playByPlay.value?.lineups || {})
+const lineups = computed<LineUps>(() => props.model.lineups || {})
 const isLineupsReady = computed(() => {
   return (
     Object.keys(lineups.value).length === 2 &&
@@ -106,12 +94,12 @@ const handleEndOfPeriod = () => {
     else {
       const time = periodsLength.value.reduce(add, 0)
       const subouts: Play[] = []
-      Object.values(playByPlay.value.lineups).forEach((lineup: PlayerId[]) => {
+      Object.values(lineups.value).forEach((lineup: PlayerId[]) => {
         lineup.forEach((playerId: PlayerId) => {
-          subouts.push({ time, playerId, actionKey: 'subout' })
+          subouts.push({ playerId, actionKey: 'subout' })
         })
       })
-      data.value.push(subouts)
+      writePlayStack({ time, playStack: subouts })
     }
   }
 }
@@ -120,37 +108,20 @@ const handleInitLineups = (payload: LineUps) => {
   const subins: Play[] = []
   Object.keys(payload).forEach((teamId: TeamId) => {
     payload[teamId].forEach((playerId: PlayerId) => {
-      subins.push({ time: 0, playerId, actionKey: 'subin' })
+      subins.push({ playerId, actionKey: 'subin' })
     })
   })
-  lineups.value = payload
-  data.value.push(subins)
+  writePlayStack({ time: 0, playStack: subins})
+}
+
+const handleNewPlayStack = (playStack: PlayStack) => {
+  writePlayStack(playStack)
 }
 
 const isGameReady = computed(() => {
   return isLineupsReady.value
 })
 
-watch(
-  () => data.value.length,
-  (val: number, oldVal: number) => {
-    if (val > oldVal) {
-      const newStack = data.value[data.value.length - 1]
-      if (newStack[0].actionKey === 'subout') {
-        const outPlayerId = newStack[0].playerId
-        const inPlayerId = newStack[1].playerId
-        Object.values(lineups.value).forEach((lineup: PlayerId[]) => {
-          const idx = lineup.findIndex((playerId: PlayerId) => playerId === outPlayerId)
-          if (idx > -1) {
-            lineup.splice(idx, 1, inPlayerId)
-            return
-          }
-        })
-      }
-    }
-    writePlayStacks(data.value)
-  }
-)
 </script>
 <template>
   <div class="flex-grow-0 hstack justify-content-between border-bottom p-1">
@@ -158,7 +129,7 @@ watch(
       <small>{{ competition?.title }}</small>
       <div class="jersey-team">{{ game.teams.map(getTeamName).join('&times;') }}</div>
     </div>
-    <GameScores :scores="playByPlay?.scores" />
+    <GameScores :scores="model.scores" />
   </div>
   <GameClock
     v-model="time"
@@ -171,13 +142,19 @@ watch(
   />
   <div class="flex-grow-1 vstack gap-3 px-1 py-3">
     <template v-if="!isLineupsReady">
-      <LineupsSelect :rosters="rosters" :length="lineupLength" @confirmed="handleInitLineups" />
+      <LineupsSelect :rosters="model.rosters" :length="lineupLength" @confirmed="handleInitLineups" />
     </template>
     <template v-if="isGameReady">
-      <PlaysInput v-model="data" :time="time" :lineups="lineups" :rosters="rosters" />
+      <PlaysInput 
+        :play-stacks="model.playStacks" 
+        :time="time" 
+        :lineups="lineups" 
+        :rosters="model.rosters" 
+        @new-play-stack="handleNewPlayStack"
+      />
     </template>
   </div>
   <div class="pb-3 border-bottom">
-    <ActionsDisplay :items="data" :rosters="rosters" :length="1" compact />
+    <ActionsDisplay :play-stacks="model.playStacks" :rosters="model.rosters" :length="1" compact />
   </div>
 </template>

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-import type { Play, PlayByPlay, PlayStack, Roster, RosterPlayer, Rosters } from '../GameInput.vue'
+import type { Play, PlayStack, Roster, RosterPlayer, Rosters } from '../GameInput.vue'
 
 import { useI18n } from 'vue-i18n'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
@@ -10,7 +10,7 @@ import type { PlayerId } from '@/types/players'
 const { t } = useI18n()
 
 interface IProps {
-  items: PlayByPlay
+  playStacks: PlayStack[]
   rosters: Rosters
   length?: number
   compact?: boolean
@@ -32,14 +32,14 @@ const getTeamIdFromPlayerId = (playerId: PlayerId): TeamId => {
   ) as TeamId
 }
 const playByPlayStacks = computed(() => {
-  const results = props.items.map((stack: PlayStack) => {
-    return stack.map((play: Play) => {
+  const results = props.playStacks.map((stack: PlayStack) => {
+    return stack.playStack.map((play: Play) => {
       const player = Object.values(props.rosters)
         .map((roster: Roster) => Object.values(roster))
         .flat()
         .find((player: RosterPlayer) => player.id === play.playerId) as RosterPlayer
-      const sec = play.time ? Math.floor((play.time % 60000) / 1000) : 0
-      const min = play.time ? Math.floor(play.time / 60000) : 0
+      const sec = stack.time ? Math.floor((stack.time % 60000) / 1000) : 0
+      const min = stack.time ? Math.floor(stack.time / 60000) : 0
       const timeToString = (n: number) => (n < 10 ? `0${n}` : n.toString())
       return {
         ...play,

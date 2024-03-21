@@ -12,7 +12,7 @@ const {
   game,
   rosters,
   config,
-  row: playByPlay
+  model
 } = usePlayByPlay(competitionId, gameId)
 </script>
 <template>
@@ -23,10 +23,8 @@ const {
     <template v-else>
       <RouterView
         :competition="competition"
-        :rosters="rosters"
-        :competition-config="config"
         :game="game"
-        :data="playByPlay"
+        :model="model"
       />
     </template>
   </div>

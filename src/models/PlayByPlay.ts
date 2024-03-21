@@ -1,5 +1,5 @@
 import useOptionsLib from '@/composable/useOptionsLib'
-import type { LineUps, Play, PlayByPlay, PlayStack, Rosters } from '@/play-by-play/GameInput.vue'
+import type { LineUps, Play, PlayStack, Rosters } from '@/play-by-play/GameInput.vue'
 import type { CompetitionConfig } from '@/types/competitions'
 import type { GameDocBoxScore, GameDocScores, GameId } from '@/types/games'
 import type { PlayerId } from '@/types/players'
@@ -11,13 +11,13 @@ const { playerStatsKeys } = useOptionsLib()
 export default class PlayByPlayModel {
   id: GameId
   config: CompetitionConfig
-  data: PlayByPlay
+  data: PlayStack[]
   rosters: Rosters
 
   constructor(
     id: GameId,
     competitionConfig: CompetitionConfig,
-    playByPlay: PlayByPlay,
+    playByPlay: PlayStack[],
     rosters: Rosters
   ) {
     this.id = id as GameId
@@ -30,12 +30,14 @@ export default class PlayByPlayModel {
     return false
   }
 
+  get playStacks(): PlayStack[] {
+    return Array.isArray(this.data) ? this.data : []
+  }
+
   get time(): number {
     let result: number = 0
     this.data.forEach((stack: PlayStack) => {
-      stack.forEach((play: Play) => {
-        result = Math.max(result, play.time)
-      })
+      result = Math.max(result, stack.time)
     })
     return result
   }
@@ -46,8 +48,8 @@ export default class PlayByPlayModel {
       return result
     }, {})
     this.data.forEach((stack: PlayStack) => {
-      if (['subout', 'subin'].includes(stack[0].actionKey)) {
-        stack.forEach((play: Play) => {
+      if (['subout', 'subin'].includes(stack.playStack[0].actionKey)) {
+        stack.playStack.forEach((play: Play) => {
           const { playerId, actionKey } = play
           const teamId = this.getTeamIdFromPlayerId(playerId)
           if (actionKey === 'subin') {
@@ -83,15 +85,15 @@ export default class PlayByPlayModel {
     )
     // fill stats
     this.data.forEach((stack: PlayStack) => {
-      stack.forEach((play: Play) => {
+      stack.playStack.forEach((play: Play) => {
         const { playerId, actionKey } = play
         if (!['subout', 'subin'].includes(actionKey)) {
           const statKey = actionKey as PlayerStatKey
           boxscores[playerId][statKey] = boxscores[playerId][statKey] || 0
           boxscores[playerId][statKey] += 1
           if (statKey === 'blk') {
-            boxscores[stack[0].playerId].blka = boxscores[stack[0].playerId].blka || 0
-            boxscores[stack[0].playerId].blka += 1
+            boxscores[stack.playStack[0].playerId].blka = boxscores[stack.playStack[0].playerId].blka || 0
+            boxscores[stack.playStack[0].playerId].blka += 1
           }
         }
       })
@@ -99,18 +101,18 @@ export default class PlayByPlayModel {
     // fill time
     const subsByPlayers = this.data.reduce(
       (subs: { [key: PlayerId]: number[] }, stack: PlayStack) => {
-        if (['subout', 'subin'].includes(stack[0].actionKey)) {
-          stack.forEach((play: Play) => {
-            const { playerId, time } = play
+        if (['subout', 'subin'].includes(stack.playStack[0].actionKey)) {
+          stack.playStack.forEach((play: Play) => {
+            const { playerId } = play
             subs[playerId] = subs[playerId] || []
-            subs[playerId].push(time)
+            subs[playerId].push(stack.time)
           })
         }
         return subs
       },
       {}
     )
-    const lastTimeStamp = this.data[this.data.length - 1][0].time
+    const lastTimeStamp = Math.max(...this.data.map((stack: PlayStack) => stack.time))
     Object.keys(subsByPlayers).forEach((playerId: PlayerId) => {
       const subsList = subsByPlayers[playerId]
       if (subsList.length % 2 === 0) subsList.push(lastTimeStamp)
@@ -136,10 +138,10 @@ export default class PlayByPlayModel {
       return result
     }, {})
     return this.data.reduce((score: GameDocScores, stack: PlayStack) => {
-      stack.forEach((play: Play) => {
+      stack.playStack.forEach((play: Play) => {
         if (['ftm', 'fgm', 'fg3m'].includes(play.actionKey)) {
-          const { playerId, actionKey, time } = play
-          const periodIdx = this.getPeriodIdxFromTime(time)
+          const { playerId, actionKey } = play
+          const periodIdx = this.getPeriodIdxFromTime(stack.time)
           const teamId = this.getTeamIdFromPlayerId(playerId)
           score[teamId][periodIdx] = score[teamId][periodIdx] || 0
           score[teamId][periodIdx] += actionKey === 'fg3m' ? 3 : actionKey === 'fgm' ? 2 : 1

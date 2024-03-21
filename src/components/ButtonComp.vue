@@ -1,7 +1,7 @@
 <template>
   <button
     :type="type"
-    class="btn d-flex align-items-center gap-3"
+    class="btn"
     :class="computedClass"
     :disabled="disabled || isBusy"
   >
@@ -21,6 +21,7 @@ interface IProps {
   pill?: boolean
   disabled?: boolean
   isBusy?: boolean
+  noFlex?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
   type: 'button',
@@ -28,18 +29,22 @@ const props = withDefaults(defineProps<IProps>(), {
   size: 'md',
   pill: false,
   disabled: false,
-  isBusy: false
+  isBusy: false,
+  noFlex: false,
 })
 
 const computedClass = computed(() => {
   const result = []
   if (typeof props.variant === 'string' && props.variant.length) {
-    result.push(props.variant)
+    result.push(`btn-${props.variant}`)
+  }
+  if (!props.noFlex) {
+    result.push('d-flex align-items-center gap-3')
   }
   if (props.size !== 'md') {
-    result.push(props.size)
+    result.push(`btn-${props.size}`)
   }
-  return result.map((str) => `btn-${str}`).join(' ')
+  return result
 })
 </script>
 
