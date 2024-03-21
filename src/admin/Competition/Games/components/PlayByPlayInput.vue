@@ -12,10 +12,13 @@
         <RouterLink
           class="btn btn-primary"
           :to="{ name: 'play-by-play', params: { competitionId, gameId } }"
-          >Resume recording Play-by-play</RouterLink
+          >Resume recording</RouterLink
         >
-        <ButtonComp variant="success" @click="handlePublish">Publish results</ButtonComp>
-        <ButtonComp class="ms-auto" variant="danger" @click="handleDelete">Delete Play-by-play</ButtonComp>
+        <RouterLink
+          class="btn btn-primary" 
+          :to="{ name: 'admin-competition-edit-game-play-by-play', params: { competitionId, gameId } }"
+          >Edit</RouterLink>
+        <ButtonComp class="ms-auto" variant="danger" @click="handleDelete">Delete</ButtonComp>
         <template v-if="confirmDatas">
           <ModalComp
             hide-heacer
