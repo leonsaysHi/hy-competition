@@ -44,4 +44,21 @@ npm run build
 ```sh
 npm run lint
 ```
-# hy-competition
+
+### GCLoud
+HY-comp
+hy-competitions
+serviceAccount: service-782030950250@gs-project-accounts.iam.gserviceaccount.com 
+
+Cityhoops
+cityhoops-basketball
+serviceAccount: service-762961716792@gs-project-accounts.iam.gserviceaccount.com
+
+
+Export:
+gcloud config set project cityhoops-basketball
+gcloud firestore export gs://cityhoops-export --database='(default)'
+
+Import
+gcloud config set project hy-competitions
+gcloud firestore import gs://cityhoops-export/2024-03-19T23:22:29_59009 --database='(default)'

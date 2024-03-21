@@ -95,7 +95,7 @@ const actionsMap: ActionMapItem[] = [
 
   { actionKey: 'fcm' },
   { actionKey: 'fdr', getPlayer: 'opp', from: ['fcm'] },
-  { actionKey: 'fta', from: ['fdr', 'ftm'] },
+  { actionKey: 'fta', from: ['fta', 'fdr', 'ftm'] },
   { actionKey: 'ftm', from: ['fta'] },
 
   { actionKey: 'tov' },
