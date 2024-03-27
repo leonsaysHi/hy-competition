@@ -16,7 +16,7 @@ const route = useRoute()
 const { competitionId } = route.params
 
 const { getPlayerName } = useLibs()
-const { getPlayerNumber } = useCompetition(competitionId)
+const { getPlayerNumber, row } = useCompetition(competitionId)
 const { playerStatsKeys } = useOptionsLib()
 
 interface IProps {
@@ -28,7 +28,9 @@ const props = withDefaults(defineProps<IProps>(), {
 })
 
 const statsFields = computed(() =>
-  playerStatsKeys.map((opt) => ({
+  playerStatsKeys
+  .filter((opt) => row.value?.trackedStats.includes(opt.value))
+  .map((opt) => ({
     key: opt.value,
     label: opt.text
   }))

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Game, GameDocBoxScore, GameDocScores } from '@/types/games'
+import type { Game, GameDocBoxScore, GameDocScores, GameId } from '@/types/games'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import { ref, computed } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
@@ -13,10 +13,12 @@ import type { AwardItem } from '@/types/stats'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
-import { useRoute } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
+import type { CompetitionId } from '@/types/competitions'
+import CheckComp from '@/components/CheckComp.vue'
 
 const route = useRoute()
-const { competitionId } = route.params
+const { competitionId, gameId } = route.params as { competitionId: CompetitionId, gameId: GameId }
 const { row, getCompetitionTeam: getCompetitionTeam } = useCompetition(competitionId)
 const { getTeamName, getPlayerName } = useLibs()
 
@@ -37,6 +39,8 @@ type FormData = {
   scores: GameDocScores
   boxscore: GameDocBoxScore
   awards: AwardItem[]
+  isFinished: boolean
+  isLive: boolean
 }
 const getDefaultGame = (): Game => ({
   id: '',
@@ -45,7 +49,8 @@ const getDefaultGame = (): Game => ({
   scores: {},
   boxscore: {},
   awards: [],
-  isFinished: false
+  isFinished: false,
+  isLive: false
 })
 
 const data = ref<FormData>({
@@ -111,8 +116,17 @@ const handleSubmit = (ev: Event) => {
     <FieldComp label="Date & time">
       <InputComp v-model="data.datetime" type="datetime-local" :disabled="isBusy" required />
     </FieldComp>
+    <FieldComp label="Game statuses">
+        <CheckComp v-model="data.isFinished" switch>Is finished</CheckComp> 
+        <CheckComp v-model="data.isLive" switch>Is live</CheckComp> 
+    </FieldComp>
     <hr />
     <template v-if="row?.statsInput === 'sheet'">
+      <FieldComp label="Record box-score">
+        <div>
+          <RouterLink class="btn btn-primary" :to="{ name: 'box-score-record', params: { competitionId, gameId } }">Record box-score</RouterLink>
+        </div>
+      </FieldComp>
       <FieldComp label="Scores">
         <ScoresInput v-model="data.scores" :teams="data.teams" :disabled="isBusy">
           <template #team1>

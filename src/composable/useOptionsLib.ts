@@ -1,8 +1,7 @@
 import type {
   CompetitionCategorie,
   CompetitionSport,
-  PhaseType,
-  StatsInputType
+  PhaseType
 } from '@/types/competitions'
 import type { GenderKey } from '@/types/players'
 import type { PlayerStatKey, TeamStatKey, PlayerRankingKey, AwardKey } from '@/types/stats'
@@ -38,13 +37,12 @@ export default function usePlayersLib() {
     { text: t('options.phases.playoffs'), value: 'playoffs' }
   ]
 
-  const competitionStatsInput: { value: StatsInputType; text: string }[] = [
+  const competitionStatsInput: Option[] = [
     { text: t('options.stats.sheet'), value: 'sheet' },
-    { text: t('options.stats.playbyplay'), value: 'playByPlay' }
+    { text: t('options.stats.playbyplay'), value: 'play-by-play', disabled: true }
   ]
 
   const playerStatsKeys: { value: PlayerStatKey; text: string; long: string }[] = [
-    'time',
     'ftm',
     'fta',
     'fgm',
@@ -65,6 +63,15 @@ export default function usePlayersLib() {
     long: t(`options.playerStats.long.${key}`),
     value: key as PlayerStatKey
   }))
+
+  const playByPlayStatsKeys: { value: PlayerStatKey; text: string; long: string }[] = [
+    ...['time'].map((key: string) => ({
+      text: t(`options.playerStats.text.${key}`),
+      long: t(`options.playerStats.long.${key}`),
+      value: key as PlayerStatKey
+    })),
+    ...playerStatsKeys
+  ]
 
   const playerRankingKeys: { value: PlayerRankingKey; text: string; long: string }[] = [
     {

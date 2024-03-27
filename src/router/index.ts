@@ -14,6 +14,7 @@ import PlayersListView from '@/views/players/ListView.vue'
 import PlayerDetailsView from '@/views/players/DetailsView.vue'
 import adminRoutes from './admin'
 import playByPlayRoutes from './play-by-play'
+import boxScoreRoutes from './box-score'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -99,6 +100,11 @@ const router = createRouter({
       path: '/play-by-play',
       component: () => import('@/play-by-play/IndexView.vue'),
       children: playByPlayRoutes
+    },
+    {
+      path: '/box-score-record',
+      component: () => import('@/box-score/IndexView.vue'),
+      children: boxScoreRoutes
     },
     {
       path: '/admin',

@@ -85,8 +85,7 @@ export const competitionTeamConverter = {
 export const gameConverter = {
   toFirestore: (row: GameDoc): DocumentData => {
     const payload = {
-      ...row,
-      isFinished: Object.values(row.scores).some((score) => score.reduce(add, 0))
+      ...row
     }
     return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null))
   },

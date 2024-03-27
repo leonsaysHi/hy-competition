@@ -4,7 +4,7 @@
       <RadioComp
         v-model="model"
         :value="opt.value"
-        :disabled="disabled"
+        :disabled="opt.disabled || disabled"
         :buttons="buttons"
         button-size="lg"
         :button-variant="opt.value === model ? 'primary' : 'outline-secondary'"

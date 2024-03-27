@@ -19,13 +19,7 @@ import { add } from '@/utils/maths'
 export interface LineUps {
   [key: TeamId]: PlayerId[]
 }
-export type RosterPlayer = CompetitionPlayer & PlayerDoc
-export interface Roster {
-  [key: PlayerId]: RosterPlayer
-}
-export interface Rosters {
-  [key: TeamId]: Roster
-}
+
 export type PlayKey = PlayerStatKey | 'subout' | 'subin'
 export interface Play {
   playerId: PlayerId

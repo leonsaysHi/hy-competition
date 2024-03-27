@@ -16,7 +16,8 @@ import SelectComp from '@/components/SelectComp.vue'
 import CheckComp from '@/components/CheckComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
-import type { AwardItem } from '@/types/stats'
+import CheckGroupComp from '@/components/CheckGroupComp.vue'
+import type { AwardItem, PlayerStatKey } from '@/types/stats'
 import AwardsInput from '../components/AwardsInput.vue'
 import useCompetition from '@/composable/useCompetition'
 import useLibs from '@/composable/useLibs'
@@ -38,6 +39,7 @@ type FormData = {
   gender?: GenderKey
   phases: Phase[]
   statsInput: StatsInputType
+  trackedStats: PlayerStatKey[]
   awards: AwardItem[]
   isActive?: Boolean
 }
@@ -45,7 +47,8 @@ const {
   competitionSports: sportsOptions,
   competitionCategories: categoriesOptions,
   genders: gendersOptions,
-  competitionStatsInput: statsInputOptions
+  competitionStatsInput: statsInputOptions,
+  playerStatsKeys: statsKeysOptions
 } = useOptionsLib()
 const { getPlayerName } = useLibs()
 const { allPlayers } = useCompetition(props.value.id)
@@ -58,7 +61,7 @@ const data = ref<FormData>({
   category: undefined,
   isActive: false,
   statsInput: statsInputOptions[0],
-
+  trackedStats: [],
   ...props.value,
 
   awards: Array.isArray(props.value.awards) ? props.value.awards : []
@@ -113,6 +116,16 @@ const handleSubmit = (ev: Event) => {
         buttons
       />
     </FieldComp>
+    <template v-if="data.statsInput === 'sheet'">
+      <FieldComp label="Tracked stats">
+        <CheckGroupComp
+          v-model="data.trackedStats"
+          :options="statsKeysOptions"
+          :disabled="isBusy"
+          buttons
+        />
+      </FieldComp>
+    </template>
     <FieldComp label="Awards">
       <AwardsInput v-model="data.awards" :players-options="playersOptions" />
     </FieldComp>
