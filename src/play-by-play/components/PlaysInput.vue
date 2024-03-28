@@ -3,12 +3,7 @@ import SelectAction from '@/play-by-play/components/actions/SelectAction.vue'
 import SelectPlayer from '@/play-by-play/components/actions/SelectPlayer.vue'
 import ActionsDisplay from '@/play-by-play/components/ActionsDisplay.vue'
 import { computed, ref, onMounted } from 'vue'
-import type {
-  LineUps,
-  Play,
-  PlayKey,
-  PlayStack
-} from '../GameInput.vue'
+import type { LineUps, Play, PlayKey, PlayStack } from '../GameInput.vue'
 import type { Rosters } from '@/types/games'
 import type { PlayerId } from '@/types/players'
 import type { TeamId } from '@/types/teams'
@@ -103,16 +98,16 @@ const currentPlayStack = ref<PlayStack | undefined>(undefined)
 const selectComponent = ref<SelectActionKey | SelectPlayerId | undefined>()
 
 const prevAction = computed<Play | undefined>(() =>
-  currentPlayStack.value?.playStack?.length && currentPlayStack.value?.playStack?.length > 0 
-  ? currentPlayStack.value.playStack[currentPlayStack.value.playStack.length - 1] 
-  : undefined
+  currentPlayStack.value?.playStack?.length && currentPlayStack.value?.playStack?.length > 0
+    ? currentPlayStack.value.playStack[currentPlayStack.value.playStack.length - 1]
+    : undefined
 )
 const endAction = () => {
   if (currentPlayStack.value) {
-  emit('new-play-stack', { ...currentPlayStack.value })
-  currentPlayStack.value = undefined
-  selectComponent.value = undefined
-  pushAction()
+    emit('new-play-stack', { ...currentPlayStack.value })
+    currentPlayStack.value = undefined
+    selectComponent.value = undefined
+    pushAction()
   }
 }
 const pushAction = async () => {
@@ -157,7 +152,7 @@ const pushAction = async () => {
   }
 }
 const handleRemovelAction = (idx: number | undefined) => {
-  if (!currentPlayStack.value) return 
+  if (!currentPlayStack.value) return
   const startIdx = typeof idx === 'number' ? idx : currentPlayStack.value.playStack.length - 1
   currentPlayStack.value.playStack.splice(startIdx, currentPlayStack.value.playStack.length)
   pushAction()
@@ -201,7 +196,9 @@ const getActionsOptions = (
 }
 
 const selectActionKey = (): Promise<{ actionKey: PlayKey; teamId?: TeamId }> => {
-  const action = actionsMap.find((action: ActionMapItem) => action.actionKey === prevAction.value?.actionKey)
+  const action = actionsMap.find(
+    (action: ActionMapItem) => action.actionKey === prevAction.value?.actionKey
+  )
   const hideCancel = !currentPlayStack.value || !currentPlayStack.value.playStack.length
   const hideSubmit = hideCancel || !!action?.force
   return new Promise((res, rej) => {
@@ -245,7 +242,9 @@ const selectPlayer = (teamId: TeamId, getPlayerKey: GetPlayerKey): Promise<Playe
   })
 }
 
-const currentPlayStacks = computed<PlayStack[]>(() => currentPlayStack.value ? [currentPlayStack.value] : [])
+const currentPlayStacks = computed<PlayStack[]>(() =>
+  currentPlayStack.value ? [currentPlayStack.value] : []
+)
 </script>
 <template>
   <ActionsDisplay

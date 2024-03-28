@@ -179,7 +179,6 @@ const { competitionId } = route.params as { competitionId: string }
 const { getTeamName, getPlayerName, getCompetition } = useLibs()
 const { playerRankingKeys, getCategory } = useOptionsLib()
 const getCalculated = (item) => {
-  console.log(item)
   const { fta, ftm, fga, fgm, fg3a, fg3m, oreb, dreb, ast, stl, blk, blka, fdr, fcm, tov } = item
   const ftprc = getPerc(fta, ftm)
   const fgprc = getPerc(fga, fgm)

@@ -7,12 +7,7 @@ import type { Game, GameId } from '@/types/games'
 import type { Ref } from 'vue'
 import { computed } from 'vue'
 import { playByPlayStackConverter } from '@/utils/firestore-converters'
-import type {
-  PlayStack,
-  Roster,
-  RosterPlayer,
-  Rosters
-} from '@/play-by-play/GameInput.vue'
+import type { PlayStack, Roster, RosterPlayer, Rosters } from '@/play-by-play/GameInput.vue'
 import useCompetition from './useCompetition'
 import useFirestoreAdmin from './useFirestoreAdmin'
 import PlayByPlayModel from '@/models/PlayByPlay'
@@ -34,13 +29,15 @@ export default function usePlayByPlay(competitionId: CompetitionId, gameId: Game
 
   const playByPlayCollection = playByPlayColl.withConverter(playByPlayStackConverter)
   //const playByPlayDoc = doc(playByPlayCollection, gameId)
-  
+
   const playByPlayStacksCollection = collection(
     playByPlayCollection,
     `${gameId}/play-stacks`
   ).withConverter(playByPlayStackConverter)
-  
-  const playByPlay = useFirestore(playByPlayStacksCollection, undefined) as Ref<PlayStack[] | undefined>
+
+  const playByPlay = useFirestore(playByPlayStacksCollection, undefined) as Ref<
+    PlayStack[] | undefined
+  >
 
   const game = computed(() => games.value.find((game: Game) => game.id === gameId))
   const isReady = computed<Boolean>(

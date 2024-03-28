@@ -3,11 +3,11 @@ import { RouterView } from 'vue-router'
 import { useRoute } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import usePlayByPlay from '@/composable/usePlayByPlay'
-import type { GameId } from '@/types/games';
-import type { CompetitionId } from '@/types/competitions';
+import type { GameId } from '@/types/games'
+import type { CompetitionId } from '@/types/competitions'
 
 const route = useRoute()
-const { competitionId, gameId } = route.params as { competitionId: CompetitionId, gameId: GameId }
+const { competitionId, gameId } = route.params as { competitionId: CompetitionId; gameId: GameId }
 const {
   isReady: isPlayByPlayReady,
   competition,
@@ -23,11 +23,7 @@ const {
       <SpinnerComp />
     </template>
     <template v-else>
-      <RouterView
-        :competition="competition"
-        :game="game"
-        :model="model"
-      />
+      <RouterView :competition="competition" :game="game" :model="model" />
     </template>
   </div>
 </template>

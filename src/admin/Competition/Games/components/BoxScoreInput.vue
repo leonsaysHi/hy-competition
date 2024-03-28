@@ -29,11 +29,11 @@ const props = withDefaults(defineProps<IProps>(), {
 
 const statsFields = computed(() =>
   playerStatsKeys
-  .filter((opt) => row.value?.trackedStats.includes(opt.value))
-  .map((opt) => ({
-    key: opt.value,
-    label: opt.text
-  }))
+    .filter((opt) => row.value?.trackedStats.includes(opt.value))
+    .map((opt) => ({
+      key: opt.value,
+      label: opt.text
+    }))
 )
 const fields = computed<TableField[]>(() => [
   { key: 'number', label: '#' },

@@ -4,18 +4,18 @@
     <div class="flex-grow-0 row row-cols-2 g-1">
       <template v-for="opt in sortedOptions" :key="opt.value">
         <div class="col">
-        <ButtonComp
-          :variant="opt.disabled ? 'light' : 'primary'"
-          :class="['w-100 vstack align-items-stretch', opt.disabled && 'border']"
-          size="lg"
-          :disabled="opt.disabled"
-          no-flex
-          @click="() => handleSelect(opt.value)"
-        >
-          <span class="display-2 mb-0 text-center jersey-number">#{{ opt.number }}</span>
-          <small class="jersey-name">{{ opt.text }}</small>
-        </ButtonComp>
-      </div>
+          <ButtonComp
+            :variant="opt.disabled ? 'light' : 'primary'"
+            :class="['w-100 vstack align-items-stretch', opt.disabled && 'border']"
+            size="lg"
+            :disabled="opt.disabled"
+            no-flex
+            @click="() => handleSelect(opt.value)"
+          >
+            <span class="display-2 mb-0 text-center jersey-number">#{{ opt.number }}</span>
+            <small class="jersey-name">{{ opt.text }}</small>
+          </ButtonComp>
+        </div>
       </template>
     </div>
     <template v-if="!hideCancel || !hideSubmit">

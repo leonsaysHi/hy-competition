@@ -1,8 +1,4 @@
-import type {
-  CompetitionCategorie,
-  CompetitionSport,
-  PhaseType
-} from '@/types/competitions'
+import type { CompetitionCategorie, CompetitionSport, PhaseType } from '@/types/competitions'
 import type { GenderKey } from '@/types/players'
 import type { PlayerStatKey, TeamStatKey, PlayerRankingKey, AwardKey } from '@/types/stats'
 import type { Option } from '@/types/comp-fields'
@@ -63,6 +59,15 @@ export default function usePlayersLib() {
     long: t(`options.playerStats.long.${key}`),
     value: key as PlayerStatKey
   }))
+
+  const playerStatsSheetKeys: { value: PlayerStatKey; text: string; long: string }[] = [
+    ...['dnp'].map((key: string) => ({
+      text: t(`options.playerStats.text.${key}`),
+      long: t(`options.playerStats.long.${key}`),
+      value: key as PlayerStatKey
+    })),
+    ...playerStatsKeys
+  ]
 
   const playByPlayStatsKeys: { value: PlayerStatKey; text: string; long: string }[] = [
     ...['time'].map((key: string) => ({
@@ -133,6 +138,7 @@ export default function usePlayersLib() {
     getAward,
 
     playerStatsKeys,
+    playerStatsSheetKeys,
     playerRankingKeys,
     awardsKeys,
     teamStandingKeys

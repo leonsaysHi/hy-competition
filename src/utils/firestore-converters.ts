@@ -172,7 +172,7 @@ export const playByPlayStackConverter = {
     const data = snapshot.data(options)!
     return {
       id: snapshot.id,
-      ...data,
+      ...data
     }
   }
 }

@@ -14,7 +14,6 @@ export interface Phase {
   datetime: Date
 }
 
-
 export interface CompetitionConfig {
   gameLength: number
   nbPeriods: number

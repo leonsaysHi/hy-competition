@@ -4,7 +4,6 @@ import type { TeamId } from './teams'
 
 export type GameId = string
 
-
 export type RosterPlayer = CompetitionPlayer & PlayerDoc
 export interface Roster {
   [key: PlayerId]: RosterPlayer

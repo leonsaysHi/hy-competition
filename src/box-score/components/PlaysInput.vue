@@ -22,7 +22,6 @@ interface ActionMapItem {
   force?: boolean // force next action selection
 }
 
-
 export type PlayKey = PlayerStatKey
 export interface Play {
   playerId: PlayerId
@@ -71,8 +70,8 @@ const props = withDefaults(defineProps<IProps>(), {
 const emit = defineEmits(['add-play-stack'])
 
 const getTeamIdFromPlayerId = (playerId: PlayerId): TeamId => {
-  return Object.keys(props.rosters).find((teamId: TeamId) =>
-  playerId in props.rosters[teamId]
+  return Object.keys(props.rosters).find(
+    (teamId: TeamId) => playerId in props.rosters[teamId]
   ) as TeamId
 }
 
@@ -82,7 +81,7 @@ const _actionsMap: ActionMapItem[] = [
   { actionKey: 'fg3a' },
   { actionKey: 'oreb', getPlayer: 'team', from: ['fta', 'fga', 'fg3a'] },
   { actionKey: 'dreb', getPlayer: 'opp', from: ['fta', 'fga', 'fg3a'] },
-  { actionKey: 'blk', getPlayer: 'opp', from: ['fga', 'fg3a']},
+  { actionKey: 'blk', getPlayer: 'opp', from: ['fga', 'fg3a'] },
   { actionKey: 'fg3m', from: ['fg3a'] },
   { actionKey: 'ast', getPlayer: 'teammate', from: ['fgm', 'fg3m'] },
 
@@ -92,30 +91,31 @@ const _actionsMap: ActionMapItem[] = [
   { actionKey: 'ftm', from: ['fta'] },
 
   { actionKey: 'tov' },
-  { actionKey: 'stl', getPlayer: 'opp', from: ['tov'] },
+  { actionKey: 'stl', getPlayer: 'opp', from: ['tov'] }
 ]
-const actionsMap = computed(() => _actionsMap
-  .filter((item: ActionMapItem) => props.trackedStats.includes(item.actionKey))
-  .map((item: ActionMapItem) => ({
-    ...item,
-    from: item.from?.filter((key: PlayKey) => props.trackedStats.includes(key))
-  }))
+const actionsMap = computed(() =>
+  _actionsMap
+    .filter((item: ActionMapItem) => props.trackedStats.includes(item.actionKey))
+    .map((item: ActionMapItem) => ({
+      ...item,
+      from: item.from?.filter((key: PlayKey) => props.trackedStats.includes(key))
+    }))
 )
 
 const currentPlayStack = ref<Play[] | undefined>(undefined)
 const selectComponent = ref<SelectActionKey | SelectPlayerId | undefined>()
 
 const prevAction = computed<Play | undefined>(() =>
-  currentPlayStack.value?.length && currentPlayStack.value?.length > 0 
-  ? currentPlayStack.value[currentPlayStack.value.length - 1] 
-  : undefined
+  currentPlayStack.value?.length && currentPlayStack.value?.length > 0
+    ? currentPlayStack.value[currentPlayStack.value.length - 1]
+    : undefined
 )
 const endAction = () => {
   if (currentPlayStack.value) {
-  emit('add-play-stack', currentPlayStack.value)
-  currentPlayStack.value = undefined
-  selectComponent.value = undefined
-  pushAction()
+    emit('add-play-stack', currentPlayStack.value)
+    currentPlayStack.value = undefined
+    selectComponent.value = undefined
+    pushAction()
   }
 }
 const pushAction = async () => {
@@ -157,7 +157,7 @@ const pushAction = async () => {
   }
 }
 const handleRemovelAction = (idx: number | undefined) => {
-  if (!currentPlayStack.value?.length) return 
+  if (!currentPlayStack.value?.length) return
   const startIdx = typeof idx === 'number' ? idx : currentPlayStack.value.length - 1
   currentPlayStack.value.splice(startIdx, currentPlayStack.value.length)
   pushAction()
@@ -200,7 +200,9 @@ const getActionsOptions = (
 }
 
 const selectActionKey = (): Promise<{ actionKey: PlayKey; teamId?: TeamId }> => {
-  const action = actionsMap.value.find((action: ActionMapItem) => action.actionKey === prevAction.value?.actionKey)
+  const action = actionsMap.value.find(
+    (action: ActionMapItem) => action.actionKey === prevAction.value?.actionKey
+  )
   const hideCancel = !currentPlayStack.value || !currentPlayStack.value.length
   const hideSubmit = hideCancel || !!action?.force
   return new Promise((res, rej) => {
@@ -223,7 +225,7 @@ const selectPlayer = (teamId: TeamId, playItem: ActionMapItem): Promise<PlayerId
       value: playerId as PlayerId,
       text: `${props.rosters[teamId][playerId].fname} ${props.rosters[teamId][playerId].lname}`,
       number: props.rosters[teamId][playerId].number,
-      disabled: (getPlayer === 'teammate' && playerId === prevPlayerId)
+      disabled: getPlayer === 'teammate' && playerId === prevPlayerId
     }
   })
   return new Promise((res, rej) => {
@@ -238,7 +240,6 @@ const selectPlayer = (teamId: TeamId, playItem: ActionMapItem): Promise<PlayerId
     }
   })
 }
-
 </script>
 <template>
   <div class="vstack gap-3">

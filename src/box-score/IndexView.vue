@@ -7,14 +7,8 @@ import type { GameId } from '@/types/games'
 import type { CompetitionId } from '@/types/competitions'
 
 const route = useRoute()
-const { competitionId, gameId } = route.params as { competitionId: CompetitionId, gameId: GameId }
-const {
-  isReady,
-  row,
-  competition,
-  config,
-  rosters
-} = useGame(competitionId, gameId)
+const { competitionId, gameId } = route.params as { competitionId: CompetitionId; gameId: GameId }
+const { isReady, row, competition, config, rosters } = useGame(competitionId, gameId)
 </script>
 <template>
   <div class="wrapper vstack justify-content-around">
@@ -22,12 +16,7 @@ const {
       <SpinnerComp />
     </template>
     <template v-else>
-      <RouterView
-        :competition="competition"
-        :config="config"
-        :rosters="rosters"
-        :game="row"
-      />
+      <RouterView :competition="competition" :config="config" :rosters="rosters" :game="row" />
     </template>
   </div>
 </template>
