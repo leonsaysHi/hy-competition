@@ -36,7 +36,13 @@
             <template v-else>
               <div class="vstack gap-1 align-items-center justify-content-center">
                 <strong>{{ gameComputed.date?.long }}</strong>
-                <small class="text-body-secondary">{{ gameComputed.date?.time }}</small>
+                <template v-if="gameComputed.isLive">
+                  <SpinnerComp grow small variant="succsss" />
+                  <small class="text-success">{{ t('globals.gameDetails.live') }}</small>
+                </template>
+                <template v-else>
+                  <small class="text-body-secondary">{{ gameComputed.date?.time }}</small>
+                </template>
               </div>
             </template>
           </div>
@@ -54,7 +60,9 @@
 <script lang="ts" setup>
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import GameComputedClass from '@/models/GameComputed'
-
+import SpinnerComp from '../SpinnerComp.vue'
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
 interface IProps {
   items: GameComputedClass[]
 }

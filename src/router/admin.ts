@@ -17,7 +17,7 @@ const adminRoutes = [
   {
     path: 'competition/:competitionId',
     name: 'admin-competition-home',
-    redirect: { name: 'admin-competition-teams' },
+    redirect: { name: 'admin-competition-games' },
     component: () => import('@/admin/competition/IndexView.vue'),
     children: [
       {

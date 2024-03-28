@@ -113,6 +113,7 @@ export default class GameComputedClass {
     }
     return result
   }
+
   getTeamScore(teamId: TeamId): ScoresComputed | undefined {
     return this.scores.find((score: ScoresComputed) => score.id === teamId)
   }

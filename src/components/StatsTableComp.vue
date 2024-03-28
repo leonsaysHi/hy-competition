@@ -51,72 +51,101 @@
     <template #gp="{ value }">
       {{ value }}
     </template>
-    <template #time="{ value }">
-      {{ durationFormat(value) }}
+    <template #time="{ item, value }">
+      <template v-if="item.dnp === true">-</template>
+      <template v-else>
+        {{ durationFormat(value) }}
+      </template>
     </template>
     <template #pts="{ item }">
-      {{
-        item.gp
-          ? formatAvg(getAvg(getCalculated(item).pts, item.gp))
-          : item.ftm + 2 * item.fgm + 3 * item.fg3m
-      }}
+      <template v-if="item.dnp === true">-</template>
+      <template v-else>
+        {{
+          item.gp
+            ? formatAvg(getAvg(getCalculated(item).pts, item.gp))
+            : item.ftm + 2 * item.fgm + 3 * item.fg3m
+        }}
+      </template>
     </template>
     <template #ftm="{ value, item }">
-      {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}
+      <template v-if="item.dnp === true">-</template>
+      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
     </template>
-    <template #fta="{ value, item }">
-      {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}
+    <template #fta="{ value, item }"
+      ><template v-if="item.dnp === true">-</template>
+      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
     </template>
-    <template #ftprc="{ item }">
-      {{ formatPerc(getCalculated(item).ftprc) }}
+    <template #ftprc="{ item }"
+      ><template v-if="item.dnp === true">-</template>
+      <template v-else> {{ formatPerc(getCalculated(item).ftprc) }}</template>
     </template>
-    <template #fgm="{ value, item }">
-      {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}
+    <template #fgm="{ value, item }"
+      ><template v-if="item.dnp === true">-</template>
+      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
     </template>
-    <template #fga="{ value, item }">
-      {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}
+    <template #fga="{ value, item }"
+      ><template v-if="item.dnp === true">-</template>
+      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
     </template>
-    <template #fgprc="{ item }">
-      {{ formatPerc(getCalculated(item).fgprc) }}
+    <template #fgprc="{ item }"
+      ><template v-if="item.dnp === true">-</template>
+      <template v-else> {{ formatPerc(getCalculated(item).fgprc) }}</template>
     </template>
-    <template #fg3m="{ value, item }">
-      {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}
+    <template #fg3m="{ value, item }"
+      ><template v-if="item.dnp === true">-</template>
+      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
     </template>
-    <template #fg3a="{ value, item }">
-      {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}
+    <template #fg3a="{ value, item }"
+      ><template v-if="item.dnp === true">-</template>
+      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
     </template>
-    <template #fg3prc="{ item }">
-      {{ formatPerc(getCalculated(item).fg3prc) }}
+    <template #fg3prc="{ item }"
+      ><template v-if="item.dnp === true">-</template>
+      <template v-else> {{ formatPerc(getCalculated(item).fg3prc) }}</template>
     </template>
-    <template #dreb="{ value, item }">
-      {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}
+    <template #dreb="{ value, item }"
+      ><template v-if="item.dnp === true">-</template>
+      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
     </template>
-    <template #oreb="{ value, item }">
-      {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}
+    <template #oreb="{ value, item }"
+      ><template v-if="item.dnp === true">-</template>
+      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
     </template>
-    <template #reb="{ item }">
-      {{ item.gp ? formatAvg(getAvg(getCalculated(item).reb, item.gp)) : getCalculated(item).reb }}
+    <template #reb="{ item }"
+      ><template v-if="item.dnp === true">-</template>
+      <template v-else>
+        {{
+          item.gp ? formatAvg(getAvg(getCalculated(item).reb, item.gp)) : getCalculated(item).reb
+        }}</template
+      >
     </template>
-    <template #ast="{ value, item }">
-      {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}
+    <template #ast="{ value, item }"
+      ><template v-if="item.dnp === true">-</template>
+      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
     </template>
-    <template #stl="{ value, item }">
-      {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}
+    <template #stl="{ value, item }"
+      ><template v-if="item.dnp === true">-</template>
+      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
     </template>
-    <template #blk="{ value, item }">
-      {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}
+    <template #blk="{ value, item }"
+      ><template v-if="item.dnp === true">-</template>
+      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
     </template>
-    <template #blka="{ value, item }">
-      {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}
+    <template #blka="{ value, item }"
+      ><template v-if="item.dnp === true">-</template>
+      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
     </template>
-    <template #tov="{ value, item }">
-      {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}
+    <template #tov="{ value, item }"
+      ><template v-if="item.dnp === true">-</template>
+      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
     </template>
-    <template #fcm="{ value, item }">
-      {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}
+    <template #fcm="{ value, item }"
+      ><template v-if="item.dnp === true">-</template>
+      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
     </template>
-    <template #fdr="{ value, item }">
-      {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}
+    <template #fdr="{ value, item }"
+      ><template v-if="item.dnp === true">-</template>
+      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
     </template>
     <template #footerid>
       <span class="fw-lighter">{{ t('global.total', 2) }}</span>

@@ -11,16 +11,15 @@ import useOptionsLib from '@/composable/useOptionsLib'
 import CompetitionStanding from '@/components/competitions/CompetitionStanding.vue'
 import CompetitionRanking from '@/components/competitions/CompetitionRanking.vue'
 import GamesList from '@/components/games/GamesList.vue'
-import type { Game } from '@/types/games'
-
+import { compareAsc } from 'date-fns'
 import { useI18n } from 'vue-i18n'
 import type GameComputedClass from '@/models/GameComputed'
-const { t } = useI18n()
 
 const route = useRoute()
 const router = useRouter()
 const { competitionId, phase } = route.params as { competitionId: string; phase: string }
 
+const { t } = useI18n()
 const { competitionPhases, getGender, getCategory } = useOptionsLib()
 
 const { isReady, row, computedPhases } = useCompetition(competitionId)
@@ -81,18 +80,22 @@ const gamesViewOptions: Option[] = [
   { text: t('global.upcoming', 2), value: 'next' }
 ]
 const currentGamesView = ref<'prev' | 'next'>(gamesViewOptions[gamesViewOptions.length - 1].value)
-const groupGames = computed<Game[]>(() => {
-  return selectedGroup.value.games
-    .filter((game: GameComputedClass) =>
-      currentGamesView.value === 'prev' ? game.isFinished : !game.isFinished
+
+const groupGames = computed<GameComputedClass[]>(() => {
+  const result = selectedGroup.value.games.filter((game: GameComputedClass) =>
+    currentGamesView.value === 'prev' ? game.isFinished : !game.isFinished
+  )
+  result.sort((a: GameComputedClass, b: GameComputedClass) => currentGamesView.value === 'prev'
+    ? compareAsc(b.row.datetime, a.row.datetime)
+    : compareAsc(a.row.datetime, b.row.datetime)
+  )
+  return result.slice(
+    0,
+    Math.max(
+      Math.round(selectedGroup.value.standing.length * 0.5),
+      Math.min(4, selectedGroup.value.standing.length)
     )
-    .slice(
-      0,
-      Math.max(
-        Math.round(selectedGroup.value.standing.length * 0.5),
-        Math.max(4, selectedGroup.value.standing.length)
-      )
-    )
+  )
 })
 </script>
 <template>
@@ -137,7 +140,6 @@ const groupGames = computed<Game[]>(() => {
                   class="nav-link"
                   :class="[currentGamesView === opt.value && 'active']"
                   :aria-current="currentGamesView === opt.value ? 'page' : false"
-                  href="#"
                   @click="currentGamesView = opt.value"
                   >{{ opt.text }}</a
                 >

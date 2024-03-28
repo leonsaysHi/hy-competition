@@ -42,6 +42,17 @@ watch(
     <li class="nav-item">
       <RouterLink
         class="nav-link"
+        :class="{
+          active: route.name?.includes('game'),
+          disabled: !isReady || !teamsListMinLength || !hasCurrentPhase
+        }"
+        :to="{ ...route, name: 'admin-competition-games' }"
+        >Games</RouterLink
+      >
+    </li>
+    <li class="nav-item">
+      <RouterLink
+        class="nav-link"
         :class="{ active: route.name?.includes('team'), disabled: !isReady }"
         :to="{ ...route, name: 'admin-competition-teams' }"
         >Teams</RouterLink
@@ -56,17 +67,6 @@ watch(
         }"
         :to="{ ...route, name: 'admin-competition-phases' }"
         >Phases</RouterLink
-      >
-    </li>
-    <li class="nav-item">
-      <RouterLink
-        class="nav-link"
-        :class="{
-          active: route.name?.includes('game'),
-          disabled: !isReady || !teamsListMinLength || !hasCurrentPhase
-        }"
-        :to="{ ...route, name: 'admin-competition-games' }"
-        >Games</RouterLink
       >
     </li>
     <li class="nav-item">
