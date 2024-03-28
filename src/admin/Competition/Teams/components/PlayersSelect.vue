@@ -115,7 +115,7 @@ const players = computed((): CompetitionPlayer[] => {
 })
 
 const playersItems = computed(() => {
-  return players.value
+  const result = players.value
     ? players.value.map((row: CompetitionPlayer) => {
         const player: Player | undefined = getPlayer(row.id)
         const { fname, lname, dob, identification } = player || {}
@@ -128,6 +128,8 @@ const playersItems = computed(() => {
         } as TableItem
       })
     : []
+  result.sort((a, b) => a.number - b.number)
+  return result
 })
 
 // Add Player
