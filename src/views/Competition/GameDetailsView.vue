@@ -34,7 +34,6 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
     return getCompetitionTeam(teamId)
   }) as CompetitionTeam[]
 })
-
 </script>
 <template>
   <div>

@@ -182,7 +182,6 @@ const es = {
     ranking: 'Líderes',
     game: 'Juego | Juegos',
     gameDetails: {
-      teamStats: 'Estatísticas por equipos',
       live: 'Vivo',
       period: {
         text: 'P',

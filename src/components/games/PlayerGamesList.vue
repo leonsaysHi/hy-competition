@@ -19,18 +19,26 @@ interface IProps {
 }
 const props = withDefaults(defineProps<IProps>(), {})
 
-const { playerRankingKeys } = useOptionsLib()
-const { getPlayerCompetitionTeam } = useCompetition(competitionId)
+const { playerRankingKeys, playerStatsSheetKeys } = useOptionsLib()
+const { row, getPlayerCompetitionTeam } = useCompetition(competitionId)
 
-const boxScoreKeys: Option[] = playerRankingKeys.filter(
-  (opt: Option) => !['gp'].includes(opt.value)
-)
+
+
+const boxScoreKeys = computed<Option[]>(() => {
+  if (!row.value?.statsInput) {
+    return []
+  }
+  return row.value?.statsInput === 'play-by-play'
+    ? playerRankingKeys.filter((opt: Option) => !['gp'].includes(opt.value))
+    : playerStatsSheetKeys.filter((opt: Option) => row.value?.trackedStats.includes(opt.value))
+})
+
 const fields = computed(() => {
   const fields = [
-    { key: 'datetime', label: t('global.date'), tdClass: 'lh-1' },
+    { key: 'datetime', label: t('global.date') },
     { key: 'teamId', label: t('global.gameDetails.opponent.text') },
     { key: 'isWin', label: '', tdClass: 'text-center' },
-    ...boxScoreKeys.reduce(
+    ...boxScoreKeys.value.reduce(
       (fields: TableField[], opt): TableField[] => [
         ...fields,
         {
@@ -44,25 +52,27 @@ const fields = computed(() => {
       []
     )
   ]
-  const minIdx = fields.findIndex((field) => field.key === 'time')
-  fields.splice(
-    minIdx + 1,
-    0,
-    {
-      key: 'pts',
-      label: t('options.playerStats.text.pts'),
-      sortable: true,
-      thClass: 'text-end',
-      tdClass: 'text-end'
-    },
-    {
-      key: 'pir',
-      label: t('options.playerStats.text.pir'),
-      sortable: true,
-      thClass: 'text-end',
-      tdClass: 'text-end'
-    }
-  )
+  const ptsField = {
+    key: 'pts',
+    label: t('options.playerStats.text.pts'),
+    sortable: true,
+    thClass: 'text-end',
+    tdClass: 'text-end',
+    tfClass: 'text-end fw-bold'
+  }
+  const pirField = {
+    key: 'pir',
+    label: t('options.playerStats.text.pir'),
+    sortable: true,
+    thClass: 'text-end',
+    tdClass: 'text-end',
+    tfClass: 'text-end fw-bold'
+  }
+  if (row.value?.statsInput === 'play-by-play') {
+    fields.splice(fields.findIndex((field) => field.key === 'time') + 1, 0, ptsField, pirField)
+  } else {
+    fields.splice(fields.findIndex((field) => field.key === 'isWin') + 1, 0, ptsField)
+  }
   return fields
 })
 const computedGames = computed<TableItem[]>(() => {
@@ -84,36 +94,3 @@ const computedGames = computed<TableItem[]>(() => {
   <StatsTableComp :fields="fields" :items="computedGames" show-logo></StatsTableComp>
 </template>
 
-<style lang="scss" scoped>
-.game {
-  display: flex;
-  gap: 1rem;
-  .team {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    .name {
-      flex-grow: 1;
-      display: flex;
-      align-items: center;
-      justify-content: end;
-      gap: 1rem;
-    }
-    .score {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 45px;
-      height: 50px;
-    }
-  }
-  .team ~ .team {
-    flex-direction: row-reverse;
-    .name {
-      flex-direction: row-reverse;
-      justify-content: start;
-    }
-  }
-}
-</style>

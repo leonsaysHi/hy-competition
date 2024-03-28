@@ -85,9 +85,10 @@ const groupGames = computed<GameComputedClass[]>(() => {
   const result = selectedGroup.value.games.filter((game: GameComputedClass) =>
     currentGamesView.value === 'prev' ? game.isFinished : !game.isFinished
   )
-  result.sort((a: GameComputedClass, b: GameComputedClass) => currentGamesView.value === 'prev'
-    ? compareAsc(b.row.datetime, a.row.datetime)
-    : compareAsc(a.row.datetime, b.row.datetime)
+  result.sort((a: GameComputedClass, b: GameComputedClass) =>
+    currentGamesView.value === 'prev'
+      ? compareAsc(b.row.datetime, a.row.datetime)
+      : compareAsc(a.row.datetime, b.row.datetime)
   )
   return result.slice(
     0,
@@ -149,7 +150,7 @@ const groupGames = computed<GameComputedClass[]>(() => {
         </div>
         <GamesList class="mb-3" :items="groupGames" />
         <h3>{{ t('global.ranking') }}</h3>
-        <CompetitionRanking :value="selectedGroup.ranking" :length="5" />
+        <CompetitionRanking :value="selectedGroup.ranking" :length="15" />
       </template>
     </template>
   </div>
