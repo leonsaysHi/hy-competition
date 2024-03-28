@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
 import GameBoxcore from '@/components/games/GameBoxcore.vue'
-import GameLeaders from '@/components/games/GameLeaders.vue'
+import GameTeamsStats from '@/components/games/GameTeamsStats.vue'
 import GamePeriods from '@/components/games/GamePeriods.vue'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
@@ -33,26 +33,6 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
   return row.value?.teams.map((teamId: TeamId): CompetitionTeam => {
     return getCompetitionTeam(teamId)
   }) as CompetitionTeam[]
-})
-interface BoxScoreByTeam {
-  teamId: TeamId
-  boxscore: GameDocBoxScore
-}
-const teamsBoxscores = computed<BoxScoreByTeam[]>(() => {
-  return Array.isArray(row.value?.teams)
-    ? row.value.teams.map((teamId: TeamId) => {
-        const players: CompetitionPlayer[] = getCompetitionTeam(teamId)?.players || []
-        return {
-          teamId,
-          boxscore: players.reduce((boxscore: GameDocBoxScore, player: CompetitionPlayer) => {
-            return {
-              ...boxscore,
-              [player.id]: gameComputed.value?.boxScore[player.id] as PlayerBoxScore
-            }
-          }, {} as GameDocBoxScore)
-        }
-      })
-    : ([] as BoxScoreByTeam[])
 })
 </script>
 <template>
@@ -118,7 +98,8 @@ const teamsBoxscores = computed<BoxScoreByTeam[]>(() => {
           <AwardsList :items="gameComputed.row.awards" class="d-inline-flex flex-column gap-1" />
         </div>
       </template>
-      <template v-if="gameComputed.isFinished">
+      <template v-if="gameComputed.isFinished || gameComputed.isLive">
+        <h3>{{ t('global.statistic', 2) }}</h3>
         <ul class="mt-5 mb-3 nav nav-tabs">
           <li class="nav-item">
             <a
@@ -127,7 +108,7 @@ const teamsBoxscores = computed<BoxScoreByTeam[]>(() => {
               :aria-current="statView === 0 ? 'page' : false"
               href="#"
               @click="statView = 0"
-              >{{ t('global.gameDetails.leader', 2) }}</a
+              >{{ t('global.team', 2) }}</a
             >
           </li>
           <li class="nav-item">
@@ -137,24 +118,12 @@ const teamsBoxscores = computed<BoxScoreByTeam[]>(() => {
               :aria-current="statView === 1 ? 'page' : false"
               href="#"
               @click="statView = 1"
-              >{{ t('global.statistic', 2) }}</a
+              >{{ t('global.player', 2) }}</a
             >
           </li>
         </ul>
         <template v-if="statView === 0">
-          <div class="row gap-2">
-            <template v-for="(team, idx) in teamsBoxscores" :key="team.teamId">
-              <div class="col">
-                <div class="mb-2 d-flex justify-content-center">
-                  <TeamLogo :team-id="team.teamId" :size="50" />
-                </div>
-                <GameLeaders :boxscore="team.boxscore" />
-              </div>
-              <template v-if="idx === 0">
-                <div class="col col-auto px-0 border-start"></div>
-              </template>
-            </template>
-          </div>
+          <GameTeamsStats :boxscore="gameComputed.boxScore" :teams="competitionTeams" />
         </template>
         <template v-if="statView === 1">
           <GameBoxcore :boxscore="gameComputed.boxScore" :teams="competitionTeams" />

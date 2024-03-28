@@ -29,16 +29,12 @@ const { row } = useCompetition(competitionId)
 const { playerRankingKeys, playerStatsSheetKeys } = useOptionsLibs()
 
 const boxScoreKeys = computed<Option[]>(() => {
-  if (!row.value?.statsInput) { return [] }
-  return row.value?.statsInput === 'play-by-play' 
-    ? playerRankingKeys
-      .filter(
-        (opt: Option) => !['gp'].includes(opt.value)
-      )
-    : playerStatsSheetKeys
-      .filter(
-          (opt: Option) => row.value?.trackedStats.includes(opt.value)
-        )
+  if (!row.value?.statsInput) {
+    return []
+  }
+  return row.value?.statsInput === 'play-by-play'
+    ? playerRankingKeys.filter((opt: Option) => !['gp'].includes(opt.value))
+    : playerStatsSheetKeys.filter((opt: Option) => row.value?.trackedStats.includes(opt.value))
 })
 
 const fields = computed(() => {
@@ -68,7 +64,7 @@ const fields = computed(() => {
     tdClass: 'text-end',
     tfClass: 'text-end fw-bold'
   }
-  const pirField =  {
+  const pirField = {
     key: 'pir',
     label: t('options.playerStats.text.pir'),
     sortable: true,
@@ -77,18 +73,9 @@ const fields = computed(() => {
     tfClass: 'text-end fw-bold'
   }
   if (row.value?.statsInput === 'play-by-play') {
-    fields.splice(
-      fields.findIndex((field) => field.key === 'time') + 1,
-      0,
-      ptsField,
-      pirField
-    )
+    fields.splice(fields.findIndex((field) => field.key === 'time') + 1, 0, ptsField, pirField)
   } else {
-    fields.splice(
-      fields.findIndex((field) => field.key === 'id') + 1,
-      0,
-      ptsField
-    )
+    fields.splice(fields.findIndex((field) => field.key === 'id') + 1, 0, ptsField)
   }
   return fields
 })

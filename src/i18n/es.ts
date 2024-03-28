@@ -182,7 +182,7 @@ const es = {
     ranking: 'Líderes',
     game: 'Juego | Juegos',
     gameDetails: {
-      leader: 'Lídere de partido | Líderes de partido',
+      live: 'Vivo',
       period: {
         text: 'P',
         long: 'Periodo | Periodos'

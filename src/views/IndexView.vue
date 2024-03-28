@@ -12,7 +12,7 @@ const { t } = useI18n()
 <template>
   <div class="wrapper">
     <header class="bd-header bg-primary py-3 d-flex align-items-stretch text-bg-dark shadow">
-      <div class="container d-flex align-items-center">
+      <div class="container-xl d-flex align-items-center">
         <a class="navbar-brand d-flex align-items-center gap-3" href="/"
           ><ImageComp :src="CityHoopsLogo" :width="150" fluid />
         </a>
@@ -39,7 +39,7 @@ const { t } = useI18n()
       </section>
     </main>
     <footer class="text-body-secondary py-4 border-top">
-      <div class="container d-flex flex-row-reverse justify-content-between">
+      <div class="container-xl d-flex flex-row-reverse justify-content-between">
         <a href="#">{{ t('global.backToTop') }}</a>
         <p class="mb-0">
           Powered by <ImageComp :src="HoopsYardLogo" title="Hoops Yard" :width="35" />

@@ -16,7 +16,7 @@ import type { Option } from '@/types/comp-fields'
 import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
 import type { CompetitionRanking } from '@/types/computed'
-import type { PlayerStatKey } from '@/types/stats'
+import type { PlayerStatKey, PlayerRankingKey } from '@/types/stats'
 
 import { useI18n } from 'vue-i18n'
 import GameComputedClass from '@/models/GameComputed'
@@ -25,9 +25,10 @@ const route = useRoute()
 const { competitionId, playerId } = route.params as { competitionId: string; playerId: string }
 
 const { getPlayerName } = useLibs()
-const { playerRankingKeys } = useOptionsLib()
+const { playerRankingKeys, playerStatsSheetKeys } = useOptionsLib()
 const {
   isReady: isCompetitionReady,
+  row,
   getCompetitionPlayer,
   getPlayerCompetitionTeam,
   games,
@@ -54,39 +55,61 @@ const playerGames = computed<GameComputedClass[]>(() => {
     : []
 })
 
+const boxScoreKeys = computed<Option[]>(() => {
+  if (!row.value?.statsInput) {
+    return []
+  }
+  return row.value?.statsInput === 'play-by-play'
+    ? playerRankingKeys.filter((opt: Option) => !['gp'].includes(opt.value))
+    : playerStatsSheetKeys.filter((opt: Option) => row.value?.trackedStats.includes(opt.value))
+})
+
 const statsFields = computed<TableField[]>(() => {
-  const fields = playerRankingKeys.reduce(
-    (fields: TableField[], opt): TableField[] => [
-      ...fields,
-      {
-        key: opt.value,
-        label: opt.text,
-        sortable: true,
-        thClass: 'text-end',
-        tdClass: 'text-end'
-      }
-    ],
-    []
-  )
-  const minIdx = fields.findIndex((field) => field.key === 'time')
-  fields.splice(
-    minIdx + 1,
-    0,
+  const fields = [
     {
-      key: 'pts',
-      label: t('options.playerStats.text.pts'),
+      key: 'gp',
+      label: t('options.playerStats.text.gp'),
       sortable: true,
       thClass: 'text-end',
-      tdClass: 'text-end'
+      tdClass: 'text-end',
+      tfClass: 'text-end fw-bold'
     },
-    {
-      key: 'pir',
-      label: t('options.playerStats.text.pir'),
-      sortable: true,
-      thClass: 'text-end',
-      tdClass: 'text-end'
-    }
-  )
+    ...boxScoreKeys.value.reduce(
+      (fields: TableField[], opt): TableField[] => [
+        ...fields,
+        {
+          key: opt.value,
+          label: opt.text,
+          sortable: true,
+          thClass: 'text-end',
+          tdClass: 'text-end',
+          tfClass: 'text-end fw-bold'
+        }
+      ],
+      []
+    )
+  ]
+  const ptsField = {
+    key: 'pts',
+    label: t('options.playerStats.text.pts'),
+    sortable: true,
+    thClass: 'text-end',
+    tdClass: 'text-end',
+    tfClass: 'text-end fw-bold'
+  }
+  const pirField = {
+    key: 'pir',
+    label: t('options.playerStats.text.pir'),
+    sortable: true,
+    thClass: 'text-end',
+    tdClass: 'text-end',
+    tfClass: 'text-end fw-bold'
+  }
+  if (row.value?.statsInput === 'play-by-play') {
+    fields.splice(fields.findIndex((field) => field.key === 'time') + 1, 0, ptsField, pirField)
+  } else {
+    fields.splice(fields.findIndex((field) => field.key === 'gp') + 1, 0, ptsField)
+  }
   return fields
 })
 

@@ -18,7 +18,7 @@ const props = withDefaults(defineProps<IProps>(), {
   length: 0
 })
 
-const rankingKeys: PlayerRankingKey[] = ['gp', 'pir', 'pts', 'fg3m', 'reb', 'ast', 'blk', 'stl']
+const rankingKeys: PlayerRankingKey[] = ['gp', 'pts', 'fg3m', 'reb', 'ast', 'blk', 'stl']
 
 const fields = computed(() => [
   {
@@ -47,6 +47,7 @@ const items = computed(() =>
           ...row,
           id: row.playerId
         }))
+        .slice(0, props.length || undefined)
     : []
 )
 </script>
