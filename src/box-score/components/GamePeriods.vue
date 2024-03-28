@@ -88,9 +88,9 @@ const handleJump = (n: 1 | -1) => {
       <TableComp class="mb-0" :fields="fields" :items="items" variant="dark">
         <template #id="{ value }">
           <div class="hstack gap-2">
-          <TeamLogo :team-id="value.id" :size="25" />
-          <span class="jersey-team text-uppercase">{{ value.short }}</span>
-        </div>
+            <TeamLogo :team-id="value.id" :size="25" />
+            <span class="jersey-team text-uppercase">{{ value.short }}</span>
+          </div>
         </template>
       </TableComp>
     </div>
@@ -107,23 +107,22 @@ const handleJump = (n: 1 | -1) => {
         }}{{ periodIdx < nbPeriods ? periodIdx + 1 : periodIdx - nbPeriods + 1 }}
       </div>
       <div class="hstack gap-1 justify-content-center">
-      <ButtonComp 
-        :disabled="periodIdx <= 0"
-        variant="primary" 
-        size="lg"
-        @click="() => handleJump(-1)" 
-      ><i class="bi bi-rewind-fill"></i
-      ></ButtonComp>
-      <ButtonComp 
-        variant="primary" 
-        size="lg"
-        :disabled="periodIdx >= nbPeriods - 1 && !isOtEnabled"
-        @click="() => handleJump(1)" 
-        ><i class="bi bi-fast-forward-fill"></i
-      ></ButtonComp>
+        <ButtonComp
+          :disabled="periodIdx <= 0"
+          variant="primary"
+          size="lg"
+          @click="() => handleJump(-1)"
+          ><i class="bi bi-rewind-fill"></i
+        ></ButtonComp>
+        <ButtonComp
+          variant="primary"
+          size="lg"
+          :disabled="periodIdx >= nbPeriods - 1 && !isOtEnabled"
+          @click="() => handleJump(1)"
+          ><i class="bi bi-fast-forward-fill"></i
+        ></ButtonComp>
+      </div>
     </div>
-    </div>
-    
   </div>
 </template>
 <style scoped lang="scss">

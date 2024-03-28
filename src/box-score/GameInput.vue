@@ -28,7 +28,9 @@ const { nbPeriods } = props.config
 
 const isBusy = ref<boolean>(false)
 const periodIdx = ref<number>(
-  props.game?.scores && Array.isArray(Object.values(props.game?.scores)[0]) ? Object.values(props.game?.scores)[0].length - 1 : 0
+  props.game?.scores && Array.isArray(Object.values(props.game?.scores)[0])
+    ? Object.values(props.game?.scores)[0].length - 1
+    : 0
 )
 
 const isGameTied = computed(() => {
@@ -97,8 +99,10 @@ const handleStopRecording = async () => {
   }
   isBusy.value = true
   await updateCompetitionGameDoc(payload)
-  router.push({ name: 'admin-competition-edit-game', params: { competitionId: props.competition.id, gameId: props.game.id } })
-
+  router.push({
+    name: 'admin-competition-edit-game',
+    params: { competitionId: props.competition.id, gameId: props.game.id }
+  })
 }
 </script>
 <template>
@@ -107,12 +111,9 @@ const handleStopRecording = async () => {
       <small>{{ competition?.title }}</small>
       <div class="jersey-team">{{ game.teams.map(getTeamName).join('&times;') }}</div>
     </div>
-    <ButtonComp 
-      variant="danger" 
-      size="sm" 
-      :is-busy="isBusy" 
-      @click="handleStopRecording"
-    >Stop</ButtonComp>
+    <ButtonComp variant="danger" size="sm" :is-busy="isBusy" @click="handleStopRecording"
+      >Stop</ButtonComp
+    >
   </div>
   <GamePeriods
     :period-idx="periodIdx"
