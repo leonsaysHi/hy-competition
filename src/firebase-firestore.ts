@@ -19,3 +19,7 @@ export const playersColl = collection(db, playersName)
 export const gamesColl = collection(db, gamesName)
 export const playByPlayColl = collection(db, playByPlayName)
 export const competitionsColl = collection(db, competitionsName).withConverter(competitionConverter)
+
+// storage
+export const storageTeams = 'hy-competition-teams'
+export const storageSponsors = 'hy-competition-sponsors'
