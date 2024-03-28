@@ -1,10 +1,5 @@
 <template>
-  <button
-    :type="type"
-    class="btn"
-    :class="computedClass"
-    :disabled="disabled || isBusy"
-  >
+  <button :type="type" class="btn" :class="computedClass" :disabled="disabled || isBusy">
     <slot> </slot><template v-if="isBusy"><SpinnerComp variant="light" size="sm" /></template>
   </button>
 </template>
@@ -30,7 +25,7 @@ const props = withDefaults(defineProps<IProps>(), {
   pill: false,
   disabled: false,
   isBusy: false,
-  noFlex: false,
+  noFlex: false
 })
 
 const computedClass = computed(() => {

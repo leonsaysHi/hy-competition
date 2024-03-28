@@ -92,7 +92,8 @@ export default class PlayByPlayModel {
           boxscores[playerId][statKey] = boxscores[playerId][statKey] || 0
           boxscores[playerId][statKey] += 1
           if (statKey === 'blk') {
-            boxscores[stack.playStack[0].playerId].blka = boxscores[stack.playStack[0].playerId].blka || 0
+            boxscores[stack.playStack[0].playerId].blka =
+              boxscores[stack.playStack[0].playerId].blka || 0
             boxscores[stack.playStack[0].playerId].blka += 1
           }
         }

@@ -1,6 +1,6 @@
 <template>
-  <table class="table" :class="{ 'table-sm': small }">
-    <thead class="table-light">
+  <table class="table" :class="tableClass">
+    <thead :class="thClass">
       <tr>
         <template v-for="({ label, sortable, thClass, key }, hIdx) in fields" :key="hIdx">
           <th
@@ -76,6 +76,7 @@
 </template>
 
 <script setup lang="ts">
+import type { Variant } from '@/types/comp-fields';
 import type { TableField, TableItem } from '@/types/comp-table'
 import { compareDesc, isDate } from 'date-fns'
 import { computed, ref } from 'vue'
@@ -83,6 +84,8 @@ import { computed, ref } from 'vue'
 interface IProps {
   fields: TableField[]
   items: TableItem[]
+  variant?: Variant | undefined
+  class?: string | undefined
   footer?: TableItem | undefined
   sortedKey?: string
   sortedDirection?: 'asc' | 'desc'
@@ -95,6 +98,8 @@ interface IProps {
   descOnly?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
+  variant: undefined,
+  class: undefined,
   footer: undefined,
   sortedKey: undefined,
   sortedDirection: 'asc',
@@ -144,6 +149,23 @@ const computedItems = computed(() => {
       return item
     }, {})
   })
+})
+const tableClass = computed(() => {
+  const result = [ props.class ]
+  if (props.variant) {
+    result.push(`table-${props.variant}`)
+  }
+  if (props.small){
+    result.push(`table-sm`)
+  }
+  return result
+})
+const thClass = computed(() => {
+  const result = []
+  if (!props.variant) {
+    result.push(`table-light`)
+  }
+  return result
 })
 const handleSort = (key: string) => {
   const { ascOnly, descOnly } = props

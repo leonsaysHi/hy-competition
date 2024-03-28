@@ -45,6 +45,9 @@ export default class GameComputedClass {
   get isFinished(): boolean {
     return this.row.isFinished
   }
+  get isLive(): boolean {
+    return this.row.isLive
+  }
 
   get boxScore(): GameBoxScoreComputed {
     const getEmptyBoxScore = (): PlayerStats =>

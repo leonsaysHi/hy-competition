@@ -2,28 +2,21 @@
 import { RouterView } from 'vue-router'
 import { useRoute } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
-import usePlayByPlay from '@/composable/usePlayByPlay'
+import useGame from '@/composable/useGame'
 import type { GameId } from '@/types/games'
 import type { CompetitionId } from '@/types/competitions'
 
 const route = useRoute()
 const { competitionId, gameId } = route.params as { competitionId: CompetitionId; gameId: GameId }
-const {
-  isReady: isPlayByPlayReady,
-  competition,
-  game,
-  rosters,
-  config,
-  model
-} = usePlayByPlay(competitionId, gameId)
+const { isReady, row, competition, config, rosters } = useGame(competitionId, gameId)
 </script>
 <template>
   <div class="wrapper vstack justify-content-around">
-    <template v-if="!isPlayByPlayReady || !game || !rosters || !config">
+    <template v-if="!isReady">
       <SpinnerComp />
     </template>
     <template v-else>
-      <RouterView :competition="competition" :game="game" :model="model" />
+      <RouterView :competition="competition" :config="config" :rosters="rosters" :game="row" />
     </template>
   </div>
 </template>

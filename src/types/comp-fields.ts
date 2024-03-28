@@ -13,4 +13,5 @@ export type Variant =
   | 'danger'
   | 'warning'
   | 'success'
+  | 'dark'
   | 'link'

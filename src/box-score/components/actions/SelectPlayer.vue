@@ -57,7 +57,7 @@ const props = withDefaults(defineProps<IProps>(), {
   hideSubmit: false,
   hideCancel: false
 })
-const emit = defineEmits(['resolve', 'reject'])
+const emit = defineEmits(['select', 'cancel'])
 
 const sortedOptions = computed(() => {
   const result = props.options.slice()
@@ -70,12 +70,12 @@ const sortedOptions = computed(() => {
 })
 
 const handleSelect = (playerId: PlayerId) => {
-  emit('resolve', playerId)
+  emit('select', playerId)
 }
 const handleSubmit = () => {
-  emit('reject', 'submit')
+  emit('cancel', 'submit')
 }
 const handleCancel = () => {
-  emit('reject')
+  emit('cancel')
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex justify-content-center">
-    <div class="spinner-border" :class="computedClass" role="status">
+    <div :class="computedClass" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
   </div>
@@ -10,18 +10,19 @@
 import { computed } from 'vue'
 
 interface IProps {
-  type?: 'button' | 'submit' | 'reset'
+  grow?: boolean
   variant?: 'primary' | 'secondary' | 'light' | 'danger' | 'warning' | 'success'
   size?: 'lg' | 'md' | 'sm'
 }
 const props = withDefaults(defineProps<IProps>(), {
-  type: 'button',
+  grow: false,
   variant: 'secondary',
   size: 'md'
 })
 
 const computedClass = computed(() => {
   const result = []
+  result.push(props.grow ? 'spinner-grow' : 'spinner-border')
   if (typeof props.variant === 'string' && props.variant.length) {
     result.push(`text-${props.variant}`)
   }

@@ -89,7 +89,7 @@ const es = {
         fg3a: 'Tiro 3Pts',
         reb: 'Reb',
         dreb: 'Rebote def.',
-        oreb: 'Reb ofe.',
+        oreb: 'Rebote ofe.',
         ast: 'Astencia',
         stl: 'Robo',
         blk: 'Bloqueo',
@@ -186,6 +186,10 @@ const es = {
       period: {
         text: 'P',
         long: 'Periodo | Periodos'
+      },
+      ot: {
+        text: 'OT',
+        lang: 'Tiempo extra'
       },
       opponent: {
         text: 'Adv',

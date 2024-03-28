@@ -12,10 +12,17 @@
         <RouterLink
           class="btn btn-primary"
           :to="{ name: 'play-by-play', params: { competitionId, gameId } }"
-          >Resume recording Play-by-play</RouterLink
+          >Resume recording</RouterLink
         >
-        <ButtonComp variant="success" @click="handlePublish">Publish results</ButtonComp>
-        <ButtonComp class="ms-auto" variant="danger" @click="handleDelete">Delete Play-by-play</ButtonComp>
+        <RouterLink
+          class="btn btn-primary"
+          :to="{
+            name: 'admin-competition-edit-game-play-by-play',
+            params: { competitionId, gameId }
+          }"
+          >Edit</RouterLink
+        >
+        <ButtonComp class="ms-auto" variant="danger" @click="handleDelete">Delete</ButtonComp>
         <template v-if="confirmDatas">
           <ModalComp
             hide-heacer
@@ -31,16 +38,16 @@
     </div>
     <template v-if="boxScoreItemsByTeam.length">
       <hr />
-        <template v-for="row in boxScoreItemsByTeam" :key="row.teamId">
-          <div class="jersey-team">{{ row.title }}</div>
-          <StatsTableComp
-            :fields="fields"
-            :items="row.items"
-            sorted-key="pts"
-            sorted-direction="desc"
-            show-total
-          />
-        </template>
+      <template v-for="row in boxScoreItemsByTeam" :key="row.teamId">
+        <div class="jersey-team">{{ row.title }}</div>
+        <StatsTableComp
+          :fields="fields"
+          :items="row.items"
+          sorted-key="pts"
+          sorted-direction="desc"
+          show-total
+        />
+      </template>
     </template>
   </div>
 </template>
@@ -90,19 +97,23 @@ const fields = computed(() => {
   return fields
 })
 const boxScoreItemsByTeam = computed(() => {
-  return model.value?.rosters 
-    ? Object.keys(model.value?.rosters)
-      .reduce((boxScoreItems: (Team & {items: PlayerStats & { dnp: boolean } & CompetitionPlayer})[], teamId: TeamId) => {
-        boxScoreItems.push({
-          ...getTeam(teamId),
-          items: Object.keys(model.value.rosters[teamId])
-            .map((playerId: PlayerId) => ({
+  return model.value?.rosters
+    ? Object.keys(model.value?.rosters).reduce(
+        (
+          boxScoreItems: (Team & { items: PlayerStats & { dnp: boolean } & CompetitionPlayer })[],
+          teamId: TeamId
+        ) => {
+          boxScoreItems.push({
+            ...getTeam(teamId),
+            items: Object.keys(model.value.rosters[teamId]).map((playerId: PlayerId) => ({
               ...getPlayer(playerId),
               ...model.value?.boxScore[playerId]
             }))
-        })
-        return boxScoreItems
-      }, [])
+          })
+          return boxScoreItems
+        },
+        []
+      )
     : []
 })
 

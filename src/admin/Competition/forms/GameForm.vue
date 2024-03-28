@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Game, GameDocBoxScore, GameDocScores } from '@/types/games'
+import type { Game, GameDocBoxScore, GameDocScores, GameId } from '@/types/games'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import { ref, computed } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
@@ -7,19 +7,23 @@ import FieldComp from '@/components/FieldComp.vue'
 import InputComp from '@/components/InputComp.vue'
 import ScoresInput from '@/admin/competition/games/components/ScoresInput.vue'
 import PlayByPlayInput from '@/admin/competition/games/components/PlayByPlayInput.vue'
+import StatsSheetInput from '@/admin/competition/games/components/StatsSheetInput.vue'
 import BoxScoreInput from '@/admin/competition/games/components/BoxScoreInput.vue'
 import AwardsInput from '@/admin/competition/components/AwardsInput.vue'
-import type { AwardItem } from '@/types/stats'
+import type { AwardItem, PlayerStatKey } from '@/types/stats'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import { useRoute } from 'vue-router'
+import type { CompetitionId } from '@/types/competitions'
+import CheckComp from '@/components/CheckComp.vue'
+import useOptionsLib from '@/composable/useOptionsLib'
 
 const route = useRoute()
-const { competitionId } = route.params
+const { competitionId, gameId } = route.params as { competitionId: CompetitionId; gameId: GameId }
 const { row, getCompetitionTeam: getCompetitionTeam } = useCompetition(competitionId)
 const { getTeamName, getPlayerName } = useLibs()
-
+const { playerStatsSheetKeys } = useOptionsLib()
 interface IProps {
   value: FormData
   competitionTeams?: CompetitionTeam[]
@@ -37,6 +41,8 @@ type FormData = {
   scores: GameDocScores
   boxscore: GameDocBoxScore
   awards: AwardItem[]
+  isFinished: boolean
+  isLive: boolean
 }
 const getDefaultGame = (): Game => ({
   id: '',
@@ -45,7 +51,8 @@ const getDefaultGame = (): Game => ({
   scores: {},
   boxscore: {},
   awards: [],
-  isFinished: false
+  isFinished: false,
+  isLive: false
 })
 
 const data = ref<FormData>({
@@ -61,9 +68,14 @@ const boxscoreByTeams = computed({
       return {
         ...acc,
         [teamId]: team.players.reduce((boxscore: GameDocBoxScore, player) => {
+          const bs = data.value.boxscore[player.id] || {}
+          playerStatsSheetKeys.forEach((opt:Option) => {
+            const key: PlayerStatKey = opt.value
+            bs[key] = key in bs ? bs[key] : 0
+          })
           return {
             ...boxscore,
-            [player.id]: data.value.boxscore[player.id]
+            [player.id]: bs
           }
         }, {})
       }
@@ -101,6 +113,17 @@ const playersOptions = computed((): Option[] => {
 
 const emit = defineEmits(['submit'])
 
+const handleResetStatsSheet = () => {
+  const { boxscore, scores, isFinished, isLive } = getDefaultGame()
+  data.value = {
+    ...data.value,
+    boxscore, 
+    scores,
+    isFinished, 
+    isLive
+  }
+  emit('submit', data.value)
+}
 const handleSubmit = (ev: Event) => {
   ev.preventDefault()
   emit('submit', data.value)
@@ -111,8 +134,15 @@ const handleSubmit = (ev: Event) => {
     <FieldComp label="Date & time">
       <InputComp v-model="data.datetime" type="datetime-local" :disabled="isBusy" required />
     </FieldComp>
+    <FieldComp label="Game statuses">
+      <CheckComp v-model="data.isFinished" switch>Is finished</CheckComp>
+      <CheckComp v-model="data.isLive" switch>Is live</CheckComp>
+    </FieldComp>
     <hr />
     <template v-if="row?.statsInput === 'sheet'">
+      <FieldComp label="Record box-score">
+        <StatsSheetInput @reset-stats-sheet="handleResetStatsSheet" />
+      </FieldComp>
       <FieldComp label="Scores">
         <ScoresInput v-model="data.scores" :teams="data.teams" :disabled="isBusy">
           <template #team1>

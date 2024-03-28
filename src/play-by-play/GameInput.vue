@@ -19,13 +19,7 @@ import { add } from '@/utils/maths'
 export interface LineUps {
   [key: TeamId]: PlayerId[]
 }
-export type RosterPlayer = CompetitionPlayer & PlayerDoc
-export interface Roster {
-  [key: PlayerId]: RosterPlayer
-}
-export interface Rosters {
-  [key: TeamId]: Roster
-}
+
 export type PlayKey = PlayerStatKey | 'subout' | 'subin'
 export interface Play {
   playerId: PlayerId
@@ -46,17 +40,17 @@ const props = withDefaults(defineProps<IProps>(), {})
 
 const route = useRoute()
 const { competitionId, gameId } = route.params as { competitionId: CompetitionId; gameId: GameId }
-const { writePlayStack  } = usePlayByPlay(competitionId, gameId)
+const { writePlayStack } = usePlayByPlay(competitionId, gameId)
 const { getTeamName } = useLibs()
 const { gameLength, nbPeriods, otLength, lineupLength } = props.model.config
 
 const time = ref<number>(props.model.time || 0)
 const periodIdx = ref<number>(
-  props.model.time <= gameLength 
-  ? Math.floor(props.model.time / (gameLength / nbPeriods))
-  : props.model.time <= gameLength
-  ? Math.floor((props.model.time - gameLength) / otLength)
-  : 0
+  props.model.time <= gameLength
+    ? Math.floor(props.model.time / (gameLength / nbPeriods))
+    : props.model.time <= gameLength
+      ? Math.floor((props.model.time - gameLength) / otLength)
+      : 0
 )
 const periodsLength = computed<number[]>(() => {
   return new Array(Math.max(nbPeriods, periodIdx.value + 1))
@@ -66,9 +60,7 @@ const periodsLength = computed<number[]>(() => {
     })
 })
 const isGameTied = computed<boolean>(() => {
-  const scores = Object.values(props.model.scores).map((scores: number[]) =>
-    scores.reduce(add, 0)
-  )
+  const scores = Object.values(props.model.scores).map((scores: number[]) => scores.reduce(add, 0))
   return scores[0] === scores[1]
 })
 const isGameOver = computed<boolean>(() => periodIdx.value === periodsLength.value.length - 1)
@@ -90,8 +82,7 @@ const handleEndOfPeriod = () => {
   if (isGameOver.value) {
     if (isGameTied.value) {
       handleNextPeriod()
-    }
-    else {
+    } else {
       const time = periodsLength.value.reduce(add, 0)
       const subouts: Play[] = []
       Object.values(lineups.value).forEach((lineup: PlayerId[]) => {
@@ -111,7 +102,7 @@ const handleInitLineups = (payload: LineUps) => {
       subins.push({ playerId, actionKey: 'subin' })
     })
   })
-  writePlayStack({ time: 0, playStack: subins})
+  writePlayStack({ time: 0, playStack: subins })
 }
 
 const handleNewPlayStack = (playStack: PlayStack) => {
@@ -121,7 +112,6 @@ const handleNewPlayStack = (playStack: PlayStack) => {
 const isGameReady = computed(() => {
   return isLineupsReady.value
 })
-
 </script>
 <template>
   <div class="flex-grow-0 hstack justify-content-between border-bottom p-1">
@@ -142,14 +132,18 @@ const isGameReady = computed(() => {
   />
   <div class="flex-grow-1 vstack gap-3 px-1 py-3">
     <template v-if="!isLineupsReady">
-      <LineupsSelect :rosters="model.rosters" :length="lineupLength" @confirmed="handleInitLineups" />
+      <LineupsSelect
+        :rosters="model.rosters"
+        :length="lineupLength"
+        @confirmed="handleInitLineups"
+      />
     </template>
     <template v-if="isGameReady">
-      <PlaysInput 
-        :play-stacks="model.playStacks" 
-        :time="time" 
-        :lineups="lineups" 
-        :rosters="model.rosters" 
+      <PlaysInput
+        :play-stacks="model.playStacks"
+        :time="time"
+        :lineups="lineups"
+        :rosters="model.rosters"
         @new-play-stack="handleNewPlayStack"
       />
     </template>

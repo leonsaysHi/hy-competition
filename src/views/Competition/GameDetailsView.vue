@@ -89,6 +89,12 @@ const teamsBoxscores = computed<BoxScoreByTeam[]>(() => {
               </template>
             </div>
           </template>
+          <template v-else-if="gameComputed.isLive">
+            <div class="vstack gap-2 justify-content-center align-items-center">
+              <span class="text-success">Live</span>
+              <SpinnerComp grow variant="success" size="sm" />
+            </div>
+          </template>
           <template v-else>
             <div class="d-flex flex-column justify-content-center align-items-center">
               {{ gameComputed.date?.long }}
@@ -106,7 +112,7 @@ const teamsBoxscores = computed<BoxScoreByTeam[]>(() => {
           <TeamLogo :team-id="gameComputed.scores[1].id" :size="60" class="d-md-none" />
         </div>
       </div>
-      <template v-if="gameComputed.isFinished">
+      <template v-if="gameComputed.isFinished || gameComputed.isLive">
         <div class="vstack gap-2 align-items-center">
           <GamePeriods :scores="gameComputed.scores" />
           <AwardsList :items="gameComputed.row.awards" class="d-inline-flex flex-column gap-1" />
