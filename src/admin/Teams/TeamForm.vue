@@ -10,9 +10,11 @@ import ImageUpload from '@/components/ImageUpload.vue'
 import { getAbbrev } from '@/utils/strings'
 interface IProps {
   row?: Team | undefined | null
+  isBusy?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
-  row: undefined
+  row: undefined,
+  isBusy: false
 })
 
 type TeamForm = {
@@ -79,6 +81,7 @@ const shortHelper = computed(() => {
         v-model="data.title"
         :invalidFeedback="errors.title"
         :isInvalid="Boolean(errors.title)"
+        :disabled="isBusy"
         required
       />
     </FieldComp>
@@ -88,16 +91,17 @@ const shortHelper = computed(() => {
         placeholder="2 or 3 letters max"
         :invalidFeedback="errors.short"
         :isInvalid="Boolean(errors.short)"
+        :disabled="isBusy"
       />
     </FieldComp>
     <FieldComp label="Logo">
-      <ImageUpload v-model="data.logoUpload" :src="data.logo" />
+      <ImageUpload v-model="data.logoUpload" :src="data.logo" :disabled="isBusy" />
     </FieldComp>
     <FieldComp label="Color">
-      <InputComp v-model="data.color" type="color" />
+      <InputComp v-model="data.color" type="color" :disabled="isBusy" />
     </FieldComp>
     <div class="d-flex justify-content-end gap-2">
-      <ButtonComp variant="primary" type="submit">Save</ButtonComp>
+      <ButtonComp variant="primary" type="submit" :is-busy="isBusy">Save</ButtonComp>
     </div>
   </form>
 </template>

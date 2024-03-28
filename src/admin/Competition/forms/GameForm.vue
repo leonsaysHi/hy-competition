@@ -69,7 +69,7 @@ const boxscoreByTeams = computed({
         ...acc,
         [teamId]: team.players.reduce((boxscore: GameDocBoxScore, player) => {
           const bs = data.value.boxscore[player.id] || {}
-          playerStatsSheetKeys.forEach((opt:Option) => {
+          playerStatsSheetKeys.forEach((opt: Option) => {
             const key: PlayerStatKey = opt.value
             bs[key] = key in bs ? bs[key] : 0
           })
@@ -117,9 +117,9 @@ const handleResetStatsSheet = () => {
   const { boxscore, scores, isFinished, isLive } = getDefaultGame()
   data.value = {
     ...data.value,
-    boxscore, 
+    boxscore,
     scores,
-    isFinished, 
+    isFinished,
     isLive
   }
   emit('submit', data.value)

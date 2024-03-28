@@ -40,6 +40,7 @@ const items = computed(() =>
     : rows.value
 )
 // Create / Edit
+const isEditBusy = ref<boolean>(false)
 const editTeam = ref<undefined | Team>()
 const editModal = ref<typeof ModalComp>()
 const handleCreate = () => {
@@ -58,12 +59,14 @@ const handleSubmitEdit = async (payload: Team) => {
     logoUpload: File | undefined
     teamDoc: TeamDoc
   } = payload
+  isEditBusy.value = true
   if (logoUpload) {
     teamDoc.logo = await uploadTeamLogo(logoUpload, new Date().getTime().toString())
   }
   await writeTeams([teamDoc])
   editTeam.value = undefined
   editModal.value?.hide()
+  isEditBusy.value = false
 }
 
 // Delete
@@ -94,7 +97,7 @@ const handleDelete = () => {
       </div>
       <TableComp :fields="fields" :items="items">
         <template #id="{ value }">
-            <TeamLogo :team-id="value" :size="30" />
+          <TeamLogo :team-id="value" :size="30" />
         </template>
         <template #actions="{ item }">
           <div class="d-flex justify-content-end gap-1">
@@ -106,7 +109,7 @@ const handleDelete = () => {
         </template>
       </TableComp>
       <ModalComp ref="editModal" title="Edit team" hide-footer>
-        <TeamForm :row="editTeam" @submit="handleSubmitEdit" />
+        <TeamForm :row="editTeam" :is-busy="isEditBusy" @submit="handleSubmitEdit" />
       </ModalComp>
       <ModalComp ref="deleteModal" title="Delete team" ok-variant="danger" @ok="handleDelete">
         Sure?

@@ -1,23 +1,25 @@
 <template>
-    <div class="hstack gap-1">
-        <RouterLink
-            class="btn btn-primary"
-            :to="{ name: 'box-score-record', params: { competitionId, gameId } }"
-            >Record box-score</RouterLink
-        >
-        <ButtonComp class="ms-auto" variant="danger" @click="handleDelete">Delete scores and stats</ButtonComp>
-        <template v-if="confirmDatas">
-            <ModalComp
-            hide-heacer
-            ok-variant="danger"
-            @ok="confirmDatas.ok"
-            @cancel="confirmDatas.cancel"
-            show
-            >
-            Are you sure?
-            </ModalComp>
-        </template>
-    </div>
+  <div class="hstack gap-1">
+    <RouterLink
+      class="btn btn-primary"
+      :to="{ name: 'box-score-record', params: { competitionId, gameId } }"
+      >Record box-score</RouterLink
+    >
+    <ButtonComp class="ms-auto" variant="danger" @click="handleDelete"
+      >Delete scores and stats</ButtonComp
+    >
+    <template v-if="confirmDatas">
+      <ModalComp
+        hide-heacer
+        ok-variant="danger"
+        @ok="confirmDatas.ok"
+        @cancel="confirmDatas.cancel"
+        show
+      >
+        Are you sure?
+      </ModalComp>
+    </template>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -25,16 +27,16 @@ import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ButtonComp from '@/components/ButtonComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
-import useCompetitionAdmin from '@/composable/useCompetitionAdmin';
-import useGame from '@/composable/useGame';
-import type { Game, GameId } from '@/types/games';
-import type { CompetitionId } from '@/types/competitions';
-import { emit } from 'process';
+import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
+import useGame from '@/composable/useGame'
+import type { Game, GameId } from '@/types/games'
+import type { CompetitionId } from '@/types/competitions'
+import { emit } from 'process'
 
 const emit = defineEmits(['reset-stats-sheet'])
 const route = useRoute()
 const router = useRouter()
-const { competitionId, gameId } = route.params as { competitionId: CompetitionId, gameId: GameId }
+const { competitionId, gameId } = route.params as { competitionId: CompetitionId; gameId: GameId }
 
 const { writeGame: updateCompetitionGameDoc } = useCompetitionAdmin(competitionId)
 const { row: game } = useGame(competitionId, gameId)

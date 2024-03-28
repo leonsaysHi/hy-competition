@@ -76,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Variant } from '@/types/comp-fields';
+import type { Variant } from '@/types/comp-fields'
 import type { TableField, TableItem } from '@/types/comp-table'
 import { compareDesc, isDate } from 'date-fns'
 import { computed, ref } from 'vue'
@@ -151,11 +151,11 @@ const computedItems = computed(() => {
   })
 })
 const tableClass = computed(() => {
-  const result = [ props.class ]
+  const result = [props.class]
   if (props.variant) {
     result.push(`table-${props.variant}`)
   }
-  if (props.small){
+  if (props.small) {
     result.push(`table-sm`)
   }
   return result
