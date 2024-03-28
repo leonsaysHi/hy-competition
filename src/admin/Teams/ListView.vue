@@ -12,10 +12,15 @@ import SpinnerComp from '@/components/SpinnerComp.vue'
 import InputComp from '@/components/InputComp.vue'
 import { stringIncludes } from '@/utils/strings'
 import { uploadTeamLogo } from '@/firebase-storage'
+import TeamLogo from '@/components/teams/TeamLogo.vue'
 
 const { isReady, teamsRows: rows } = useLibs()
 const { writeRows: writeTeams, deleteRows } = useTeamsLib()
 const fields: TableField[] = [
+  {
+    key: 'id',
+    label: ''
+  },
   {
     key: 'title',
     label: 'Team',
@@ -88,6 +93,9 @@ const handleDelete = () => {
         <ButtonComp variant="primary" @click="handleCreate">Create</ButtonComp>
       </div>
       <TableComp :fields="fields" :items="items">
+        <template #id="{ value }">
+            <TeamLogo :team-id="value" :size="30" />
+        </template>
         <template #actions="{ item }">
           <div class="d-flex justify-content-end gap-1">
             <ButtonComp variant="light" size="sm" @click="() => handleEdit(item)">Edit</ButtonComp>
