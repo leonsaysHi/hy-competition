@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { Option } from '@/types/comp-fields'
 import { computed } from 'vue'
+import TeamLogo from '@/components/teams/TeamLogo.vue'
 import type { PlayerRankingKey, PlayerStatKey } from '@/types/stats'
 import type { GameBoxScoreComputed } from '@/types/computed'
 import { TeamId, CompetitionTeam } from '@/types/teams'
@@ -8,6 +9,7 @@ import { PlayerId } from '@/types/players'
 import { useRoute } from 'vue-router'
 import useOptionsLib from '@/composable/useOptionsLib'
 import useCompetition from '@/composable/useCompetition'
+import useLibs from '@/composable/useLibs'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -15,6 +17,7 @@ const route = useRoute()
 const { competitionId } = route.params
 const { row: competition } = useCompetition(competitionId)
 const { playerStatsKeys } = useOptionsLib()
+const { getTeamName } = useLibs()
 
 interface IProps {
   boxscore: GameBoxScoreComputed
@@ -69,16 +72,16 @@ const teamsBarsByStats = computed(() => {
 <template>
   <div class="row row-cols-3 g-2">
     <div class="col vstack gap-3">
-      <div class="vstack gap-2">
-        <TeamLogo :team-id="teams[0].id" size="50" />
-        <strong class="jersey-team">{{ teams[0].title }}</strong>
+      <div class="vstack gap-2 align-items-center">
+        <TeamLogo :team-id="teams[0].id" size="60" />
+        <strong class="text-center jersey-team">{{ getTeamName(teams[0].id) }}</strong>
       </div>
     </div>
     <div></div>
     <div class="col vstack gap-3">
-      <div class="vstack gap-2">
-        <TeamLogo :team-id="teams[1].id" size="50" />
-        <strong class="jersey-team">{{ teams[1].title }}</strong>
+      <div class="vstack gap-2 align-items-center">
+        <TeamLogo :team-id="teams[1].id" size="60" />
+        <strong class="text-center jersey-team">{{ getTeamName(teams[1].id) }}</strong>
       </div>
     </div>
   </div>
