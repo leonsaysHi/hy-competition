@@ -110,13 +110,11 @@ const handleJump = (n: 1 | -1) => {
         <ButtonComp
           :disabled="periodIdx <= 0"
           variant="primary"
-          size="lg"
           @click="() => handleJump(-1)"
           ><i class="bi bi-rewind-fill"></i
         ></ButtonComp>
         <ButtonComp
           variant="primary"
-          size="lg"
           :disabled="periodIdx >= nbPeriods - 1 && !isOtEnabled"
           @click="() => handleJump(1)"
           ><i class="bi bi-fast-forward-fill"></i
