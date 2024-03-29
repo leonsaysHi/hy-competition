@@ -17,6 +17,7 @@ import SpinnerComp from '@/components/SpinnerComp.vue'
 import PhaseMenu from './components/PhaseMenu.vue'
 import useCompetition from '@/composable/useCompetition'
 import { formatDate } from '@/utils/dates'
+import type { Item } from 'firebase/analytics'
 
 const route = useRoute()
 const { competitionId } = route.params
@@ -60,6 +61,7 @@ const gamesItems = computed(() => {
 const fields: TableField[] = [
   { key: 'game', label: 'Games' },
   { key: 'datetime', label: 'Date' },
+  { key: 'status', label: 'Status' },
   { key: 'actions', label: '' }
 ]
 
@@ -130,6 +132,16 @@ const handleDelete = async () => {
             </template>
           </div>
         </template>
+        <template #status="{ item }">
+          <div class="hstack gap-1">
+            <template v-if="item.isFinished">
+              <span class="badge text-bg-primary">Finished</span>
+            </template>
+            <template v-if="item.isLive">
+              <span class="badge text-bg-success">Live</span>
+            </template>
+          </div>
+        </template>
         <template #actions="{ item }">
           <div class="d-flex justify-content-end gap-1">
             <RouterLink
@@ -137,7 +149,7 @@ const handleDelete = async () => {
               :to="{ name: 'admin-competition-edit-game', params: { gameId: item.id } }"
               >Edit</RouterLink
             >
-            <ButtonComp variant="danger" size="sm" @click="handleConfirmDeleteGame(item)"
+            <ButtonComp variant="danger" size="sm" :disabled="item.isFinished || item.isLive" @click="handleConfirmDeleteGame(item)"
               >Delete</ButtonComp
             >
           </div>

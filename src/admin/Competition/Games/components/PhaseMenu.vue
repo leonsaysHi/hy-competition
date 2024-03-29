@@ -34,7 +34,7 @@ const phasesOptions = computed((): Option[] => {
 })
 </script>
 <template>
-  <div class="d-flex gap-3">
+  <div class="hstack gap-3">
     <strong>Phase:</strong>
     <div class="d-flex gap-1">
       <RadioGroupComp
