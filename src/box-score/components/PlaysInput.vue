@@ -76,19 +76,19 @@ const getTeamIdFromPlayerId = (playerId: PlayerId): TeamId => {
 }
 
 const _actionsMap: ActionMapItem[] = [
+  { actionKey: 'fta', from: ['fta', 'fdr', 'ftm'] },
+  { actionKey: 'ftm', from: ['fta'] },
   { actionKey: 'fga' },
   { actionKey: 'fgm', from: ['fga'] },
   { actionKey: 'fg3a' },
+  { actionKey: 'fg3m', from: ['fg3a'] },
+  { actionKey: 'ast', getPlayer: 'teammate', from: ['fgm', 'fg3m'] },
   { actionKey: 'oreb', getPlayer: 'team', from: ['fta', 'fga', 'fg3a'] },
   { actionKey: 'dreb', getPlayer: 'opp', from: ['fta', 'fga', 'fg3a'] },
   { actionKey: 'blk', getPlayer: 'opp', from: ['fga', 'fg3a'] },
-  { actionKey: 'fg3m', from: ['fg3a'] },
-  { actionKey: 'ast', getPlayer: 'teammate', from: ['fgm', 'fg3m'] },
 
   { actionKey: 'fcm' },
   { actionKey: 'fdr', getPlayer: 'opp', from: ['fcm'] },
-  { actionKey: 'fta', from: ['fta', 'fdr', 'ftm'] },
-  { actionKey: 'ftm', from: ['fta'] },
 
   { actionKey: 'tov' },
   { actionKey: 'stl', getPlayer: 'opp', from: ['tov'] }
@@ -190,7 +190,7 @@ const getActionsOptions = (
       .map(
         (act): ActionsOptionItem => ({
           value: act.actionKey,
-          text: t(`options.playByPlay.text.${act.actionKey}`),
+          text: t(`options.scoreboxRecord.${act.actionKey}`),
           variant: ['ftm', 'fgm', 'fg3m'].includes(act.actionKey) ? 'success' : undefined
         })
       )

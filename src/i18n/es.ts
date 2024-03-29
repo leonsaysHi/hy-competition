@@ -78,6 +78,25 @@ const es = {
         ptsavg: 'Puntos prom.'
       }
     },
+    scoreboxRecord: {
+        ftm: '+1Pt',
+        fta: 'Tiro Libre',
+        fgm: '+2Pts',
+        fga: 'Tiro 2Pts',
+        fg3m: '+3Pts',
+        fg3a: 'Tiro 3Pts',
+        reb: 'Reb',
+        dreb: 'Reb. defensivo',
+        oreb: 'Reb. ofensivo',
+        ast: 'Astencia',
+        stl: 'Robo',
+        blk: 'Bloqueo',
+        tov: 'Bal. perdido',
+        fcm: 'Falta',
+        fdr: 'Falta sobre',
+        subout: 'Sust. sale',
+        subin: 'Sust. entra'
+    },
     playByPlay: {
       text: {
         time: 'Min',

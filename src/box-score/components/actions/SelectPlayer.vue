@@ -12,8 +12,8 @@
             no-flex
             @click="() => handleSelect(opt.value)"
           >
-            <span class="display-2 mb-0 text-center jersey-number">#{{ opt.number }}</span>
-            <small class="jersey-name">{{ opt.text }}</small>
+            <span class="lh-1 display-2 mb-0 text-center jersey-number">#{{ opt.number }}</span>
+            <small class="lh-1 jersey-name">{{ opt.text }}</small>
           </ButtonComp>
         </div>
       </template>
