@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
 
 import useLibs from '@/composable/useLibs'
@@ -10,6 +10,7 @@ import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
 const { isReady: isLibsReady, getTeamName } = useLibs()
 
 const route = useRoute()
+const router = useRouter()
 const { competitionId, gameId } = route.params
 const { isReady, row: competition, getGame } = useCompetition(competitionId)
 const { writeGame: updateCompetitionGameDoc } = useCompetitionAdmin(competitionId)
@@ -22,7 +23,7 @@ const isBusy = ref(false)
 const handleSubmit = async (payload) => {
   isBusy.value = true
   await updateCompetitionGameDoc(payload)
-  setTimeout(() => (isBusy.value = false), 150)
+  router.push({ ...route, name: 'admin-competition-games' })
 }
 </script>
 <template>

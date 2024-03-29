@@ -3,10 +3,7 @@ import { competitionsColl, teamsName, gamesName, playersName } from '@/firebase-
 import type {
   Competition,
   CompetitionConfig,
-  CompetitionId,
-  Roster,
-  RosterPlayer,
-  Rosters
+  CompetitionId
 } from '@/types/competitions'
 
 import { useFirestore } from '@vueuse/firebase/useFirestore'
@@ -32,7 +29,7 @@ import useOptionsLib from './useOptionsLib'
 import type { PlayerStatKey, PlayerStats } from '@/types/stats'
 
 export default function useCompetition(competitionId: CompetitionId | undefined) {
-  const { isReady: isLibsReady, getCompetition, getPlayer } = useLibs()
+  const { isReady: isLibsReady, getCompetition } = useLibs()
   const { playerStatsKeys } = useOptionsLib()
 
   const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`).withConverter(
@@ -80,8 +77,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
         ...playerStatsKeys.reduce((playerStats: PlayerStats, opt) => {
           playerStats[opt.value] = 0
           return playerStats
-        }, {} as PlayerStats),
-        dnp: false
+        }, {} as PlayerStats)
       }
     }
     const teams = competitionTeams.value.map((team: CompetitionTeam) => {

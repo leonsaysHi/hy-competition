@@ -72,10 +72,10 @@ const handleAddPlayStack = async (plays: Play[]) => {
     isLive: true
   }
   plays.forEach((play: Play) => {
-    const { playerId, actionKey }: { playerId: PlayerId; actionKey: PlayerStatKey } = play
+    const { playerId, playKey }: { playerId: PlayerId; playKey: PlayerStatKey } = play
     const teamId: TeamId = getTeamIdFromPlayerId(playerId)
-    payload.boxscore[playerId][actionKey] += 1
-    switch (actionKey) {
+    payload.boxscore[playerId][playKey] += 1
+    switch (playKey) {
       case 'fg3m':
         payload.scores[teamId][periodIdx.value] += 3
         break

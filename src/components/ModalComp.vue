@@ -6,7 +6,7 @@
       class="modal"
       data-bs-backdrop="static"
       :class="`${containerClass} modal-${size} ${isAnimated ? 'fade' : ''}`"
-      :aria-hidden="!isShown"
+      :aria-hidden="!_isShown"
     >
       <div :class="`modal-dialog ${isCentered ? 'modal-dialog-centered' : ''}`">
         <div class="modal-content">
@@ -107,7 +107,7 @@ const myModalComponent = ref<Modal>()
 myModalComponent.value?.show() | myModalComponent.value?.hide()
 
 // Show/hide modal using show props:
-<Modal show />
+<Modal is-shown />
 
 */
 
@@ -119,7 +119,7 @@ interface IProps {
   isCentered?: boolean
   isAnimated?: boolean
   modelValue?: boolean
-  show?: boolean
+  isShown?: boolean
   title?: string | undefined
   size?: 'lg' | 'md' | 'sm'
   hideHeader?: boolean
@@ -162,7 +162,7 @@ interface IProps {
 const props = withDefaults(defineProps<IProps>(), {
   title: undefined,
   size: 'md',
-  show: false,
+  isShown: false,
   hideHeader: false,
   hideFooter: false,
   hideOk: false,
@@ -188,7 +188,7 @@ defineExpose({ show, hide })
 
 let modalEl = ref<HTMLDivElement>()
 let bsModal = ref<Modal>()
-const isShown = ref(false)
+const _isShown = ref(false)
 onMounted(() => {
   if (modalEl.value) {
     bsModal.value = new Modal(modalEl.value, {
@@ -199,12 +199,12 @@ onMounted(() => {
     })
     modalEl.value.addEventListener('shown.bs.modal', () => {
       modalEl.value?.focus()
-      isShown.value = true
+      _isShown.value = true
     })
     modalEl.value.addEventListener('hidden.bs.modal', () => {
-      isShown.value = false
+      _isShown.value = false
     })
-    if (props.modelValue || props.show) {
+    if (props.modelValue || props.isShown) {
       show()
     }
   }
@@ -217,7 +217,7 @@ onUnmounted(() => {
 })
 
 watch(
-  () => props.modelValue || props.show,
+  () => props.modelValue || props.isShown,
   (val) => {
     if (!bsModal.value) {
       return

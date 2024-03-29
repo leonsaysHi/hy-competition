@@ -9,12 +9,11 @@ import SpinnerComp from '@/components/SpinnerComp.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import GameComputed from '@/models/GameComputed'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
-import type { Game, GameDocBoxScore } from '@/types/games'
-import type { CompetitionPlayer } from '@/types/players'
+import type { Game } from '@/types/games'
 import AwardsList from '@/components/competitions/AwardsList.vue'
 
 import { useI18n } from 'vue-i18n'
-import type { PlayerBoxScore } from '@/types/stats'
+
 const { t } = useI18n()
 const route = useRoute()
 const { competitionId, gameId } = route.params as { competitionId: string; gameId: string }
@@ -56,7 +55,9 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
               <template v-for="(team, idx) in gameComputed.scores" :key="idx">
                 <div
                   class="py-2 px-3 border border-5 rounded-2 display-3 d-none d-md-block"
-                  :class="[gameComputed.isFinished ? team.winner ? 'border-win' : 'border-loss' : '']"
+                  :class="[
+                    gameComputed.isFinished ? (team.winner ? 'border-win' : 'border-loss') : ''
+                  ]"
                 >
                   <strong class="jersey-score">{{ team.finalScore }}</strong>
                 </div>
@@ -88,8 +89,8 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
       </div>
       <template v-if="gameComputed.isLive">
         <div class="mb-3 vstack justify-content-center align-items-center">
-            <span class="text-success">{{ t('global.gameDetails.live') }}</span>
-            <SpinnerComp grow variant="success" size="sm" />
+          <span class="text-success">{{ t('global.gameDetails.live') }}</span>
+          <SpinnerComp grow variant="success" size="sm" />
         </div>
       </template>
       <template v-if="gameComputed.isFinished || gameComputed.isLive">

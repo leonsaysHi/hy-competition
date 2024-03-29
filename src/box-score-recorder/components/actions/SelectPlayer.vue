@@ -12,25 +12,31 @@
             no-flex
             @click="() => handleSelect(opt.value)"
           >
-            <span class="display-2 mb-0 text-center jersey-number">#{{ opt.number }}</span>
-            <small class="jersey-name">{{ opt.text }}</small>
+            <span class="lh-1 display-2 mb-0 text-center jersey-number">#{{ opt.number }}</span>
+            <small class="lh-1 jersey-name">{{ opt.text }}</small>
           </ButtonComp>
         </div>
       </template>
     </div>
     <template v-if="!hideCancel || !hideSubmit">
-      <div class="hstack justify-content-between">
+      <hr class="my-0" />
+      <div class="hstack gap-1">
         <ButtonComp
           variant="light"
-          class="border"
+          class="border flex-grow-1"
           :disabled="hideCancel"
           size="lg"
           @click="handleCancel"
           >{{ t('cta.cancel') }}</ButtonComp
         >
-        <ButtonComp variant="success" :disabled="hideSubmit" size="lg" @click="handleSubmit">{{
-          t('cta.submit')
-        }}</ButtonComp>
+        <ButtonComp
+          variant="success"
+          class="flex-grow-1"
+          :disabled="hideSubmit"
+          size="lg"
+          @click="handleSubmit"
+          >{{ t('cta.submit') }}</ButtonComp
+        >
       </div>
     </template>
   </div>
@@ -57,7 +63,7 @@ const props = withDefaults(defineProps<IProps>(), {
   hideSubmit: false,
   hideCancel: false
 })
-const emit = defineEmits(['resolve', 'reject'])
+const emit = defineEmits(['select', 'cancel'])
 
 const sortedOptions = computed(() => {
   const result = props.options.slice()
@@ -70,12 +76,12 @@ const sortedOptions = computed(() => {
 })
 
 const handleSelect = (playerId: PlayerId) => {
-  emit('resolve', playerId)
+  emit('select', playerId)
 }
 const handleSubmit = () => {
-  emit('reject', 'submit')
+  emit('cancel', 'submit')
 }
 const handleCancel = () => {
-  emit('reject')
+  emit('cancel')
 }
 </script>

@@ -12,7 +12,6 @@ export interface AwardItem {
 }
 
 export interface PlayerStats {
-  time: number
   ftm: number
   fta: number
   fgm: number
@@ -33,11 +32,11 @@ export type PlayerStatKey = keyof PlayerStats
 
 export interface PlayerBoxScore extends PlayerStats {
   dnp: boolean
+  pts: number
+  reb: number
   ftprc: number
   fgprc: number
   fg3prc: number
-  pts: number
-  reb: number
   pir: number
   awards: AwardItem[]
 }

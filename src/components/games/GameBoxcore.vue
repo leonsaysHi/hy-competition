@@ -14,6 +14,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
 import type { CompetitionId } from '@/types/competitions'
+import type { PlayerStatKey } from '@/types/stats'
 const { t } = useI18n()
 
 interface IProps {
@@ -26,15 +27,13 @@ const props = withDefaults(defineProps<IProps>(), {})
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: CompetitionId }
 const { row } = useCompetition(competitionId)
-const { playerRankingKeys, playerStatsSheetKeys } = useOptionsLibs()
+const { playerStatsSheetKeys } = useOptionsLibs()
 
 const boxScoreKeys = computed<Option[]>(() => {
   if (!row.value?.statsInput) {
     return []
   }
-  return row.value?.statsInput === 'play-by-play'
-    ? playerRankingKeys.filter((opt: Option) => !['gp'].includes(opt.value))
-    : playerStatsSheetKeys.filter((opt: Option) => row.value?.trackedStats.includes(opt.value))
+  return playerStatsSheetKeys.filter((opt: Option) => row.value?.trackedStats.includes(opt.value as PlayerStatKey))
 })
 
 const fields = computed(() => {
@@ -64,19 +63,7 @@ const fields = computed(() => {
     tdClass: 'text-end',
     tfClass: 'text-end fw-bold'
   }
-  const pirField = {
-    key: 'pir',
-    label: t('options.playerStats.text.pir'),
-    sortable: true,
-    thClass: 'text-end',
-    tdClass: 'text-end',
-    tfClass: 'text-end fw-bold'
-  }
-  if (row.value?.statsInput === 'play-by-play') {
-    fields.splice(fields.findIndex((field) => field.key === 'time') + 1, 0, ptsField, pirField)
-  } else {
-    fields.splice(fields.findIndex((field) => field.key === 'id') + 1, 0, ptsField)
-  }
+  fields.splice(fields.findIndex((field) => field.key === 'id') + 1, 0, ptsField)
   return fields
 })
 

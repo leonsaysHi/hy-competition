@@ -1,13 +1,13 @@
 import type { AwardItem, PlayerStatKey } from './stats'
 import type { CompetitionTeam, TeamId } from './teams'
 import type { Game } from './games'
-import type { CompetitionPlayer, GenderKey, PlayerDoc, PlayerId } from './players'
+import type { GenderKey } from './players'
 export type CompetitionId = string
 export type CompetitionSport = 'basketball5x5' | 'basketball3x3'
 export type CompetitionCategorie = 'u17' | 'u21' | 'senior' | '+35'
 
 export type PhaseType = 'groups' | 'playins' | 'playoffs' | undefined
-export type StatsInputType = 'sheet' | 'play-by-play' | undefined
+export type StatsInputType = 'sheet' | undefined
 export interface Phase {
   type: PhaseType
   groups: TeamId[][]

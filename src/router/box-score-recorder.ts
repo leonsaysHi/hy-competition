@@ -1,8 +1,8 @@
 const adminRoutes = [
   {
     path: 'competition/:competitionId/game/:gameId',
-    name: 'play-by-play',
-    component: () => import('@/play-by-play/GameInput.vue')
+    name: 'box-score-record',
+    component: () => import('@/box-score-recorder/GameInput.vue')
   }
 ]
 

@@ -107,10 +107,7 @@ const handleJump = (n: 1 | -1) => {
         }}{{ periodIdx < nbPeriods ? periodIdx + 1 : periodIdx - nbPeriods + 1 }}
       </div>
       <div class="hstack gap-1 justify-content-center">
-        <ButtonComp
-          :disabled="periodIdx <= 0"
-          variant="primary"
-          @click="() => handleJump(-1)"
+        <ButtonComp :disabled="periodIdx <= 0" variant="primary" @click="() => handleJump(-1)"
           ><i class="bi bi-rewind-fill"></i
         ></ButtonComp>
         <ButtonComp

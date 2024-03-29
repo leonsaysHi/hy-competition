@@ -55,11 +55,6 @@ const adminRoutes = [
             name: 'admin-competition-edit-game',
             component: () => import('@/admin/competition/games/FormView.vue')
           },
-          {
-            path: 'edit/:gameId/play-by-play',
-            name: 'admin-competition-edit-game-play-by-play',
-            component: () => import('@/admin/competition/games/PlayByPlayEditView.vue')
-          }
         ]
       },
       {
