@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import ButtonComp from '@/components/ButtonComp.vue'
-import TableComp from '@/components/TableComp.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import useLibs from '@/composable/useLibs'
 import type { ScoresComputed } from '@/models/GameComputed'
@@ -41,11 +40,12 @@ const scoresComputed = computed(() =>
 const fields = computed((): TableField[] => {
   return [
     {
-      key: 'id',
-      label: t('global.team', 2)
+      key: 'team',
+      label: ''
     },
     ...scoresComputed.value[0].periods.map((n: number, idx: number) => ({
       key: `p${idx}`,
+      pIdx: idx,
       label: `${
         idx < props.nbPeriods
           ? t('global.gameDetails.period.text')
@@ -66,7 +66,7 @@ const fields = computed((): TableField[] => {
 const items = computed(() => {
   return scoresComputed.value.map(
     (score: ScoresComputed): TableItem => ({
-      id: getTeam(score.id),
+      team: getTeam(score.id),
       ...score.periods.reduce((acc: {}, n: number, idx: number) => {
         return {
           ...acc,
@@ -78,45 +78,55 @@ const items = computed(() => {
   )
 })
 
-const handleJump = (n: 1 | -1) => {
-  emit('change-period', n)
+const handleJumpTo = (idx: number) => {
+  emit('change-period', idx)
 }
 </script>
 <template>
-  <div class="hstack text-white bg-dark p-1">
-    <div class="flex-grow-0 vstack gap-1">
-      <TableComp class="mb-0" :fields="fields" :items="items" variant="dark">
-        <template #id="{ value }">
-          <div class="hstack gap-2">
-            <TeamLogo :team-id="value.id" :size="25" />
-            <span class="jersey-team text-uppercase">{{ value.short }}</span>
-          </div>
-        </template>
-      </TableComp>
-    </div>
-    <div class="vstack">
-      <div class="vstack justify-content-center align-items-center display-3 lh-1 font-scoreboard">
-        {{
-          t(
-            `${
-              periodIdx < props.nbPeriods
-                ? 'global.gameDetails.period.text'
-                : 'global.gameDetails.ot.text'
-            }`
-          )
-        }}{{ periodIdx < nbPeriods ? periodIdx + 1 : periodIdx - nbPeriods + 1 }}
-      </div>
-      <div class="hstack gap-1 justify-content-center">
-        <ButtonComp :disabled="periodIdx <= 0" variant="primary" @click="() => handleJump(-1)"
-          ><i class="bi bi-rewind-fill"></i
-        ></ButtonComp>
-        <ButtonComp
-          variant="primary"
-          :disabled="periodIdx >= nbPeriods - 1 && !isOtEnabled"
-          @click="() => handleJump(1)"
-          ><i class="bi bi-fast-forward-fill"></i
-        ></ButtonComp>
-      </div>
+  <div class="d-flex justify-content-center text-white bg-dark p-1">
+    <div>
+      <table class="table table-sm table-dark">
+        <thead class="align-middle">
+          <template v-for="({ label, key, pIdx }, hIdx) in fields" :key="hIdx">
+            <template v-if="key === 'team'">
+              <th class="pe-3">{{ label }}</th>
+            </template>
+            <template v-else-if="key === 'finalScore'">
+              <th><div><ButtonComp 
+                variant="outline-primary" 
+                size="sm" 
+                :disabled="periodIdx + 1 <= nbPeriods - 1 || !isOtEnabled"
+                @click="handleJumpTo(periodIdx + 1)"
+              >+</ButtonComp></div></th>
+              <th class="fw-bold text-end ps-3">{{ label }}</th>
+            </template>
+            <template v-else>
+              <th><div><ButtonComp :variant="periodIdx === pIdx ? 'primary' : 'outline-primary'" size="sm" @click="handleJumpTo(pIdx)">{{ label }}</ButtonComp></div></th>
+            </template>
+          </template>
+        </thead>
+        <tbody>
+          <template v-for="(item, trIdx) in items" :key="trIdx">
+            <tr>
+              <template v-for="({ key }, tdIdx) in fields" :key="tdIdx">
+                <template v-if="key === 'team'">
+                  <div class="hstack gap-2 pe-3">
+                    <TeamLogo :team-id="item[key].id" :size="30" />
+                    <span class="jersey-team">{{ item[key].short }}</span>
+                  </div>
+                </template>
+                <template v-else-if="key === 'finalScore'">
+                  <td class="fw-bold text-center">-</td>
+                  <td class="fw-bold text-end ps-3">{{ item[key] }}</td>
+                </template>
+                <template v-else>
+                  <td class="text-end pe-3">{{ item[key] }}</td>
+                </template>
+              </template>
+            </tr>
+          </template>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>

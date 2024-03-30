@@ -45,8 +45,8 @@ const getTeamIdFromPlayerId = (playerId: PlayerId): TeamId => {
   ) as TeamId
 }
 
-const handleChangePeriod = async (n: 1 | -1) => {
-  periodIdx.value += n
+const handleChangePeriod = async (idx: number) => {
+  periodIdx.value = idx
   if (
     Object.values(props.game.scores).some(
       (periods: number[]) => periodIdx.value > periods.length - 1

@@ -21,7 +21,7 @@ const { t } = useI18n()
 interface IProps {
   rosters: Rosters
   trackedStats: PlayerStatKey[]
-  disabled: boolean
+  disabled?: boolean
 }
 
 const props = withDefaults(defineProps<IProps>(), {
