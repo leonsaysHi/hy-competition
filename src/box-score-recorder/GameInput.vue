@@ -45,8 +45,8 @@ const getTeamIdFromPlayerId = (playerId: PlayerId): TeamId => {
   ) as TeamId
 }
 
-const handleChangePeriod = async (n: 1 | -1) => {
-  periodIdx.value += n
+const handleChangePeriod = async (idx: number) => {
+  periodIdx.value = idx
   if (
     Object.values(props.game.scores).some(
       (periods: number[]) => periodIdx.value > periods.length - 1
@@ -72,10 +72,10 @@ const handleAddPlayStack = async (plays: Play[]) => {
     isLive: true
   }
   plays.forEach((play: Play) => {
-    const { playerId, actionKey }: { playerId: PlayerId; actionKey: PlayerStatKey } = play
+    const { playerId, playKey }: { playerId: PlayerId; playKey: PlayerStatKey } = play
     const teamId: TeamId = getTeamIdFromPlayerId(playerId)
-    payload.boxscore[playerId][actionKey] += 1
-    switch (actionKey) {
+    payload.boxscore[playerId][playKey] += 1
+    switch (playKey) {
       case 'fg3m':
         payload.scores[teamId][periodIdx.value] += 3
         break

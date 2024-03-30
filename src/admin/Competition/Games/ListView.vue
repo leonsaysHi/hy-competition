@@ -17,7 +17,6 @@ import SpinnerComp from '@/components/SpinnerComp.vue'
 import PhaseMenu from './components/PhaseMenu.vue'
 import useCompetition from '@/composable/useCompetition'
 import { formatDate } from '@/utils/dates'
-import type { Item } from 'firebase/analytics'
 
 const route = useRoute()
 const { competitionId } = route.params
@@ -149,7 +148,11 @@ const handleDelete = async () => {
               :to="{ name: 'admin-competition-edit-game', params: { gameId: item.id } }"
               >Edit</RouterLink
             >
-            <ButtonComp variant="danger" size="sm" :disabled="item.isFinished || item.isLive" @click="handleConfirmDeleteGame(item)"
+            <ButtonComp
+              variant="danger"
+              size="sm"
+              :disabled="item.isFinished || item.isLive"
+              @click="handleConfirmDeleteGame(item)"
               >Delete</ButtonComp
             >
           </div>

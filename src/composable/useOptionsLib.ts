@@ -69,15 +69,6 @@ export default function usePlayersLib() {
     ...playerStatsKeys
   ]
 
-  const playByPlayStatsKeys: { value: PlayerStatKey; text: string; long: string }[] = [
-    ...['time'].map((key: string) => ({
-      text: t(`options.playerStats.text.${key}`),
-      long: t(`options.playerStats.long.${key}`),
-      value: key as PlayerStatKey
-    })),
-    ...playerStatsKeys
-  ]
-
   const playerRankingKeys: { value: PlayerRankingKey; text: string; long: string }[] = [
     {
       text: t('options.playerStats.text.gp'),

@@ -24,7 +24,9 @@
               @keyup.enter="() => sortable && handleSort(key)"
               @click="() => sortable && handleSort(key)"
             >
-              <span>{{ typeof label === 'string' ? label : key }}</span>
+              <slot :name="'header' + key" v-bind="{ label, sortable, thClass, key }" :value="label">
+                <span>{{ typeof label === 'string' ? label : key }}</span>
+              </slot>
               <template v-if="sortable && sortedKey === key">
                 <i
                   class="bi position-absolute top-0 start-50 translate-middle-x small lh-1"

@@ -16,7 +16,7 @@ import type { Option } from '@/types/comp-fields'
 import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
 import type { CompetitionRanking } from '@/types/computed'
-import type { PlayerStatKey, PlayerRankingKey } from '@/types/stats'
+import type { PlayerStatKey } from '@/types/stats'
 
 import { useI18n } from 'vue-i18n'
 import GameComputedClass from '@/models/GameComputed'
@@ -59,9 +59,7 @@ const boxScoreKeys = computed<Option[]>(() => {
   if (!row.value?.statsInput) {
     return []
   }
-  return row.value?.statsInput === 'play-by-play'
-    ? playerRankingKeys.filter((opt: Option) => !['gp'].includes(opt.value))
-    : playerStatsSheetKeys.filter((opt: Option) => row.value?.trackedStats.includes(opt.value))
+  return playerStatsSheetKeys.filter((opt: Option) => row.value?.trackedStats.includes(opt.value as PlayerStatKey))
 })
 
 const statsFields = computed<TableField[]>(() => {

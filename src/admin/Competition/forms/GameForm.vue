@@ -6,7 +6,6 @@ import ButtonComp from '@/components/ButtonComp.vue'
 import FieldComp from '@/components/FieldComp.vue'
 import InputComp from '@/components/InputComp.vue'
 import ScoresInput from '@/admin/competition/games/components/ScoresInput.vue'
-import PlayByPlayInput from '@/admin/competition/games/components/PlayByPlayInput.vue'
 import StatsSheetInput from '@/admin/competition/games/components/StatsSheetInput.vue'
 import BoxScoreInput from '@/admin/competition/games/components/BoxScoreInput.vue'
 import AwardsInput from '@/admin/competition/components/AwardsInput.vue'
@@ -20,7 +19,7 @@ import CheckComp from '@/components/CheckComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
 
 const route = useRoute()
-const { competitionId, gameId } = route.params as { competitionId: CompetitionId; gameId: GameId }
+const { competitionId } = route.params as { competitionId: CompetitionId; gameId: GameId }
 const { row, getCompetitionTeam: getCompetitionTeam } = useCompetition(competitionId)
 const { getTeamName, getPlayerName } = useLibs()
 const { playerStatsSheetKeys } = useOptionsLib()
@@ -163,11 +162,6 @@ const handleSubmit = (ev: Event) => {
           <h3 class="mb-0">{{ getTeamName(teamId) }}</h3>
           <BoxScoreInput v-model="boxscoreByTeams[teamId]" :disabled="isBusy" />
         </template>
-      </FieldComp>
-    </template>
-    <template v-else>
-      <FieldComp label="Play-by-play">
-        <PlayByPlayInput />
       </FieldComp>
     </template>
     <hr />

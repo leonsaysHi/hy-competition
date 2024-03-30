@@ -5,9 +5,7 @@ import type { DocumentData, QueryDocumentSnapshot, SnapshotOptions } from 'fireb
 import { dateToTimeStamp } from '@/utils/dates'
 import type { CompetitionTeamDoc, TeamDoc, TeamId } from '@/types/teams'
 import type { GameDoc } from '@/types/games'
-import { add } from './maths'
 import type { CompetitionRankingComputed, CompetitionStandingComputed } from '@/types/computed'
-import type { PlayStack } from '@/play-by-play/GameInput.vue'
 
 const dateFromFirestore = (ts: Timestamp): Date => {
   return ts.toDate()
@@ -153,22 +151,6 @@ export const computedStandingConverter = {
     return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null))
   },
   fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions) => {
-    const data = snapshot.data(options)!
-    return {
-      id: snapshot.id,
-      ...data
-    }
-  }
-}
-
-export const playByPlayStackConverter = {
-  toFirestore: (row: PlayStack): DocumentData => {
-    const payload = {
-      ...row
-    }
-    return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null))
-  },
-  fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions): PlayStack => {
     const data = snapshot.data(options)!
     return {
       id: snapshot.id,

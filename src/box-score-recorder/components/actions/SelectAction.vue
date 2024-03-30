@@ -21,18 +21,24 @@
       </template>
     </div>
     <template v-if="!hideCancel || !hideSubmit">
-      <div class="hstack justify-content-between">
+      <hr class="my-0" />
+      <div class="hstack gap-1">
         <ButtonComp
           variant="light"
-          class="border"
+          class="border flex-grow-1"
           :disabled="hideCancel"
           size="lg"
           @click="handleCancel"
           >{{ t('cta.cancel') }}</ButtonComp
         >
-        <ButtonComp variant="success" :disabled="hideSubmit" size="lg" @click="handleSubmit">{{
-          t('cta.submit')
-        }}</ButtonComp>
+        <ButtonComp
+          variant="success"
+          class="flex-grow-1"
+          :disabled="hideSubmit"
+          size="lg"
+          @click="handleSubmit"
+          >{{ t('cta.submit') }}</ButtonComp
+        >
       </div>
     </template>
   </div>
@@ -42,15 +48,14 @@
 import ButtonComp from '@/components/ButtonComp.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import useLibs from '@/composable/useLibs'
-import type { PlayKey } from '@/play-by-play/GameInput.vue'
+import type { PlayKey, PlayOptions } from '@/types/box-score-recorder'
 import type { TeamId } from '@/types/teams'
-import type { ActionsOptions } from '../PlaysInput.vue'
 import { useI18n } from 'vue-i18n'
 import { computed } from 'vue'
 
 const { t } = useI18n()
 interface IProps {
-  options: ActionsOptions
+  options: PlayOptions
   hideSubmit?: boolean
   hideCancel?: boolean
 }
@@ -65,9 +70,9 @@ const teams = computed(() =>
   Object.keys(props.options).filter((teamId: TeamId) => props.options[teamId]?.length)
 )
 
-const handleSelect = (teamId: TeamId, actionKey: PlayKey) => {
-  console.log(teamId, actionKey)
-  emit('select', { teamId, actionKey })
+const handleSelect = (teamId: TeamId, playKey: PlayKey) => {
+  console.log(teamId, playKey)
+  emit('select', { teamId, playKey })
 }
 const handleSubmit = () => {
   emit('cancel', 'submit')

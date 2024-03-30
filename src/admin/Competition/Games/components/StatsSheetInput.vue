@@ -14,7 +14,7 @@
         ok-variant="danger"
         @ok="confirmDatas.ok"
         @cancel="confirmDatas.cancel"
-        show
+        is-shown
       >
         Are you sure?
       </ModalComp>
@@ -24,22 +24,16 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import ButtonComp from '@/components/ButtonComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
-import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
-import useGame from '@/composable/useGame'
-import type { Game, GameId } from '@/types/games'
+import type { GameId } from '@/types/games'
 import type { CompetitionId } from '@/types/competitions'
-import { emit } from 'process'
 
 const emit = defineEmits(['reset-stats-sheet'])
 const route = useRoute()
-const router = useRouter()
 const { competitionId, gameId } = route.params as { competitionId: CompetitionId; gameId: GameId }
 
-const { writeGame: updateCompetitionGameDoc } = useCompetitionAdmin(competitionId)
-const { row: game } = useGame(competitionId, gameId)
 
 const confirmDatas = ref()
 const handleConfirmDelete = () => {
