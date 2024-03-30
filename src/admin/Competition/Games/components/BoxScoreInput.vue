@@ -36,7 +36,7 @@ const statsFields = computed(() =>
     }))
 )
 const fields = computed<TableField[]>(() => [
-  { key: 'number', label: '#' },
+  { key: 'number', label: '' },
   { key: 'name', label: 'Players' },
   ...statsFields.value,
   { key: 'dnp', label: '' }
@@ -50,7 +50,7 @@ const model = computed({
 })
 
 const items = computed((): TableItem[][] => {
-  return model.value
+  const result = model.value
     ? Object.keys(model.value)?.map((playerId: PlayerId): TableItem[] => {
         return {
           id: playerId,
@@ -60,11 +60,16 @@ const items = computed((): TableItem[][] => {
         }
       })
     : []
+  result.sort((a, b) => a.number - b.number)
+  return result
 })
 </script>
 
 <template>
   <TableComp :items="items" :fields="fields" small>
+    <template #number="{ value }"
+      ><div class="lh-1 fw-bold text-end">#{{ value }}</div></template
+    >
     <template #name="{ value }"
       ><div class="lh-1">{{ value }}</div></template
     >
