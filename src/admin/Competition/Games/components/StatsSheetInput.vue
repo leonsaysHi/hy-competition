@@ -34,7 +34,6 @@ const emit = defineEmits(['reset-stats-sheet'])
 const route = useRoute()
 const { competitionId, gameId } = route.params as { competitionId: CompetitionId; gameId: GameId }
 
-
 const confirmDatas = ref()
 const handleConfirmDelete = () => {
   return new Promise((resolve) => {

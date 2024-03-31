@@ -1,10 +1,6 @@
 import { collection } from 'firebase/firestore'
 import { competitionsColl, teamsName, gamesName, playersName } from '@/firebase-firestore.js'
-import type {
-  Competition,
-  CompetitionConfig,
-  CompetitionId
-} from '@/types/competitions'
+import type { Competition, CompetitionConfig, CompetitionId } from '@/types/competitions'
 
 import { useFirestore } from '@vueuse/firebase/useFirestore'
 import type { CompetitionTeam, TeamId } from '@/types/teams'

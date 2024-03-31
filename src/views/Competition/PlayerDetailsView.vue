@@ -59,7 +59,9 @@ const boxScoreKeys = computed<Option[]>(() => {
   if (!row.value?.statsInput) {
     return []
   }
-  return playerStatsSheetKeys.filter((opt: Option) => row.value?.trackedStats.includes(opt.value as PlayerStatKey))
+  return playerStatsSheetKeys.filter((opt: Option) =>
+    row.value?.trackedStats.includes(opt.value as PlayerStatKey)
+  )
 })
 
 const statsFields = computed<TableField[]>(() => {

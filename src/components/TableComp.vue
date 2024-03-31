@@ -24,7 +24,11 @@
               @keyup.enter="() => sortable && handleSort(key)"
               @click="() => sortable && handleSort(key)"
             >
-              <slot :name="'header' + key" v-bind="{ label, sortable, thClass, key }" :value="label">
+              <slot
+                :name="'header' + key"
+                v-bind="{ label, sortable, thClass, key }"
+                :value="label"
+              >
                 <span>{{ typeof label === 'string' ? label : key }}</span>
               </slot>
               <template v-if="sortable && sortedKey === key">

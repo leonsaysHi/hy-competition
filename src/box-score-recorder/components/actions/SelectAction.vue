@@ -71,7 +71,6 @@ const teams = computed(() =>
 )
 
 const handleSelect = (teamId: TeamId, playKey: PlayKey) => {
-  console.log(teamId, playKey)
   emit('select', { teamId, playKey })
 }
 const handleSubmit = () => {
