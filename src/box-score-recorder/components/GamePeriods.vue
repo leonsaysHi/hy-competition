@@ -92,16 +92,30 @@ const handleJumpTo = (idx: number) => {
               <th class="pe-3">{{ label }}</th>
             </template>
             <template v-else-if="key === 'finalScore'">
-              <th><div><ButtonComp 
-                variant="outline-primary" 
-                size="sm" 
-                :disabled="periodIdx + 1 <= nbPeriods - 1 || !isOtEnabled"
-                @click="handleJumpTo(periodIdx + 1)"
-              >+</ButtonComp></div></th>
+              <th>
+                <div>
+                  <ButtonComp
+                    variant="outline-primary"
+                    size="sm"
+                    :disabled="periodIdx + 1 <= nbPeriods - 1 || !isOtEnabled"
+                    @click="handleJumpTo(periodIdx + 1)"
+                    >+</ButtonComp
+                  >
+                </div>
+              </th>
               <th class="fw-bold text-end ps-3">{{ label }}</th>
             </template>
             <template v-else>
-              <th><div><ButtonComp :variant="periodIdx === pIdx ? 'primary' : 'outline-primary'" size="sm" @click="handleJumpTo(pIdx)">{{ label }}</ButtonComp></div></th>
+              <th>
+                <div>
+                  <ButtonComp
+                    :variant="periodIdx === pIdx ? 'primary' : 'outline-primary'"
+                    size="sm"
+                    @click="handleJumpTo(pIdx)"
+                    >{{ label }}</ButtonComp
+                  >
+                </div>
+              </th>
             </template>
           </template>
         </thead>

@@ -3,7 +3,9 @@ import type { Game } from '@/types/games'
 import { computed, ref } from 'vue'
 import useLibs from '@/composable/useLibs'
 import GamePeriods from './components/GamePeriods.vue'
-import PlaysInput, { type Play } from './components/PlaysInput.vue'
+import PlaysDisplay from './components/PlaysDisplay.vue'
+import PlaysInput from './components/PlaysInput.vue'
+import type { Play } from '@/types/box-score-recoder'
 import type { TeamId } from '@/types/teams'
 import type { Rosters } from '@/types/games'
 import type { Competition, CompetitionConfig } from '@/types/competitions'
@@ -26,6 +28,8 @@ const { writeGame: updateCompetitionGameDoc } = useCompetitionAdmin(props.compet
 const { getTeamName } = useLibs()
 const { nbPeriods } = props.config
 
+const body = ref<'play' | 'edit'>('play')
+const history = ref<Play[][]>([])
 const isBusy = ref<boolean>(false)
 const periodIdx = ref<number>(
   props.game?.scores && Array.isArray(Object.values(props.game?.scores)[0])
@@ -78,18 +82,49 @@ const handleAddPlayStack = async (plays: Play[]) => {
     switch (playKey) {
       case 'fg3m':
         payload.scores[teamId][periodIdx.value] += 3
+        play.periodIdx = periodIdx.value
         break
       case 'fgm':
         payload.scores[teamId][periodIdx.value] += 2
+        play.periodIdx = periodIdx.value
         break
       case 'ftm':
         payload.scores[teamId][periodIdx.value] += 1
+        play.periodIdx = periodIdx.value
         break
     }
   })
   isBusy.value = true
   await updateCompetitionGameDoc(payload)
   isBusy.value = false
+  history.value.push(plays)
+}
+const handleRevertPlayStack = async (pIdx: number, idx: number) => {
+  const payload = {
+    ...props.game
+  }
+  const play = history.value[pIdx][idx]
+  const { playerId, playKey }: { playerId: PlayerId; playKey: PlayerStatKey } = play
+  const teamId: TeamId = getTeamIdFromPlayerId(playerId)
+  payload.boxscore[playerId][playKey] -= 1
+  switch (playKey) {
+    case 'fg3m':
+      payload.scores[teamId][play.periodIdx] -= 3
+      break
+    case 'fgm':
+      payload.scores[teamId][play.periodIdx] -= 2
+      break
+    case 'ftm':
+      payload.scores[teamId][play.periodIdx] -= 1
+      break
+  }
+  isBusy.value = true
+  await updateCompetitionGameDoc(payload)
+  isBusy.value = false
+  history.value[pIdx].splice(idx, 1)
+  if (!history.value[pIdx].length) {
+    history.value.splice(pIdx, 1)
+  }
 }
 const handleStopRecording = async () => {
   const payload = {
@@ -122,11 +157,94 @@ const handleStopRecording = async () => {
     :is-ot-enabled="isGameTied"
     @change-period="handleChangePeriod"
   />
-  <div class="flex-grow-1 vstack gap-3 px-1 py-3">
-    <PlaysInput
-      :rosters="rosters"
-      :tracked-stats="competition.trackedStats"
-      @add-play-stack="handleAddPlayStack"
-    />
+  <div class="main vstack flex-grow-1" :class="`-${body}`">
+    <div class="border-bottom flex-grow-0">
+      <ButtonComp
+        variant="light"
+        :is-busy="isBusy"
+        class="w-100 justify-content-center"
+        @click="body = 'play'"
+        ><i class="bi bi-record-circle"></i
+      ></ButtonComp>
+    </div>
+    <div class="body flex-grow-1">
+      <div class="play">
+        <div class="vstack gap-3 px-1 py-3">
+          <PlaysInput
+            :rosters="rosters"
+            :tracked-stats="competition.trackedStats"
+            @add-play-stack="handleAddPlayStack"
+          />
+        </div>
+      </div>
+      <div class="edit">
+        <div class="vstack gap-3 px-1 py-3">
+          <PlaysDisplay
+            :rosters="rosters"
+            :history="history"
+            :is-busy="isBusy"
+            @revert-play-stack="handleRevertPlayStack"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="border-top flex-grow-0">
+      <ButtonComp
+        variant="light"
+        :is-busy="isBusy"
+        class="w-100 justify-content-center"
+        @click="body = 'edit'"
+        ><i class="bi bi-eraser-fill"></i
+      ></ButtonComp>
+    </div>
   </div>
 </template>
+
+<style scoped lang="scss">
+.main {
+  > div:first-child,
+  > div:last-child {
+    display: none;
+  }
+  > .body {
+    position: relative;
+    overflow-y: hidden;
+    > .play,
+    > .edit {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100%;
+      transition: top 0.3s;
+      overflow-y: auto;
+    }
+  }
+  &.-play {
+    > div:last-child {
+      display: block;
+    }
+    > .body {
+      .edit {
+        top: 100%;
+        overflow-y: hidden;
+        pointer-events: none;
+        z-index: -1;
+      }
+    }
+  }
+  &.-edit {
+    > div:first-child {
+      display: block;
+    }
+    > .body {
+      .play {
+        top: -100%;
+        overflow-y: hidden;
+        pointer-events: none;
+        z-index: -1;
+      }
+    }
+  }
+}
+</style>
