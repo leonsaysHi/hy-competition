@@ -45,8 +45,8 @@ const playsMap = computed(() => {
     { playKey: 'fg3a' },
     { playKey: 'fg3m', from: ['fg3a'] },
     { playKey: 'ast', getPlayer: 'teammate', from: ['fgm', 'fg3m'] },
-    { playKey: 'oreb', getPlayer: 'team', from: ['fta', 'fga', 'fg3a'] },
     { playKey: 'dreb', getPlayer: 'opp', from: ['fta', 'fga', 'fg3a'] },
+    { playKey: 'oreb', getPlayer: 'team', from: ['fta', 'fga', 'fg3a'] },
     { playKey: 'blk', getPlayer: 'opp', from: ['fga', 'fg3a'] },
 
     { playKey: 'fcm' },
