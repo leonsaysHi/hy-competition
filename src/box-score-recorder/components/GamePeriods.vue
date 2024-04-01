@@ -97,7 +97,7 @@ const handleJumpTo = (idx: number) => {
                   <ButtonComp
                     variant="outline-primary"
                     size="sm"
-                    :disabled="periodIdx + 1 <= nbPeriods - 1 || !isOtEnabled"
+                    :disabled="periodIdx >= nbPeriods - 1 && !isOtEnabled"
                     @click="handleJumpTo(periodIdx + 1)"
                     >+</ButtonComp
                   >

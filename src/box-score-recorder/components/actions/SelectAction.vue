@@ -12,6 +12,7 @@
               <ButtonComp
                 :variant="opt.variant || 'primary'"
                 size="lg"
+                class="lh-1"
                 @click="() => handleSelect(teamId, opt.value)"
                 >{{ opt.text }}</ButtonComp
               >
