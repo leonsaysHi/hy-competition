@@ -2,10 +2,15 @@
   <div class="hstack gap-1">
     <RouterLink
       class="btn btn-primary"
+      :class="{ disabled }" 
       :to="{ name: 'box-score-record', params: { competitionId, gameId } }"
       >Record box-score</RouterLink
     >
-    <ButtonComp class="ms-auto" variant="danger" @click="handleDelete"
+    <ButtonComp 
+      class="ms-auto" 
+      variant="danger" 
+      :disabled="disabled" 
+      @click="handleDelete"
       >Delete scores and stats</ButtonComp
     >
     <template v-if="confirmDatas">
@@ -29,6 +34,13 @@ import ButtonComp from '@/components/ButtonComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
 import type { GameId } from '@/types/games'
 import type { CompetitionId } from '@/types/competitions'
+
+interface IProps {
+  disabled?: boolean
+}
+withDefaults(defineProps<IProps>(), {
+  disabled: false
+})
 
 const emit = defineEmits(['reset-stats-sheet'])
 const route = useRoute()
