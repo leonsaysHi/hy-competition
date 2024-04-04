@@ -1,11 +1,9 @@
 <script lang="ts" setup>
 import type { Game } from '@/types/games'
 import { computed, ref } from 'vue'
-import useLibs from '@/composable/useLibs'
 import GamePeriods from './components/GamePeriods.vue'
 import PlaysDisplay from './components/PlaysDisplay.vue'
 import PlaysInput from './components/PlaysInput.vue'
-import type { Play } from '@/types/box-score-recoder'
 import type { TeamId } from '@/types/teams'
 import type { Rosters } from '@/types/games'
 import type { Competition, CompetitionConfig } from '@/types/competitions'
@@ -15,6 +13,8 @@ import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
 import { add } from '@/utils/maths'
 import ButtonComp from '@/components/ButtonComp.vue'
 import router from '@/router'
+import type { Play } from '@/types/box-score-recorder'
+import RadioGroupComp from '@/components/RadioGroupComp.vue'
 
 interface IProps {
   config: CompetitionConfig
@@ -25,9 +25,11 @@ interface IProps {
 const props = withDefaults(defineProps<IProps>(), {})
 
 const { writeGame: updateCompetitionGameDoc } = useCompetitionAdmin(props.competition.id)
-const { getTeamName } = useLibs()
 const { nbPeriods } = props.config
-
+const modeOptions = [
+  { value: 'play', text: 'Record' },
+  { value: 'edit', text: 'Revert' }
+]
 const body = ref<'play' | 'edit'>('play')
 const history = ref<Play[][]>([])
 const isBusy = ref<boolean>(false)
@@ -144,7 +146,10 @@ const handleStopRecording = async () => {
   <div class="flex-grow-0 hstack justify-content-between border-bottom p-1">
     <div>
       <small>{{ competition?.title }}</small>
-      <div class="jersey-team">{{ game.teams.map(getTeamName).join('&times;') }}</div>
+      <div class="jersey-team">{{ game.datetime }}</div>
+    </div>
+    <div class="hstack gap-2 align-self-center align-items-baseline">
+      <RadioGroupComp v-model="body" :options="modeOptions" buttons button-variant-active="success" size="sm" />
     </div>
     <ButtonComp variant="danger" size="sm" :is-busy="isBusy" @click="handleStopRecording"
       >Stop</ButtonComp
@@ -158,15 +163,6 @@ const handleStopRecording = async () => {
     @change-period="handleChangePeriod"
   />
   <div class="main vstack flex-grow-1" :class="`-${body}`">
-    <div class="border-bottom flex-grow-0">
-      <ButtonComp
-        variant="light"
-        :is-busy="isBusy"
-        class="w-100 justify-content-center"
-        @click="body = 'play'"
-        ><i class="bi bi-record-circle"></i
-      ></ButtonComp>
-    </div>
     <div class="body flex-grow-1">
       <div class="play">
         <div class="vstack gap-3 px-1 py-3">
@@ -187,15 +183,6 @@ const handleStopRecording = async () => {
           />
         </div>
       </div>
-    </div>
-    <div class="border-top flex-grow-0">
-      <ButtonComp
-        variant="light"
-        :is-busy="isBusy"
-        class="w-100 justify-content-center"
-        @click="body = 'edit'"
-        ><i class="bi bi-eraser-fill"></i
-      ></ButtonComp>
     </div>
   </div>
 </template>

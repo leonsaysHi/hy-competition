@@ -6,8 +6,8 @@
         :value="opt.value"
         :disabled="opt.disabled || disabled"
         :buttons="buttons"
-        button-size="lg"
-        :button-variant="opt.value === model ? 'primary' : 'outline-secondary'"
+        :button-size="size"
+        :button-variant="opt.value === model ? buttonVariantActive : buttonVariant"
         >{{ opt.text }}</RadioComp
       >
     </template>
@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import RadioComp from '@/components/RadioComp.vue'
-import type { Option } from '@/types/comp-fields'
+import type { Option, Size, Variant } from '@/types/comp-fields'
 import { computed } from 'vue'
 interface IProps {
   modelValue: string | undefined
@@ -27,6 +27,9 @@ interface IProps {
   disabled?: boolean
   stacked?: boolean
   buttons?: boolean
+  buttonVariant?: Variant
+  buttonVariantActive?: Variant
+  size?: Size
   isValid?: boolean
   isInvalid?: boolean
 }
@@ -37,6 +40,9 @@ const props = withDefaults(defineProps<IProps>(), {
   disabled: false,
   stacked: false,
   buttons: false,
+  buttonVariant: 'outline-secondary',
+  buttonVariantActive: 'primary',
+  size: 'md',
   isValid: false,
   isInvalid: false
 })
