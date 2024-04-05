@@ -49,7 +49,8 @@ const es = {
         fdr: 'FDr',
         pir: 'PIR',
         pts: 'Pts',
-        ptsavg: 'Pts avg.'
+        ptsavg: 'Pts avg.',
+        dnp: 'DNP',
       },
       long: {
         gp: 'Juegos',
@@ -75,7 +76,8 @@ const es = {
         fdr: 'Faltas personales señaladas',
         pir: 'Índice de rendimiento',
         pts: 'Puntos',
-        ptsavg: 'Puntos prom.'
+        ptsavg: 'Puntos prom.',
+        dnp: 'Did not play',
       }
     },
     scoreboxRecorder: {

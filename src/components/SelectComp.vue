@@ -12,7 +12,7 @@
       <option value="">{{ placeholder }}</option>
     </template>
     <template v-for="opt in options" :key="opt.value">
-      <option :value="opt.value">{{ opt.text }}</option>
+      <option :value="opt.value" :disabled="opt.disabled">{{ opt.text }}</option>
     </template>
   </select>
 </template>

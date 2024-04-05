@@ -79,7 +79,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     const teams = competitionTeams.value.map((team: CompetitionTeam) => {
       return {
         ...team,
-        players: playersLists.value?.[team.id] as CompetitionPlayer[]
+        players: (Array.isArray(playersLists.value?.[team.id]) ? playersLists.value?.[team.id] : []) as CompetitionPlayer[]
       }
     })
     // Sanitize game datas

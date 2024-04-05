@@ -91,7 +91,16 @@ const handleRemove = async () => {
           {{ getTeam(item.id).title }}
         </template>
         <template #players="{ item }">
-          {{ Array.isArray(item.players) ? item.players.length : '0' }}
+          <template v-if="item.players.length < 5">
+            <div class="hstack gap-3 text-danger">
+              <span>{{ item.players.length }}</span>
+              <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+          </template>
+          <template v-else>
+            {{ item.players.length }}
+          </template>
+          
         </template>
         <template #actions="{ item }">
           <div class="d-flex justify-content-end gap-1">
