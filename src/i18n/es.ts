@@ -90,7 +90,7 @@ const es = {
       reb: 'Reb',
       dreb: 'Reb. defensivo',
       oreb: 'Reb. ofensivo',
-      ast: 'Astencia',
+      ast: 'Asistencia',
       stl: 'Robo',
       blk: 'Bloqueo',
       tov: 'Bal. perdido',

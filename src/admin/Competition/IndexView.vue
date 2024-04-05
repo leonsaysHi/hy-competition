@@ -14,11 +14,11 @@ const rName: String = route.params.name?.toString() || ''
 const { isReady, row } = useCompetition(competitionId)
 const { updateCompetitionComputeds } = useCompetitionAdmin(competitionId)
 const currentPhaseValid = computed(() => Array.isArray(row?.value?.phases) && row.value.phases.length)
-const teamsValid = computed (() => {
-  return row.value?.teams && 
-  row.value.teams.length > 1 &&
-  row.value.teams.every((team: CompetitionTeam) => team.players.length >= 5)
-})
+const teamsValid = computed (() => row.value?.teams && 
+  row.value.teams.length > 1)
+const rostersValid = computed (() => teamsValid.value &&
+  row.value?.teams.every((team: CompetitionTeam) => team.players.length >= 5)
+)
 
 // Updates computed on compatition update
 watch(
@@ -36,10 +36,10 @@ watch(
   <template v-if="isReady">
     <h1>{{ row?.title }}</h1>
   </template>
-  <template v-if="isReady && !teamsValid">
+  <template v-if="isReady && !rostersValid">
     <AlertComp variant="warning">You should add at least 2 teams to the competition. All teams should have at least 5 players.</AlertComp>
   </template>
-  <template v-if="isReady && teamsValid && !currentPhaseValid">
+  <template v-if="isReady && rostersValid && !currentPhaseValid">
     <AlertComp variant="warning"> You should initiate a competition phase. </AlertComp>
   </template>
   <ul class="nav nav-tabs mb-4">
@@ -53,9 +53,6 @@ watch(
         :to="{ ...route, name: 'admin-competition-games' }"
         >
         Games
-        <template v-if="!currentPhaseValid">
-          <span class="text-danger"><i class="bi bi-exclamation-triangle-fill"></i></span>
-        </template>
         </RouterLink
       >
     </li>
@@ -66,7 +63,7 @@ watch(
         :to="{ ...route, name: 'admin-competition-teams' }"
         >
         Teams
-        <template v-if="!teamsValid">
+        <template v-if="!rostersValid">
           <span class="text-danger"><i class="bi bi-exclamation-triangle-fill"></i></span>
         </template>
         </RouterLink

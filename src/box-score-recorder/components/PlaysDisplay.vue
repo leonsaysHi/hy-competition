@@ -48,7 +48,7 @@ const items = computed(() => {
     <ul class="list-group list-group-flush">
       <template v-for="(item, pIdx) in items" :key="pIdx">
         <li class="list-group-item hstack gap-3">
-          <div class="vstack">
+          <div class="vstack gap-1">
             <template v-for="(itemPlay, idx) in item" :key="idx">
               <div class="hstack gap-3 align-items-center">
                 <TeamLogo :team-id="getTeamIdFromPlayerId(itemPlay.playerId)" :size="25" />
@@ -63,7 +63,7 @@ const items = computed(() => {
                   variant="danger"
                   size="sm"
                   class="ms-auto"
-                  :is-busy="isBusy"
+                  :disabled="isBusy"
                   @click="handleRevert(pIdx, idx)"
                   ><i class="bi bi-x"></i
                 ></ButtonComp>
