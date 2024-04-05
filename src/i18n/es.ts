@@ -50,7 +50,7 @@ const es = {
         pir: 'PIR',
         pts: 'Pts',
         ptsavg: 'Pts avg.',
-        dnp: 'DNP',
+        dnp: 'DNP'
       },
       long: {
         gp: 'Juegos',
@@ -77,7 +77,7 @@ const es = {
         pir: 'Índice de rendimiento',
         pts: 'Puntos',
         ptsavg: 'Puntos prom.',
-        dnp: 'Did not play',
+        dnp: 'Did not play'
       }
     },
     scoreboxRecorder: {

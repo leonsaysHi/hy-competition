@@ -75,7 +75,7 @@ const teamsOptionsByGroups = computed((): Option[][] => {
             return {
               value: teamId,
               text: getTeam(teamId)?.title,
-              disabled: team.players.length < 5,
+              disabled: team.players.length < 5
             }
           })
         ]
@@ -151,6 +151,11 @@ const handleDelete = async () => {
           <div class="d-flex justify-content-end gap-1">
             <RouterLink
               class="btn btn-light btn-sm"
+              :to="{ name: 'competition-game', params: { competitionId, gameId: item.id } }"
+              >View</RouterLink
+            >
+            <RouterLink
+              class="btn btn-primary btn-sm"
               :to="{ name: 'admin-competition-edit-game', params: { gameId: item.id } }"
               >Edit</RouterLink
             >
