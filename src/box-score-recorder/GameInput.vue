@@ -194,6 +194,7 @@ const handleStopRecording = async () => {
 <style scoped lang="scss">
 .main {
   position: relative;
+  overflow-y: hidden;
   > .play,
   > .edit {
     position: absolute;
