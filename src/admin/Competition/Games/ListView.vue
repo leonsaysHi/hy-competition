@@ -7,7 +7,7 @@ import TableComp from '@/components/TableComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import type { Option } from '@/types/comp-fields'
-import type { TeamId } from '@/types/teams'
+import type { CompetitionTeam, TeamId } from '@/types/teams'
 import type { Game } from '@/types/games'
 import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
 import AddGameForm from '@/admin/competition/forms/AddGameForm.vue'
@@ -22,7 +22,7 @@ const route = useRoute()
 const { competitionId } = route.params
 const { isReady: isLibsReady, getTeam, getTeamName } = useLibs()
 
-const { row } = useCompetition(competitionId)
+const { row, getCompetitionTeam } = useCompetition(competitionId)
 const { writeGame: addCompetitionGame, deleteGame: deleteCompetitionGame } =
   useCompetitionAdmin(competitionId)
 
@@ -68,12 +68,18 @@ const teamsOptionsByGroups = computed((): Option[][] => {
   const currentPhase = row.value?.phases[row.value?.phases.length - 1]
   const groups = currentPhase?.groups
   return Array.isArray(groups) && groups.length
-    ? groups?.map((group: TeamId[]) => [
-        ...group.map((teamId: TeamId) => ({
-          value: teamId,
-          text: getTeam(teamId)?.title
-        }))
-      ])
+    ? groups?.map((group: TeamId[]): Option[] => {
+        return [
+          ...group.map((teamId: TeamId): Option => {
+            const team = getCompetitionTeam(teamId) as CompetitionTeam
+            return {
+              value: teamId,
+              text: getTeam(teamId)?.title,
+              disabled: team.players.length < 5,
+            }
+          })
+        ]
+      })
     : []
 })
 

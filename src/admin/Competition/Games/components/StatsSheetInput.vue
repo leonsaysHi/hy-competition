@@ -11,7 +11,7 @@
       variant="danger" 
       :disabled="disabled" 
       @click="handleDelete"
-      >Delete scores and stats</ButtonComp
+      >Reset</ButtonComp
     >
     <template v-if="confirmDatas">
       <ModalComp
