@@ -13,11 +13,13 @@ const { competitionId } = route.params
 const rName: String = route.params.name?.toString() || ''
 const { isReady, row } = useCompetition(competitionId)
 const { updateCompetitionComputeds } = useCompetitionAdmin(competitionId)
-const currentPhaseValid = computed(() => Array.isArray(row?.value?.phases) && row.value.phases.length)
-const teamsValid = computed (() => row.value?.teams && 
-  row.value.teams.length > 1)
-const rostersValid = computed (() => teamsValid.value &&
-  row.value?.teams.every((team: CompetitionTeam) => team.players.length >= 5)
+const currentPhaseValid = computed(
+  () => Array.isArray(row?.value?.phases) && row.value.phases.length
+)
+const teamsValid = computed(() => row.value?.teams && row.value.teams.length > 1)
+const rostersValid = computed(
+  () =>
+    teamsValid.value && row.value?.teams.every((team: CompetitionTeam) => team.players.length >= 5)
 )
 
 // Updates computed on compatition update
@@ -37,7 +39,10 @@ watch(
     <h1>{{ row?.title }}</h1>
   </template>
   <template v-if="isReady && !rostersValid">
-    <AlertComp variant="warning">You should add at least 2 teams to the competition. All teams should have at least 5 players.</AlertComp>
+    <AlertComp variant="warning"
+      >You should add at least 2 teams to the competition. All teams should have at least 5
+      players.</AlertComp
+    >
   </template>
   <template v-if="isReady && rostersValid && !currentPhaseValid">
     <AlertComp variant="warning"> You should initiate a competition phase. </AlertComp>
@@ -51,23 +56,21 @@ watch(
           disabled: !isReady || !teamsValid || !currentPhaseValid
         }"
         :to="{ ...route, name: 'admin-competition-games' }"
-        >
-        Games
-        </RouterLink
       >
+        Games
+      </RouterLink>
     </li>
     <li class="nav-item">
       <RouterLink
         class="nav-link"
         :class="{ active: rName?.includes('team'), disabled: !isReady }"
         :to="{ ...route, name: 'admin-competition-teams' }"
-        >
+      >
         Teams
         <template v-if="!rostersValid">
           <span class="text-danger"><i class="bi bi-exclamation-triangle-fill"></i></span>
         </template>
-        </RouterLink
-      >
+      </RouterLink>
     </li>
     <li class="nav-item">
       <RouterLink

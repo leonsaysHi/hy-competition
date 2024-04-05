@@ -149,7 +149,13 @@ const handleStopRecording = async () => {
       <div class="jersey-team">{{ game.datetime }}</div>
     </div>
     <div class="hstack gap-2 align-self-center align-items-baseline">
-      <RadioGroupComp v-model="body" :options="modeOptions" buttons button-variant-active="success" size="sm" />
+      <RadioGroupComp
+        v-model="body"
+        :options="modeOptions"
+        buttons
+        button-variant-active="success"
+        size="sm"
+      />
     </div>
     <ButtonComp variant="danger" size="sm" :is-busy="isBusy" @click="handleStopRecording"
       >Stop</ButtonComp
@@ -163,25 +169,23 @@ const handleStopRecording = async () => {
     @change-period="handleChangePeriod"
   />
   <div class="main vstack flex-grow-1" :class="`-${body}`">
-    <div class="body flex-grow-1">
-      <div class="play">
-        <div class="vstack gap-3 px-1 py-3">
-          <PlaysInput
-            :rosters="rosters"
-            :tracked-stats="competition.trackedStats"
-            @add-play-stack="handleAddPlayStack"
-          />
-        </div>
+    <div class="play">
+      <div class="vstack gap-3 px-1 py-3">
+        <PlaysInput
+          :rosters="rosters"
+          :tracked-stats="competition.trackedStats"
+          @add-play-stack="handleAddPlayStack"
+        />
       </div>
-      <div class="edit">
-        <div class="vstack gap-3 px-1 py-3">
-          <PlaysDisplay
-            :rosters="rosters"
-            :history="history"
-            :is-busy="isBusy"
-            @revert-play-stack="handleRevertPlayStack"
-          />
-        </div>
+    </div>
+    <div class="edit">
+      <div class="vstack gap-3 px-1 py-3">
+        <PlaysDisplay
+          :rosters="rosters"
+          :history="history"
+          :is-busy="isBusy"
+          @revert-play-stack="handleRevertPlayStack"
+        />
       </div>
     </div>
   </div>
@@ -189,48 +193,31 @@ const handleStopRecording = async () => {
 
 <style scoped lang="scss">
 .main {
-  > div:first-child,
-  > div:last-child {
-    display: none;
-  }
-  > .body {
-    position: relative;
-    overflow-y: hidden;
-    > .play,
-    > .edit {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 100%;
-      transition: top 0.3s;
-      overflow-y: auto;
-    }
+  position: relative;
+  > .play,
+  > .edit {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    transition: top 0.3s;
+    overflow-y: auto;
   }
   &.-play {
-    > div:last-child {
-      display: block;
-    }
-    > .body {
-      .edit {
-        top: 100%;
-        overflow-y: hidden;
-        pointer-events: none;
-        z-index: -1;
-      }
+    > .edit {
+      top: 100%;
+      overflow-y: hidden;
+      pointer-events: none;
+      z-index: -1;
     }
   }
   &.-edit {
-    > div:first-child {
-      display: block;
-    }
-    > .body {
-      .play {
-        top: -100%;
-        overflow-y: hidden;
-        pointer-events: none;
-        z-index: -1;
-      }
+    > .play {
+      top: -100%;
+      overflow-y: hidden;
+      pointer-events: none;
+      z-index: -1;
     }
   }
 }

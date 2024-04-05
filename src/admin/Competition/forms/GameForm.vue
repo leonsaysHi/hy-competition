@@ -134,7 +134,12 @@ const handleSubmit = (ev: Event) => {
       <InputComp v-model="data.datetime" type="datetime-local" :disabled="isBusy" required />
     </FieldComp>
     <FieldComp label="Game statuses">
-        <CheckComp v-model="data.isFinished" switch>Is finished <small class="lh-1 text-body-secondary">(Can't edit/delete Finished games)</small></CheckComp>
+      <CheckComp v-model="data.isFinished" switch
+        >Is finished
+        <small class="lh-1 text-body-secondary"
+          >(Can't edit/delete Finished games)</small
+        ></CheckComp
+      >
 
       <CheckComp v-model="data.isLive" switch>Is live</CheckComp>
     </FieldComp>
@@ -144,7 +149,11 @@ const handleSubmit = (ev: Event) => {
         <StatsSheetInput :disabled="data.isFinished" @reset-stats-sheet="handleResetStatsSheet" />
       </FieldComp>
       <FieldComp label="Scores">
-        <ScoresInput v-model="data.scores" :teams="data.teams" :disabled="data.isFinished || isBusy">
+        <ScoresInput
+          v-model="data.scores"
+          :teams="data.teams"
+          :disabled="data.isFinished || isBusy"
+        >
           <template #team1>
             <template v-for="(scores, teamId, idx) in data.scores">
               <template v-if="!idx">{{ getTeamName(teamId) }}</template>

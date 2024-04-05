@@ -2,15 +2,11 @@
   <div class="hstack gap-1">
     <RouterLink
       class="btn btn-primary"
-      :class="{ disabled }" 
+      :class="{ disabled }"
       :to="{ name: 'box-score-record', params: { competitionId, gameId } }"
       >Record box-score</RouterLink
     >
-    <ButtonComp 
-      class="ms-auto" 
-      variant="danger" 
-      :disabled="disabled" 
-      @click="handleDelete"
+    <ButtonComp class="ms-auto" variant="danger" :disabled="disabled" @click="handleDelete"
       >Reset</ButtonComp
     >
     <template v-if="confirmDatas">

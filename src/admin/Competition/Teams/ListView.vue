@@ -100,7 +100,6 @@ const handleRemove = async () => {
           <template v-else>
             {{ item.players.length }}
           </template>
-          
         </template>
         <template #actions="{ item }">
           <div class="d-flex justify-content-end gap-1">
