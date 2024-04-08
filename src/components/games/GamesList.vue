@@ -37,7 +37,7 @@
               <div class="vstack gap-1 align-items-center justify-content-center">
                 <strong>{{ gameComputed.date?.long }}</strong>
                 <template v-if="gameComputed.isLive">
-                  <SpinnerComp grow small variant="succsss" />
+                  <SpinnerComp grow variant="success" size="sm" />
                   <small class="text-success">{{ t('global.gameDetails.live') }}</small>
                 </template>
                 <template v-else>

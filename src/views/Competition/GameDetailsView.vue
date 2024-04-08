@@ -47,7 +47,7 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
           <strong class="fs-6 jersey-team text-center lh-1">{{
             gameComputed.scores[0].title
           }}</strong>
-          <TeamLogo :team-id="gameComputed.scores[0].id" :size="60" />
+          <TeamLogo :team-id="gameComputed.scores[0].id" :size="100" />
         </div>
         <div>
           <template v-if="gameComputed.isFinished || gameComputed.isLive">
@@ -83,8 +83,7 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
           <strong class="jersey-team fs-6 text-center lh-1">{{
             gameComputed.scores[1].title
           }}</strong>
-          <TeamLogo :team-id="gameComputed.scores[1].id" :size="100" class="d-none d-md-block" />
-          <TeamLogo :team-id="gameComputed.scores[1].id" :size="60" class="d-md-none" />
+          <TeamLogo :team-id="gameComputed.scores[1].id" :size="100" />
         </div>
       </div>
       <template v-if="gameComputed.isLive">
