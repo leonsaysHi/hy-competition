@@ -40,16 +40,16 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
       <SpinnerComp />
     </template>
     <template v-else>
-      <div class="d-flex gap-2 align-items-start">
+      <div class="row align-items-start">
         <div
-          class="flex-grow-1 d-flex flex-column-reverse justify-content-start align-items-center gap-1"
+          class="col d-flex flex-column-reverse justify-content-start align-items-center gap-2"
         >
-          <strong class="fs-6 jersey-team text-center lh-1">{{
+          <strong class="fs-5 jersey-team text-center lh-1">{{
             gameComputed.scores[0].title
           }}</strong>
           <TeamLogo :team-id="gameComputed.scores[0].id" :size="100" />
         </div>
-        <div>
+        <div class="col col-auto">
           <template v-if="gameComputed.isFinished || gameComputed.isLive">
             <div class="d-flex align-items-center justify-content-center gap-2">
               <template v-for="(team, idx) in gameComputed.scores" :key="idx">
@@ -78,9 +78,9 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
           </template>
         </div>
         <div
-          class="flex-grow-1 d-flex flex-column-reverse justify-content-start align-items-center gap-1"
+          class="col d-flex flex-column-reverse justify-content-start align-items-center gap-2"
         >
-          <strong class="jersey-team fs-6 text-center lh-1">{{
+          <strong class="jersey-team fs-5 text-center lh-1">{{
             gameComputed.scores[1].title
           }}</strong>
           <TeamLogo :team-id="gameComputed.scores[1].id" :size="100" />
