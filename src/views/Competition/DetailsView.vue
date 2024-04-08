@@ -3,7 +3,7 @@ import { useRoute, useRouter } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import DropdownComp from '@/components/DropdownComp.vue'
 import useCompetition from '@/composable/useCompetition'
-import { computed, ref, watchEffect } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 import type { CompetitionGroupComputed, CompetitionPhaseComputed } from '@/types/computed'
 import type { Option } from '@/types/comp-fields'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
@@ -75,16 +75,46 @@ watchEffect(() => {
   })
 })
 
-const gamesViewOptions: Option[] = [
-  { text: t('global.previous', 2), value: 'prev' },
-  { text: t('global.upcoming', 2), value: 'next' }
-]
-const currentGamesView = ref<'prev' | 'next'>(gamesViewOptions[gamesViewOptions.length - 1].value)
+const gamesViewOptions = computed<Option[]>(() => {
+  return [
+    { 
+      text: t('global.gameDetails.live'), 
+      value: 'live',
+      disabled: !selectedGroup.value || !selectedGroup.value?.games.some((game: GameComputedClass) => game.isLive)
+    },
+    { 
+      text: t('global.previous', 2), 
+      value: 'prev',
+      disabled: !selectedGroup.value || !selectedGroup.value?.games.some((game: GameComputedClass) => game.isFinished && !game.isLive)
+    },
+    { 
+      text: t('global.upcoming', 2), 
+      value: 'next',
+      disabled: !selectedGroup.value || !selectedGroup.value?.games.some((game: GameComputedClass) => !game.isFinished && !game.isLive)
+    }
+  ]
+})
+
+const currentGamesView = ref<'prev' | 'next' | 'live'>('prev')
+
+watch(
+  () => gamesViewOptions.value,
+  (val: Option[]) => {
+    const optIdx = val.findIndex((opt: Option) => !opt.disabled)
+    currentGamesView.value = val[optIdx].value as ('prev' | 'next' | 'live')
+  }
+)
 
 const groupGames = computed<GameComputedClass[]>(() => {
-  const result = selectedGroup.value.games.filter((game: GameComputedClass) =>
-    currentGamesView.value === 'prev' ? game.isFinished : !game.isFinished
-  )
+  const result = Array.isArray(selectedGroup.value?.games) 
+    ? selectedGroup.value.games.filter((game: GameComputedClass) => {
+      return currentGamesView.value === 'prev' 
+        ? game.isFinished && !game.isLive 
+        : currentGamesView.value === 'next' 
+          ? !game.isFinished && !game.isLive
+          : !game.isFinished && game.isLive
+    }) 
+    : []
   result.sort((a: GameComputedClass, b: GameComputedClass) =>
     currentGamesView.value === 'prev'
       ? compareAsc(b.row.datetime, a.row.datetime)
@@ -139,7 +169,7 @@ const groupGames = computed<GameComputedClass[]>(() => {
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  :class="[currentGamesView === opt.value && 'active']"
+                  :class="[currentGamesView === opt.value && 'active', opt.disabled && 'disabled']"
                   :aria-current="currentGamesView === opt.value ? 'page' : false"
                   @click="currentGamesView = opt.value"
                   >{{ opt.text }}</a

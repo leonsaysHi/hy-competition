@@ -15,7 +15,26 @@
           </div>
 
           <div class="">
-            <template v-if="gameComputed.isFinished">
+            <template v-if="gameComputed.isLive">
+              <div class="vstack gap-1">
+                <div class="text-success text-center">{{ t('global.gameDetails.live') }}</div>
+                <div class="hstack gap-2 justify-content-center">
+                  <template v-for="(team, idx) in gameComputed.scores" :key="idx">
+                    <div
+                      class="flex-grow-1 p-2 border border-3 rounded-2"
+                      :class="[team.winner ? 'border-win' : 'border-loss']"
+                    >
+                      <strong class="jersey-score fs-3 lh-1 pt-1">{{ team.finalScore }}</strong>
+                    </div>
+                    <template v-if="idx===0">
+                        <SpinnerComp grow variant="success" size="sm" />
+                    </template>
+                  </template>
+                </div>
+              </div>
+            </template>
+
+            <template v-else-if="gameComputed.isFinished">
               <div class="vstack gap-1">
                 <small class="text-center text-body-secondary">{{
                   gameComputed.date?.short
@@ -36,13 +55,7 @@
             <template v-else>
               <div class="vstack gap-1 align-items-center justify-content-center">
                 <strong>{{ gameComputed.date?.long }}</strong>
-                <template v-if="gameComputed.isLive">
-                  <SpinnerComp grow small variant="succsss" />
-                  <small class="text-success">{{ t('global.gameDetails.live') }}</small>
-                </template>
-                <template v-else>
-                  <small class="text-body-secondary">{{ gameComputed.date?.time }}</small>
-                </template>
+                <small class="text-body-secondary">{{ gameComputed.date?.time }}</small>
               </div>
             </template>
           </div>

@@ -1,10 +1,10 @@
 <template>
   <div class="hstack gap-1">
-    <RouterLink
-      class="btn btn-primary"
-      :class="{ disabled }"
-      :to="{ name: 'box-score-record', params: { competitionId, gameId } }"
-      >Record box-score</RouterLink
+    <ButtonComp
+      variant="primary"
+      :disabled="disabled"
+      @click="handleOpenRecord"
+      >Record box-score</ButtonComp
     >
     <ButtonComp class="ms-auto" variant="danger" :disabled="disabled" @click="handleDelete"
       >Reset</ButtonComp
@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import ButtonComp from '@/components/ButtonComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
 import type { GameId } from '@/types/games'
@@ -40,6 +40,7 @@ withDefaults(defineProps<IProps>(), {
 
 const emit = defineEmits(['reset-stats-sheet'])
 const route = useRoute()
+const router = useRouter()
 const { competitionId, gameId } = route.params as { competitionId: CompetitionId; gameId: GameId }
 
 const confirmDatas = ref()
@@ -54,6 +55,14 @@ const handleConfirmDelete = () => {
       cancel: () => resp(false)
     }
   })
+}
+
+const handleOpenRecord = () => {
+  const recordRoute = { name: 'box-score-record', params: { competitionId, gameId } }
+  const route = router.resolve(recordRoute)
+  const url = new URL(route.href, window.location.origin).href
+  window.open(url,'_blank')
+  router.push({ name: 'admin-competition-games', params: { competitionId } })
 }
 
 const handleDelete = async () => {

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { RouterView, type RouteRecordName } from 'vue-router'
+import { RouterView } from 'vue-router'
 import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
 import SpinnerComp from '@/components/SpinnerComp.vue'
