@@ -40,14 +40,15 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
       <SpinnerComp />
     </template>
     <template v-else>
-      <div class="d-flex gap-2 align-items-start">
+      <div class="hstack align-items-start">
         <div
           class="flex-grow-1 d-flex flex-column-reverse justify-content-start align-items-center gap-1"
         >
           <strong class="fs-6 jersey-team text-center lh-1">{{
             gameComputed.scores[0].title
           }}</strong>
-          <TeamLogo :team-id="gameComputed.scores[0].id" :size="100" />
+          <TeamLogo class="d-none d-lg-block" :team-id="gameComputed.scores[0].id" :size="100" />
+          <TeamLogo class="d-lg-none" :team-id="gameComputed.scores[0].id" :size="60" />
         </div>
         <div>
           <template v-if="gameComputed.isFinished || gameComputed.isLive">
@@ -83,7 +84,8 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
           <strong class="jersey-team fs-6 text-center lh-1">{{
             gameComputed.scores[1].title
           }}</strong>
-          <TeamLogo :team-id="gameComputed.scores[1].id" :size="100" />
+          <TeamLogo class="d-none d-lg-block" :team-id="gameComputed.scores[1].id" :size="100" />
+          <TeamLogo class="d-lg-none" :team-id="gameComputed.scores[1].id" :size="60" />
         </div>
       </div>
       <template v-if="gameComputed.isLive">
