@@ -158,6 +158,10 @@ const es = {
         text: 'P',
         long: 'Periodo | Periodos'
       },
+      finalScore: {
+        text: 'Final',
+        long: 'Puntaje final'
+      },
       ot: {
         text: 'OT',
         lang: 'Tiempo extra'

@@ -92,7 +92,7 @@ const items = computed(() => {
     </template>
     <template v-else>
       <div>
-        <h1 class="mb-4 vstack gap-1 lh-1 display-2 fw-bold jersey-name">
+        <h1 class="mb-4 vstack gap-1 lh-1 display-2 fw-bold font-name">
           <span>{{ player.fname }}</span
           ><span>{{ player.lname }}</span>
         </h1>

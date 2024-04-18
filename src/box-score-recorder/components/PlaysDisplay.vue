@@ -54,9 +54,9 @@ const items = computed(() => {
                 <TeamLogo :team-id="getTeamIdFromPlayerId(itemPlay.playerId)" :size="25" />
                 <div class="hstack gap-1 h6 mb-0 pt-1">
                   <span
-                    >#<span class="jersey-number">{{ itemPlay.player.number }}</span></span
+                    >#<span class="font-number">{{ itemPlay.player.number }}</span></span
                   >
-                  <span class="jersey-name">{{ itemPlay.player.lname }}</span>
+                  <span class="font-name">{{ itemPlay.player.lname }}</span>
                 </div>
                 <strong>{{ t(`options.scoreboxRecorder.${itemPlay.playKey}`) }}</strong>
                 <ButtonComp

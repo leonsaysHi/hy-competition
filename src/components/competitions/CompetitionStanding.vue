@@ -69,7 +69,7 @@ const items = computed(() => {
         :to="{ name: 'competition-team', params: { competitionId: competitionId, teamId: value } }"
       >
         <TeamLogo :team-id="value" :size="35" />
-        <strong class="jersey-team fs-6">{{ getTeamName(value) }}</strong>
+        <strong class="font-team fs-6">{{ getTeamName(value) }}</strong>
       </RouterLink>
     </template>
     <template #hist="{ value }"><LastGames :items="value" :length="5" /></template>

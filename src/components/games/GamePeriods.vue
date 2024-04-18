@@ -3,7 +3,34 @@
     <template v-if="scores[0].periods.length >= 1">
       <TableComp :fields="fields" :items="items">
         <template #team="{ value }">
-          {{ value.short }}
+          <span class="fs-6">{{ value.short }}</span>
+        </template>
+        <template #p0="{ value }">
+          <span :class="{ 'fw-bold': value.win }">{{ value.score }}</span>
+        </template>
+        <template #p1="{ value }">
+          <span :class="{ 'fw-bold': value.win }">{{ value.score }}</span>
+        </template>
+        <template #p2="{ value }">
+          <span :class="{ 'fw-bold': value.win }">{{ value.score }}</span>
+        </template>
+        <template #p3="{ value }">
+          <span :class="{ 'fw-bold': value.win }">{{ value.score }}</span>
+        </template>
+        <template #p4="{ value }">
+          <span :class="{ 'fw-bold': value.win }">{{ value.score }}</span>
+        </template>
+        <template #p5="{ value }">
+          <span :class="{ 'fw-bold': value.win }">{{ value.score }}</span>
+        </template>
+        <template #p6="{ value }">
+          <span :class="{ 'fw-bold': value.win }">{{ value.score }}</span>
+        </template>
+        <template #p7="{ value }">
+          <span :class="{ 'fw-bold': value.win }">{{ value.score }}</span>
+        </template>
+        <template #p8="{ value }">
+          <span :class="{ 'fw-bold': value.win }">{{ value.score }}</span>
         </template>
       </TableComp>
     </template>
@@ -30,8 +57,8 @@ const fields = computed((): TableField[] => {
   return [
     {
       key: 'team',
-      label: t('global.team', 2),
-      tdClass: 'jersey-team text-uppercase'
+      label: '',
+      tdClass: 'font-team text-uppercase'
     },
     ...props.scores[0].periods.map((n: number, idx: number) => ({
       key: `p${idx}`,
@@ -43,12 +70,12 @@ const fields = computed((): TableField[] => {
 })
 const items = computed(() => {
   return props.scores.map(
-    (score: ScoresComputed): TableItem => ({
+    (score: ScoresComputed, idx: number, arr: ScoresComputed[]): TableItem => ({
       team: getTeam(score.id),
-      ...score.periods.reduce((acc: {}, n: number, idx: number) => {
+      ...score.periods.reduce((acc: {}, n: number, pIdx: number) => {
         return {
           ...acc,
-          [`p${idx}`]: n
+          [`p${pIdx}`]: { score: n, win: n >= arr[idx ? 0 : 1].periods[pIdx]  }
         }
       }, {})
     })

@@ -34,7 +34,7 @@ const boxScoreKeys = computed<Option[]>(() => {
 
 const fields = computed(() => {
   const fields = [
-    { key: 'datetime', label: t('global.date') },
+    { key: 'datetime', label: t('global.date'), tdClass: 'pt-1 lh-1' },
     { key: 'teamId', label: t('global.gameDetails.opponent.text') },
     { key: 'isWin', label: '', tdClass: 'text-center' },
     ...boxScoreKeys.value.reduce(
