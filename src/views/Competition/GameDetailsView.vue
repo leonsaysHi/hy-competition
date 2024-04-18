@@ -42,7 +42,7 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
     <template v-else>
       <div class="result" :class="{ '-is-finished': gameComputed.isFinished, '-is-live': gameComputed.isLive }">
         
-        <div class="g-details">
+        <div class="g details">
           <template v-if="!gameComputed.isLive">
             {{ gameComputed.date?.long }}
             <span class="text-body-secondary">{{ gameComputed.date.time }}</span>
@@ -54,16 +54,16 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
         </div>
 
         <template v-for="(score, idx) in gameComputed.scores" :key="score.id">
-          <div :class="`t${idx}-name`">
+          <div :class="`t${idx} name`">
             <strong class="fs-5 jersey-team text-center lh-1">{{
               score.title
             }}</strong>
           </div>
-          <div :class="`t${idx}-logo`">
+          <div :class="`t${idx} logo`">
             <TeamLogo class="d-none d-lg-block" :team-id="gameComputed.scores[0].id" :size="100" />
             <TeamLogo class="d-lg-none" :team-id="gameComputed.scores[0].id" :size="60" />
           </div>
-          <div :class="`t${idx}-score`">
+          <div :class="`t${idx} score`">
             <div
               class="py-2 px-3 rounded-2 display-6"
               :class="[score.winner ? 'bg-success-subtle' : 'bg-danger-subtle']"
@@ -72,7 +72,7 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
             </div>
           </div>
         </template>
-        
+
       </div>
       
       <template v-if="gameComputed.isFinished || gameComputed.isLive">

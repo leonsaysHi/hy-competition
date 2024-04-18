@@ -3,7 +3,7 @@
       display: grid;
       grid-template-columns: 1fr 40% 1fr;
       grid-template-rows: auto;
-      .t0-score, .t1-score { display: none; }
+      .score { display: none; }
       grid-template-areas:
           "t0logo gdetails t1logo"
           "t0name gdetails t1name";
@@ -12,30 +12,33 @@
         grid-template-areas:
           "t0logo t0score t1score t1logo"
           "t0name t0score t1score t1name";
-        .g-details { display: none; }
-        .t0-score, .t1-score { display: block; }
+        .g.details { display: none; }
+        .score { display: block; }
       }
       column-gap: 1rem;
       > * { border: solid #ccc 1px; }
-      .t0-name {
+      .name, .logo, .score {
+        justify-items: center;
+      }
+      .t0.name {
         grid-area: t0name;
       }
-      .t0-logo {
+      .t0.logo {
         grid-area: t0logo;
       }
-      .t0-score {
+      .t0.score {
         grid-area: t0score;
       }
-      .t1-name {
+      .t1.name {
         grid-area: t1name;
       }
-      .t1-logo {
+      .t1.logo {
         grid-area: t1logo;
       }
-      .t1-score {
+      .t1.score {
         grid-area: t1score;
       }
-      .g-details {
+      .g.details {
         grid-area: gdetails;
       }
     }
