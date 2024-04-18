@@ -40,50 +40,44 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
       <SpinnerComp />
     </template>
     <template v-else>
-      <div class="result" :class="{ '-is-finished': gameComputed.isFinished, '-is-live': gameComputed.isLive }">
-        
+      <div class="mb-3 result" :class="{ '-is-finished': gameComputed.isFinished, '-is-live': gameComputed.isLive }">
         <div class="g details">
-          <template v-if="!gameComputed.isLive">
-            {{ gameComputed.date?.long }}
-            <span class="text-body-secondary">{{ gameComputed.date.time }}</span>
-          </template>
-          <template v-else>
-            <span class="text-success">{{ t('global.gameDetails.live') }}</span>
-            <SpinnerComp grow variant="success" size="sm" />
-          </template>
+          {{ gameComputed.date?.long }}
+          <span class="text-body-secondary">{{ gameComputed.date.time }}</span>
         </div>
-
-        <template v-for="(score, idx) in gameComputed.scores" :key="score.id">
+        <template v-for="(item, idx) in gameComputed.scores" :key="item.id">
           <div :class="`t${idx} name`">
-            <strong class="fs-5 jersey-team text-center lh-1">{{
-              score.title
+            <strong class="fs-5 font-team text-center lh-1">{{
+              item.title
             }}</strong>
           </div>
           <div :class="`t${idx} logo`">
-            <TeamLogo class="d-none d-lg-block" :team-id="gameComputed.scores[0].id" :size="100" />
-            <TeamLogo class="d-lg-none" :team-id="gameComputed.scores[0].id" :size="60" />
+            <TeamLogo class="d-none d-lg-block" :team-id="item.id" :size="100" />
+            <TeamLogo class="d-lg-none" :team-id="item.id" :size="60" />
           </div>
-          <div :class="`t${idx} score`">
-            <div
-              class="py-2 px-3 rounded-2 display-6"
-              :class="[score.winner ? 'bg-success-subtle' : 'bg-danger-subtle']"
-            >
-              <strong class="jersey-score">{{ score.finalScore }}</strong>
-            </div>
+          <div :class="[`t${idx} score pt-2 pb-1 px-3 rounded-2`, item.winner ? 'bg-success-subtle' : 'bg-danger-subtle']">
+            <strong class="display-1 font-score">{{ item.finalScore }}</strong>
+          </div>
+        </template>
+        <template v-if="gameComputed.isLive">
+          <div class="g live d-flex align-items-center gap-2">
+            <span class="text-success">{{ t('global.gameDetails.live') }}</span>
+            <SpinnerComp grow variant="success" size="xs" />
           </div>
         </template>
 
       </div>
       
       <template v-if="gameComputed.isFinished || gameComputed.isLive">
-        <div class="vstack gap-2 align-items-center">
-          <GamePeriods :scores="gameComputed.scores" />
+        <div class="mb-3 vstack gap-2 align-items-center">
+          <template v-if="gameComputed.scores[0].periods.length > 1">
+            <GamePeriods :scores="gameComputed.scores" />
+          </template>
           <AwardsList :items="gameComputed.row.awards" class="d-inline-flex flex-column gap-1" />
         </div>
       </template>
       <template v-if="gameComputed.isFinished || gameComputed.isLive">
-        <h3>{{ t('global.statistic', 2) }}</h3>
-        <ul class="mt-5 mb-3 nav nav-tabs">
+        <ul class="mt-4 mb-3 nav nav-tabs">
           <li class="nav-item">
             <a
               class="nav-link"

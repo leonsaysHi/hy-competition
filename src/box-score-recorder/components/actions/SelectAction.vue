@@ -5,7 +5,7 @@
         <div class="col">
           <div class="vstack align-items-center gap-1">
             <TeamLogo :team-id="teamId" :size="45" />
-            <h3 class="jersey-team">{{ getTeamName(teamId) }}</h3>
+            <h3 class="font-team">{{ getTeamName(teamId) }}</h3>
           </div>
           <div class="vstack gap-1">
             <template v-for="opt in options[teamId]" :key="opt.value">

@@ -126,7 +126,7 @@ const handleJumpTo = (idx: number) => {
                 <template v-if="key === 'team'">
                   <div class="hstack gap-2 pe-3">
                     <TeamLogo :team-id="item[key].id" :size="30" />
-                    <span class="jersey-team">{{ item[key].short }}</span>
+                    <span class="font-team">{{ item[key].short }}</span>
                   </div>
                 </template>
                 <template v-else-if="key === 'finalScore'">

@@ -142,10 +142,10 @@ const statsItem = computed<TableItem[]>(() => {
           <TeamLogo :team-id="competitionTeam?.id" :size="150" />
         </div>
         <div>
-          <div class="display-1 text-body-secondary lh-1 jersey-number">
+          <div class="display-1 text-body-secondary lh-1 font-number">
             #<strong>{{ competitionPlayer?.number }}</strong>
           </div>
-          <h1 class="display-6 fw-bold jersey-name">{{ getPlayerName(playerId) }}</h1>
+          <h1 class="display-6 fw-bold font-name">{{ getPlayerName(playerId) }}</h1>
         </div>
         <div class="ms-auto align-self-end">
           <div class="d-flex flex-column align-items-center gap-2">

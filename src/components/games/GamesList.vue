@@ -10,7 +10,7 @@
           :to="gameComputed.to"
         >
           <div class="team vstack align-items-center">
-            <strong class="jersey-team fs-6 lh-1">{{ gameComputed.scores[0].title }}</strong>
+            <strong class="font-team fs-6 lh-1">{{ gameComputed.scores[0].title }}</strong>
             <TeamLogo :team-id="gameComputed.scores[0].id" :size="45" />
           </div>
 
@@ -24,7 +24,7 @@
                       class="flex-grow-1 p-2 border border-3 rounded-2"
                       :class="[team.winner ? 'border-win' : 'border-loss']"
                     >
-                      <strong class="jersey-score fs-3 lh-1 pt-1">{{ team.finalScore }}</strong>
+                      <strong class="font-score fs-3 lh-1 pt-1">{{ team.finalScore }}</strong>
                     </div>
                     <template v-if="idx===0">
                         <SpinnerComp grow variant="success" size="sm" />
@@ -45,7 +45,7 @@
                       class="flex-grow-1 p-2 border border-3 rounded-2"
                       :class="[team.winner ? 'border-win' : 'border-loss']"
                     >
-                      <strong class="jersey-score fs-3 lh-1 pt-1">{{ team.finalScore }}</strong>
+                      <strong class="font-score fs-3 lh-1 pt-1">{{ team.finalScore }}</strong>
                     </div>
                   </template>
                 </div>
@@ -61,7 +61,7 @@
           </div>
 
           <div class="team vstack align-items-center">
-            <strong class="jersey-team fs-6">{{ gameComputed.scores[1].title }}</strong>
+            <strong class="font-team fs-6">{{ gameComputed.scores[1].title }}</strong>
             <TeamLogo :team-id="gameComputed.scores[1].id" :size="45" />
           </div>
         </RouterLink>

@@ -46,7 +46,7 @@ const items = computed<TableItem[]>(() => {
           :to="{ name: 'team', params: { teamId: value } }"
         >
           <TeamLogo :team-id="value" :size="23" />
-          <strong class="jersey-team">{{ item.title }}</strong>
+          <strong class="font-team">{{ item.title }}</strong>
         </RouterLink>
       </template>
     </TableComp>

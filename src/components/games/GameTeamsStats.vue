@@ -74,14 +74,14 @@ const teamsBarsByStats = computed(() => {
     <div class="col vstack gap-3">
       <div class="vstack gap-2 align-items-center">
         <TeamLogo :team-id="teams[0].id" size="60" />
-        <strong class="text-center jersey-team">{{ getTeamName(teams[0].id) }}</strong>
+        <strong class="text-center font-team">{{ getTeamName(teams[0].id) }}</strong>
       </div>
     </div>
     <div></div>
     <div class="col vstack gap-3">
       <div class="vstack gap-2 align-items-center">
         <TeamLogo :team-id="teams[1].id" size="60" />
-        <strong class="text-center jersey-team">{{ getTeamName(teams[1].id) }}</strong>
+        <strong class="text-center font-team">{{ getTeamName(teams[1].id) }}</strong>
       </div>
     </div>
   </div>

@@ -1,177 +1,173 @@
 <template>
-  <TableComp
-    :fields="fields"
-    :items="items"
-    :footer="footerItem"
-    :sorted-key="sortedKey"
-    :sorted-direction="sortedDirection"
-    small
-    showEmpty
-  >
-    <template #isWin="{ value }">
-      <span :class="value ? 'text-win' : 'text-loss'">{{ value ? 'W' : 'L' }}</span>
-    </template>
-    <template #teamId="{ value }">
-      <div class="d-flex gap-2 align-items-center lh-1">
-        <template v-if="showLogo">
-          <TeamLogo :team-id="value" :size="35" />
-        </template>
-        <span class="jersey-team py-1">{{ getTeamName(value) }}</span>
-      </div>
-    </template>
-    <template #competitionId="{ value }">
-      <RouterLink
-        class="d-flex flex-column align-items-start text-decoration-none"
-        :to="{ name: 'competition', params: { competitionId: value } }"
-      >
-        <div>{{ getCompetition(value)?.title }}</div>
-        <div class="d-flex gap-3 small text-body-secondary text-nowrap">
-          <small>{{ getCompetition(value)?.date }}</small>
-          <small>{{ getCategory(getCompetition(value)?.category)?.text }}</small>
+  <div class="w-100 overflow-x-auto">
+    <TableComp
+      :fields="fields"
+      :items="items"
+      :footer="footerItem"
+      :sorted-key="sortedKey"
+      :sorted-direction="sortedDirection"
+      small
+      showEmpty
+    >
+      <template #isWin="{ value }">
+        <strong :class="[value ? 'text-win' : 'text-loss', 'fs-5']">{{ value ? 'W' : 'L' }}</strong>
+      </template>
+      <template #teamId="{ value }">
+        <div class="d-flex gap-2 align-items-center lh-1">
+          <template v-if="showLogo">
+            <TeamLogo :team-id="value" :size="35" class="flex-shrink-0" />
+          </template>
+          <span class="font-team py-1">{{ getTeamName(value) }}</span>
         </div>
-      </RouterLink>
-    </template>
-    <template #number="{ value }"
-      ><span class="text-body-secondary jersey-number">#{{ value }}</span></template
-    >
-    <template #id="{ value }"
-      ><RouterLink
-        class="d-flex align-items-center gap-2 link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover jersey-name"
-        :to="{
-          name: 'competition-player',
-          params: { competitionId: competitionId, playerId: value }
-        }"
+      </template>
+      <template #competitionId="{ value }">
+        <RouterLink
+          class="d-flex flex-column align-items-start text-decoration-none"
+          :to="{ name: 'competition', params: { competitionId: value } }"
+        >
+          <div>{{ getCompetition(value)?.title }}</div>
+          <div class="d-flex gap-3 small text-body-secondary text-nowrap">
+            <small>{{ getCompetition(value)?.date }}</small>
+            <small>{{ getCategory(getCompetition(value)?.category)?.text }}</small>
+          </div>
+        </RouterLink>
+      </template>
+      <template #number="{ value }"
+        ><span class="text-body-secondary font-number fs-6 lh-small">{{ value }}</span></template
       >
-        {{ getPlayerName(value) }}
-      </RouterLink></template
-    >
-    <template #pos="{ index }"
-      >{{ index + 1 }}<sup>{{ getOrd(index + 1) }}</sup></template
-    >
-    <template #gp="{ value }">
-      {{ value }}
-    </template>
-    <template #time="{ item, value }">
-      <template v-if="item.dnp === true">-</template>
-      <template v-else>
+      <template #id="{ value }"
+        ><RouterLink
+          class="d-flex align-items-center gap-2 link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover font-name lh-small"
+          :to="{
+            name: 'competition-player',
+            params: { competitionId: competitionId, playerId: value }
+          }"
+        >
+          {{ getPlayerName(value) }}
+        </RouterLink></template
+      >
+      <template #pos="{ index }"
+        >{{ index + 1 }}<sup>{{ getOrd(index + 1) }}</sup></template
+      >
+      <template #gp="{ value }">
+        {{ value }}
+      </template>
+      <template #pts="{ item }">
+        <template v-if="item.dnp === true">-</template>
+        <template v-else>
+          {{
+            item.gp
+              ? formatAvg(getAvg(getCalculated(item).pts, item.gp))
+              : item.ftm + 2 * item.fgm + 3 * item.fg3m
+          }}
+        </template>
+      </template>
+      <template #ftm="{ value, item }">
+        <template v-if="item.dnp === true">-</template>
+        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+      </template>
+      <template #fta="{ value, item }"
+        ><template v-if="item.dnp === true">-</template>
+        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+      </template>
+      <template #ftprc="{ item }"
+        ><template v-if="item.dnp === true">-</template>
+        <template v-else> {{ formatPerc(getCalculated(item).ftprc) }}</template>
+      </template>
+      <template #fgm="{ value, item }"
+        ><template v-if="item.dnp === true">-</template>
+        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+      </template>
+      <template #fga="{ value, item }"
+        ><template v-if="item.dnp === true">-</template>
+        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+      </template>
+      <template #fgprc="{ item }"
+        ><template v-if="item.dnp === true">-</template>
+        <template v-else> {{ formatPerc(getCalculated(item).fgprc) }}</template>
+      </template>
+      <template #fg3m="{ value, item }"
+        ><template v-if="item.dnp === true">-</template>
+        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+      </template>
+      <template #fg3a="{ value, item }"
+        ><template v-if="item.dnp === true">-</template>
+        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+      </template>
+      <template #fg3prc="{ item }"
+        ><template v-if="item.dnp === true">-</template>
+        <template v-else> {{ formatPerc(getCalculated(item).fg3prc) }}</template>
+      </template>
+      <template #dreb="{ value, item }"
+        ><template v-if="item.dnp === true">-</template>
+        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+      </template>
+      <template #oreb="{ value, item }"
+        ><template v-if="item.dnp === true">-</template>
+        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+      </template>
+      <template #reb="{ item }"
+        ><template v-if="item.dnp === true">-</template>
+        <template v-else>
+          {{
+            item.gp ? formatAvg(getAvg(getCalculated(item).reb, item.gp)) : getCalculated(item).reb
+          }}</template
+        >
+      </template>
+      <template #ast="{ value, item }"
+        ><template v-if="item.dnp === true">-</template>
+        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+      </template>
+      <template #stl="{ value, item }"
+        ><template v-if="item.dnp === true">-</template>
+        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+      </template>
+      <template #blk="{ value, item }"
+        ><template v-if="item.dnp === true">-</template>
+        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+      </template>
+      <template #blka="{ value, item }"
+        ><template v-if="item.dnp === true">-</template>
+        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+      </template>
+      <template #tov="{ value, item }"
+        ><template v-if="item.dnp === true">-</template>
+        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+      </template>
+      <template #fcm="{ value, item }"
+        ><template v-if="item.dnp === true">-</template>
+        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+      </template>
+      <template #fdr="{ value, item }"
+        ><template v-if="item.dnp === true">-</template>
+        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+      </template>
+      <template #footerid>
+        <span class="fw-lighter">{{ t('global.total', 2) }}</span>
+      </template>
+      <template #footertime="{ value }">
         {{ durationFormat(value) }}
       </template>
-    </template>
-    <template #pts="{ item }">
-      <template v-if="item.dnp === true">-</template>
-      <template v-else>
-        {{
-          item.gp
-            ? formatAvg(getAvg(getCalculated(item).pts, item.gp))
-            : item.ftm + 2 * item.fgm + 3 * item.fg3m
-        }}
+      <template #footerftprc>
+        {{ formatPerc(getCalculated(footerItem).ftprc) }}
       </template>
-    </template>
-    <template #ftm="{ value, item }">
-      <template v-if="item.dnp === true">-</template>
-      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
-    </template>
-    <template #fta="{ value, item }"
-      ><template v-if="item.dnp === true">-</template>
-      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
-    </template>
-    <template #ftprc="{ item }"
-      ><template v-if="item.dnp === true">-</template>
-      <template v-else> {{ formatPerc(getCalculated(item).ftprc) }}</template>
-    </template>
-    <template #fgm="{ value, item }"
-      ><template v-if="item.dnp === true">-</template>
-      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
-    </template>
-    <template #fga="{ value, item }"
-      ><template v-if="item.dnp === true">-</template>
-      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
-    </template>
-    <template #fgprc="{ item }"
-      ><template v-if="item.dnp === true">-</template>
-      <template v-else> {{ formatPerc(getCalculated(item).fgprc) }}</template>
-    </template>
-    <template #fg3m="{ value, item }"
-      ><template v-if="item.dnp === true">-</template>
-      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
-    </template>
-    <template #fg3a="{ value, item }"
-      ><template v-if="item.dnp === true">-</template>
-      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
-    </template>
-    <template #fg3prc="{ item }"
-      ><template v-if="item.dnp === true">-</template>
-      <template v-else> {{ formatPerc(getCalculated(item).fg3prc) }}</template>
-    </template>
-    <template #dreb="{ value, item }"
-      ><template v-if="item.dnp === true">-</template>
-      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
-    </template>
-    <template #oreb="{ value, item }"
-      ><template v-if="item.dnp === true">-</template>
-      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
-    </template>
-    <template #reb="{ item }"
-      ><template v-if="item.dnp === true">-</template>
-      <template v-else>
-        {{
-          item.gp ? formatAvg(getAvg(getCalculated(item).reb, item.gp)) : getCalculated(item).reb
-        }}</template
-      >
-    </template>
-    <template #ast="{ value, item }"
-      ><template v-if="item.dnp === true">-</template>
-      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
-    </template>
-    <template #stl="{ value, item }"
-      ><template v-if="item.dnp === true">-</template>
-      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
-    </template>
-    <template #blk="{ value, item }"
-      ><template v-if="item.dnp === true">-</template>
-      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
-    </template>
-    <template #blka="{ value, item }"
-      ><template v-if="item.dnp === true">-</template>
-      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
-    </template>
-    <template #tov="{ value, item }"
-      ><template v-if="item.dnp === true">-</template>
-      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
-    </template>
-    <template #fcm="{ value, item }"
-      ><template v-if="item.dnp === true">-</template>
-      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
-    </template>
-    <template #fdr="{ value, item }"
-      ><template v-if="item.dnp === true">-</template>
-      <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
-    </template>
-    <template #footerid>
-      <span class="fw-lighter">{{ t('global.total', 2) }}</span>
-    </template>
-    <template #footertime="{ value }">
-      {{ durationFormat(value) }}
-    </template>
-    <template #footerftprc>
-      {{ formatPerc(getCalculated(footerItem).ftprc) }}
-    </template>
-    <template #footerfgprc>
-      {{ formatPerc(getCalculated(footerItem).fgprc) }}
-    </template>
-    <template #footerfg3prc>
-      {{ formatPerc(getCalculated(footerItem).fg3prc) }}
-    </template>
-    <template #footerpts>
-      {{ footerItem.ftm + 2 * footerItem.fgm + 3 * footerItem.fg3m }}
-    </template>
-    <template #footerpir>
-      {{ getCalculated(footerItem).pir }}
-    </template>
-    <template #footerreb>
-      {{ footerItem.oreb + footerItem.dreb }}
-    </template>
-  </TableComp>
+      <template #footerfgprc>
+        {{ formatPerc(getCalculated(footerItem).fgprc) }}
+      </template>
+      <template #footerfg3prc>
+        {{ formatPerc(getCalculated(footerItem).fg3prc) }}
+      </template>
+      <template #footerpts>
+        {{ footerItem.ftm + 2 * footerItem.fgm + 3 * footerItem.fg3m }}
+      </template>
+      <template #footerpir>
+        {{ getCalculated(footerItem).pir }}
+      </template>
+      <template #footerreb>
+        {{ footerItem.oreb + footerItem.dreb }}
+      </template>
+    </TableComp>
+  </div>
 </template>
 
 <script setup lang="ts">

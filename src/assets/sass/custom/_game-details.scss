@@ -3,23 +3,30 @@
       display: grid;
       grid-template-columns: 1fr 40% 1fr;
       grid-template-rows: auto;
-      .score { display: none; }
+      .score, .live { display: none; }
       grid-template-areas:
           "t0logo gdetails t1logo"
           "t0name gdetails t1name";
-      &.-is-finished, &.-is-live {
+      &.-is-finished {
         grid-template-columns: 1fr 20% 20% 1fr;
         grid-template-areas:
           "t0logo t0score t1score t1logo"
           "t0name t0score t1score t1name";
         .g.details { display: none; }
-        .score { display: block; }
+        .score { display: flex; }
       }
-      column-gap: 1rem;
-      > * { border: solid #ccc 1px; }
-      .name, .logo, .score {
-        justify-items: center;
+      &.-is-live {
+        grid-template-columns: 1fr 20% 20% 1fr;
+        grid-template-areas:
+          "t0logo t0score t1score t1logo"
+          "t0name glive glive t1name";
+        .g.details { display: none; }
+        .score, .live { display: flex; }
       }
+
+      column-gap: map-get($spacers, 1);
+      row-gap: map-get($spacers, 1);
+
       .t0.name {
         grid-area: t0name;
       }
@@ -41,5 +48,17 @@
       .g.details {
         grid-area: gdetails;
       }
+      .g.live {
+        grid-area: glive;
+      }
+
+      .name, .logo, .score, .live {
+        display: flex;
+        justify-content: center;
+      }
+      .name { align-items: start; }
+      .logo { align-items: end; }
+      .score { align-items: center; }
+
     }
   }

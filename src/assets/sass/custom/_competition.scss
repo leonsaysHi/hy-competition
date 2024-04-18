@@ -7,11 +7,11 @@ h2 {
   font-family: 'Arvo', serif;
   font-weight: bold;
 }
-.jersey {
-  &-team,
-  &-number,
-  &-name,
-  &-score {
+.font- {
+  &team,
+  &number,
+  &name,
+  &score {
     font-family: 'Bebas Neue', sans-serif;
     font-weight: 400;
     font-style: normal;
@@ -30,8 +30,13 @@ body {
   .table-sm {
     // stylelint-disable-next-line selector-max-universal
     > :not(caption) > * > * {
-      padding: $table-cell-padding-y-sm * 0.5 $table-cell-padding-x-sm * 0.5;
+      padding: $table-cell-padding-y-sm * 0.6 $table-cell-padding-x-sm * 0.6;
     }
+  }
+  .spinner-border-xs,
+  .spinner-border-xs {
+    --bs-spinner-width: #{$font-size-sm};
+    --bs-spinner-height: #{$font-size-sm};
   }
 }
 .last-games {

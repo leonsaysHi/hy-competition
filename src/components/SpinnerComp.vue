@@ -12,7 +12,7 @@ import { computed } from 'vue'
 interface IProps {
   grow?: boolean
   variant?: 'primary' | 'secondary' | 'light' | 'danger' | 'warning' | 'success'
-  size?: 'lg' | 'md' | 'sm'
+  size?: 'lg' | 'md' | 'sm' | 'xs'
 }
 const props = withDefaults(defineProps<IProps>(), {
   grow: false,

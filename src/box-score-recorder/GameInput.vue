@@ -146,7 +146,7 @@ const handleStopRecording = async () => {
   <div class="flex-grow-0 hstack justify-content-between border-bottom p-1">
     <div>
       <small>{{ competition?.title }}</small>
-      <div class="jersey-team">{{ game.datetime }}</div>
+      <div class="font-team">{{ game.datetime }}</div>
     </div>
     <div class="hstack gap-2 align-self-center align-items-baseline">
       <RadioGroupComp

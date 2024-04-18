@@ -10,7 +10,7 @@
         </template>
         <template v-else>
           <div
-            class="flex-grow-1 d-flex align-items-center justify-content-center pt-1 fs-3 jersey-team text-black"
+            class="flex-grow-1 d-flex align-items-center justify-content-center pt-1 fs-3 font-team text-black"
             :style="`background-color:${team.color}`"
           >
             <strong class="text-muted text-uppercase">{{ short }}</strong>
