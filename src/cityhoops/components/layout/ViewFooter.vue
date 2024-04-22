@@ -26,7 +26,7 @@ import CompetitionNavigation from '../CompetitionNavigation.vue'
         </div>
       </div>
       <hr />
-      <div class="d-flex justify-content-between">
+      <div class="d-flex justify-content-between gap-3">
         <CompetitionNavigation />
         <div class="small">
           <p>Powered by <ImageComp :src="HoopsYardLogo" title="Hoops Yard" :width="35" /></p>
