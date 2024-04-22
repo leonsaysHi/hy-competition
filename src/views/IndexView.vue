@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import ViewHeader from '@/cityhoops/components/layout/ViewHeader.vue'
 import ViewFooter from '@/cityhoops/components/layout/ViewFooter.vue'
-
 </script>
 
 <template>

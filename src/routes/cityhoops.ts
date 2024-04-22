@@ -1,4 +1,3 @@
-
 import routes from './index'
 
 import CompetitionHomeView from '@/cityhoops/views/HomeView.vue'
@@ -10,7 +9,9 @@ import CompetitionTeamDetailsView from '@/views/competition/TeamDetailsView.vue'
 import CompetitionPlayerDetailsView from '@/views/competition/PlayerDetailsView.vue'
 
 const frontViewIdx = routes.findIndex((r: any) => r.path === '/')
-const competitionViewIdx = routes[frontViewIdx].children.findIndex((r: any) => r.path === '/competition/:competitionId')
+const competitionViewIdx = routes[frontViewIdx].children.findIndex(
+  (r: any) => r.path === '/competition/:competitionId'
+)
 
 const cityhoopsRoutes = routes.slice()
 cityhoopsRoutes[frontViewIdx].children[competitionViewIdx].children = [
@@ -46,6 +47,5 @@ cityhoopsRoutes[frontViewIdx].children[competitionViewIdx].children = [
     component: CompetitionPlayerDetailsView
   }
 ]
-
 
 export default cityhoopsRoutes

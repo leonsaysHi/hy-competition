@@ -14,95 +14,94 @@ import PlayerDetailsView from '@/views/players/DetailsView.vue'
 import adminRoutes from './admin'
 import boxScoreRoutes from './box-score-recorder'
 
-
 const routes = [
-    {
-      path: '/',
-      component: FrontView,
-      children: [
-        {
-          path: '',
-          name: 'home',
-          component: HomeView
-        },
-        {
-          path: '/competition/:competitionId',
-          component: CompetitionView,
-          children: [
-            {
-              path: ':phase?',
-              name: 'competition',
-              component: CompetitionDetailsView
-            },
-            {
-              path: 'game/:gameId',
-              name: 'competition-game',
-              component: CompetitionGameDetailsView
-            },
-            {
-              path: 'team/:teamId',
-              name: 'competition-team',
-              component: CompetitionTeamDetailsView
-            },
-            {
-              path: 'player/:playerId',
-              name: 'competition-player',
-              component: CompetitionPlayerDetailsView
-            }
-          ]
-        },
-        {
-          path: '/teams',
-          component: TeamsView,
-          children: [
-            {
-              path: '',
-              name: 'teams',
-              component: TeamsListView
-            },
-            {
-              path: ':teamId',
-              name: 'team',
-              component: TeamDetailsView
-            }
-          ]
-        },
-        {
-          path: '/players',
-          component: PlayersView,
-          children: [
-            {
-              path: '',
-              name: 'players',
-              component: PlayersListView
-            },
-            {
-              path: ':playerId',
-              name: 'player',
-              component: PlayerDetailsView
-            }
-          ]
-        },
-        {
-          path: '/about',
-          name: 'about',
-          // route level code-splitting
-          // this generates a separate chunk (About.[hash].js) for this route
-          // which is lazy-loaded when the route is visited.
-          component: () => import('@/views/AboutView.vue')
-        }
-      ]
-    },
-    {
-      path: '/box-score-record',
-      component: () => import('@/box-score-recorder/IndexView.vue'),
-      children: boxScoreRoutes
-    },
-    {
-      path: '/admin',
-      component: () => import('@/admin/IndexView.vue'),
-      children: adminRoutes
-    }
-  ]
+  {
+    path: '/',
+    component: FrontView,
+    children: [
+      {
+        path: '',
+        name: 'home',
+        component: HomeView
+      },
+      {
+        path: '/competition/:competitionId',
+        component: CompetitionView,
+        children: [
+          {
+            path: ':phase?',
+            name: 'competition',
+            component: CompetitionDetailsView
+          },
+          {
+            path: 'game/:gameId',
+            name: 'competition-game',
+            component: CompetitionGameDetailsView
+          },
+          {
+            path: 'team/:teamId',
+            name: 'competition-team',
+            component: CompetitionTeamDetailsView
+          },
+          {
+            path: 'player/:playerId',
+            name: 'competition-player',
+            component: CompetitionPlayerDetailsView
+          }
+        ]
+      },
+      {
+        path: '/teams',
+        component: TeamsView,
+        children: [
+          {
+            path: '',
+            name: 'teams',
+            component: TeamsListView
+          },
+          {
+            path: ':teamId',
+            name: 'team',
+            component: TeamDetailsView
+          }
+        ]
+      },
+      {
+        path: '/players',
+        component: PlayersView,
+        children: [
+          {
+            path: '',
+            name: 'players',
+            component: PlayersListView
+          },
+          {
+            path: ':playerId',
+            name: 'player',
+            component: PlayerDetailsView
+          }
+        ]
+      },
+      {
+        path: '/about',
+        name: 'about',
+        // route level code-splitting
+        // this generates a separate chunk (About.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import('@/views/AboutView.vue')
+      }
+    ]
+  },
+  {
+    path: '/box-score-record',
+    component: () => import('@/box-score-recorder/IndexView.vue'),
+    children: boxScoreRoutes
+  },
+  {
+    path: '/admin',
+    component: () => import('@/admin/IndexView.vue'),
+    children: adminRoutes
+  }
+]
 
 export default routes

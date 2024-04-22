@@ -16,7 +16,7 @@ const route = useRoute()
 const { competitionId } = route.params
 
 interface IProps {
-  value: CompetitionStanding[],
+  value: CompetitionStanding[]
   length?: number
 }
 
@@ -50,9 +50,7 @@ const fields = [
   }
 ]
 const items = computed(() => {
-  const items = props.length 
-    ? props.value.slice(0, props.length)
-    : props.value.slice()
+  const items = props.length ? props.value.slice(0, props.length) : props.value.slice()
   return items
 })
 </script>
