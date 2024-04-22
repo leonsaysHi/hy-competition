@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { useRoute } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-const { t } = useI18n()
+import SocialsNav from './SocialsNav.vue'
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string | undefined }
 const handleAboutUs = () => {
@@ -11,7 +10,7 @@ const handleAboutUs = () => {
 <template>
   <template v-if="!competitionId"> No competition. </template>
   <template v-else>
-    <nav class="nav">
+    <nav class="nav flex-column flex-lg-row">
       <RouterLink
         :to="{ name: 'competition', params: { competitionId } }"
         class="nav-link text-white fw-bold"
@@ -20,7 +19,7 @@ const handleAboutUs = () => {
       <RouterLink
         :to="{ name: 'competition-standing', params: { competitionId } }"
         class="nav-link text-white fw-bold"
-        >Tablas</RouterLink
+        >Tabla</RouterLink
       >
       <RouterLink
         :to="{ name: 'competition-games', params: { competitionId } }"
@@ -32,6 +31,7 @@ const handleAboutUs = () => {
         class="nav-link text-white fw-bold"
         >Sobre la liga</a
       >
+      <SocialsNav class="d-lg-none" />
     </nav>
   </template>
 </template>

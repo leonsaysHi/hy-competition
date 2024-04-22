@@ -11,7 +11,7 @@ const styleObj = {
 
 <template>
   <div 
-    class="p-5 mb-4 bg-dark text-white d-flex justify-content-between rounded-3"
+    class="p-5 mb-4 bg-dark text-white d-flex flex-column flex-lg-row justify-content-between rounded-3"
     :style="styleObj"
   >
     <div class="pb-5"><slot></slot></div>

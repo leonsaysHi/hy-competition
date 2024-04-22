@@ -83,7 +83,7 @@ const nextGames = computed<GameComputedClass[]>(() => {
 <template>
   <div>
     <template v-if="!isReady">
-      <SpinnerComp />
+      <div class="py-5"><SpinnerComp /></div>
     </template>
     <template v-else-if="!phasesOptions?.length">
       <p>Error: No phase.</p>
