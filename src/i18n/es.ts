@@ -5,6 +5,13 @@ const es = {
     team: 'Equipo | Equipos',
     player: 'Jugadore | Jugadores'
   },
+  competitionNav: {
+    home: 'Inicio',
+    ranking: 'Tables',
+    games: 'Resultados',
+    about: 'Sobre la liga',
+    contact: 'Contacto'
+  },
   options: {
     genders: {
       text: {
