@@ -1,51 +1,18 @@
 <script setup lang="ts">
-import ImageComp from '@/components/ImageComp.vue'
-import { RouterLink, RouterView } from 'vue-router'
+import ViewHeader from '@/components/layout/ViewHeader.vue'
+import ViewFooter from '@/components/layout/ViewFooter.vue'
 
-import { useI18n } from 'vue-i18n'
-import CityHoopsLogo from '@/assets/images/cityhoops.png'
-import HoopsYardLogo from '@/assets/images/hoops-yard.png'
-
-const { t } = useI18n()
 </script>
 
 <template>
   <div class="wrapper">
-    <header class="bd-header bg-primary py-3 d-flex align-items-stretch text-bg-dark shadow">
-      <div class="container-xl d-flex align-items-center">
-        <a class="navbar-brand d-flex align-items-center gap-3" href="/"
-          ><ImageComp :src="CityHoopsLogo" :width="150" fluid />
-        </a>
-        <nav class="nav nav-masthead justify-content-center ms-auto">
-          <RouterLink :to="{ name: 'home' }" class="nav-link text-white fw-bold text-uppercase">{{
-            t('sections.home')
-          }}</RouterLink>
-
-          <RouterLink :to="{ name: 'teams' }" class="nav-link text-white fw-bold text-uppercase">{{
-            t('sections.team', 2)
-          }}</RouterLink>
-          <RouterLink
-            :to="{ name: 'players' }"
-            class="nav-link text-white fw-bold text-uppercase"
-            >{{ t('sections.player', 2) }}</RouterLink
-          >
-        </nav>
-      </div>
-    </header>
-
+    <ViewHeader />
     <main>
       <section class="py-4 container-xl">
         <RouterView />
       </section>
     </main>
-    <footer class="text-body-secondary py-4 border-top">
-      <div class="container-xl d-flex flex-row-reverse justify-content-between">
-        <a href="#">{{ t('global.backToTop') }}</a>
-        <p class="mb-0">
-          Powered by <ImageComp :src="HoopsYardLogo" title="Hoops Yard" :width="35" />
-        </p>
-      </div>
-    </footer>
+    <ViewFooter />
   </div>
 </template>
 <style lang="scss" scoped>
