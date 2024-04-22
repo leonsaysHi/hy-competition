@@ -1,6 +1,6 @@
 <script lang="ts" setup></script>
 <template>
-  <div class="socials_wrap hstack gap-3">
+  <div class="socials_wrap hstack gap-3 fs-5">
     <a
       target="_blank"
       href="https://www.instagram.com/cityhoopspanama/"

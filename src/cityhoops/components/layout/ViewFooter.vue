@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import ImageComp from '@/components/ImageComp.vue'
-import HoopsYardLogo from '@/assets/images/hoops-yard.png'
+import HoopsYardLogo from '@/assets/images/hoops-yard-alt.png'
 import CompetitionNavigation from '../CompetitionNavigation.vue'
 </script>
 
 <template>
-  <footer class="py-4 border-top">
-    <div class="container-xl">
+  <footer class="py-5 border-top">
+    <div class="container-xl py-4">
       <div class="row">
         <div class="col col-12 col-lg-2"><h1>CITY HOOPS</h1></div>
         <div class="col col-12 col-lg-5">
