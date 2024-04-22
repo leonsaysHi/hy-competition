@@ -10,16 +10,10 @@
     No competition.
   </template>
   <template v-else>
-    <nav class="nav nav-masthead justify-content-center ms-auto">
-      <RouterLink :to="{ name: 'competition-home', params: { competitionId } }" class="nav-link text-white fw-bold">{{
-        t('competitionNav.home')
-      }}</RouterLink>
-      <RouterLink :to="{ name: 'competition', params: { competitionId } }" class="nav-link text-white fw-bold text-uppercase">{{
-        t('competitionNav.ranking')
-      }}</RouterLink>
-      <RouterLink :to="{ name: 'competition-games', params: { competitionId } }" class="nav-link text-white fw-bold text-uppercase">{{
-        t('competitionNav.games')
-      }}</RouterLink>
+    <nav class="nav">
+      <RouterLink :to="{ name: 'competition', params: { competitionId } }" class="nav-link text-white fw-bold">Inicio</RouterLink>
+      <RouterLink :to="{ name: 'competition-standing', params: { competitionId } }" class="nav-link text-white fw-bold">Tablas</RouterLink>
+      <RouterLink :to="{ name: 'competition-games', params: { competitionId } }" class="nav-link text-white fw-bold">Resultdos</RouterLink>
     </nav>
   </template>
 </template>

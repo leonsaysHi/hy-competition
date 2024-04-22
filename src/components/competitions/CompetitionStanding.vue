@@ -16,10 +16,13 @@ const route = useRoute()
 const { competitionId } = route.params
 
 interface IProps {
-  value: CompetitionStanding[]
+  value: CompetitionStanding[],
+  length?: number
 }
 
-const props = withDefaults(defineProps<IProps>(), {})
+const props = withDefaults(defineProps<IProps>(), {
+  length: 0
+})
 const { getTeamName } = useLibs()
 const fields = [
   {
@@ -47,7 +50,9 @@ const fields = [
   }
 ]
 const items = computed(() => {
-  const items = props.value.slice()
+  const items = props.length 
+    ? props.value.slice(0, props.length)
+    : props.value.slice()
   return items
 })
 </script>

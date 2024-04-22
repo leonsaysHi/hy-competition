@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ImageComp from '@/components/ImageComp.vue'
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
 
 import { useI18n } from 'vue-i18n'
 import CityHoopsLogo from '@/assets/images/cityhoops.png'
@@ -17,20 +17,7 @@ const { t } = useI18n()
         <a class="navbar-brand d-flex align-items-center gap-3" href="/"
           ><ImageComp :src="CityHoopsLogo" :width="150" fluid />
         </a>
-        <nav class="nav nav-masthead justify-content-center ms-auto">
-          <RouterLink :to="{ name: 'home' }" class="nav-link text-white fw-bold text-uppercase">{{
-            t('sections.home')
-          }}</RouterLink>
-
-          <RouterLink :to="{ name: 'teams' }" class="nav-link text-white fw-bold text-uppercase">{{
-            t('sections.team', 2)
-          }}</RouterLink>
-          <RouterLink
-            :to="{ name: 'players' }"
-            class="nav-link text-white fw-bold text-uppercase"
-            >{{ t('sections.player', 2) }}</RouterLink
-          >
-        </nav>
+        <CompetitionNavigation class="ms-auto" />
       </div>
     </header>
 
@@ -39,7 +26,7 @@ const { t } = useI18n()
         <RouterView />
       </section>
     </main>
-    <footer class="text-body-secondary py-4 border-top">
+    <footer class="py-4 border-top">
       <div class="container-xl">
         <div class="row">
         <div class="col col-12 col-lg-2"><h1>CITY HOOPS</h1></div>
