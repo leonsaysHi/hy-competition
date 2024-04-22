@@ -155,41 +155,27 @@ const groupGames = computed<GameComputedClass[]>(() => {
       <p>Error: No phase.</p>
     </template>
     <template v-else>
-      <div class="mb-3 hstack gap-3">
-        <DropdownComp
-          v-model="selectedPhaseIdx"
-          :options="phasesOptions"
-          variant="light"
-          size="lg"
-          class="fw-bold fz-5"
-          :disabled="phasesOptions.length === 1"
-        />
-        <template v-if="groupsOptions.length > 1">
-          <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons />
-        </template>
-      </div>
-      <hr />
-      <template v-if="selectedPhase && selectedGroup">
-        <h3>{{ t('global.standing') }}</h3>
-        <CompetitionStanding :value="selectedGroup.standing" />
-        <div class="d-flex align-items-end justify-content-between">
-          <h3>{{ t('global.game', 2) }}</h3>
-          <ul class="nav nav-underline justify-content-end">
-            <template v-for="opt in gamesViewOptions" :key="opt.value">
-              <li class="nav-item">
-                <a
-                  class="nav-link"
-                  :class="[currentGamesView === opt.value && 'active', opt.disabled && 'disabled']"
-                  :aria-current="currentGamesView === opt.value ? 'page' : false"
-                  @click="currentGamesView = opt.value"
-                  >{{ opt.text }}</a
-                >
-              </li>
-            </template>
-          </ul>
+      <div class="p-5 mb-4 bg-body-tertiary rounded-3">
+        <h1>Tabla y líderes</h1>
+        <div class="hstack gap-3">
+          <DropdownComp
+            v-model="selectedPhaseIdx"
+            :options="phasesOptions"
+            variant="light"
+            size="lg"
+            class="fw-bold fz-5"
+            :disabled="phasesOptions.length === 1"
+          />
+          <template v-if="groupsOptions.length > 1">
+            <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons />
+          </template>
         </div>
-        <GamesList class="mb-3" :items="groupGames" />
-        <h3>{{ t('global.ranking') }}</h3>
+      </div>
+      
+      <template v-if="selectedPhase && selectedGroup">
+        <h2>Tabla</h2>
+        <CompetitionStanding :value="selectedGroup.standing" />
+        <h2>Líderes por categorías</h2>
         <CompetitionRanking :value="selectedGroup.ranking" :length="15" />
       </template>
     </template>

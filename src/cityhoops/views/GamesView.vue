@@ -8,8 +8,6 @@ import type { CompetitionGroupComputed, CompetitionPhaseComputed } from '@/types
 import type { Option } from '@/types/comp-fields'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
-import CompetitionStanding from '@/components/competitions/CompetitionStanding.vue'
-import CompetitionRanking from '@/components/competitions/CompetitionRanking.vue'
 import GamesList from '@/components/games/GamesList.vue'
 import { compareAsc } from 'date-fns'
 import { useI18n } from 'vue-i18n'
@@ -20,9 +18,9 @@ const router = useRouter()
 const { competitionId, phase } = route.params as { competitionId: string; phase: string }
 
 const { t } = useI18n()
-const { competitionPhases, getGender, getCategory } = useOptionsLib()
+const { competitionPhases } = useOptionsLib()
 
-const { isReady, row, computedPhases } = useCompetition(competitionId)
+const { isReady, computedPhases } = useCompetition(competitionId)
 
 const selectedPhaseIdx = ref<string | undefined>(phase || undefined)
 const selectedGroupIdx = ref<string | undefined>(route.hash?.substring(1) || undefined)
@@ -78,13 +76,6 @@ watchEffect(() => {
 const gamesViewOptions = computed<Option[]>(() => {
   return [
     {
-      text: t('global.gameDetails.live'),
-      value: 'live',
-      disabled:
-        !selectedGroup.value ||
-        !selectedGroup.value?.games.some((game: GameComputedClass) => game.isLive)
-    },
-    {
       text: t('global.previous', 2),
       value: 'prev',
       disabled:
@@ -120,10 +111,25 @@ const groupGames = computed<GameComputedClass[]>(() => {
     ? selectedGroup.value.games.filter((game: GameComputedClass) => {
         return currentGamesView.value === 'prev'
           ? game.isFinished && !game.isLive
-          : currentGamesView.value === 'next'
-            ? !game.isFinished && !game.isLive
-            : !game.isFinished && game.isLive
+          : !game.isFinished && !game.isLive
       })
+    : []
+  result.sort((a: GameComputedClass, b: GameComputedClass) =>
+    currentGamesView.value === 'prev'
+      ? compareAsc(b.row.datetime, a.row.datetime)
+      : compareAsc(a.row.datetime, b.row.datetime)
+  )
+  return result.slice(
+    0,
+    Math.max(
+      Math.round(selectedGroup.value.standing.length * 0.5),
+      Math.min(4, selectedGroup.value.standing.length)
+    )
+  )
+})
+const groupLiveGames = computed<GameComputedClass[]>(() => {
+  const result = Array.isArray(selectedGroup.value?.games)
+    ? selectedGroup.value.games.filter((game: GameComputedClass) => !game.isFinished && game.isLive)
     : []
   result.sort((a: GameComputedClass, b: GameComputedClass) =>
     currentGamesView.value === 'prev'
@@ -141,13 +147,6 @@ const groupGames = computed<GameComputedClass[]>(() => {
 </script>
 <template>
   <div>
-    <h1>{{ row?.title }}</h1>
-    <div class="d-flex gap-3 align-items-start">
-      <p>{{ row?.date }}</p>
-      <p>{{ getGender(row?.gender)?.long }}</p>
-      <p>{{ getCategory(row?.category)?.text }}</p>
-    </div>
-
     <template v-if="!isReady">
       <SpinnerComp />
     </template>
@@ -155,25 +154,29 @@ const groupGames = computed<GameComputedClass[]>(() => {
       <p>Error: No phase.</p>
     </template>
     <template v-else>
-      <div class="mb-3 hstack gap-3">
-        <DropdownComp
-          v-model="selectedPhaseIdx"
-          :options="phasesOptions"
-          variant="light"
-          size="lg"
-          class="fw-bold fz-5"
-          :disabled="phasesOptions.length === 1"
-        />
-        <template v-if="groupsOptions.length > 1">
-          <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons />
-        </template>
+      <div class="p-5 mb-4 bg-body-tertiary rounded-3">
+        <h1>Resultados</h1>
+        <div class="hstack gap-3">
+          <DropdownComp
+            v-model="selectedPhaseIdx"
+            :options="phasesOptions"
+            variant="light"
+            size="lg"
+            class="fw-bold fz-5"
+            :disabled="phasesOptions.length === 1"
+          />
+          <template v-if="groupsOptions.length > 1">
+            <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons />
+          </template>
+        </div>
       </div>
-      <hr />
+      
       <template v-if="selectedPhase && selectedGroup">
-        <h3>{{ t('global.standing') }}</h3>
-        <CompetitionStanding :value="selectedGroup.standing" />
+        <template v-if="groupLiveGames.length">
+          <h2>Ahora en vivo</h2>
+          <GamesList class="mb-3" :items="groupLiveGames" />
+        </template>
         <div class="d-flex align-items-end justify-content-between">
-          <h3>{{ t('global.game', 2) }}</h3>
           <ul class="nav nav-underline justify-content-end">
             <template v-for="opt in gamesViewOptions" :key="opt.value">
               <li class="nav-item">
@@ -189,8 +192,6 @@ const groupGames = computed<GameComputedClass[]>(() => {
           </ul>
         </div>
         <GamesList class="mb-3" :items="groupGames" />
-        <h3>{{ t('global.ranking') }}</h3>
-        <CompetitionRanking :value="selectedGroup.ranking" :length="15" />
       </template>
     </template>
   </div>

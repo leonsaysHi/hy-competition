@@ -141,13 +141,6 @@ const groupGames = computed<GameComputedClass[]>(() => {
 </script>
 <template>
   <div>
-    <h1>{{ row?.title }}</h1>
-    <div class="d-flex gap-3 align-items-start">
-      <p>{{ row?.date }}</p>
-      <p>{{ getGender(row?.gender)?.long }}</p>
-      <p>{{ getCategory(row?.category)?.text }}</p>
-    </div>
-
     <template v-if="!isReady">
       <SpinnerComp />
     </template>
@@ -155,23 +148,31 @@ const groupGames = computed<GameComputedClass[]>(() => {
       <p>Error: No phase.</p>
     </template>
     <template v-else>
-      <div class="mb-3 hstack gap-3">
-        <DropdownComp
-          v-model="selectedPhaseIdx"
-          :options="phasesOptions"
-          variant="light"
-          size="lg"
-          class="fw-bold fz-5"
-          :disabled="phasesOptions.length === 1"
-        />
-        <template v-if="groupsOptions.length > 1">
-          <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons />
-        </template>
+      <div class="p-5 mb-4 bg-body-tertiary rounded-3">
+        <h1>{{ row?.title }}</h1>
+        <div class="d-flex gap-3 align-items-start">
+          <p>{{ row?.date }}</p>
+          <p>{{ getGender(row?.gender)?.long }}</p>
+          <p>{{ getCategory(row?.category)?.text }}</p>
+        </div>
+        <div class="hstack gap-3">
+          <DropdownComp
+            v-model="selectedPhaseIdx"
+            :options="phasesOptions"
+            variant="light"
+            size="lg"
+            class="fw-bold fz-5"
+            :disabled="phasesOptions.length === 1"
+          />
+          <template v-if="groupsOptions.length > 1">
+            <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons />
+          </template>
+        </div>
       </div>
-      <hr />
+      
       <template v-if="selectedPhase && selectedGroup">
         <div class="d-flex align-items-end justify-content-between">
-          <h3>{{ t('global.game', 2) }}</h3>
+          <h2>{{ t('global.game', 2) }}</h2>
           <ul class="nav nav-underline">
             <template v-for="opt in gamesViewOptions" :key="opt.value">
               <li class="nav-item">
@@ -188,16 +189,14 @@ const groupGames = computed<GameComputedClass[]>(() => {
         </div>
         <GamesList class="mb-3" :items="groupGames" />
         <div class="mb-3 d-flex justify-content-center">
-          <ButtonComp
-            variant="primary"
-            class="text-white"
-            size="lg"
-            :to="{ name: 'competition-games' }"
-            >Ver Resultados</ButtonComp
+          <RouterLink
+            class="btn btn-primary btn-lg text-white"
+            :to="{ name: 'competition-games', params: { competitionId} }"
+            >Ver Resultados</RouterLink
           >
         </div>
         <hr />
-        <h3>{{ t('global.standing') }}</h3>
+        <h2>Tabla</h2>
         <CompetitionStanding :value="selectedGroup.standing" :length="7" />
         <div class="mb-3 d-flex justify-content-center">
           <ButtonComp
