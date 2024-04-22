@@ -2,7 +2,12 @@ import './assets/sass/app.scss'
 import 'bootstrap'
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './router'
+import routes from './routes'
 import i18n from './i18n'
+import { createRouter, createWebHistory } from 'vue-router'
 
+const router = createRouter({
+    history: createWebHistory(import.meta.env.BASE_URL),
+    routes
+})
 createApp(App).use(i18n).use(router).mount('#app')

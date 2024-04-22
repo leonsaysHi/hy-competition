@@ -1,4 +1,3 @@
-import { createRouter, createWebHistory } from 'vue-router'
 import FrontView from '@/views/IndexView.vue'
 import HomeView from '@/views/HomeView.vue'
 import CompetitionView from '@/views/competition/IndexView.vue'
@@ -15,9 +14,8 @@ import PlayerDetailsView from '@/views/players/DetailsView.vue'
 import adminRoutes from './admin'
 import boxScoreRoutes from './box-score-recorder'
 
-const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
+
+const routes = [
     {
       path: '/',
       component: FrontView,
@@ -106,6 +104,5 @@ const router = createRouter({
       children: adminRoutes
     }
   ]
-})
 
-export default router
+export default routes

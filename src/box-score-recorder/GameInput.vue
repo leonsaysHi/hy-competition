@@ -12,7 +12,7 @@ import type { PlayerStatKey } from '@/types/stats'
 import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
 import { add } from '@/utils/maths'
 import ButtonComp from '@/components/ButtonComp.vue'
-import router from '@/router'
+import router from '@/routes'
 import type { Play } from '@/types/box-score-recorder'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 
