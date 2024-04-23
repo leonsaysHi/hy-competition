@@ -13,9 +13,7 @@ import ViewHero from '../components/layout/ViewHero.vue'
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
-
 const { t } = useI18n()
-
 const { isReady, computedPhases } = useCompetition(competitionId)
 
 const currentGamesView = ref<'prev' | 'next'>('prev')
