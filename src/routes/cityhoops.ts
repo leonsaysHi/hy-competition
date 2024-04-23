@@ -16,17 +16,17 @@ const competitionViewIdx = routes[frontViewIdx].children.findIndex(
 const cityhoopsRoutes = routes.slice()
 cityhoopsRoutes[frontViewIdx].children[competitionViewIdx].children = [
   {
-    path: ':phase?',
+    path: ':phase?/:group?',
     name: 'competition',
     component: CompetitionHomeView
   },
   {
-    path: 'ranking/:phase?',
+    path: 'ranking/:phase?/:group?',
     name: 'competition-standing',
     component: CompetitionRankingsView
   },
   {
-    path: 'games/:phase?',
+    path: 'games/:phase?/:group?',
     name: 'competition-games',
     component: CompetitionGamesView
   },

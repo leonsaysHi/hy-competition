@@ -12,7 +12,7 @@ import type GameComputedClass from '@/models/GameComputed'
 import ViewHero from '../components/layout/ViewHero.vue'
 
 const route = useRoute()
-const { competitionId } = route.params as { competitionId: string; phase: string }
+const { competitionId } = route.params as { competitionId: string }
 
 const { t } = useI18n()
 
