@@ -1,10 +1,9 @@
 <script lang="ts" setup>
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import DropdownComp from '@/components/DropdownComp.vue'
 import useCompetition from '@/composable/useCompetition'
-import { computed, ref, watch, watchEffect } from 'vue'
-import type { CompetitionGroupComputed, CompetitionPhaseComputed } from '@/types/computed'
+import { computed, ref, watch } from 'vue'
 import type { Option } from '@/types/comp-fields'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
@@ -14,99 +13,24 @@ import GamesList from '@/components/games/GamesList.vue'
 import { compareAsc } from 'date-fns'
 import { useI18n } from 'vue-i18n'
 import type GameComputedClass from '@/models/GameComputed'
+import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
 
 const route = useRoute()
-const router = useRouter()
-const { competitionId, phase, group } = route.params as { competitionId: string; phase: string, group: string }
+const { competitionId } = route.params as { competitionId: string }
+
+const { isReady, row } = useCompetition(competitionId)
+
+const { 
+  selectedPhaseIdx, 
+  selectedPhase,
+  phasesOptions,
+  selectedGroupIdx,
+  selectedGroup,
+  groupsOptions
+} = useCompetitionPhasesGroups()
 
 const { t } = useI18n()
-const { competitionPhases, getGender, getCategory } = useOptionsLib()
-
-const { isReady, row, computedPhases, competitionRankings } = useCompetition(competitionId)
-
-const selectedPhaseIdx = computed({
-  get () { 
-    const { phase } = route.params
-    return phase || '0' 
-  },
-  set (v) {
-    router.replace({
-      ...route,
-      params: {
-        phase: v,
-        group: '0'
-      }
-    })
-  }
-})
-const selectedGroupIdx = computed({
-  get () { 
-    const { group } = route.params
-    return group || '0' 
-  },
-  set (v) {
-    router.replace({
-      ...route,
-      params: {
-        ...route.params,
-        group: v
-      }
-    })
-  }
-})
-
-const selectedPhase = computed<CompetitionPhaseComputed | undefined>(() =>
-  Array.isArray(computedPhases?.value) && selectedPhaseIdx.value
-    ? (computedPhases.value[Number(selectedPhaseIdx.value)] as CompetitionPhaseComputed)
-    : undefined
-)
-const selectedGroup = computed<CompetitionGroupComputed | undefined>(() =>
-  Array.isArray(selectedPhase.value?.groups) && selectedGroupIdx.value
-    ? selectedPhase.value?.groups[Number(selectedGroupIdx.value)]
-    : undefined
-)
-
-const phasesOptions = computed<Option[] | undefined>(() =>
-  Array.isArray(computedPhases.value)
-    ? computedPhases.value?.map(
-        (row: CompetitionPhaseComputed, idx): Option => ({
-          value: idx.toString(),
-          text: competitionPhases.find((opt) => opt.value === row.type)?.text as string
-        })
-      )
-    : undefined
-)
-const groupsOptions = computed<Option[] | undefined>(() =>
-  Array.isArray(selectedPhase.value?.groups)
-    ? selectedPhase.value?.groups.map(
-        (row: CompetitionGroupComputed, idx): Option => ({
-          value: idx.toString(),
-          text: t('global.group') + ` ${idx + 1}`
-        })
-      )
-    : undefined
-)
-
-watchEffect(() => {
-  const hasPhases = Array.isArray(computedPhases?.value) && computedPhases?.value.length > 1
-  const hasGroups = selectedPhase.value && selectedPhase.value.groups.length > 1
-  const params = {} as { phase: string, group?: string }
-  if (hasPhases && !phase) {
-    const pIdx = computedPhases.value.length - 1
-    params.phase = pIdx.toString()
-    params.group = '0'
-  }
-  if (hasGroups && !group) {
-    params.group = '0'
-    params.phase = params.phase || '0'
-  }
-  if (params.phase) {
-    router.replace({
-      ...route,
-        params
-    })
-  }
-})
+const { getGender, getCategory } = useOptionsLib()
 
 const gamesViewOptions = computed<Option[]>(() => {
   return [
@@ -188,14 +112,12 @@ const groupGames = computed<GameComputedClass[]>(() => {
           size="lg"
           class="fw-bold fz-5"
           :disabled="phasesOptions.length === 1"
-          @change="handleChangePhase"
         />
         <template v-if="groupsOptions.length > 1">
           <RadioGroupComp 
             v-model="selectedGroupIdx" 
             :options="groupsOptions" 
-            buttons 
-            @change="handleChangeGroup" 
+            buttons
           />
         </template>
       </div>
