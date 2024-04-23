@@ -13,6 +13,14 @@ export interface Phase {
   groups: TeamId[][]
   datetime: Date
 }
+export interface BracketMatchup {
+  teams: {
+    id: TeamId,
+    pos: number
+  }[]
+}
+export type BracketRound = BracketMatchup[]
+export type Bracket = BracketRound[]
 
 export interface CompetitionConfig {
   gameLength: number

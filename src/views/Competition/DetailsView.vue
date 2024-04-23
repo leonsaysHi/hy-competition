@@ -14,6 +14,7 @@ import { compareAsc } from 'date-fns'
 import { useI18n } from 'vue-i18n'
 import type GameComputedClass from '@/models/GameComputed'
 import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
+import BracketView from '@/components/bracket/BracketView.vue'
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
@@ -123,8 +124,14 @@ const groupGames = computed<GameComputedClass[]>(() => {
       </div>
       <hr />
       <template v-if="selectedPhase && selectedGroup">
-        <h3>{{ t('global.standing') }}</h3>
-        <CompetitionStanding :value="selectedGroup.standing" />
+        <template v-if="selectedPhase.type === 'playoffs'">
+          <h3>{{ t('global.playoffs') }}</h3>
+          <BracketView :group="selectedGroup" />
+        </template>
+        <template v-else>
+          <h3>{{ t('global.standing') }}</h3>
+          <CompetitionStanding :value="selectedGroup.standing" />
+        </template>
         <div class="d-flex align-items-end justify-content-between">
           <h3>{{ t('global.game', 2) }}</h3>
           <ul class="nav nav-underline justify-content-end">

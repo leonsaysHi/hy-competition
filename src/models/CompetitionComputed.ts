@@ -1,4 +1,4 @@
-import type { Competition, Phase } from '@/types/competitions'
+import type { Bracket, Competition, Phase } from '@/types/competitions'
 import type { Game } from '@/types/games'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import type { Option } from '@/types/comp-fields'

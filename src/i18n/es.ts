@@ -151,6 +151,7 @@ const es = {
     group: 'Grupo | Grupos',
     standing: 'Clasificación',
     ranking: 'Líderes',
+    playoffs: 'Playoffs',
     game: 'Juego | Juegos',
     gameDetails: {
       live: 'Vivo',
