@@ -61,7 +61,6 @@ const nextGames = computed<GameComputedClass[]>(() => {
       <ViewHero>
           <h1>{{ row?.title }}</h1>
           <div class="d-flex gap-3 align-items-start">
-            <p>{{ row?.date }}</p>
             <p>{{ getGender(row?.gender)?.long }}</p>
             <p>{{ getCategory(row?.category)?.text }}</p>
           </div>
