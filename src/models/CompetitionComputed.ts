@@ -157,124 +157,127 @@ export default class CompetitionClass {
   }
 
   get computedPhases(): CompetitionPhaseComputed[] {
-    const phases = this.row.phases.map((phase: Phase, idx: number): CompetitionPhaseComputed => {
-      const { type } = phase
-      const dateStart = phase.datetime
-      const dateEnd = this.row.phases[idx + 1] ? this.row.phases[idx + 1].datetime : undefined
-      const phaseGames = this.games
-        .filter((game: Game) => {
-          return isAfter(game.datetime, dateStart) && (!dateEnd || isBefore(dateEnd, game.datetime))
-        })
-        .map((game: Game): GameComputedClass => new GameComputedClass(this.row.id, game))
-      phaseGames.sort((a: GameComputedClass, b: GameComputedClass) =>
-        compareAsc(a.row.datetime, b.row.datetime)
-      )
-      // each group:
-      const groups = phase.groups.map((groupTeams: TeamId[]): CompetitionGroupComputed => {
-        // games
-        const groupGames = groupTeams.reduce((groupGames: GameComputedClass[], teamId: TeamId) => {
-          return [
-            ...groupGames,
-            ...phaseGames.filter(
-              (game: GameComputedClass) =>
-                game.row.teams.includes(teamId) &&
-                groupGames.findIndex((g: GameComputedClass) => g.id === game.id) === -1
-            )
-          ]
-        }, [])
+    const phases = Array.isArray(this.row.phases)
+      ? this.row.phases
+        .map((phase: Phase, idx: number): CompetitionPhaseComputed => {
+          const { type } = phase
+          const dateStart = phase.datetime
+          const dateEnd = this.row.phases[idx + 1] ? this.row.phases[idx + 1].datetime : undefined
+          const phaseGames = this.games
+            .filter((game: Game) => {
+              return isAfter(game.datetime, dateStart) && (!dateEnd || isBefore(dateEnd, game.datetime))
+            })
+            .map((game: Game): GameComputedClass => new GameComputedClass(this.row.id, game))
+          phaseGames.sort((a: GameComputedClass, b: GameComputedClass) =>
+            compareAsc(a.row.datetime, b.row.datetime)
+          )
+          // each group:
+          const groups = phase.groups.map((groupTeams: TeamId[]): CompetitionGroupComputed => {
+            // games
+            const groupGames = groupTeams.reduce((groupGames: GameComputedClass[], teamId: TeamId) => {
+              return [
+                ...groupGames,
+                ...phaseGames.filter(
+                  (game: GameComputedClass) =>
+                    game.row.teams.includes(teamId) &&
+                    groupGames.findIndex((g: GameComputedClass) => g.id === game.id) === -1
+                )
+              ]
+            }, [])
 
-        // standing:
-        const standing: CompetitionStanding[] = groupTeams.reduce(
-          (standing: CompetitionStanding[], teamId: TeamId) => {
-            const teamGames: GameComputedClass[] = phaseGames.filter(
-              (game: GameComputedClass) => game.row.teams.includes(teamId) && game.isFinished
+            // standing:
+            const standing: CompetitionStanding[] = groupTeams.reduce(
+              (standing: CompetitionStanding[], teamId: TeamId) => {
+                const teamGames: GameComputedClass[] = phaseGames.filter(
+                  (game: GameComputedClass) => game.row.teams.includes(teamId) && game.isFinished
+                )
+                const hist: GamesHist = new Array(5).fill(0).map((n: number, idx: number) => {
+                  const game = teamGames[idx]
+                  if (!game?.isFinished) return 0
+                  return game.scores.findIndex(
+                    (score: ScoresComputed) => score.id === teamId && score.winner
+                  ) > -1
+                    ? 1
+                    : -1
+                })
+                hist.reverse()
+                standing.push({
+                  teamId,
+                  ...getTeamPhaseStanding(teamId, teamGames),
+                  hist
+                })
+                return standing
+              },
+              []
             )
-            const hist: GamesHist = new Array(5).fill(0).map((n: number, idx: number) => {
-              const game = teamGames[idx]
-              if (!game?.isFinished) return 0
-              return game.scores.findIndex(
-                (score: ScoresComputed) => score.id === teamId && score.winner
-              ) > -1
-                ? 1
-                : -1
+            standing.sort((a: CompetitionStanding, b: CompetitionStanding) => {
+              const getPct = (st: CompetitionStanding) => st.gp / st.wins
+              const getDiff = (st: CompetitionStanding) => st.ptsfv - st.ptsag
+              const aPct = getPct(a)
+              const bPct = getPct(b)
+              const bestWinningPerc = aPct - bPct
+              const mostPlayedGames = b.gp - a.gp
+              const bestDiff = getDiff(b) - getDiff(a)
+              return bestWinningPerc || mostPlayedGames || bestDiff
             })
-            hist.reverse()
-            standing.push({
-              teamId,
-              ...getTeamPhaseStanding(teamId, teamGames),
-              hist
+            standing.forEach((row: CompetitionStanding, idx: number) => {
+              if (type === 'groups') {
+                standing[idx].pos = standing[idx].gp ? idx + 1 : standing.length + 1
+              } else {
+                standing[idx].playoff = groupTeams.length / (row.wins + 1)
+              }
             })
-            return standing
-          },
-          []
-        )
-        standing.sort((a: CompetitionStanding, b: CompetitionStanding) => {
-          const getPct = (st: CompetitionStanding) => st.gp / st.wins
-          const getDiff = (st: CompetitionStanding) => st.ptsfv - st.ptsag
-          const aPct = getPct(a)
-          const bPct = getPct(b)
-          const bestWinningPerc = aPct - bPct
-          const mostPlayedGames = b.gp - a.gp
-          const bestDiff = getDiff(b) - getDiff(a)
-          return bestWinningPerc || mostPlayedGames || bestDiff
-        })
-        standing.forEach((row: CompetitionStanding, idx: number) => {
-          if (type === 'groups') {
-            standing[idx].pos = standing[idx].gp ? idx + 1 : standing.length + 1
-          } else {
-            standing[idx].playoff = groupTeams.length / (row.wins + 1)
+
+            // ranking:
+            const ranking: CompetitionRanking[] = groupTeams.reduce(
+              (ranking: CompetitionRanking[], teamId: TeamId) => {
+                const team = this.teams.find(
+                  (team: CompetitionTeam) => team.id === teamId
+                ) as CompetitionTeam
+                const teamRanking: CompetitionRanking[] = team.players.map(
+                  (player: CompetitionPlayer) => {
+                    const playerId: PlayerId = player.id
+                    const playerGames = phaseGames.filter((game: GameComputedClass) => {
+                      return (
+                        game.getTeamScore(teamId) &&
+                        game.boxScore[playerId] &&
+                        !game.boxScore[playerId].dnp
+                      )
+                    })
+                    const ranking = getPlayerStatsFromGame(playerId, playerGames)
+                    return {
+                      teamId: team.id,
+                      playerId: player.id,
+                      number: player.number,
+                      ...ranking,
+                      awards: [
+                        ...ranking.awards,
+                        ...this.row.awards
+                          .filter((row: AwardItem) => row.id === player.id)
+                          .map((row: AwardItem) => ({ ...row, competitionId: this.row.id }))
+                      ]
+                    }
+                  }
+                )
+                return [...ranking, ...teamRanking]
+              },
+              []
+            )
+
+            // returns CompetitionGroupComputed
+            return {
+              standing,
+              ranking,
+              games: groupGames
+            }
+          })
+
+          return {
+            type,
+            groups
           }
         })
-
-        // ranking:
-        const ranking: CompetitionRanking[] = groupTeams.reduce(
-          (ranking: CompetitionRanking[], teamId: TeamId) => {
-            const team = this.teams.find(
-              (team: CompetitionTeam) => team.id === teamId
-            ) as CompetitionTeam
-            const teamRanking: CompetitionRanking[] = team.players.map(
-              (player: CompetitionPlayer) => {
-                const playerId: PlayerId = player.id
-                const playerGames = phaseGames.filter((game: GameComputedClass) => {
-                  return (
-                    game.getTeamScore(teamId) &&
-                    game.boxScore[playerId] &&
-                    !game.boxScore[playerId].dnp
-                  )
-                })
-                const ranking = getPlayerStatsFromGame(playerId, playerGames)
-                return {
-                  teamId: team.id,
-                  playerId: player.id,
-                  number: player.number,
-                  ...ranking,
-                  awards: [
-                    ...ranking.awards,
-                    ...this.row.awards
-                      .filter((row: AwardItem) => row.id === player.id)
-                      .map((row: AwardItem) => ({ ...row, competitionId: this.row.id }))
-                  ]
-                }
-              }
-            )
-            return [...ranking, ...teamRanking]
-          },
-          []
-        )
-
-        // returns CompetitionGroupComputed
-        return {
-          standing,
-          ranking,
-          games: groupGames
-        }
-      })
-
-      return {
-        type,
-        groups
-      }
-    })
+      : []
     return phases
   }
 

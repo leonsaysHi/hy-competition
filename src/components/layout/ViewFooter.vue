@@ -16,4 +16,3 @@ const { t } = useI18n()
       </div>
     </footer>
 </template>
-<style lang="scss" scoped>

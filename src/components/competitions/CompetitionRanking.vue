@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import StatsTableComp from '@/components/StatsTableComp.vue'
 
-import type { CompetitionRanking } from '@/types/computed'
+import type { CompetitionRanking, CompetitionRankingComputed } from '@/types/computed'
 import type { TableField } from '@/types/comp-table'
 import type { PlayerRankingKey } from '@/types/stats'
 
@@ -10,7 +10,7 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 interface IProps {
-  value: CompetitionRanking[]
+  value: CompetitionRankingComputed[]
   length?: number
 }
 
@@ -18,7 +18,7 @@ const props = withDefaults(defineProps<IProps>(), {
   length: 0
 })
 
-const rankingKeys: PlayerRankingKey[] = ['gp', 'pts', 'fg3m', 'reb', 'ast', 'blk', 'stl']
+const rankingKeys: PlayerRankingKey[] = ['gp', 'pts', 'fg3m', 'reb', 'ast', 'blk', 'stl', 'tov']
 
 const fields = computed(() => [
   {

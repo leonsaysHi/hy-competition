@@ -17,15 +17,43 @@ import type GameComputedClass from '@/models/GameComputed'
 
 const route = useRoute()
 const router = useRouter()
-const { competitionId, phase } = route.params as { competitionId: string; phase: string }
+const { competitionId, phase, group } = route.params as { competitionId: string; phase: string, group: string }
 
 const { t } = useI18n()
 const { competitionPhases, getGender, getCategory } = useOptionsLib()
 
-const { isReady, row, computedPhases } = useCompetition(competitionId)
+const { isReady, row, computedPhases, competitionRankings } = useCompetition(competitionId)
 
-const selectedPhaseIdx = ref<string | undefined>(phase || undefined)
-const selectedGroupIdx = ref<string | undefined>(route.hash?.substring(1) || undefined)
+const selectedPhaseIdx = computed({
+  get () { 
+    const { phase } = route.params
+    return phase || '0' 
+  },
+  set (v) {
+    router.replace({
+      ...route,
+      params: {
+        phase: v,
+        group: '0'
+      }
+    })
+  }
+})
+const selectedGroupIdx = computed({
+  get () { 
+    const { group } = route.params
+    return group || '0' 
+  },
+  set (v) {
+    router.replace({
+      ...route,
+      params: {
+        ...route.params,
+        group: v
+      }
+    })
+  }
+})
 
 const selectedPhase = computed<CompetitionPhaseComputed | undefined>(() =>
   Array.isArray(computedPhases?.value) && selectedPhaseIdx.value
@@ -60,19 +88,24 @@ const groupsOptions = computed<Option[] | undefined>(() =>
 )
 
 watchEffect(() => {
-  if (selectedPhaseIdx.value === undefined) {
-    selectedPhaseIdx.value = Array.isArray(phasesOptions.value)
-      ? phasesOptions.value[phasesOptions.value.length - 1].value
-      : undefined
-    selectedGroupIdx.value = '0'
+  const hasPhases = Array.isArray(computedPhases?.value) && computedPhases?.value.length > 1
+  const hasGroups = selectedPhase.value && selectedPhase.value.groups.length > 1
+  const params = {} as { phase: string, group?: string }
+  if (hasPhases && !phase) {
+    const pIdx = computedPhases.value.length - 1
+    params.phase = pIdx.toString()
+    params.group = '0'
   }
-})
-watchEffect(() => {
-  router.replace({
-    ...route,
-    params: { phase: selectedPhaseIdx.value },
-    hash: `#${selectedGroupIdx.value}`
-  })
+  if (hasGroups && !group) {
+    params.group = '0'
+    params.phase = params.phase || '0'
+  }
+  if (params.phase) {
+    router.replace({
+      ...route,
+        params
+    })
+  }
 })
 
 const gamesViewOptions = computed<Option[]>(() => {
@@ -111,7 +144,9 @@ watch(
   () => gamesViewOptions.value,
   (val: Option[]) => {
     const optIdx = val.findIndex((opt: Option) => !opt.disabled)
-    currentGamesView.value = val[optIdx].value as 'prev' | 'next' | 'live'
+    if (optIdx > -1) {
+      currentGamesView.value = val[optIdx].value as ('prev' | 'next' | 'live')
+    }
   }
 )
 
@@ -163,9 +198,15 @@ const groupGames = computed<GameComputedClass[]>(() => {
           size="lg"
           class="fw-bold fz-5"
           :disabled="phasesOptions.length === 1"
+          @change="handleChangePhase"
         />
         <template v-if="groupsOptions.length > 1">
-          <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons />
+          <RadioGroupComp 
+            v-model="selectedGroupIdx" 
+            :options="groupsOptions" 
+            buttons 
+            @change="handleChangeGroup" 
+          />
         </template>
       </div>
       <hr />

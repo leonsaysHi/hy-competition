@@ -35,8 +35,12 @@ const gamesItems = computed(() => {
           if (!selectedPhase.value) {
             return true
           }
-          const phase = row.value?.phases[Number(selectedPhase.value)]
-          return isAfter(game.datetime, phase?.datetime)
+          const phaseIdx = Number(selectedPhase.value)
+          const phase = row.value?.phases[phaseIdx]
+          const nextPhase = row.value?.phases[phaseIdx + 1]
+
+          console.log(phase)
+          return isAfter(game.datetime, phase?.datetime) && (!nextPhase || !isAfter(game.datetime, nextPhase?.datetime))
         })
         .map((game: Game) => {
           return {

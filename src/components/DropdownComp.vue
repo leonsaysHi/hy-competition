@@ -50,10 +50,10 @@ const model = computed({
   get: () => props.modelValue,
   set: (val) => {
     emit('update:modelValue', val)
+    emit('change', val)
   }
 })
-const handleSelect = (val) => {
-  console.log('val', val)
+const handleSelect = (val: any) => {
   model.value = val
 }
 const selectedOption = computed(() =>

@@ -47,8 +47,7 @@ const model = computed({
     emit('update:modelValue', val)
   }
 })
-const handleSelect = (val) => {
-  console.log('val', val)
+const handleSelect = (val: any) => {
   model.value = val
 }
 const computedInputClass = computed(() => {
