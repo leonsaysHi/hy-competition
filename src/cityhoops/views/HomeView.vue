@@ -55,7 +55,6 @@ const selectedGroupIdx = computed({
     })
   }
 })
-
 const selectedPhase = computed<CompetitionPhaseComputed | undefined>(() =>
   Array.isArray(computedPhases?.value) && selectedPhaseIdx.value
     ? (computedPhases.value[Number(selectedPhaseIdx.value)] as CompetitionPhaseComputed)
@@ -66,13 +65,22 @@ const selectedGroup = computed<CompetitionGroupComputed | undefined>(() =>
     ? selectedPhase.value?.groups[Number(selectedGroupIdx.value)]
     : undefined
 )
-
 const phasesOptions = computed<Option[] | undefined>(() =>
   Array.isArray(computedPhases.value)
     ? computedPhases.value?.map(
         (row: CompetitionPhaseComputed, idx): Option => ({
           value: idx.toString(),
           text: competitionPhases.find((opt) => opt.value === row.type)?.text as string
+        })
+      )
+    : undefined
+)
+const groupsOptions = computed<Option[] | undefined>(() =>
+  Array.isArray(selectedPhase.value?.groups)
+    ? selectedPhase.value?.groups.map(
+        (row: CompetitionGroupComputed, idx): Option => ({
+          value: idx.toString(),
+          text: t('global.group') + ` ${idx + 1}`
         })
       )
     : undefined
@@ -145,6 +153,14 @@ const nextGames = computed<GameComputedClass[]>(() => {
             class="fw-bold fz-5"
             :disabled="phasesOptions.length === 1"
           />
+          <template v-if="groupsOptions.length > 1">
+            <RadioGroupComp 
+              v-model="selectedGroupIdx" 
+              :options="groupsOptions" 
+              buttons 
+              @change="handleChangeGroup" 
+            />
+          </template>
         </template>
       </ViewHero>
       

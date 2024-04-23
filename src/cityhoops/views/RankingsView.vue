@@ -3,9 +3,10 @@ import { useRoute, useRouter } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import DropdownComp from '@/components/DropdownComp.vue'
 import useCompetition from '@/composable/useCompetition'
-import { computed, ref, watchEffect } from 'vue'
+import { computed, watchEffect } from 'vue'
 import type { CompetitionGroupComputed, CompetitionPhaseComputed } from '@/types/computed'
 import type { Option } from '@/types/comp-fields'
+import { useI18n } from 'vue-i18n'
 import useOptionsLib from '@/composable/useOptionsLib'
 import CompetitionStanding from '@/components/competitions/CompetitionStanding.vue'
 import CompetitionRanking from '@/components/competitions/CompetitionRanking.vue'
@@ -15,13 +16,41 @@ const route = useRoute()
 const router = useRouter()
 const { competitionId, phase } = route.params as { competitionId: string; phase: string }
 
+const { t } = useI18n()
 const { competitionPhases } = useOptionsLib()
 
 const { isReady, computedPhases } = useCompetition(competitionId)
 
-
-const selectedPhaseIdx = ref<string | undefined>(phase || undefined)
-const selectedGroupIdx = ref<string | undefined>('0')
+const selectedPhaseIdx = computed({
+  get () { 
+    const { phase } = route.params
+    return phase || '0' 
+  },
+  set (v) {
+    router.replace({
+      ...route,
+      params: {
+        phase: v,
+        group: '0'
+      }
+    })
+  }
+})
+const selectedGroupIdx = computed({
+  get () { 
+    const { group } = route.params
+    return group || '0' 
+  },
+  set (v) {
+    router.replace({
+      ...route,
+      params: {
+        ...route.params,
+        group: v
+      }
+    })
+  }
+})
 const selectedPhase = computed<CompetitionPhaseComputed | undefined>(() =>
   Array.isArray(computedPhases?.value) && selectedPhaseIdx.value
     ? (computedPhases.value[Number(selectedPhaseIdx.value)] as CompetitionPhaseComputed)
@@ -42,17 +71,35 @@ const phasesOptions = computed<Option[] | undefined>(() =>
       )
     : undefined
 )
+const groupsOptions = computed<Option[] | undefined>(() =>
+  Array.isArray(selectedPhase.value?.groups)
+    ? selectedPhase.value?.groups.map(
+        (row: CompetitionGroupComputed, idx): Option => ({
+          value: idx.toString(),
+          text: t('global.group') + ` ${idx + 1}`
+        })
+      )
+    : undefined
+)
+
 watchEffect(() => {
-  if (selectedPhaseIdx.value === undefined && competitionPhases.length >= 1) {
-    selectedPhaseIdx.value = Array.isArray(phasesOptions.value)
-      ? phasesOptions.value[phasesOptions.value.length - 1].value
-      : undefined
-    if (selectedPhaseIdx.value) {
-      router.replace({
-        ...route,
-        params: { phase: selectedPhaseIdx.value }
-      })
-    }
+  const hasPhases = Array.isArray(computedPhases?.value) && computedPhases?.value.length > 1
+  const hasGroups = selectedPhase.value && selectedPhase.value.groups.length > 1
+  const params = {} as { phase: string, group?: string }
+  if (hasPhases && !phase) {
+    const pIdx = computedPhases.value.length - 1
+    params.phase = pIdx.toString()
+    params.group = '0'
+  }
+  if (hasGroups && !group) {
+    params.group = '0'
+    params.phase = params.phase || '0'
+  }
+  if (params.phase) {
+    router.replace({
+      ...route,
+        params
+    })
   }
 })
 </script>
@@ -73,6 +120,14 @@ watchEffect(() => {
             class="fw-bold fz-5"
             :disabled="phasesOptions.length === 1"
           />
+          <template v-if="groupsOptions.length > 1">
+            <RadioGroupComp 
+              v-model="selectedGroupIdx" 
+              :options="groupsOptions" 
+              buttons 
+              @change="handleChangeGroup" 
+            />
+          </template>
         </template>
       </ViewHero>
       
