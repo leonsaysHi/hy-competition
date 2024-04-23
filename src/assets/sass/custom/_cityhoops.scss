@@ -5,3 +5,14 @@ footer {
   background-color: $blue-600;
   color: white;
 }
+.hero {
+  background-size: auto;
+  background-repeat: no-repeat;
+  background-position: -25% 35%;
+}
+@import url('https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Bebas+Neue&display=swap');
+h1,
+h2 {
+  font-family: 'Arvo', sans-serif;
+  font-weight: bold;
+}

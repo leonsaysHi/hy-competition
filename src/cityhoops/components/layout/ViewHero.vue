@@ -1,17 +1,14 @@
 <script setup lang="ts">
-import HeroBg from '@/cityhoops/assets/hero-bg.webp'
+import HeroBg from '@/cityhoops/assets/hero-bg.png'
 console.log(HeroBg)
 const styleObj = {
-  backgroundImage: `url(${HeroBg})`,
-  backgroundSize: 'cover',
-  backgroundPosition: '0 35%',
-  backgroundBlendMode: 'difference'
+  backgroundImage: `url(${HeroBg})`
 }
 </script>
 
 <template>
   <div 
-    class="p-5 mb-4 bg-dark text-white d-flex flex-column flex-lg-row justify-content-between rounded-3"
+    class="hero p-5 mb-4 bg-black text-white d-flex flex-column flex-lg-row justify-content-between rounded-3"
     :style="styleObj"
   >
     <div class="pb-5"><slot></slot></div>
