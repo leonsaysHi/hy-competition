@@ -30,7 +30,7 @@ const routes = [
           component: CompetitionView,
           children: [
             {
-              path: ':phase?',
+              path: ':phase?/:group?',
               name: 'competition',
               component: CompetitionDetailsView
             },

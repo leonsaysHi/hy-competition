@@ -62,6 +62,7 @@ const model = computed({
   get: () => props.modelValue,
   set: (val) => {
     emit('update:modelValue', val)
+    emit('change', val)
   }
 })
 </script>
