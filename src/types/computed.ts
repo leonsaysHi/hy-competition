@@ -1,5 +1,5 @@
 import type GameComputedClass from '@/models/GameComputed'
-import type { Bracket, CompetitionId, PhaseType } from './competitions'
+import type { CompetitionId, PhaseType } from './competitions'
 import type { PlayerId } from './players'
 import type { PlayerBoxScore, PlayerRankingStats, TeamStandingStats } from './stats'
 import type { TeamId } from './teams'

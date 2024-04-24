@@ -6,24 +6,24 @@
     <template v-for="(matchup, rIdx) in matchups" :key="rIdx">
       <div
         class="matchup d-flex align-items-center"
-        :style="matchup.styleObj"
+        :style="matchup.matchupStyleObj"
       >
-        <template v-if="matchup.hasPrevMatchup">
-          <span class="border-top pr-2" />
+        <template v-if="matchup.roundIdx > 0">
+          <span class="border-top pe-2" />
         </template>
         <template v-if="matchup">
           <div class="d-flex py-2 flex-grow-1">
             <Matchup
               class="flex-grow-1"
               :matchup="matchup"
-              :is-final="matchups.isFinal"
+              :is-final="matchup.isFinal"
             />
           </div>
         </template>
-        <template v-if="matchup.hasNextMatchup">
+        <template v-if="!matchup.isFinal">
           <span
-            class="pr-2 border-top"
-            :class="{ 'h-50 align-self-start border-bottom border-top-0 border-right': matchup.hasNextMatchupWay === 'up', 'h-50 align-self-end border-right': matchup.hasNextMatchupWay === 'down' }" 
+            class="pe-2 border-top"
+            :class="{ 'h-50 align-self-start border-bottom border-top-0 border-end': matchup.roundGameIdx%2, 'h-50 align-self-end border-end': !(matchup.roundGameIdx%2) }" 
           />
         </template>
       </div>
@@ -36,53 +36,52 @@ import { computed } from 'vue';
 import Matchup from './BracketMatchup.vue'
 import type { CompetitionGroupComputed } from '@/types/computed';
 import type GameComputedClass from '@/models/GameComputed';
-
+import type { Bracket, BracketMatchup, BracketRound } from '@/types/competitions';
 
 interface IProps {
   group: CompetitionGroupComputed
 }
 const props = withDefaults(defineProps<IProps>(), {})
 
-const rounds = computed(() => {
+const rounds = computed<Bracket>(() => {
   let teamsLength = props.group.standing.length
   const games = props.group.games.slice()
-  const rounds = []
-  let mIdx = 0
+  const rounds:Bracket = []
+  let matchupIdx = 0
   while(teamsLength > 1) {
     teamsLength *= .5
-    const roundGames = games.splice(0, teamsLength)
+    const roundGames: GameComputedClass[]  = games.splice(0, teamsLength)
     while (roundGames.length < teamsLength) {
       roundGames.push({} as GameComputedClass)
     }
-    rounds.push(
-      roundGames
-        .map((game: GameComputedClass, gIdx) => {
-          mIdx++
-          const rowIdx = gIdx * 2 + 1 + rounds.length
-          const roundIdx = rounds.length
-          const styleObj = {
-            gridArea: 'row' + rowIdx +
-            ' / round' + roundIdx +
-            ' / span 2' +
-            ' / span 1'
-          }
-          const hasPrevMatchup = roundIdx > 0
-          const hasNextMatchup = teamsLength > 1
-          const hasNextMatchupWay = !(gIdx%2)
-            ? 'down'
-            : 'up'
-          
-          return {
-            mIdx,
-            ...game,
-            hasPrevMatchup,
-            hasNextMatchup,
-            hasNextMatchupWay,
-            isFinal: teamsLength <= 1,
-            styleObj
-          }
-        })
-    )
+    const round: BracketRound = roundGames
+      .map((game: GameComputedClass, roundGameIdx): BracketMatchup => {
+        matchupIdx++
+        const rowIdx = roundGameIdx * 2 + 1 + rounds.length
+        const roundIdx = rounds.length
+        const matchupStyleObj = {
+          gridArea: 'row' + rowIdx +
+          ' / round' + roundIdx +
+          ' / span 2' +
+          ' / span 1'
+        }
+        return {
+          ...game as GameComputedClass,
+          matchupIdx,
+          roundIdx,
+          roundGameIdx,
+          isFinal: teamsLength <= 1,
+          matchupStyleObj,
+          winnersFrom: !game.id && roundIdx > 0
+            ? [(roundGameIdx * 2), (roundGameIdx * 2) + 1]
+              .map((idx: number) => {
+                return rounds[roundIdx - 1][idx].matchupIdx
+              })
+            : [undefined, undefined]
+            
+        }
+      })
+    rounds.push(round)
   }
   return rounds
 })

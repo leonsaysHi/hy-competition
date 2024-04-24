@@ -145,6 +145,9 @@ const es = {
     title: 'Lista de las ligas:',
     lastUpdate: 'Última actualización'
   },
+  bracket: {
+    winnerFrom: 'Ganador de {n}',
+  },
   //
   global: {
     competition: 'Liga | Ligas',

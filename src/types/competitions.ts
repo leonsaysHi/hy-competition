@@ -2,6 +2,7 @@ import type { AwardItem, PlayerStatKey } from './stats'
 import type { CompetitionTeam, TeamId } from './teams'
 import type { Game } from './games'
 import type { GenderKey } from './players'
+import type GameComputedClass from '@/models/GameComputed'
 export type CompetitionId = string
 export type CompetitionSport = 'basketball5x5' | 'basketball3x3'
 export type CompetitionCategorie = 'u17' | 'u21' | 'senior' | '+35'
@@ -13,11 +14,13 @@ export interface Phase {
   groups: TeamId[][]
   datetime: Date
 }
-export interface BracketMatchup {
-  teams: {
-    id: TeamId,
-    pos: number
-  }[]
+export interface BracketMatchup extends GameComputedClass {
+  matchupIdx: number
+  roundIdx: number
+  roundGameIdx: number
+  isFinal: boolean
+  matchupStyleObj: any,
+  winnersFrom: (number | undefined)[]
 }
 export type BracketRound = BracketMatchup[]
 export type Bracket = BracketRound[]
