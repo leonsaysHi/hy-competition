@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import HoopsYardLogo from '@/assets/images/hoops-yard-alt.png'
+import ImageComp from '../ImageComp.vue';
 const { t } = useI18n()
 </script>
 
@@ -8,7 +10,7 @@ const { t } = useI18n()
     <header class="bd-header bg-primary py-3 d-flex align-items-stretch text-bg-dark shadow">
       <div class="container-xl d-flex align-items-center">
         <a class="navbar-brand d-flex align-items-center gap-3" href="/"
-          >Logo
+          ><ImageComp :src="HoopsYardLogo" title="Hoops Yard" :width="40" /><strong>Ligas</strong>
         </a>
         <nav class="nav nav-masthead justify-content-center ms-auto">
           <RouterLink :to="{ name: 'home' }" class="nav-link text-white fw-bold text-uppercase">{{
