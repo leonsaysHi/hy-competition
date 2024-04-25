@@ -14,13 +14,14 @@ export interface Phase {
   groups: TeamId[][]
   datetime: Date
 }
-export interface BracketMatchup extends GameComputedClass {
+export interface BracketMatchup {
+  game: GameComputedClass
   matchupIdx: number
   roundIdx: number
   roundGameIdx: number
   isFinal: boolean
   matchupStyleObj: any,
-  winnersFrom: (number | undefined)[]
+  winnersFrom: BracketMatchup[] | undefined
 }
 export type BracketRound = BracketMatchup[]
 export type Bracket = BracketRound[]

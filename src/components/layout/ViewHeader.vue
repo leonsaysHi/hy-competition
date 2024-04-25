@@ -13,15 +13,15 @@ const { t } = useI18n()
           ><ImageComp :src="HoopsYardLogo" title="Hoops Yard" :width="40" /><strong>Ligas</strong>
         </a>
         <nav class="nav nav-masthead justify-content-center ms-auto">
-          <RouterLink :to="{ name: 'home' }" class="nav-link text-white fw-bold text-uppercase">{{
+          <RouterLink :to="{ name: 'home' }" class="nav-link text-white fw-bold">{{
             t('sections.home')
           }}</RouterLink>
-          <RouterLink :to="{ name: 'teams' }" class="nav-link text-white fw-bold text-uppercase">{{
+          <RouterLink :to="{ name: 'teams' }" class="nav-link text-white fw-bold">{{
             t('sections.team', 2)
           }}</RouterLink>
           <RouterLink
             :to="{ name: 'players' }"
-            class="nav-link text-white fw-bold text-uppercase"
+            class="nav-link text-white fw-bold"
             >{{ t('sections.player', 2) }}</RouterLink
           >
         </nav>

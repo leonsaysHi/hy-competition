@@ -106,10 +106,8 @@ export default class GameComputedClass {
         winner: false
       }
     })
-    if (result[0].finalScore > result[1].finalScore) {
-      result[0].winner = true
-    } else {
-      result[1].winner = true
+    if (this.isFinished) {
+      result[result[0].finalScore > result[1].finalScore ? 0 : 1].winner = true
     }
     return result
   }

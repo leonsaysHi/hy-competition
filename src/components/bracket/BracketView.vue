@@ -66,7 +66,7 @@ const rounds = computed<Bracket>(() => {
           ' / span 1'
         }
         return {
-          ...game as GameComputedClass,
+          game,
           matchupIdx,
           roundIdx,
           roundGameIdx,
@@ -75,9 +75,9 @@ const rounds = computed<Bracket>(() => {
           winnersFrom: !game.id && roundIdx > 0
             ? [(roundGameIdx * 2), (roundGameIdx * 2) + 1]
               .map((idx: number) => {
-                return rounds[roundIdx - 1][idx].matchupIdx
+                return rounds[roundIdx - 1][idx]
               })
-            : [undefined, undefined]
+            : undefined
             
         }
       })
