@@ -20,7 +20,7 @@ export interface BracketMatchup {
   roundIdx: number
   roundGameIdx: number
   isFinal: boolean
-  matchupStyleObj: any,
+  matchupStyleObj: any
   winnersFrom: BracketMatchup[] | undefined
 }
 export type BracketRound = BracketMatchup[]

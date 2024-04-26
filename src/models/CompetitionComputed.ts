@@ -158,14 +158,15 @@ export default class CompetitionClass {
 
   get computedPhases(): CompetitionPhaseComputed[] {
     const phases = Array.isArray(this.row.phases)
-      ? this.row.phases
-        .map((phase: Phase, idx: number): CompetitionPhaseComputed => {
+      ? this.row.phases.map((phase: Phase, idx: number): CompetitionPhaseComputed => {
           const { type } = phase
           const dateStart = phase.datetime
           const dateEnd = this.row.phases[idx + 1] ? this.row.phases[idx + 1].datetime : undefined
           const phaseGames = this.games
             .filter((game: Game) => {
-              return isAfter(game.datetime, dateStart) && (!dateEnd || isBefore(dateEnd, game.datetime))
+              return (
+                isAfter(game.datetime, dateStart) && (!dateEnd || isBefore(dateEnd, game.datetime))
+              )
             })
             .map((game: Game): GameComputedClass => new GameComputedClass(this.row.id, game))
           phaseGames.sort((a: GameComputedClass, b: GameComputedClass) =>
@@ -174,16 +175,19 @@ export default class CompetitionClass {
           // each group:
           const groups = phase.groups.map((groupTeams: TeamId[]): CompetitionGroupComputed => {
             // games
-            const groupGames = groupTeams.reduce((groupGames: GameComputedClass[], teamId: TeamId) => {
-              return [
-                ...groupGames,
-                ...phaseGames.filter(
-                  (game: GameComputedClass) =>
-                    game.row.teams.includes(teamId) &&
-                    groupGames.findIndex((g: GameComputedClass) => g.id === game.id) === -1
-                )
-              ]
-            }, [])
+            const groupGames = groupTeams.reduce(
+              (groupGames: GameComputedClass[], teamId: TeamId) => {
+                return [
+                  ...groupGames,
+                  ...phaseGames.filter(
+                    (game: GameComputedClass) =>
+                      game.row.teams.includes(teamId) &&
+                      groupGames.findIndex((g: GameComputedClass) => g.id === game.id) === -1
+                  )
+                ]
+              },
+              []
+            )
 
             // standing:
             const standing: CompetitionStanding[] = groupTeams.reduce(

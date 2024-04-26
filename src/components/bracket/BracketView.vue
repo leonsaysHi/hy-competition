@@ -1,42 +1,36 @@
 <template>
-  <div
-    class="bracket mb-4"
-    :style="gridStyle"
-  >
+  <div class="bracket mb-4" :style="gridStyle">
     <template v-for="(matchup, rIdx) in matchups" :key="rIdx">
-      <div
-        class="matchup d-flex align-items-center"
-        :style="matchup.matchupStyleObj"
-      >
+      <div class="matchup d-flex align-items-center" :style="matchup.matchupStyleObj">
         <template v-if="matchup.roundIdx > 0">
           <span class="border-top pe-2" />
         </template>
         <template v-if="matchup">
           <div class="d-flex py-2 flex-grow-1">
-            <Matchup
-              class="flex-grow-1"
-              :matchup="matchup"
-              :is-final="matchup.isFinal"
-            />
+            <Matchup class="flex-grow-1" :matchup="matchup" :is-final="matchup.isFinal" />
           </div>
         </template>
         <template v-if="!matchup.isFinal">
           <span
             class="pe-2 border-top"
-            :class="{ 'h-50 align-self-start border-bottom border-top-0 border-end': matchup.roundGameIdx%2, 'h-50 align-self-end border-end': !(matchup.roundGameIdx%2) }" 
+            :class="{
+              'h-50 align-self-start border-bottom border-top-0 border-end':
+                matchup.roundGameIdx % 2,
+              'h-50 align-self-end border-end': !(matchup.roundGameIdx % 2)
+            }"
           />
         </template>
       </div>
     </template>
   </div>
 </template>
-  
+
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed } from 'vue'
 import Matchup from './BracketMatchup.vue'
-import type { CompetitionGroupComputed } from '@/types/computed';
-import type GameComputedClass from '@/models/GameComputed';
-import type { Bracket, BracketMatchup, BracketRound } from '@/types/competitions';
+import type { CompetitionGroupComputed } from '@/types/computed'
+import type GameComputedClass from '@/models/GameComputed'
+import type { Bracket, BracketMatchup, BracketRound } from '@/types/competitions'
 
 interface IProps {
   group: CompetitionGroupComputed
@@ -46,24 +40,21 @@ const props = withDefaults(defineProps<IProps>(), {})
 const rounds = computed<Bracket>(() => {
   let teamsLength = props.group.standing.length
   const games = props.group.games.slice()
-  const rounds:Bracket = []
+  const rounds: Bracket = []
   let matchupIdx = 0
-  while(teamsLength > 1) {
-    teamsLength *= .5
-    const roundGames: GameComputedClass[]  = games.splice(0, teamsLength)
+  while (teamsLength > 1) {
+    teamsLength *= 0.5
+    const roundGames: GameComputedClass[] = games.splice(0, teamsLength)
     while (roundGames.length < teamsLength) {
       roundGames.push({} as GameComputedClass)
     }
-    const round: BracketRound = roundGames
-      .map((game: GameComputedClass, roundGameIdx): BracketMatchup => {
+    const round: BracketRound = roundGames.map(
+      (game: GameComputedClass, roundGameIdx): BracketMatchup => {
         matchupIdx++
         const rowIdx = roundGameIdx * 2 + 1 + rounds.length
         const roundIdx = rounds.length
         const matchupStyleObj = {
-          gridArea: 'row' + rowIdx +
-          ' / round' + roundIdx +
-          ' / span 2' +
-          ' / span 1'
+          gridArea: 'row' + rowIdx + ' / round' + roundIdx + ' / span 2' + ' / span 1'
         }
         return {
           game,
@@ -72,30 +63,25 @@ const rounds = computed<Bracket>(() => {
           roundGameIdx,
           isFinal: teamsLength <= 1,
           matchupStyleObj,
-          winnersFrom: !game.id && roundIdx > 0
-            ? [(roundGameIdx * 2), (roundGameIdx * 2) + 1]
-              .map((idx: number) => {
-                return rounds[roundIdx - 1][idx]
-              })
-            : undefined
-            
+          winnersFrom:
+            !game.id && roundIdx > 0
+              ? [roundGameIdx * 2, roundGameIdx * 2 + 1].map((idx: number) => {
+                  return rounds[roundIdx - 1][idx]
+                })
+              : undefined
         }
-      })
+      }
+    )
     rounds.push(round)
   }
   return rounds
 })
 const gridMaxRowsLength = computed(() => {
-  return Array.isArray(rounds.value) && Array.isArray(rounds.value[0])
-    ? rounds.value[0].length
-    : 0
+  return Array.isArray(rounds.value) && Array.isArray(rounds.value[0]) ? rounds.value[0].length : 0
 })
 
 const matchups = computed(() => {
-  return Array.isArray(rounds.value) 
-    ? rounds.value
-      .flat()
-    : []
+  return Array.isArray(rounds.value) ? rounds.value.flat() : []
 })
 
 /*
@@ -164,19 +150,22 @@ const matchups = computed(() => {
   */
 
 const gridStyle = computed(() => {
-    const rowsCount = gridMaxRowsLength.value * 2
-    return {
-      minWidth: (rounds.value.length * 250) + 'px',
-      gridTemplateColumns: rounds.value.map((r, rIdx) => '[round' + rIdx + '] minmax(0,1fr)').join(' '),
-      gridTemplateRows: new Array(rowsCount).fill(null).map((r, rIdx) => '[row' + (rIdx + 1) + '] minmax(0,1fr)').join(' ')
-    }
-})
-
-
-</script>
-  
-  <style lang="scss" scoped>
-  .bracket {
-    display: grid;
+  const rowsCount = gridMaxRowsLength.value * 2
+  return {
+    minWidth: rounds.value.length * 250 + 'px',
+    gridTemplateColumns: rounds.value
+      .map((r, rIdx) => '[round' + rIdx + '] minmax(0,1fr)')
+      .join(' '),
+    gridTemplateRows: new Array(rowsCount)
+      .fill(null)
+      .map((r, rIdx) => '[row' + (rIdx + 1) + '] minmax(0,1fr)')
+      .join(' ')
   }
-  </style>
+})
+</script>
+
+<style lang="scss" scoped>
+.bracket {
+  display: grid;
+}
+</style>

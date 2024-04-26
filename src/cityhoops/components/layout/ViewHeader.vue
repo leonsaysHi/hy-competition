@@ -12,7 +12,15 @@ import SocialsNav from '../SocialsNav.vue'
         <a class="navbar-brand d-flex align-items-center gap-3" href="/"
           ><ImageComp :src="CityHoopsLogo" :width="60" fluid />
         </a>
-        <button class="ms-auto navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button
+          class="ms-auto navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">

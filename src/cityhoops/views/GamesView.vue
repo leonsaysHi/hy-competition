@@ -20,12 +20,10 @@ const currentGamesView = ref<'prev' | 'next'>('prev')
 
 const gamesList = computed<GameComputedClass[]>(() => {
   const result = Array.isArray(computedPhases?.value)
-    ? computedPhases.value
-      .reduce((acc: GameComputedClass[], phase: CompetitionPhaseComputed) => {
-        phase.groups
-          .forEach((group: CompetitionGroupComputed) => {
-            acc.push(...group.games)
-          }) 
+    ? computedPhases.value.reduce((acc: GameComputedClass[], phase: CompetitionPhaseComputed) => {
+        phase.groups.forEach((group: CompetitionGroupComputed) => {
+          acc.push(...group.games)
+        })
         return acc
       }, [])
     : []
@@ -37,16 +35,14 @@ const gamesList = computed<GameComputedClass[]>(() => {
   return result
 })
 const prevNextGamesList = computed<GameComputedClass[]>(() => {
-  return gamesList.value
-    .filter((game: GameComputedClass) => {
-        return currentGamesView.value === 'prev'
-          ? game.isFinished && !game.isLive
-          : !game.isFinished && !game.isLive
-      })
+  return gamesList.value.filter((game: GameComputedClass) => {
+    return currentGamesView.value === 'prev'
+      ? game.isFinished && !game.isLive
+      : !game.isFinished && !game.isLive
+  })
 })
 const liveGamesList = computed<GameComputedClass[]>(() => {
-  return gamesList.value
-    .filter((game: GameComputedClass) => !game.isFinished && game.isLive)
+  return gamesList.value.filter((game: GameComputedClass) => !game.isFinished && game.isLive)
 })
 
 const gamesViewOptions = computed<Option[]>(() => {
@@ -54,20 +50,12 @@ const gamesViewOptions = computed<Option[]>(() => {
     {
       text: t('global.previous', 2),
       value: 'prev',
-      disabled:
-        gamesList.value
-          .some(
-            (game: GameComputedClass) => game.isFinished && !game.isLive
-          )
+      disabled: gamesList.value.some((game: GameComputedClass) => game.isFinished && !game.isLive)
     },
     {
       text: t('global.upcoming', 2),
       value: 'next',
-      disabled:
-      gamesList.value
-        .some(
-          (game: GameComputedClass) => !game.isFinished && !game.isLive
-        )
+      disabled: gamesList.value.some((game: GameComputedClass) => !game.isFinished && !game.isLive)
     }
   ]
 })
@@ -76,10 +64,9 @@ watch(
   () => gamesViewOptions.value,
   (val: Option[]) => {
     const optIdx = val.findIndex((opt: Option) => !opt.disabled)
-    currentGamesView.value = optIdx > -1 ? val[optIdx].value as 'prev' | 'next' : 'prev'
+    currentGamesView.value = optIdx > -1 ? (val[optIdx].value as 'prev' | 'next') : 'prev'
   }
 )
-
 </script>
 <template>
   <div>

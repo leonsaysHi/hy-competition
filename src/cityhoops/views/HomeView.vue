@@ -11,15 +11,14 @@ import GamesList from '@/components/games/GamesList.vue'
 import { compareAsc } from 'date-fns'
 import { useI18n } from 'vue-i18n'
 import type GameComputedClass from '@/models/GameComputed'
-import ButtonComp from '@/components/ButtonComp.vue'
 import ViewHero from '../components/layout/ViewHero.vue'
 import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
 const { isReady, row } = useCompetition(competitionId)
-const { 
-  selectedPhaseIdx, 
+const {
+  selectedPhaseIdx,
   selectedPhase,
   phasesOptions,
   selectedGroupIdx,
@@ -35,12 +34,12 @@ const nextGames = computed<GameComputedClass[]>(() => {
         return !game.isFinished || game.isLive
       })
     : []
-  result.sort((a: GameComputedClass, b: GameComputedClass) => 
+  result.sort((a: GameComputedClass, b: GameComputedClass) =>
     compareAsc(a.row.datetime, b.row.datetime)
   )
   return result.slice(
     0,
-    selectedGroup.value?.standing 
+    selectedGroup.value?.standing
       ? Math.max(
           Math.round(selectedGroup.value?.standing.length * 0.5),
           Math.min(4, selectedGroup.value?.standing.length)
@@ -59,11 +58,11 @@ const nextGames = computed<GameComputedClass[]>(() => {
     </template>
     <template v-else>
       <ViewHero>
-          <h1>{{ row?.title }}</h1>
-          <div class="d-flex gap-3 align-items-start">
-            <p>{{ getGender(row?.gender)?.long }}</p>
-            <p>{{ getCategory(row?.category)?.text }}</p>
-          </div>
+        <h1>{{ row?.title }}</h1>
+        <div class="d-flex gap-3 align-items-start">
+          <p>{{ getGender(row?.gender)?.long }}</p>
+          <p>{{ getCategory(row?.category)?.text }}</p>
+        </div>
         <template #nav>
           <template v-if="phasesOptions && phasesOptions.length > 1">
             <DropdownComp
@@ -76,22 +75,18 @@ const nextGames = computed<GameComputedClass[]>(() => {
             />
           </template>
           <template v-if="groupsOptions && groupsOptions.length > 1">
-            <RadioGroupComp 
-              v-model="selectedGroupIdx" 
-              :options="groupsOptions" 
-              buttons 
-            />
+            <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons />
           </template>
         </template>
       </ViewHero>
-      
+
       <template v-if="selectedPhase && selectedGroup">
         <h2>{{ t('global.game', 2) }}</h2>
         <GamesList class="mb-3" :items="nextGames" />
         <div class="mb-3 d-flex justify-content-center">
           <RouterLink
             class="btn btn-primary btn-lg text-white"
-            :to="{ name: 'competition-games', params: { competitionId} }"
+            :to="{ name: 'competition-games', params: { competitionId } }"
             >Ver Resultados</RouterLink
           >
         </div>
@@ -99,12 +94,10 @@ const nextGames = computed<GameComputedClass[]>(() => {
         <h2>Tabla</h2>
         <CompetitionStanding :value="selectedGroup.standing" :length="7" />
         <div class="mb-3 d-flex justify-content-center">
-          <ButtonComp
-            variant="primary"
-            class="text-white"
-            size="lg"
+          <RouterLink
+            class="btn btn-primary btn-lg text-white"
             :to="{ name: 'competition-standing' }"
-            >Ver tabla completa</ButtonComp
+            >Ver tabla completa</RouterLink
           >
         </div>
       </template>

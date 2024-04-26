@@ -9,6 +9,7 @@ import TeamLogo from '@/components/teams/TeamLogo.vue'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import GamesList from '@/components/games/GamesList.vue'
+import CompetitionRanking from '@/components/competitions/CompetitionRanking.vue'
 import type { CompetitionStandingComputed } from '@/types/computed'
 import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
@@ -24,7 +25,8 @@ const { competitionId, teamId } = route.params as { competitionId: string; teamI
 
 const { getTeamName } = useLibs()
 const { teamStandingKeys } = useOptionsLib()
-const { isReady, games, teams, competitionStandings } = useCompetition(competitionId)
+const { isReady, games, teams, competitionStandings, competitionRankings } =
+  useCompetition(competitionId)
 
 const competitionComputed = computed<CompetitionStandingComputed | undefined>(() => {
   return competitionStandings.value?.find(
@@ -75,12 +77,13 @@ const statsFields: TableField[] = [
         <TeamLogo :team-id="teamId" :size="150" />
         <div class="display-3 fw-bold font-team">{{ getTeamName(teamId) }}</div>
       </div>
-      <TableComp :fields="statsFields" :items="statsItem">
+      <TableComp :fields="statsFields" :items="statsItem" class="mb-4">
         <template #hist="{ value }">
           <LastGames :items="value" :length="5" />
         </template>
       </TableComp>
-      <hr />
+      <h3>{{ t('global.ranking') }}</h3>
+      <CompetitionRanking :value="competitionRankings" :team-id="teamId" class="mb-2" />
       <h3>{{ t('global.game', 2) }}</h3>
       <GamesList :items="teamGames" />
     </template>

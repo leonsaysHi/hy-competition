@@ -7,7 +7,7 @@ const styleObj = {
 </script>
 
 <template>
-  <div 
+  <div
     class="hero p-5 mb-4 bg-black text-white d-flex flex-column flex-lg-row justify-content-between rounded-3"
     :style="styleObj"
   >

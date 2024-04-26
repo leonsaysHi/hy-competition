@@ -3,6 +3,7 @@ import routes from './index'
 import CompetitionHomeView from '@/cityhoops/views/HomeView.vue'
 import CompetitionRankingsView from '@/cityhoops/views/RankingsView.vue'
 import CompetitionGamesView from '@/cityhoops/views/GamesView.vue'
+import CompetitionTeamsView from '@/cityhoops/views/TeamsView.vue'
 
 import CompetitionGameDetailsView from '@/views/competition/GameDetailsView.vue'
 import CompetitionTeamDetailsView from '@/views/competition/TeamDetailsView.vue'
@@ -29,6 +30,11 @@ cityhoopsRoutes[frontViewIdx].children[competitionViewIdx].children = [
     path: 'games/:phase?/:group?',
     name: 'competition-games',
     component: CompetitionGamesView
+  },
+  {
+    path: 'teams',
+    name: 'competition-teams',
+    component: CompetitionTeamsView
   },
 
   {

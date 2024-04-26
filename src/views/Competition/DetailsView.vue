@@ -21,8 +21,8 @@ const { competitionId } = route.params as { competitionId: string }
 
 const { isReady, row } = useCompetition(competitionId)
 
-const { 
-  selectedPhaseIdx, 
+const {
+  selectedPhaseIdx,
   selectedPhase,
   phasesOptions,
   selectedGroupIdx,
@@ -70,7 +70,7 @@ watch(
   (val: Option[]) => {
     const optIdx = val.findIndex((opt: Option) => !opt.disabled)
     if (optIdx > -1) {
-      currentGamesView.value = val[optIdx].value as ('prev' | 'next' | 'live')
+      currentGamesView.value = val[optIdx].value as 'prev' | 'next' | 'live'
     }
   }
 )
@@ -125,11 +125,7 @@ const groupGames = computed<GameComputedClass[]>(() => {
           :disabled="phasesOptions.length === 1"
         />
         <template v-if="groupsOptions.length > 1">
-          <RadioGroupComp 
-            v-model="selectedGroupIdx" 
-            :options="groupsOptions" 
-            buttons
-          />
+          <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons />
         </template>
       </div>
       <hr />

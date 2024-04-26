@@ -12,15 +12,14 @@ import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
 const { isReady } = useCompetition(competitionId)
-const { 
-  selectedPhaseIdx, 
+const {
+  selectedPhaseIdx,
   selectedPhase,
   phasesOptions,
   selectedGroupIdx,
   selectedGroup,
   groupsOptions
 } = useCompetitionPhasesGroups()
-
 </script>
 <template>
   <div>
@@ -42,15 +41,11 @@ const {
             />
           </template>
           <template v-if="groupsOptions && groupsOptions.length > 1">
-            <RadioGroupComp 
-              v-model="selectedGroupIdx" 
-              :options="groupsOptions" 
-              buttons  
-            />
+            <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons />
           </template>
         </template>
       </ViewHero>
-      
+
       <template v-if="selectedPhase && selectedGroup">
         <h2>Tabla</h2>
         <CompetitionStanding :value="selectedGroup.standing" />
