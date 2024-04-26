@@ -145,12 +145,16 @@ const es = {
     title: 'Lista de las ligas:',
     lastUpdate: 'Última actualización'
   },
+  bracket: {
+    winnerFrom: 'Ganador de {n}',
+  },
   //
   global: {
     competition: 'Liga | Ligas',
     group: 'Grupo | Grupos',
     standing: 'Clasificación',
     ranking: 'Líderes',
+    playoffs: 'Playoffs',
     game: 'Juego | Juegos',
     gameDetails: {
       live: 'Vivo',
