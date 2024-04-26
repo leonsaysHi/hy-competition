@@ -10,6 +10,8 @@ import { useRoute } from 'vue-router'
 import { getOrd } from '@/utils/maths'
 
 import { useI18n } from 'vue-i18n'
+import type { Option } from '@/types/comp-fields'
+import type { TableField } from '@/types/comp-table'
 const { t } = useI18n()
 const { teamStandingKeys } = useOptionsLibs()
 const route = useRoute()
@@ -43,6 +45,12 @@ const fields = [
     })
   ),
   {
+    label: t('options.standingStats.text.ptsdiff'),
+    key: 'ptsdiff',
+    thClass: 'text-center',
+    tdClass: 'text-center'
+  },
+  {
     label: t('options.standingStats.text.hist'),
     key: 'hist',
     thClass: 'text-center',
@@ -75,6 +83,7 @@ const items = computed(() => {
         <strong class="font-team fs-6">{{ getTeamName(value) }}</strong>
       </RouterLink>
     </template>
+    <template #ptsdiff="{ item }">{{ (item.ptsfv  || 0) - (item.ptsag || 0) }}</template>
     <template #hist="{ value }"><LastGames :items="value" :length="5" /></template>
   </TableComp>
 </template>

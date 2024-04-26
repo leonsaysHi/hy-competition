@@ -124,6 +124,7 @@ const es = {
         wins: 'W',
         ptsfv: 'Pts+',
         ptsag: 'Pts-',
+        ptsdiff: '+/-',
         hist: 'Últimos'
       },
       long: {
@@ -132,6 +133,7 @@ const es = {
         wins: 'Ganados',
         ptsfv: 'Puntos anotados',
         ptsag: 'Puntos encajados',
+        ptsdiff: 'Diferencia de pts',
         hist: 'Últimos juegos'
       }
     }
