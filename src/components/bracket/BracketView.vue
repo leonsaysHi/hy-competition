@@ -37,24 +37,41 @@ interface IProps {
 }
 const props = withDefaults(defineProps<IProps>(), {})
 
+const gridTotalRows = computed(() => {
+  return Array.isArray(rounds.value) && Array.isArray(rounds.value[0])
+    ? rounds.value[0].length
+    : 0
+})
+
 const rounds = computed<Bracket>(() => {
+  
   let teamsLength = props.group.standing.length
   const games = props.group.games.slice()
   const rounds: Bracket = []
   let matchupIdx = 0
-  while (teamsLength > 1) {
-    teamsLength *= 0.5
-    const roundGames: GameComputedClass[] = games.splice(0, teamsLength)
+  let matchupRowSpan = 2
+  while(teamsLength > 1) {
+    teamsLength *= .5
+    const roundGames: GameComputedClass[]  = games.splice(0, teamsLength)
     while (roundGames.length < teamsLength) {
       roundGames.push({} as GameComputedClass)
     }
     const round: BracketRound = roundGames.map(
       (game: GameComputedClass, roundGameIdx): BracketMatchup => {
         matchupIdx++
-        const rowIdx = roundGameIdx * 2 + 1 + rounds.length
-        const roundIdx = rounds.length
+      
+        const roundIdx = rounds.length // 0, 1, 2, 3
+        const rowIdx = roundGameIdx * matchupRowSpan + ((matchupRowSpan - 2)*.5)
+
+        if (matchupRowSpan > 2 * 2) {
+          console.log(matchupRowSpan)
+        }
+
         const matchupStyleObj = {
-          gridArea: 'row' + rowIdx + ' / round' + roundIdx + ' / span 2' + ' / span 1'
+          gridArea: 'row' + (rowIdx + 1) +
+          ' / round' + roundIdx +
+          ' / span 2' +
+          ' / span 1'
         }
         return {
           game,
@@ -73,11 +90,9 @@ const rounds = computed<Bracket>(() => {
       }
     )
     rounds.push(round)
+    matchupRowSpan *= 2
   }
   return rounds
-})
-const gridMaxRowsLength = computed(() => {
-  return Array.isArray(rounds.value) && Array.isArray(rounds.value[0]) ? rounds.value[0].length : 0
 })
 
 const matchups = computed(() => {
@@ -101,7 +116,7 @@ const matchups = computed(() => {
       if (thirdPlaceMatchupIdx > -1) {
         const m = round.splice(thirdPlaceMatchupIdx, 1)[0]
         const styleObj = {
-          gridArea: 'row' + (gridMaxRowsLength.value + 1) +
+          gridArea: 'row' + (gridTotalRows.value + 1) +
           ' / round' + roundIdx +
           ' / span ' + 2 +
           ' / span 1'
@@ -114,7 +129,7 @@ const matchups = computed(() => {
     }
     const matchupsLength = round.length
     const directMatchupLength = round.filter(m => m.pmIds && m.pmIds.filter(Boolean).length < 2).length
-    const matchupsSpan = (gridMaxRowsLength.value - directMatchupLength * 2) / (matchupsLength - directMatchupLength)
+    const matchupsSpan = (gridTotalRows.value - directMatchupLength * 2) / (matchupsLength - directMatchupLength)
     let rowIdx = 1
     let mDown = true
     matchups.push(...round
@@ -150,22 +165,19 @@ const matchups = computed(() => {
   */
 
 const gridStyle = computed(() => {
-  const rowsCount = gridMaxRowsLength.value * 2
-  return {
-    minWidth: rounds.value.length * 250 + 'px',
-    gridTemplateColumns: rounds.value
-      .map((r, rIdx) => '[round' + rIdx + '] minmax(0,1fr)')
-      .join(' '),
-    gridTemplateRows: new Array(rowsCount)
-      .fill(null)
-      .map((r, rIdx) => '[row' + (rIdx + 1) + '] minmax(0,1fr)')
-      .join(' ')
-  }
+    const rowsCount = gridTotalRows.value * 2
+    return {
+      minWidth: (rounds.value.length * 250) + 'px',
+      gridTemplateColumns: rounds.value.map((r, rIdx) => '[round' + rIdx + '] minmax(0,1fr)').join(' '),
+      gridTemplateRows: new Array(rowsCount).fill(null).map((r, rIdx) => '[row' + (rIdx + 1) + '] minmax(0,1fr)').join(' ')
+    }
 })
-</script>
 
+
+</script>
+  
 <style lang="scss" scoped>
-.bracket {
-  display: grid;
-}
+  .bracket {
+    display: grid;
+  }
 </style>
