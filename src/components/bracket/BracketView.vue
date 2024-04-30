@@ -27,6 +27,7 @@
           />
         </template>
       </div>
+      <span class="border-end" :style="matchup.vrStyleObj" />
     </template>
   </div>
 </template>
@@ -63,15 +64,22 @@ const rounds = computed<Bracket>(() => {
       roundGames.push({} as GameComputedClass)
     }
     const round: BracketRound = roundGames
-      .map((game: GameComputedClass, roundGameIdx): BracketMatchup => {
+      .map((game: GameComputedClass, roundGameIdx: number): BracketMatchup => {
         matchupIdx++
-      
+        
+        const isFinal = teamsLength <= 1
+        // roundGameIdx // 0, 1, 2, 3
         const roundIdx = rounds.length // 0, 1, 2, 3
         const rowIdx = roundGameIdx * matchupRowSpan + ((matchupRowSpan - 2)*.5)
 
-        if (matchupRowSpan > 2 * 2) {
-          console.log(matchupRowSpan)
-        }
+        const vrStyleObj: { [key:string]: string } = (roundGameIdx % 2 == 0 && !isFinal && matchupRowSpan > 2) 
+          ? {
+            gridArea: 'row' + (rowIdx + 3) +
+          ' / round' + roundIdx +
+          ' / span ' + (matchupRowSpan - 2) +
+          ' / span 1'
+          }
+          : { display: 'none' }
 
         const matchupStyleObj = {
           gridArea: 'row' + (rowIdx + 1) +
@@ -84,7 +92,8 @@ const rounds = computed<Bracket>(() => {
           matchupIdx,
           roundIdx,
           roundGameIdx,
-          isFinal: teamsLength <= 1,
+          isFinal,
+          vrStyleObj,
           matchupStyleObj,
           winnersFrom: !game.id && roundIdx > 0
             ? [(roundGameIdx * 2), (roundGameIdx * 2) + 1]
@@ -107,71 +116,6 @@ const matchups = computed(() => {
       .flat()
     : []
 })
-
-/*
-    const fullRound = props.bracket
-      .reduce((acc, m, idx, arr) => {
-        acc.push({
-          ...m,
-          straightMatchup: idx > 0 && arr[idx - 1].isBye
-        })
-        return acc
-      }, [])
-    const round = fullRound.filter(m => !m.isBye)
-    const roundIdx = bracket.length
-    const isFinalRound = roundIdx === bracket.length - 1
-    if (isFinalRound) {
-      const thirdPlaceMatchupIdx = round.findIndex(m => m.is3rdPlaceGame)
-      if (thirdPlaceMatchupIdx > -1) {
-        const m = round.splice(thirdPlaceMatchupIdx, 1)[0]
-        const styleObj = {
-          gridArea: 'row' + (gridTotalRows.value + 1) +
-          ' / round' + roundIdx +
-          ' / span ' + 2 +
-          ' / span 1'
-        }
-        matchups.push({
-          ...m,
-          styleObj
-        })
-      }
-    }
-    const matchupsLength = round.length
-    const directMatchupLength = round.filter(m => m.pmIds && m.pmIds.filter(Boolean).length < 2).length
-    const matchupsSpan = (gridTotalRows.value - directMatchupLength * 2) / (matchupsLength - directMatchupLength)
-    let rowIdx = 1
-    let mDown = true
-    matchups.push(...round
-      .map((m, mIdx) => {
-        const pmLength = roundIdx > 0 ? m.pmIds && m.pmIds.filter(Boolean).length : 1
-        const rowSpan = pmLength < 2 ? 2 : matchupsSpan
-        const styleObj = {
-          gridArea: 'row' + (m.isFinal ? rowIdx + 1 : rowIdx) +
-          ' / round' + roundIdx +
-          ' / span ' + (m.isFinal ? rowSpan - 2 : rowSpan) +
-          ' / span 1'
-        }
-        const hasPrevMatchup = m.pmIds && m.pmIds.filter(Boolean).length
-        const hasNextMatchup = roundIdx < bracket.value.length - 1
-        const hasNextMatchupWay = m.straightMatchup
-          ? 'flat'
-          : mDown
-            ? 'down'
-            : 'up'
-        mDown = hasNextMatchupWay !== 'down'
-        rowIdx += rowSpan
-        return {
-          ...m,
-          hasPrevMatchup,
-          hasNextMatchup,
-          hasNextMatchupWay,
-          styleObj
-        }
-      })
-    )
-  }
-  return matchups
-  */
 
 const gridStyle = computed(() => {
     const rowsCount = gridTotalRows.value * 2
