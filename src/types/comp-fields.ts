@@ -1,6 +1,6 @@
 export type Option = {
   text: string
-  value: string
+  value: string | number | undefined
   disabled?: boolean
 }
 export type Size = 'lg' | 'md' | 'sm'

@@ -150,7 +150,7 @@ const groupGames = computed<GameComputedClass[]>(() => {
         </div>
         <GamesList class="mb-3" :items="groupGames" />
         <h3>{{ t('global.ranking') }}</h3>
-        <CompetitionRanking :value="selectedGroup.ranking" :length="15" />
+        <CompetitionRanking :value="selectedGroup.ranking" :limit="15" />
       </template>
     </template>
   </div>

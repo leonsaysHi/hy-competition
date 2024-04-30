@@ -5,7 +5,7 @@ import type { Option } from '@/types/comp-fields'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
 interface IProps {
-  modelValue: string
+  modelValue: number | undefined
   phases: Phase[] | undefined
 }
 const props = withDefaults(defineProps<IProps>(), {})
@@ -25,12 +25,12 @@ const phasesOptions = computed((): Option[] => {
     ? props.phases.map((phase: Phase, idx: number): Option => {
         const opt = competitionPhases.find((opt: Option) => opt.value === phase.type)
         return {
-          text: opt ? opt.text : phase.type,
-          value: idx.toString()
+          text: opt ? opt.text : phase.type as string,
+          value: idx
         }
       })
     : []
-  return [{ text: 'All', value: '' }, ...result]
+  return [{ text: 'All', value: undefined }, ...result]
 })
 </script>
 <template>

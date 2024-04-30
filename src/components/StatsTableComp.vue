@@ -3,6 +3,7 @@
     <TableComp
       :fields="fields"
       :items="items"
+      :limit="limit"
       :footer="footerItem"
       :sorted-key="sortedKey"
       :sorted-direction="sortedDirection"
@@ -187,12 +188,14 @@ const { t } = useI18n()
 interface IProps {
   fields: TableField[]
   items: TableItem[]
+  limit?: number
   showLogo?: boolean
   showTotal?: boolean
   sortedKey?: string | undefined
   sortedDirection?: 'asc' | 'desc' | undefined
 }
 const props = withDefaults(defineProps<IProps>(), {
+  limit: 0,
   showTotal: false,
   showLogo: false,
   sortedKey: undefined,

@@ -17,8 +17,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 interface IProps {
-  modelValue: string | undefined
-  value?: boolean | string
+  modelValue: boolean | string | number | undefined
+  value?: boolean | string | number | undefined
   readonly?: boolean
   required?: boolean
   disabled?: boolean

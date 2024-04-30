@@ -1,8 +1,8 @@
-import type { Bracket, Competition, Phase } from '@/types/competitions'
+import type { Competition, Phase } from '@/types/competitions'
 import type { Game } from '@/types/games'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import type { Option } from '@/types/comp-fields'
-import { compareAsc, isAfter, isBefore } from 'date-fns'
+import { compareAsc, isAfter } from 'date-fns'
 import type {
   AwardItem,
   TeamStats,
@@ -105,10 +105,6 @@ export const getPlayerStatsFromGames = (
   games: GameComputedClass[]
 ): PlayerStats => {
   return games
-    .filter(
-      (game: GameComputedClass) =>
-        game.isFinished && game.boxScore[playerId] && !game.boxScore[playerId].dnp
-    )
     .reduce((ranking: PlayerStats, game: GameComputedClass) => {
       playerStatsKeys
         .map((opt: Option) => opt.value as PlayerStatKey)
@@ -119,14 +115,15 @@ export const getPlayerStatsFromGames = (
       return ranking
     }, {} as PlayerStats)
 }
-const getPlayerStatsFromGame = (
+const getPlayerRankingFromGames = (
   playerId: PlayerId,
   games: GameComputedClass[]
 ): PlayerRankingStats => {
-  const playedgames = games.filter(
-    (game: GameComputedClass) =>
-      game.isFinished && game.boxScore[playerId] && !game.boxScore[playerId].dnp
-  )
+  const playedgames = games
+    .filter(
+      (game: GameComputedClass) =>
+        game.isFinished && game.boxScore[playerId] && !game.boxScore[playerId].dnp
+    )
   const result = {
     gp: playedgames.length,
     ...getPlayerStatsFromGames(playerId, playedgames)
@@ -165,7 +162,8 @@ export default class CompetitionClass {
           const dateEnd = this.row.phases[idx + 1] ? this.row.phases[idx + 1].datetime : undefined
           const phaseGames = this.games
             .filter((game: Game) => {
-              return isAfter(game.datetime, dateStart) && (!dateEnd || isBefore(dateEnd, game.datetime))
+              const isPhaseGame =  isAfter(game.datetime, dateStart) && (!dateEnd || isAfter(dateEnd, game.datetime))
+              return isPhaseGame
             })
             .map((game: Game): GameComputedClass => new GameComputedClass(this.row.id, game))
           phaseGames.sort((a: GameComputedClass, b: GameComputedClass) =>
@@ -173,22 +171,16 @@ export default class CompetitionClass {
           )
           // each group:
           const groups = phase.groups.map((groupTeams: TeamId[]): CompetitionGroupComputed => {
+
             // games
-            const groupGames = groupTeams.reduce((groupGames: GameComputedClass[], teamId: TeamId) => {
-              return [
-                ...groupGames,
-                ...phaseGames.filter(
-                  (game: GameComputedClass) =>
-                    game.row.teams.includes(teamId) &&
-                    groupGames.findIndex((g: GameComputedClass) => g.id === game.id) === -1
-                )
-              ]
-            }, [])
+            const groupGames = phaseGames.filter(
+              (game: GameComputedClass) => game.row.teams.every((teamId: TeamId) => groupTeams.includes(teamId))
+            )
 
             // standing:
             const standing: CompetitionStanding[] = groupTeams.reduce(
               (standing: CompetitionStanding[], teamId: TeamId) => {
-                const teamGames: GameComputedClass[] = phaseGames.filter(
+                const teamGames: GameComputedClass[] = groupGames.filter(
                   (game: GameComputedClass) => game.row.teams.includes(teamId) && game.isFinished
                 )
                 const hist: GamesHist = new Array(5).fill(0).map((n: number, idx: number) => {
@@ -237,14 +229,8 @@ export default class CompetitionClass {
                 const teamRanking: CompetitionRanking[] = team.players.map(
                   (player: CompetitionPlayer) => {
                     const playerId: PlayerId = player.id
-                    const playerGames = phaseGames.filter((game: GameComputedClass) => {
-                      return (
-                        game.getTeamScore(teamId) &&
-                        game.boxScore[playerId] &&
-                        !game.boxScore[playerId].dnp
-                      )
-                    })
-                    const ranking = getPlayerStatsFromGame(playerId, playerGames)
+                    const ranking = getPlayerRankingFromGames(playerId, groupGames)
+                    console.log(ranking)
                     return {
                       teamId: team.id,
                       playerId: player.id,

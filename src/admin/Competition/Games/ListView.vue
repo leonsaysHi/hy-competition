@@ -26,16 +26,16 @@ const { row, getCompetitionTeam } = useCompetition(competitionId)
 const { writeGame: addCompetitionGame, deleteGame: deleteCompetitionGame } =
   useCompetitionAdmin(competitionId)
 
-const selectedPhase = ref('')
+const selectedPhase = ref<number | undefined>()
 
 const gamesItems = computed(() => {
   const result = Array.isArray(row?.value?.games)
     ? row?.value?.games
         .filter((game: Game) => {
-          if (!selectedPhase.value) {
+          if (selectedPhase.value === undefined) {
             return true
           }
-          const phaseIdx = Number(selectedPhase.value)
+          const phaseIdx = selectedPhase.value
           const phase = row.value?.phases[phaseIdx]
           const nextPhase = row.value?.phases[phaseIdx + 1]
 
