@@ -90,6 +90,7 @@ import { computed, ref } from 'vue'
 interface IProps {
   fields: TableField[]
   items: TableItem[]
+  limit?: number
   variant?: Variant | undefined
   class?: string | undefined
   footer?: TableItem | undefined
@@ -104,6 +105,7 @@ interface IProps {
   descOnly?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
+  limit: 0,
   variant: undefined,
   class: undefined,
   footer: undefined,
@@ -147,14 +149,16 @@ const computedItems = computed(() => {
   // pagination
   const sliceFirstIdx = (props.currentPage - 1) * props.perPage
   const sliceEnd =
-    props.perPage > 0 ? Math.min(results.length, sliceFirstIdx + props.perPage) : results.length
-  return results.slice(sliceFirstIdx, sliceEnd).map((row: TableItem) => {
-    return Object.keys(row).reduce((item: TableItem, key: string, idx: number) => {
-      const field = props.fields.find((field: TableField) => field.key === key)
-      item[key] = field?.formatter ? field.formatter(row[key], row, idx) : row[key]
-      return item
-    }, {})
-  })
+    props.perPage > 0 ? Math.min(results.length, sliceFirstIdx + props.perPage) : props.limit ? props.limit : results.length
+  return results
+    .slice(sliceFirstIdx, sliceEnd)
+    .map((row: TableItem) => {
+      return Object.keys(row).reduce((item: TableItem, key: string, idx: number) => {
+        const field = props.fields.find((field: TableField) => field.key === key)
+        item[key] = field?.formatter ? field.formatter(row[key], row, idx) : row[key]
+        return item
+      }, {})
+    })
 })
 const tableClass = computed(() => {
   const result = [props.class]

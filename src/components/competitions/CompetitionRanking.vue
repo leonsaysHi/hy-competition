@@ -12,12 +12,12 @@ const { t } = useI18n()
 
 interface IProps {
   value: CompetitionRankingComputed[]
-  length?: number
+  limit?: number
   teamId?: TeamId
 }
 
 const props = withDefaults(defineProps<IProps>(), {
-  length: 0,
+  limit: 0,
   teamId: undefined
 })
 
@@ -63,7 +63,6 @@ const items = computed(() =>
           ...row,
           id: row.playerId
         }))
-        .slice(0, props.length || undefined)
     : []
 )
 </script>
@@ -71,6 +70,7 @@ const items = computed(() =>
   <StatsTableComp
     :fields="fields"
     :items="items"
+    :limit="limit"
     sorted-key="pts"
     sorted-direction="desc"
   ></StatsTableComp>

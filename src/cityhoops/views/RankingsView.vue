@@ -50,7 +50,7 @@ const {
         <h2>Tabla</h2>
         <CompetitionStanding :value="selectedGroup.standing" />
         <h2>Líderes por categorías</h2>
-        <CompetitionRanking :value="selectedGroup.ranking" :length="15" />
+        <CompetitionRanking :value="selectedGroup.ranking" :limit="25" />
       </template>
     </template>
   </div>
