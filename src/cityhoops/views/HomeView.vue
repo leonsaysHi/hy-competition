@@ -13,6 +13,7 @@ import { useI18n } from 'vue-i18n'
 import type GameComputedClass from '@/models/GameComputed'
 import ViewHero from '../components/layout/ViewHero.vue'
 import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
+import BracketView from '@/components/bracket/BracketView.vue'
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
@@ -91,8 +92,14 @@ const nextGames = computed<GameComputedClass[]>(() => {
           >
         </div>
         <hr />
-        <h2>Tabla</h2>
-        <CompetitionStanding :value="selectedGroup.standing" :length="7" />
+        <template v-if="selectedPhase.type === 'playoffs'">
+          <h3>{{ t('global.playoffs') }}</h3>
+          <BracketView :group="selectedGroup" />
+        </template>
+        <template v-else>
+          <h3>{{ t('global.standing') }}</h3>
+          <CompetitionStanding :value="selectedGroup.standing" />
+        </template>
         <div class="mb-3 d-flex justify-content-center">
           <RouterLink
             class="btn btn-primary btn-lg text-white"
