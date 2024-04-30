@@ -104,26 +104,24 @@ export const getPlayerStatsFromGames = (
   playerId: PlayerId,
   games: GameComputedClass[]
 ): PlayerStats => {
-  return games
-    .reduce((ranking: PlayerStats, game: GameComputedClass) => {
-      playerStatsKeys
-        .map((opt: Option) => opt.value as PlayerStatKey)
-        .forEach((key: PlayerStatKey) => {
-          const statValue = game.boxScore[playerId][key]
-          ranking[key] = ranking[key] ? ranking[key] + statValue : statValue
-        })
-      return ranking
-    }, {} as PlayerStats)
+  return games.reduce((ranking: PlayerStats, game: GameComputedClass) => {
+    playerStatsKeys
+      .map((opt: Option) => opt.value as PlayerStatKey)
+      .forEach((key: PlayerStatKey) => {
+        const statValue = game.boxScore[playerId][key]
+        ranking[key] = ranking[key] ? ranking[key] + statValue : statValue
+      })
+    return ranking
+  }, {} as PlayerStats)
 }
 const getPlayerRankingFromGames = (
   playerId: PlayerId,
   games: GameComputedClass[]
 ): PlayerRankingStats => {
-  const playedgames = games
-    .filter(
-      (game: GameComputedClass) =>
-        game.isFinished && game.boxScore[playerId] && !game.boxScore[playerId].dnp
-    )
+  const playedgames = games.filter(
+    (game: GameComputedClass) =>
+      game.isFinished && game.boxScore[playerId] && !game.boxScore[playerId].dnp
+  )
   const result = {
     gp: playedgames.length,
     ...getPlayerStatsFromGames(playerId, playedgames)
@@ -155,14 +153,14 @@ export default class CompetitionClass {
 
   get computedPhases(): CompetitionPhaseComputed[] {
     const phases = Array.isArray(this.row.phases)
-      ? this.row.phases
-        .map((phase: Phase, idx: number): CompetitionPhaseComputed => {
+      ? this.row.phases.map((phase: Phase, idx: number): CompetitionPhaseComputed => {
           const { type } = phase
           const dateStart = phase.datetime
           const dateEnd = this.row.phases[idx + 1] ? this.row.phases[idx + 1].datetime : undefined
           const phaseGames = this.games
             .filter((game: Game) => {
-              const isPhaseGame =  isAfter(game.datetime, dateStart) && (!dateEnd || isAfter(dateEnd, game.datetime))
+              const isPhaseGame =
+                isAfter(game.datetime, dateStart) && (!dateEnd || isAfter(dateEnd, game.datetime))
               return isPhaseGame
             })
             .map((game: Game): GameComputedClass => new GameComputedClass(this.row.id, game))
@@ -171,10 +169,9 @@ export default class CompetitionClass {
           )
           // each group:
           const groups = phase.groups.map((groupTeams: TeamId[]): CompetitionGroupComputed => {
-
             // games
-            const groupGames = phaseGames.filter(
-              (game: GameComputedClass) => game.row.teams.every((teamId: TeamId) => groupTeams.includes(teamId))
+            const groupGames = phaseGames.filter((game: GameComputedClass) =>
+              game.row.teams.every((teamId: TeamId) => groupTeams.includes(teamId))
             )
 
             // standing:

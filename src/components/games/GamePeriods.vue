@@ -75,7 +75,7 @@ const items = computed(() => {
       ...score.periods.reduce((acc: {}, n: number, pIdx: number) => {
         return {
           ...acc,
-          [`p${pIdx}`]: { score: n, win: n >= arr[idx ? 0 : 1].periods[pIdx]  }
+          [`p${pIdx}`]: { score: n, win: n >= arr[idx ? 0 : 1].periods[pIdx] }
         }
       }, {})
     })

@@ -20,8 +20,8 @@ export interface BracketMatchup {
   roundIdx: number
   roundGameIdx: number
   isFinal: boolean
-  matchupStyleObj: { [key:string]: string },
-  vrStyleObj: { [key:string]: string }
+  matchupStyleObj: { [key: string]: string }
+  vrStyleObj: { [key: string]: string }
   winnersFrom: BracketMatchup[] | undefined
 }
 export type BracketRound = BracketMatchup[]
