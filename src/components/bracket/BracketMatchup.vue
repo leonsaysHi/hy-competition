@@ -96,7 +96,7 @@ const matchupTeams = computed<(MatchupTeam | undefined)[]>(() => {
       ? props.matchup.winnersFrom 
         .map((matchup: BracketMatchup) => {
             const scores: ScoresComputed[] = matchup.game.scores
-            const winner = scores.find((row: ScoresComputed) => row.winner)
+            const winner = scores?.find((row: ScoresComputed) => row.winner)
           return {
             winnerFrom: matchup.matchupIdx,
             ...(winner ? getTeam(winner.id) : {})

@@ -230,7 +230,6 @@ export default class CompetitionClass {
                   (player: CompetitionPlayer) => {
                     const playerId: PlayerId = player.id
                     const ranking = getPlayerRankingFromGames(playerId, groupGames)
-                    console.log(ranking)
                     return {
                       teamId: team.id,
                       playerId: player.id,
