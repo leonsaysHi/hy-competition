@@ -25,7 +25,7 @@ const phasesOptions = computed((): Option[] => {
     ? props.phases.map((phase: Phase, idx: number): Option => {
         const opt = competitionPhases.find((opt: Option) => opt.value === phase.type)
         return {
-          text: opt ? opt.text : phase.type as string,
+          text: opt ? opt.text : (phase.type as string),
           value: idx
         }
       })
