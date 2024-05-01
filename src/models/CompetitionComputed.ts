@@ -315,7 +315,7 @@ export default class CompetitionClass {
         phase.groups.forEach((group: CompetitionGroupComputed) => {
           group.standing.forEach((stand: CompetitionStanding) => {
             const idx = standingList.findIndex(
-              (r: CompetitionStandingComputed) => r.id === stand.teamId
+              (r: CompetitionStandingComputed) => r.teamId === stand.teamId
             )
             const newStand =
               idx > -1
@@ -329,7 +329,7 @@ export default class CompetitionClass {
               const key = opt.value as TeamStatKey
               newStand[key] += stand[key] || 0
             })
-            newStand.hist.push(...stand.hist)
+            newStand.hist.push(...stand.hist.filter(Boolean))
             newStand.hist = newStand.hist.slice(newStand.hist.length - 5, newStand.hist.length)
             if (idx === -1) {
               standingList.push(newStand)
