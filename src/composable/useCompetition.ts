@@ -180,7 +180,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
         team.players.findIndex((player: CompetitionPlayer) => player.id === playerId) > -1
     )
   const getPlayerNumber = (playerId: PlayerId): string | undefined => {
-    const player: CompetitionPlayer = getCompetitionPlayer(playerId)
+    const player: CompetitionPlayer | undefined = getCompetitionPlayer(playerId)
     return player?.number
   }
   const getGame = (gameId: GameId): Game | undefined => {
@@ -189,15 +189,15 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
 
   // Competition Computed
   const computedPhases = computed<CompetitionPhaseComputed[] | undefined>(() => {
-    const competitionClass = isReady.value ? new CompetitionClass(row.value) : undefined
+    const competitionClass = isReady.value && row.value ? new CompetitionClass(row.value) : undefined
     return competitionClass ? competitionClass.computedPhases : undefined
   })
   const competitionRankings = computed<CompetitionRankingComputed[] | undefined>(() => {
-    const competitionClass = isReady.value ? new CompetitionClass(row.value) : undefined
+    const competitionClass = isReady.value && row.value ? new CompetitionClass(row.value) : undefined
     return competitionClass?.competitionRankings
   })
   const competitionStandings = computed<CompetitionStandingComputed[] | undefined>(() => {
-    const competitionClass = isReady.value ? new CompetitionClass(row.value) : undefined
+    const competitionClass = isReady.value && row.value ? new CompetitionClass(row.value) : undefined
     return competitionClass?.competitionStandings
   })
 
