@@ -1,7 +1,7 @@
 import type { CompetitionGroupComputed, CompetitionPhaseComputed } from '@/types/computed'
 import type { Option } from '@/types/comp-fields'
 import { computed, watchEffect } from 'vue'
-import { useRoute, useRouter, type RouteParamValue } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import useCompetition from './useCompetition'
 import useOptionsLib from './useOptionsLib'
