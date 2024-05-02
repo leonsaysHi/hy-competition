@@ -8,11 +8,18 @@ import type { Bracket, BracketMatchup, BracketRound } from '@/types/competitions
 import type { TeamId } from '@/types/teams'
 import type { ScoresComputed } from '@/models/GameComputed'
 import useLibs from '@/composable/useLibs'
+import ModalComp from '@/components/ModalComp.vue'
+import TeamLogo from '@/components/teams/TeamLogo.vue'
+import InputComp from '@/components/InputComp.vue'
+import { add } from '@/utils/maths'
+import FieldComp from '@/components/FieldComp.vue'
+import ButtonComp from '@/components/ButtonComp.vue'
 
-export type BracketSelection = TeamId[][]
+export type BracketSelection = (TeamId | undefined)[][]
+export type BracketFinalScore = { [key: TeamId]: number }
 const competitionId = 'YNZaQiwQDMPHCWsE1KrQ'
 const { isReady, computedPhases } = useCompetition(competitionId)
-const { getTeam } = useLibs()
+const { getTeam, getTeamName } = useLibs()
 const selectedGroup = computed<CompetitionGroupComputed | undefined>(() => {
   const idx: number = Array.isArray(computedPhases.value)
     ? computedPhases.value.findIndex((phase: CompetitionPhaseComputed) => phase.type === 'playoffs')
@@ -41,7 +48,34 @@ const gotEmptyBracket = watch(
   },
   { immediate: true }
 )
-const selection = ref<BracketSelection>([])
+const title = ref<string>()
+const selectedWinners = ref<BracketSelection | undefined>([])
+const finalScore = ref<BracketFinalScore | undefined>()
+
+const dataErrors = computed<string[]>(() => {
+  const result = []
+  if (!isFinalScoreInputValid.value) {
+    result.push('Por favor llenar el bracket completo.')
+  }
+  return result
+})
+
+const finalScoreInput = ref<BracketFinalScore | undefined>()
+const finalScoreModal = ref<typeof ModalComp>()
+
+const winnerTeamId = computed(() => {
+  const final = selectedWinners.value?.slice(-1)
+  return final?.[0]?.[0] as TeamId
+})
+const isFinalScoreInputValid = computed(() => {
+  const scores = finalScoreInput.value ? Object.values(finalScoreInput.value) : []
+  const totalPoints = scores.reduce(add, 0)
+  return (
+    totalPoints > 0 &&
+    scores[0] !== scores[1] &&
+    finalScoreInput.value?.[winnerTeamId.value] === Math.max(...scores)
+  )
+})
 const createdBracket = computed<Bracket>((): Bracket => {
   return emptyBracket.value
     ? emptyBracket.value.map((round: BracketRound, roundIdx: number) => {
@@ -51,16 +85,16 @@ const createdBracket = computed<Bracket>((): Bracket => {
                 (acc: (ScoresComputed | undefined)[], mu: BracketMatchup) => {
                   const { roundIdx, roundGameIdx } = mu
                   const teamId =
-                    selection.value && selection.value[roundIdx]
-                      ? selection.value[roundIdx][roundGameIdx]
+                    selectedWinners.value && selectedWinners.value[roundIdx]
+                      ? selectedWinners.value[roundIdx][roundGameIdx]
                       : undefined
                   acc.push(
                     teamId
                       ? ({
                           ...getTeam(teamId),
                           id: teamId,
-                          winner: false,
-                          finalScore: 0
+                          winner: winnerTeamId.value === teamId || false,
+                          finalScore: finalScore.value?.[teamId] || 0
                         } as ScoresComputed)
                       : undefined
                   )
@@ -77,12 +111,50 @@ const createdBracket = computed<Bracket>((): Bracket => {
       })
     : ([] as Bracket)
 })
+
 const handleSelectWinner = (matchup: BracketMatchup, teamId: TeamId) => {
   const { roundIdx, roundGameIdx } = matchup
-  const result: TeamId[][] = [...(Array.isArray(selection.value) ? selection.value : [])]
+  const result: BracketSelection = [
+    ...(Array.isArray(selectedWinners.value) ? selectedWinners.value : [])
+  ]
   result[roundIdx] = [...(Array.isArray(result[roundIdx]) ? result[roundIdx] : [])]
+
+  const prevTeamId = result[roundIdx][roundGameIdx]
+  if (prevTeamId) {
+    result.forEach((round: (TeamId | undefined)[], rIdx: number) => {
+      if (rIdx > roundIdx && round) {
+        round.forEach((teamId: TeamId | undefined, idx: number) => {
+          if (teamId === prevTeamId) {
+            round.splice(idx, 1, undefined)
+            finalScoreInput.value = undefined
+            finalScore.value = undefined
+          }
+        })
+      }
+    })
+  }
   result[roundIdx][roundGameIdx] = teamId
-  selection.value = result
+  //
+  selectedWinners.value = result
+  if (matchup.isFinal) {
+    finalScoreInput.value = selectedWinners.value[selectedWinners.value.length - 2].reduce(
+      (result: BracketFinalScore, teamId: TeamId) => {
+        result[teamId] = 0
+        return result
+      },
+      {}
+    )
+    finalScoreModal.value?.show()
+  }
+}
+const handleSubmitFinalScoreInput = () => {
+  finalScore.value = finalScoreInput.value
+  finalScoreModal.value?.hide()
+}
+
+const handleSubmit = (ev:Event) => {
+  ev.preventDefault()
+
 }
 </script>
 <template>
@@ -94,8 +166,55 @@ const handleSelectWinner = (matchup: BracketMatchup, teamId: TeamId) => {
       <p>Error: No phase.</p>
     </template>
     <template v-else>
-      <BracketView :bracket="createdBracket" :selection="selection" @select="handleSelectWinner" />
-      {{ selection }}
+      <form @submit="handleSubmit">
+        <FieldComp label="Nombre del bracket">
+          <InputComp 
+            v-model="title"
+            :minlength="5"
+            required 
+          />
+        </FieldComp>
+        <FieldComp label="Bracket">
+          <BracketView
+            :bracket="createdBracket"
+            :selected-winners="selectedWinners"
+            @select-winner="handleSelectWinner"
+          />
+        </FieldComp>
+        <ButtonComp 
+          type="submit"
+          size="lg"
+          variant="primary"
+          :disabled="dataErrors.length > 0"
+          >Guardar el bracket</ButtonComp>
+      </form>
+      <div>{{ selectedWinners }}</div>
+      <div>{{ finalScoreInput }}</div>
+      <ModalComp
+        ref="finalScoreModal"
+        hide-cancel
+        :ok-variant="!isFinalScoreInputValid ? 'light' : 'primary'"
+        :ok-disabled="!isFinalScoreInputValid"
+        @ok="handleSubmitFinalScoreInput"
+      >
+        <template v-if="finalScoreInput">
+          <div class="hstack gap-3">
+            <template v-for="(score, teamId) in finalScoreInput" :key="teamId">
+              <div class="vstack align-items-center gap-2">
+                <TeamLogo :team-id="teamId" :size="50" />
+                <h4 class="font-team text-center">{{ getTeamName(teamId) }}</h4>
+                <InputComp
+                  v-model="finalScoreInput[teamId]"
+                  type="number"
+                  size="lg"
+                  class="border border-3"
+                  :class="winnerTeamId === teamId ? 'border-win' : 'border-loss'"
+                />
+              </div>
+            </template>
+          </div>
+        </template>
+      </ModalComp>
     </template>
   </div>
 </template>

@@ -28,7 +28,14 @@
               <template v-if="team?.id">
                 <TeamLogo :team-id="team.id" :size="25" />
                 <div class="ms-1 d-flex align-items-center">
-                  <span class="font-team" :class="{ 'fw-bold': team.winner }">
+                  <span
+                    class="font-team"
+                    :class="{
+                      'fw-bold':
+                        team.winner ||
+                        selectedWinners?.[matchup.roundIdx]?.[matchup.roundGameIdx] === team?.id
+                    }"
+                  >
                     {{ team.title }}
                   </span>
                 </div>
@@ -38,30 +45,66 @@
                   t('bracket.winnerFrom', { n: team?.winnerFrom })
                 }}</span>
               </template>
-              <template v-if="team?.id && selection">
-                <div class="ms-auto d-flex justify-content-end align-items-start">
-                  <ButtonComp
-                    variant="primary"
-                    size="sm"
-                    :disabled="selection[matchup.roundIdx]?.[matchup.roundGameIdx] === team?.id"
-                    @click="() => handleSelect(team?.id)"
-                    ><i class="bi bi-fast-forward-fill"></i
-                  ></ButtonComp>
-                </div>
-              </template>
-              <template v-else-if="team && matchup.game?.isFinished">
-                <div
-                  class="ms-auto d-flex justify-content-end align-items-center px-1 rounded-1 border border-2"
-                  :class="[team.winner ? 'border-win' : 'border-loss', team?.winner && 'fw-bold']"
-                >
-                  {{ team.finalScore }}
-                </div>
-              </template>
+              <div class="ms-auto hstack">
+                <template v-if="team?.id && selectedWinners">
+                  <div class="d-flex justify-content-end align-items-start">
+                    <ButtonComp
+                      :variant="
+                        selectedWinners[matchup.roundIdx]?.[matchup.roundGameIdx]
+                          ? 'light'
+                          : 'primary'
+                      "
+                      :class="[
+                        selectedWinners[matchup.roundIdx]?.[matchup.roundGameIdx] ||
+                          (selectedWinners[matchup.roundIdx]?.[matchup.roundGameIdx] === team?.id &&
+                            'border')
+                      ]"
+                      size="sm"
+                      :disabled="
+                        !hasTeams ||
+                        selectedWinners[matchup.roundIdx]?.[matchup.roundGameIdx] === team?.id
+                      "
+                      @click="() => handleSelect(team?.id)"
+                    >
+                      <template v-if="!isFinal">
+                        <template
+                          v-if="
+                            !selectedWinners[matchup.roundIdx]?.[matchup.roundGameIdx] ||
+                            selectedWinners[matchup.roundIdx]?.[matchup.roundGameIdx] === team?.id
+                          "
+                        >
+                          <i class="bi bi-star-fill"></i
+                        ></template>
+                        <template v-else> <i class="bi bi-star"></i></template>
+                      </template>
+                      <template v-else>
+                        <template
+                          v-if="
+                            !selectedWinners[matchup.roundIdx]?.[matchup.roundGameIdx] ||
+                            selectedWinners[matchup.roundIdx]?.[matchup.roundGameIdx] === team?.id
+                          "
+                        >
+                          <i class="bi bi-trophy-fill"></i
+                        ></template>
+                        <template v-else> <i class="bi bi-trophy"></i></template>
+                      </template>
+                    </ButtonComp>
+                  </div>
+                </template>
+                <template v-if="team && (matchup.game?.isFinished || (isFinal && hasScore))">
+                  <div
+                    class="d-flex justify-content-end align-items-center px-1 rounded-1 border border-3"
+                    :class="[team.winner ? 'border-win' : 'border-loss', team?.winner && 'fw-bold']"
+                  >
+                    {{ team.finalScore }}
+                  </div>
+                </template>
+              </div>
             </div>
           </template>
         </div>
 
-        <template v-if="!selection && matchup.game?.date && !matchup.game.isFinished">
+        <template v-if="!selectedWinners && matchup.game?.date && !matchup.game.isFinished">
           <div class="d-flex align-items-center p-2 small">
             {{ matchup.game.date.short }}
             <br />
@@ -87,16 +130,16 @@ import type { BracketSelection } from '@/cityhoops/views/brackets/CreateView.vue
 interface IProps {
   matchup: BracketMatchup
   isFinal?: boolean
-  selection?: BracketSelection
+  selectedWinners?: BracketSelection
 }
 const props = withDefaults(defineProps<IProps>(), {
   isFinal: false,
-  selection: undefined
+  selectedWinners: undefined
 })
 
 const { t } = useI18n()
 const { getTeam } = useLibs()
-const emit = defineEmits(['select'])
+const emit = defineEmits(['select-winner', 'final-score'])
 
 interface MatchupTeam extends ScoresComputed, Team {
   winnerFrom: number
@@ -126,7 +169,19 @@ const matchupTeams = computed<(MatchupTeam | undefined)[]>(() => {
   return [scores[0] || winnersFrom[0] || undefined, scores[1] || winnersFrom[1] || undefined]
 })
 
+const hasTeams = computed(() => {
+  return matchupTeams.value?.every((team: MatchupTeam | undefined) => team?.id)
+})
+const hasScore = computed(() => {
+  return (
+    props.matchup?.game?.scores &&
+    Object.values(props.matchup.game.scores).some((score: ScoresComputed) =>
+      score ? score.finalScore > 0 : false
+    )
+  )
+})
+
 const handleSelect = (teamId: TeamId) => {
-  emit('select', teamId)
+  emit('select-winner', teamId)
 }
 </script>

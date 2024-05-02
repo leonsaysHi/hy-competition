@@ -1,9 +1,10 @@
 import routes from '@/routes/index'
-
+import FrontView from '@/cityhoops/views/IndexView.vue'
 import CompetitionHomeView from '@/cityhoops/views/HomeView.vue'
 import CompetitionRankingsView from '@/cityhoops/views/RankingsView.vue'
 import CompetitionGamesView from '@/cityhoops/views/GamesView.vue'
 import CompetitionTeamsView from '@/cityhoops/views/TeamsView.vue'
+import BracketView from '@/cityhoops/views/BracketView.vue'
 import CreateBracket from '@/cityhoops/views/brackets/CreateView.vue'
 import ListBrackets from '@/cityhoops/views/brackets/ListView.vue'
 
@@ -18,6 +19,7 @@ const competitionViewIdx = cityhoopsRoutes[frontViewIdx].children.findIndex(
   (r: any) => r.path === '/competition/:competitionId'
 )
 
+cityhoopsRoutes[frontViewIdx].component = FrontView
 cityhoopsRoutes[frontViewIdx].children[competitionViewIdx].children = [
   {
     path: ':phase?/:group?',
@@ -57,16 +59,22 @@ cityhoopsRoutes[frontViewIdx].children[competitionViewIdx].children = [
   }
 ]
 
-cityhoopsRoutes[frontViewIdx].children.push(
+cityhoopsRoutes.push(
   {
-    path: 'bracket',
-    name: 'bracket',
-    component: CreateBracket
-  },
-  {
-    path: 'list-YNZaQiwQDMPHCWsE1KrQ-brackets',
-    name: 'bracket-list',
-    component: ListBrackets
+    path: '/bracket',
+    component: BracketView,
+    children: [
+      {
+        path: '',
+        name: 'bracket',
+        component: CreateBracket
+      },
+      {
+        path: 'list-YNZaQiwQDMPHCWsE1KrQ-brackets',
+        name: 'bracket-list',
+        component: ListBrackets
+      }
+    ]
   }
 )
 

@@ -12,8 +12,8 @@
                 class="flex-grow-1"
                 :matchup="matchup"
                 :is-final="matchup.isFinal"
-                :selection="selection"
-                @select="(teamId: TeamId) => handleSelectMatchupWinner(matchup, teamId)"
+                :selected-winners="selectedWinners"
+                @select-winner="(teamId: TeamId) => handleSelectMatchupWinner(matchup, teamId)"
               />
             </div>
           </template>
@@ -43,13 +43,13 @@ import type { BracketSelection } from '@/cityhoops/views/brackets/CreateView.vue
 
 interface IProps {
   bracket: Bracket | undefined
-  selection?: BracketSelection
+  selectedWinners?: BracketSelection
 }
 const props = withDefaults(defineProps<IProps>(), {
-  selection: undefined
+  selectedWinners: undefined
 })
 
-const emit = defineEmits(['select'])
+const emit = defineEmits(['select-winner'])
 
 const gridTotalRows = computed(() => {
   return Array.isArray(rounds.value) && Array.isArray(rounds.value[0]) ? rounds.value[0].length : 0
@@ -109,7 +109,7 @@ const gridStyle = computed(() => {
 })
 
 const handleSelectMatchupWinner = (matchup: BracketMatchup, teamId: TeamId) => {
-  emit('select', matchup, teamId)
+  emit('select-winner', matchup, teamId)
 }
 </script>
 
