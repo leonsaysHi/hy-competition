@@ -8,15 +8,17 @@ import useCompetition from '@/composable/useCompetition'
 import type { TableItem } from '@/types/comp-table'
 import { computed, ref } from 'vue'
 import { formatDate } from '@/utils/dates'
+import type { CompetitionGroupComputed, CompetitionPhaseComputed } from '@/types/computed'
 
 const competitionId = 'YNZaQiwQDMPHCWsE1KrQ'
-const { isReady: isCompetitionReady, row: competitionRow } = useCompetition(competitionId)
+const { isReady: isCompetitionReady, computedPhases } = useCompetition(competitionId)
 const { isReady, rows, deleteRows } = useBracketsLib()
 
 const fields = [
   {
     key: 'id',
-    label: ''
+    label: '',
+    tdClass: 'small text-body-secondary'
   },
   {
     key: 'title',
@@ -40,11 +42,23 @@ const fields = [
 ]
 
 const items = computed(() => {
-  return rows.value?.map((row: BracketItem) => ({
-    ...row,
-    points: 0,
-    diff: 0
-  }))
+  return rows.value?.map((row: BracketItem) => {
+    const games = selectedGroup.value?.games
+    return {
+      ...row,
+      points: 0,
+      diff: 0
+    }
+  })
+})
+
+const selectedGroup = computed<CompetitionGroupComputed | undefined>(() => {
+  const idx: number = Array.isArray(computedPhases.value)
+    ? computedPhases.value.findIndex((phase: CompetitionPhaseComputed) => phase.type === 'playoffs')
+    : -1
+  return Array.isArray(computedPhases.value) && idx > -1
+    ? computedPhases.value[idx].groups[0]
+    : undefined
 })
 
 // Delete game
