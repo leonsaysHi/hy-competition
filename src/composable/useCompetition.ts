@@ -189,15 +189,18 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
 
   // Competition Computed
   const computedPhases = computed<CompetitionPhaseComputed[] | undefined>(() => {
-    const competitionClass = isReady.value && row.value ? new CompetitionClass(row.value) : undefined
+    const competitionClass =
+      isReady.value && row.value ? new CompetitionClass(row.value) : undefined
     return competitionClass ? competitionClass.computedPhases : undefined
   })
   const competitionRankings = computed<CompetitionRankingComputed[] | undefined>(() => {
-    const competitionClass = isReady.value && row.value ? new CompetitionClass(row.value) : undefined
+    const competitionClass =
+      isReady.value && row.value ? new CompetitionClass(row.value) : undefined
     return competitionClass?.competitionRankings
   })
   const competitionStandings = computed<CompetitionStandingComputed[] | undefined>(() => {
-    const competitionClass = isReady.value && row.value ? new CompetitionClass(row.value) : undefined
+    const competitionClass =
+      isReady.value && row.value ? new CompetitionClass(row.value) : undefined
     return competitionClass?.competitionStandings
   })
 

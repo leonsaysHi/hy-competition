@@ -132,7 +132,7 @@ const groupGames = computed<GameComputedClass[]>(() => {
       <template v-if="selectedPhase && selectedGroup">
         <template v-if="selectedPhase.type === 'playoffs'">
           <h3>{{ t('global.playoffs') }}</h3>
-          <BracketView :group="selectedGroup" />
+          <BracketView :bracket="selectedGroup?.bracket" />
         </template>
         <template v-else>
           <h3>{{ t('global.standing') }}</h3>

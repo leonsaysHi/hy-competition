@@ -8,7 +8,13 @@
           </template>
           <template v-if="matchup">
             <div class="d-flex py-2 flex-grow-1">
-              <Matchup class="flex-grow-1" :matchup="matchup" :is-final="matchup.isFinal" />
+              <Matchup
+                class="flex-grow-1"
+                :matchup="matchup"
+                :is-final="matchup.isFinal"
+                :selection="selection"
+                @select="(teamId: TeamId) => handleSelectMatchupWinner(matchup, teamId)"
+              />
             </div>
           </template>
           <template v-if="!matchup.isFinal">
@@ -31,81 +37,60 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import Matchup from './BracketMatchup.vue'
-import type { CompetitionGroupComputed } from '@/types/computed'
-import type GameComputedClass from '@/models/GameComputed'
 import type { Bracket, BracketMatchup, BracketRound } from '@/types/competitions'
+import type { TeamId } from '@/types/teams'
+import type { BracketSelection } from '@/cityhoops/views/brackets/CreateView.vue'
 
 interface IProps {
-  group: CompetitionGroupComputed
+  bracket: Bracket | undefined
+  selection?: BracketSelection
 }
-const props = withDefaults(defineProps<IProps>(), {})
+const props = withDefaults(defineProps<IProps>(), {
+  selection: undefined
+})
+
+const emit = defineEmits(['select'])
 
 const gridTotalRows = computed(() => {
   return Array.isArray(rounds.value) && Array.isArray(rounds.value[0]) ? rounds.value[0].length : 0
 })
 
 const rounds = computed<Bracket>(() => {
-  let teamsLength = props.group.standing.length
-  const games = props.group.games.slice()
-  const rounds: Bracket = []
-  let matchupIdx = 0
-  let matchupRowSpan = 2
-  while (teamsLength > 1) {
-    teamsLength *= 0.5
-    const roundGames: GameComputedClass[] = games.splice(0, teamsLength)
-    while (roundGames.length < teamsLength) {
-      roundGames.push({} as GameComputedClass)
-    }
-    const round: BracketRound = roundGames.map(
-      (game: GameComputedClass, roundGameIdx: number): BracketMatchup => {
-        matchupIdx++
+  let matchupRowSpan = 1
+  return Array.isArray(props.bracket)
+    ? props.bracket.map((round: BracketRound) => {
+        matchupRowSpan *= 2
+        return round.map((matchup: BracketMatchup) => {
+          const { roundIdx, roundGameIdx, isFinal } = matchup
+          const rowIdx = roundGameIdx * matchupRowSpan + (matchupRowSpan - 2) * 0.5
+          const vrStyleObj: { [key: string]: string } =
+            roundGameIdx % 2 == 0 && !isFinal && matchupRowSpan > 2
+              ? {
+                  gridArea:
+                    'row' +
+                    (rowIdx + 3) +
+                    ' / round' +
+                    roundIdx +
+                    ' / span ' +
+                    (matchupRowSpan - 2) +
+                    ' / span 1'
+                }
+              : { display: 'none' }
 
-        const isFinal = teamsLength <= 1
-        // roundGameIdx // 0, 1, 2, 3
-        const roundIdx = rounds.length // 0, 1, 2, 3
-        const rowIdx = roundGameIdx * matchupRowSpan + (matchupRowSpan - 2) * 0.5
-
-        const vrStyleObj: { [key: string]: string } =
-          roundGameIdx % 2 == 0 && !isFinal && matchupRowSpan > 2
-            ? {
-                gridArea:
-                  'row' +
-                  (rowIdx + 3) +
-                  ' / round' +
-                  roundIdx +
-                  ' / span ' +
-                  (matchupRowSpan - 2) +
-                  ' / span 1'
-              }
-            : { display: 'none' }
-
-        const matchupStyleObj = {
-          gridArea: 'row' + (rowIdx + 1) + ' / round' + roundIdx + ' / span 2' + ' / span 1'
-        }
-        return {
-          game,
-          matchupIdx,
-          roundIdx,
-          roundGameIdx,
-          isFinal,
-          vrStyleObj,
-          matchupStyleObj,
-          winnersFrom:
-            !game.id && roundIdx > 0
-              ? [roundGameIdx * 2, roundGameIdx * 2 + 1].map((idx: number) => {
-                  return rounds[roundIdx - 1][idx]
-                })
-              : undefined
-        }
-      }
-    )
-    rounds.push(round)
-    matchupRowSpan *= 2
-  }
-  return rounds
+          const matchupStyleObj = {
+            gridArea: 'row' + (rowIdx + 1) + ' / round' + roundIdx + ' / span 2' + ' / span 1'
+          }
+          return {
+            ...matchup,
+            vrStyleObj,
+            matchupStyleObj
+          }
+        })
+      })
+    : []
 })
 
-const matchups = computed(() => {
+const matchups = computed<BracketMatchup[]>(() => {
   return Array.isArray(rounds.value) ? rounds.value.flat() : []
 })
 
@@ -122,6 +107,10 @@ const gridStyle = computed(() => {
       .join(' ')
   }
 })
+
+const handleSelectMatchupWinner = (matchup: BracketMatchup, teamId: TeamId) => {
+  emit('select', matchup, teamId)
+}
 </script>
 
 <style lang="scss" scoped>

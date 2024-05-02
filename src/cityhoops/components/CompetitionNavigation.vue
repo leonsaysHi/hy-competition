@@ -36,7 +36,9 @@ const handleAboutUs = () => {
           class="nav-link text-white fw-bold"
           >Equipos</RouterLink
         >
-        <a @click="handleAboutUs" class="nav-link text-white fw-bold cursor-pointer">Sobre la liga</a>
+        <a @click="handleAboutUs" class="nav-link text-white fw-bold cursor-pointer"
+          >Sobre la liga</a
+        >
       </nav>
       <div class="ms-auto d-lg-none"><SocialsNav /></div>
     </div>

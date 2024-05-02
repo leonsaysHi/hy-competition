@@ -1,20 +1,23 @@
-import routes from './index'
+import routes from '@/routes/index'
 
 import CompetitionHomeView from '@/cityhoops/views/HomeView.vue'
 import CompetitionRankingsView from '@/cityhoops/views/RankingsView.vue'
 import CompetitionGamesView from '@/cityhoops/views/GamesView.vue'
 import CompetitionTeamsView from '@/cityhoops/views/TeamsView.vue'
+import CreateBracket from '@/cityhoops/views/brackets/CreateView.vue'
+import ListBrackets from '@/cityhoops/views/brackets/ListView.vue'
 
 import CompetitionGameDetailsView from '@/views/competition/GameDetailsView.vue'
 import CompetitionTeamDetailsView from '@/views/competition/TeamDetailsView.vue'
 import CompetitionPlayerDetailsView from '@/views/competition/PlayerDetailsView.vue'
 
-const frontViewIdx = routes.findIndex((r: any) => r.path === '/')
-const competitionViewIdx = routes[frontViewIdx].children.findIndex(
+const cityhoopsRoutes = routes.slice()
+
+const frontViewIdx = cityhoopsRoutes.findIndex((r: any) => r.path === '/')
+const competitionViewIdx = cityhoopsRoutes[frontViewIdx].children.findIndex(
   (r: any) => r.path === '/competition/:competitionId'
 )
 
-const cityhoopsRoutes = routes.slice()
 cityhoopsRoutes[frontViewIdx].children[competitionViewIdx].children = [
   {
     path: ':phase?/:group?',
@@ -53,5 +56,18 @@ cityhoopsRoutes[frontViewIdx].children[competitionViewIdx].children = [
     component: CompetitionPlayerDetailsView
   }
 ]
+
+cityhoopsRoutes[frontViewIdx].children.push(
+  {
+    path: 'bracket',
+    name: 'bracket',
+    component: CreateBracket
+  },
+  {
+    path: 'list-YNZaQiwQDMPHCWsE1KrQ-brackets',
+    name: 'bracket-list',
+    component: ListBrackets
+  }
+)
 
 export default cityhoopsRoutes

@@ -83,7 +83,7 @@ const items = computed(() => {
         <strong class="font-team fs-6">{{ getTeamName(value) }}</strong>
       </RouterLink>
     </template>
-    <template #ptsdiff="{ item }">{{ (item.ptsfv  || 0) - (item.ptsag || 0) }}</template>
+    <template #ptsdiff="{ item }">{{ (item.ptsfv || 0) - (item.ptsag || 0) }}</template>
     <template #hist="{ value }"><LastGames :items="value" :length="5" /></template>
   </TableComp>
 </template>

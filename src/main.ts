@@ -2,7 +2,7 @@ import './assets/sass/app.scss'
 import 'bootstrap'
 import { createApp } from 'vue'
 import App from './App.vue'
-import routes from './routes/cityhoops'
+import routes from './cityhoops/router'
 import i18n from './i18n'
 import { createRouter, createWebHistory } from 'vue-router'
 
