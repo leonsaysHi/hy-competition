@@ -61,6 +61,7 @@
                       ]"
                       size="sm"
                       :disabled="
+                        disabled ||
                         !hasTeams ||
                         selectedWinners[matchup.roundIdx]?.[matchup.roundGameIdx] === team?.id
                       "
@@ -129,10 +130,12 @@ import type { BracketSelection } from '@/cityhoops/views/brackets/CreateView.vue
 
 interface IProps {
   matchup: BracketMatchup
+  disabled?: boolean
   isFinal?: boolean
   selectedWinners?: BracketSelection
 }
 const props = withDefaults(defineProps<IProps>(), {
+  disabled: false,
   isFinal: false,
   selectedWinners: undefined
 })

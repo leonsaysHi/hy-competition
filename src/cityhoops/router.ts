@@ -6,6 +6,7 @@ import CompetitionGamesView from '@/cityhoops/views/GamesView.vue'
 import CompetitionTeamsView from '@/cityhoops/views/TeamsView.vue'
 import BracketView from '@/cityhoops/views/BracketView.vue'
 import CreateBracket from '@/cityhoops/views/brackets/CreateView.vue'
+import ViewBracket from '@/cityhoops/views/brackets/ViewView.vue'
 import ListBrackets from '@/cityhoops/views/brackets/ListView.vue'
 
 import CompetitionGameDetailsView from '@/views/competition/GameDetailsView.vue'
@@ -59,23 +60,26 @@ cityhoopsRoutes[frontViewIdx].children[competitionViewIdx].children = [
   }
 ]
 
-cityhoopsRoutes.push(
-  {
-    path: '/bracket',
-    component: BracketView,
-    children: [
-      {
-        path: '',
-        name: 'bracket',
-        component: CreateBracket
-      },
-      {
-        path: 'list-YNZaQiwQDMPHCWsE1KrQ-brackets',
-        name: 'bracket-list',
-        component: ListBrackets
-      }
-    ]
-  }
-)
+cityhoopsRoutes.push({
+  path: '/brackets',
+  component: BracketView,
+  children: [
+    {
+      path: '',
+      name: 'bracket-new',
+      component: CreateBracket
+    },
+    {
+      path: 'view/:bracketId',
+      name: 'bracket-view',
+      component: ViewBracket
+    },
+    {
+      path: 'list-comp-brackets/:competitionId',
+      name: 'bracket-list',
+      component: ListBrackets
+    }
+  ]
+})
 
 export default cityhoopsRoutes

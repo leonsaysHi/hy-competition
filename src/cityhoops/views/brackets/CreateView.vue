@@ -14,10 +14,17 @@ import InputComp from '@/components/InputComp.vue'
 import { add } from '@/utils/maths'
 import FieldComp from '@/components/FieldComp.vue'
 import ButtonComp from '@/components/ButtonComp.vue'
+import useBracketsLib from '@/cityhoops/composable/useBracketsLib'
+import { useRouter } from 'vue-router'
 
 export type BracketSelection = (TeamId | undefined)[][]
 export type BracketFinalScore = { [key: TeamId]: number }
+
+const { writeRows } = useBracketsLib()
+
+const router = useRouter()
 const competitionId = 'YNZaQiwQDMPHCWsE1KrQ'
+
 const { isReady, computedPhases } = useCompetition(competitionId)
 const { getTeam, getTeamName } = useLibs()
 const selectedGroup = computed<CompetitionGroupComputed | undefined>(() => {
@@ -48,6 +55,7 @@ const gotEmptyBracket = watch(
   },
   { immediate: true }
 )
+const isReadOnly = ref<boolean>(false)
 const title = ref<string>()
 const selectedWinners = ref<BracketSelection | undefined>([])
 const finalScore = ref<BracketFinalScore | undefined>()
@@ -152,14 +160,24 @@ const handleSubmitFinalScoreInput = () => {
   finalScoreModal.value?.hide()
 }
 
-const handleSubmit = (ev:Event) => {
+const handleSubmit = async (ev: Event) => {
   ev.preventDefault()
-
+  isReadOnly.value = true
+  const resp = await writeRows([
+    {
+      title: title.value,
+      competitionId,
+      winners: selectedWinners.value,
+      final: finalScore.value
+    }
+  ])
+  const id = resp[0].id
+  router.push({ name: 'bracket-view', params: { bracketId: id } })
 }
 </script>
 <template>
   <div>
-    <template v-if="!isReady">
+    <template v-if="!isReady || isBusy">
       <div class="py-5"><SpinnerComp /></div>
     </template>
     <template v-else-if="!computedPhases?.length">
@@ -168,25 +186,24 @@ const handleSubmit = (ev:Event) => {
     <template v-else>
       <form @submit="handleSubmit">
         <FieldComp label="Nombre del bracket">
-          <InputComp 
-            v-model="title"
-            :minlength="5"
-            required 
-          />
+          <InputComp v-model="title" :minlength="5" :disabled="isReadyOnly" required />
         </FieldComp>
         <FieldComp label="Bracket">
           <BracketView
             :bracket="createdBracket"
+            :disabled="isReadyOnly"
             :selected-winners="selectedWinners"
             @select-winner="handleSelectWinner"
           />
         </FieldComp>
-        <ButtonComp 
+        <ButtonComp
           type="submit"
           size="lg"
-          variant="primary"
-          :disabled="dataErrors.length > 0"
-          >Guardar el bracket</ButtonComp>
+          :isBusy="isReadOnly"
+          :variant="isReadOnly ? 'light' : 'primary'"
+          :disabled="isReadOnly || dataErrors.length > 0"
+          >Guardar el bracket</ButtonComp
+        >
       </form>
       <div>{{ selectedWinners }}</div>
       <div>{{ finalScoreInput }}</div>

@@ -12,6 +12,7 @@
                 class="flex-grow-1"
                 :matchup="matchup"
                 :is-final="matchup.isFinal"
+                :disabled="disabled"
                 :selected-winners="selectedWinners"
                 @select-winner="(teamId: TeamId) => handleSelectMatchupWinner(matchup, teamId)"
               />
@@ -43,9 +44,11 @@ import type { BracketSelection } from '@/cityhoops/views/brackets/CreateView.vue
 
 interface IProps {
   bracket: Bracket | undefined
+  disabled?: boolean
   selectedWinners?: BracketSelection
 }
 const props = withDefaults(defineProps<IProps>(), {
+  disabled: false,
   selectedWinners: undefined
 })
 
