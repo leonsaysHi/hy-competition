@@ -205,8 +205,6 @@ const handleSubmit = async (ev: Event) => {
           >Guardar el bracket</ButtonComp
         >
       </form>
-      <div>{{ selectedWinners }}</div>
-      <div>{{ finalScoreInput }}</div>
       <ModalComp
         ref="finalScoreModal"
         hide-cancel
