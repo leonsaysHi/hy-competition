@@ -295,7 +295,7 @@ export default class CompetitionClass {
               standing,
               ranking,
               games: groupGames,
-              bracket,
+              bracket
             }
           })
 

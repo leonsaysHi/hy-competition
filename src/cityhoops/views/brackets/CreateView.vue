@@ -56,7 +56,7 @@ const gotEmptyBracket = watch(
   { immediate: true }
 )
 const isReadOnly = ref<boolean>(false)
-const title = ref<string>()
+const title = ref<string|number>('')
 const selectedWinners = ref<BracketSelection | undefined>([])
 const finalScore = ref<BracketFinalScore | undefined>()
 
@@ -176,8 +176,8 @@ const handleSubmit = async (ev: Event) => {
 }
 </script>
 <template>
-  <div>
-    <template v-if="!isReady || isBusy">
+  <div class="pb-5 mb-5">
+    <template v-if="!isReady">
       <div class="py-5"><SpinnerComp /></div>
     </template>
     <template v-else-if="!computedPhases?.length">
@@ -185,25 +185,35 @@ const handleSubmit = async (ev: Event) => {
     </template>
     <template v-else>
       <form @submit="handleSubmit">
-        <FieldComp label="Nombre del bracket">
-          <InputComp v-model="title" :minlength="5" :disabled="isReadyOnly" required />
+        <FieldComp 
+          label="Nombre del bracket"
+          helper="Debe tener al menos 5 caracteres."
+        >
+          <InputComp 
+          v-model="title" 
+          :minlength="5" 
+          :disabled="isReadOnly" 
+          required 
+          />
         </FieldComp>
         <FieldComp label="Bracket">
           <BracketView
             :bracket="createdBracket"
-            :disabled="isReadyOnly"
+            :disabled="isReadOnly"
             :selected-winners="selectedWinners"
             @select-winner="handleSelectWinner"
           />
         </FieldComp>
-        <ButtonComp
-          type="submit"
-          size="lg"
-          :isBusy="isReadOnly"
-          :variant="isReadOnly ? 'light' : 'primary'"
-          :disabled="isReadOnly || dataErrors.length > 0"
-          >Guardar el bracket</ButtonComp
-        >
+        <div class="hstack justify-content-center">
+          <ButtonComp
+            type="submit"
+            size="lg"
+            :isBusy="isReadOnly"
+            :variant="isReadOnly ? 'light' : 'primary'"
+            :disabled="isReadOnly || dataErrors.length > 0"
+            >Guardar el bracket</ButtonComp
+          >
+        </div>
       </form>
       <ModalComp
         ref="finalScoreModal"

@@ -92,7 +92,7 @@
                     </ButtonComp>
                   </div>
                 </template>
-                <template v-if="team && (matchup.game?.isFinished || (isFinal && hasScore))">
+                <template v-if="team && matchup.game?.isFinished && showScores">
                   <div
                     class="d-flex justify-content-end align-items-center px-1 rounded-1 border border-3"
                     :class="[team.winner ? 'border-win' : 'border-loss', team?.winner && 'fw-bold']"
@@ -182,6 +182,10 @@ const hasScore = computed(() => {
       score ? score.finalScore > 0 : false
     )
   )
+})
+
+const showScores = computed<boolean>(() => {
+  return Boolean(!props.selectedWinners || (props.isFinal && hasScore))
 })
 
 const handleSelect = (teamId: TeamId) => {
