@@ -9,7 +9,9 @@ import HoopsYardLogo from '@/assets/images/hoops-yard.png'
 <template>
   <div class="wrapper">
     <div class="container-xl hstack gap-4 p-3">
-      <a href="//www.cityhoopspty.com" target="_blank"><ImageComp :src="CityHoopsLogo" :width="100" fluid /></a>
+      <a href="//www.cityhoopspty.com" target="_blank"
+        ><ImageComp :src="CityHoopsLogo" :width="100" fluid
+      /></a>
       <div class="vr"></div>
       <a href="//bigbet.pa" target="_blank"><ImageComp :src="BigBet" :width="200" fluid /></a>
     </div>

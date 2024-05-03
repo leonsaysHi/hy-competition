@@ -4,7 +4,10 @@
       <template v-for="page in pageItems" :key="page">
         <li
           class="page-item"
-          :class="{ active: pageItems.length && model === page, disabled: !pageItems.length }"
+          :class="{
+            active: pageItems.length && model === page,
+            disabled: !pageItems.length || disabled
+          }"
           :aria-current="model === page ? 'page' : false"
         >
           <template v-if="model === page"
@@ -32,6 +35,7 @@ const props = withDefaults(defineProps<IProps>(), {
   items: () => [],
   perPage: 0
 })
+const disabled = computed(() => props.items.length <= props.perPage)
 const totalPages = computed(() => {
   return props.perPage > 0 ? Math.ceil(props.items.length / props.perPage) : 1
 })

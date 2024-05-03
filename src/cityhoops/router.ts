@@ -8,6 +8,7 @@ import BracketView from '@/cityhoops/views/BracketView.vue'
 import CreateBracket from '@/cityhoops/views/brackets/CreateView.vue'
 import ViewBracket from '@/cityhoops/views/brackets/ViewView.vue'
 import ListBrackets from '@/cityhoops/views/brackets/ListView.vue'
+import AdminBrackets from '@/cityhoops/views/brackets/AdminView.vue'
 
 import CompetitionGameDetailsView from '@/views/competition/GameDetailsView.vue'
 import CompetitionTeamDetailsView from '@/views/competition/TeamDetailsView.vue'
@@ -70,14 +71,19 @@ cityhoopsRoutes.push({
       component: CreateBracket
     },
     {
+      path: 'list',
+      name: 'bracket-list',
+      component: ListBrackets
+    },
+    {
       path: 'view/:bracketId',
       name: 'bracket-view',
       component: ViewBracket
     },
     {
-      path: 'list-comp-brackets/:competitionId',
-      name: 'bracket-list',
-      component: ListBrackets
+      path: 'admin-comp-brackets/:competitionId',
+      name: 'bracket-admin',
+      component: AdminBrackets
     }
   ]
 })

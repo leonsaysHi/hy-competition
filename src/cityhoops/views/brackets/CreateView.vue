@@ -56,7 +56,7 @@ const gotEmptyBracket = watch(
   { immediate: true }
 )
 const isReadOnly = ref<boolean>(false)
-const title = ref<string|number>('')
+const title = ref<string | number>('')
 const selectedWinners = ref<BracketSelection | undefined>([])
 const finalScore = ref<BracketFinalScore | undefined>()
 
@@ -185,16 +185,8 @@ const handleSubmit = async (ev: Event) => {
     </template>
     <template v-else>
       <form @submit="handleSubmit">
-        <FieldComp 
-          label="Nombre del bracket"
-          helper="Debe tener al menos 5 caracteres."
-        >
-          <InputComp 
-          v-model="title" 
-          :minlength="5" 
-          :disabled="isReadOnly" 
-          required 
-          />
+        <FieldComp label="Nombre del bracket" helper="Debe tener al menos 5 caracteres.">
+          <InputComp v-model="title" :minlength="5" :disabled="isReadOnly" required />
         </FieldComp>
         <FieldComp label="Bracket">
           <BracketView

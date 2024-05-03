@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import useBracketsLib, { type BracketItem } from '@/cityhoops/composable/useBracketsLib'
-import PaginationComp from '@/components/PaginationComp.vue'
+import ButtonComp from '@/components/ButtonComp.vue'
+import ModalComp from '@/components/ModalComp.vue'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import TableComp from '@/components/TableComp.vue'
 import useCompetition from '@/composable/useCompetition'
+import type { TableItem } from '@/types/comp-table'
 import { computed, ref } from 'vue'
 import { formatDate } from '@/utils/dates'
 import type {
@@ -17,22 +19,27 @@ import type { BracketMatchup } from '@/types/competitions'
 
 const competitionId = 'YNZaQiwQDMPHCWsE1KrQ'
 const { computedPhases } = useCompetition(competitionId)
-const { isReady, rows } = useBracketsLib()
+const { isReady, rows, deleteRows } = useBracketsLib()
 
 const fields = [
   {
-    key: 'points',
-    label: 'Puntos',
-    sortable: true
+    key: 'id',
+    label: '',
+    tdClass: 'small text-body-secondary'
   },
   {
     key: 'title',
-    label: 'Titulo',
+    label: 'Title',
     sortable: true
   },
   {
     key: 'dateCreated',
-    label: 'Fecha',
+    label: 'Date',
+    sortable: true
+  },
+  {
+    key: 'points',
+    label: 'Puntos',
     sortable: true
   },
   {
@@ -40,9 +47,6 @@ const fields = [
     label: ''
   }
 ]
-
-const currentPage = ref<number>(1)
-const perPage = ref<number>(25)
 
 const teams = computed(() => {
   return (
@@ -62,7 +66,7 @@ const winners = computed(() => {
   )
 })
 
-const items = computed(() => {
+const items = computed<TableItem[]>(() => {
   return (
     rows.value?.map((row: BracketItem) => {
       const bracketwinners = row.winners.flat() as TeamId[]
@@ -94,6 +98,19 @@ const selectedGroup = computed<CompetitionGroupComputed | undefined>(() => {
     ? computedPhases.value[idx].groups[0]
     : undefined
 })
+
+// Delete game
+const deleteModal = ref<typeof ModalComp>()
+const deleteRow = ref<TableItem | undefined>()
+const handleConfirmDeleteRow = (row: TableItem) => {
+  deleteRow.value = row
+  deleteModal.value?.show()
+}
+const handleDelete = async () => {
+  const row = deleteRow.value
+  await deleteRows([row as any])
+  deleteModal.value?.hide()
+}
 </script>
 <template>
   <div>
@@ -104,16 +121,13 @@ const selectedGroup = computed<CompetitionGroupComputed | undefined>(() => {
       <TableComp
         :fields="fields"
         :items="items"
-        :current-page="currentPage"
-        :per-page="perPage"
-        sorted-key="points"
-        sorted-direction="desc"
+        sorted-key="dateCreated"
+        sorted-direction="asc"
         show-empty
       >
         <template #empty>
-          <p class="text-body-secondary text-center">Ningun bracket.</p>
-        </template>
-        <template #points="{ value, item }">
+          <p class="text-body-secondary text-center">Ningun bracket.</p> </template
+        ><template #points="{ value, item }">
           <strong>{{ value }}</strong>
         </template>
         <template #dateCreated="{ value }">
@@ -128,12 +142,24 @@ const selectedGroup = computed<CompetitionGroupComputed | undefined>(() => {
             >
               <i class="bi bi-eye"></i>
             </RouterLink>
+            <ButtonComp variant="danger" size="sm" @click="handleConfirmDeleteRow(item)"
+              >Delete</ButtonComp
+            >
           </div>
         </template>
       </TableComp>
-      <div class="hstack justify-content-center">
-        <PaginationComp v-model="currentPage" :per-page="perPage" :items="items" />
-      </div>
+      <ModalComp ref="deleteModal" title="Confirm detetion" ok-title="Delete" ok-variant="danger">
+        <p>
+          Sure to delete bracket
+          <strong>{{ deleteRow?.title }}</strong
+          >?
+        </p>
+        <template #modal-ok="{ okTitle, okVariant }">
+          <ButtonComp :variant="okVariant" @click="handleDelete">
+            {{ okTitle }}
+          </ButtonComp>
+        </template>
+      </ModalComp>
     </template>
   </div>
 </template>
