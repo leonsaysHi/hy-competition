@@ -282,7 +282,7 @@ export default class CompetitionClass {
 
             // bracket:
             const bracket =
-              type === 'playoffs' ? getGroupBracket(groupTeams, groupGames) : undefined
+              type === 'playoffs' ? getGroupBracket(groupTeams, groupGames.slice()) : undefined
 
 
             // returns CompetitionGroupComputed
