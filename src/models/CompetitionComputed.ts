@@ -182,7 +182,41 @@ const getPlayerRankingFromGames = (
     ...updatePlayerBoxScoreCalculations(result)
   }
 }
-
+const getGroupBracket = (teams: TeamId[], games: GameComputedClass[]): Bracket => {
+  let teamsLength = teams.length
+  let matchupId = 0
+  const rounds: Bracket = []
+  while (teamsLength > 1) {
+    teamsLength *= 0.5
+    const roundGames: GameComputedClass[] = games.splice(0, teamsLength)
+    while (roundGames.length < teamsLength) {
+      roundGames.push({} as GameComputedClass)
+    }
+    const round: BracketRound = roundGames.map(
+      (game: GameComputedClass, roundGameIdx: number): BracketMatchup => {
+        matchupId++
+        const isFinal = teamsLength <= 1
+        // roundGameIdx // 0, 1, 2, 3
+        const roundIdx = rounds.length // 0, 1, 2, 3
+        return {
+          game,
+          matchupId,
+          roundIdx,
+          roundGameIdx,
+          isFinal,
+          winnersFrom:
+            !game.id && roundIdx > 0
+              ? [roundGameIdx * 2, roundGameIdx * 2 + 1].map((idx: number) => {
+                  return rounds[roundIdx - 1][idx]
+                })
+              : undefined
+        }
+      }
+    )
+    rounds.push(round)
+  }
+  return rounds
+}
 export default class CompetitionClass {
   row: Competition
   games: Game[]
@@ -298,7 +332,7 @@ export default class CompetitionClass {
               standing,
               ranking,
               games: groupGames,
-              bracket
+              bracket,
             }
           })
 
