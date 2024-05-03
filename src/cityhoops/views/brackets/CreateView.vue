@@ -249,9 +249,6 @@ const handleSubmit = async (ev: Event) => {
             ><RouterLink class="btn btn-link" :to="{ name: 'bracket-view', params: { bracketId } }"
               >Volver a ver tu bracket</RouterLink
             ></template
-          >
-          <RouterLink class="btn btn-link" :to="{ name: 'bracket-list' }"
-            >Ver todos los brackets</RouterLink
           >.
         </div>
       </ModalComp>

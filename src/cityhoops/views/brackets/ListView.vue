@@ -17,7 +17,7 @@ import type { BracketMatchup } from '@/types/competitions'
 
 const competitionId = 'YNZaQiwQDMPHCWsE1KrQ'
 const { computedPhases } = useCompetition(competitionId)
-const { isReady, rows } = useBracketsLib()
+const { isReady, rows, admin } = useBracketsLib()
 
 const fields = [
   {
@@ -63,6 +63,9 @@ const winners = computed(() => {
 })
 
 const items = computed(() => {
+  if (!admin.value?.canCreate) {
+    return []
+  }
   return (
     rows.value?.map((row: BracketItem) => {
       const bracketwinners = row.winners.flat() as TeamId[]
@@ -111,7 +114,11 @@ const selectedGroup = computed<CompetitionGroupComputed | undefined>(() => {
         show-empty
       >
         <template #empty>
-          <p class="text-body-secondary text-center">Ningun bracket.</p>
+          <p class="text-body-secondary text-center">
+            <template v-if="!admin.value?.canCreate"> No se puede ver los brackets aun </template>
+            <template v-else> Ningun bracket por ahora </template>
+            .
+          </p>
         </template>
         <template #points="{ value, item }">
           <strong>{{ value }}</strong>
