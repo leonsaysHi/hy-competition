@@ -42,8 +42,8 @@ const bracketsConverter = {
   toFirestore: (row: any): DocumentData => {
     const payload: BracketDoc = {
       ...row,
-      winners: JSON.stringify(row.winners),
-      final: JSON.stringify(row.final),
+      winners: row.winners ? JSON.stringify(row.winners) : undefined,
+      final: row.final ? JSON.stringify(row.final) : undefined,
       dateCreated: dateToFireStore(new Date())
     }
     return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null))
@@ -53,8 +53,8 @@ const bracketsConverter = {
     const result: BracketItem = {
       id: snapshot.id,
       ...data,
-      winners: JSON.parse(data.winners),
-      final: JSON.parse(data.final),
+      winners: data.winners ? JSON.parse(data.winners) : null,
+      final: data.final ? JSON.parse(data.final) : null,
       dateCreated: data.dateCreated ? dateFromFirestore(data.dateCreated) : new Date()
     }
     return result
@@ -64,9 +64,11 @@ const bracketsConverter = {
 const coll = bracketsColl.withConverter(bracketsConverter)
 
 export default function useBracketsLib() {
-  const rows: Ref<BracketItem[] | undefined> = useFirestore(coll, undefined) as Ref<
+  const _rows: Ref<BracketItem[] | undefined> = useFirestore(coll, undefined) as Ref<
     BracketItem[] | undefined
   >
+  const rows = computed(() => _rows.value?.filter((row: BracketItem) => row.id !== 'admin') || [])
+  const admin = computed(() => _rows.value?.find((row: BracketItem) => row.id === 'admin'))
   const isReady = computed(() => Array.isArray(rows.value))
 
   const { writeDocs, deleteDocs } = useFirestoreAdmin()
@@ -78,6 +80,7 @@ export default function useBracketsLib() {
   return {
     isReady,
     rows,
+    admin,
 
     // admin
     writeRows,

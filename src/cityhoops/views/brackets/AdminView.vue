@@ -16,10 +16,12 @@ import type {
 import type { ScoresComputed } from '@/models/GameComputed'
 import type { TeamId } from '@/types/teams'
 import type { BracketMatchup } from '@/types/competitions'
+import FieldComp from '@/components/FieldComp.vue'
+import CheckComp from '@/components/CheckComp.vue'
 
 const competitionId = 'YNZaQiwQDMPHCWsE1KrQ'
 const { computedPhases } = useCompetition(competitionId)
-const { isReady, rows, deleteRows } = useBracketsLib()
+const { isReady, rows, admin, deleteRows, writeRows } = useBracketsLib()
 
 const fields = [
   {
@@ -47,6 +49,15 @@ const fields = [
     label: ''
   }
 ]
+
+const canCreate = computed({
+  get() {
+    return admin.value?.canCreate
+  },
+  set(v: boolean) {
+    writeRows([{ id: 'admin', canCreate: v }])
+  }
+})
 
 const teams = computed(() => {
   return (
@@ -118,6 +129,12 @@ const handleDelete = async () => {
       <div class="py-5"><SpinnerComp /></div>
     </template>
     <template v-else>
+      <p class="hstack gap-3 align-items-baseline">
+        <strong>Can create new brackets?</strong>
+        No
+        <CheckComp v-model="canCreate" :value="true" :uncheck-value="false" switch></CheckComp>
+        Yes
+      </p>
       <TableComp
         :fields="fields"
         :items="items"
@@ -125,8 +142,7 @@ const handleDelete = async () => {
         sorted-direction="asc"
         show-empty
       >
-        <template #empty>
-          <p class="text-body-secondary text-center">Ningun bracket.</p> </template
+        <template #empty> <p class="text-body-secondary text-center">Ningun bracket.</p> </template
         ><template #points="{ value, item }">
           <strong>{{ value }}</strong>
         </template>

@@ -20,7 +20,7 @@ import { useRouter } from 'vue-router'
 export type BracketSelection = (TeamId | undefined)[][]
 export type BracketFinalScore = { [key: TeamId]: number }
 
-const { writeRows } = useBracketsLib()
+const { admin, writeRows } = useBracketsLib()
 
 const router = useRouter()
 const competitionId = 'YNZaQiwQDMPHCWsE1KrQ'
@@ -69,7 +69,11 @@ const dataErrors = computed<string[]>(() => {
 })
 
 const finalScoreInput = ref<BracketFinalScore | undefined>()
+
+const bracketId = ref<string | undefined>()
 const finalScoreModal = ref<typeof ModalComp>()
+
+const successModal = ref<typeof ModalComp>()
 
 const winnerTeamId = computed(() => {
   const final = selectedWinners.value?.slice(-1)
@@ -171,8 +175,8 @@ const handleSubmit = async (ev: Event) => {
       final: finalScore.value
     }
   ])
-  const id = resp[0].id
-  router.push({ name: 'bracket-view', params: { bracketId: id } })
+  bracketId.value = resp[0].id
+  successModal.value?.show()
 }
 </script>
 <template>
@@ -182,6 +186,12 @@ const handleSubmit = async (ev: Event) => {
     </template>
     <template v-else-if="!computedPhases?.length">
       <p>Error: No phase.</p>
+    </template>
+    <template v-else-if="!admin.canCreate">
+      <p>
+        No se puede crear mas brackets.
+        <br /><RouterLink :to="{ name: 'bracket-list' }">Ver todos los brackets</RouterLink>.
+      </p>
     </template>
     <template v-else>
       <form @submit="handleSubmit">
@@ -231,6 +241,19 @@ const handleSubmit = async (ev: Event) => {
             </template>
           </div>
         </template>
+      </ModalComp>
+      <ModalComp ref="successModal" title="Guardado" hide-footer>
+        <h3>Tu bracket ha sido guardado</h3>
+        <div class="hstack justify-content-end gap-2">
+          <template v-if="bracketId"
+            ><RouterLink class="btn btn-link" :to="{ name: 'bracket-view', params: { bracketId } }"
+              >Volver a ver tu bracket</RouterLink
+            ></template
+          >
+          <RouterLink class="btn btn-link" :to="{ name: 'bracket-list' }"
+            >Ver todos los brackets</RouterLink
+          >.
+        </div>
       </ModalComp>
     </template>
   </div>
