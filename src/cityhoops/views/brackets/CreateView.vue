@@ -219,6 +219,7 @@ const handleSubmit = async (ev: Event) => {
       </form>
       <ModalComp
         ref="finalScoreModal"
+        title="Puntuación final"
         hide-cancel
         :ok-variant="!isFinalScoreInputValid ? 'light' : 'primary'"
         :ok-disabled="!isFinalScoreInputValid"
