@@ -11,7 +11,7 @@ import type { TeamId } from '@/types/teams'
 const { t } = useI18n()
 
 interface IProps {
-  value: CompetitionRankingComputed[]
+  value: CompetitionRanking[]
   limit?: number
   teamId?: TeamId
 }

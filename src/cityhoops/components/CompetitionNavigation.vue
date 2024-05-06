@@ -19,7 +19,7 @@ const handleAboutUs = () => {
           >Inicio</RouterLink
         >
         <RouterLink
-          :to="{ name: 'competition-standing', params: { competitionId } }"
+          :to="{ name: 'competition-stats', params: { competitionId } }"
           active-class="border-2 border-white border-bottom"
           class="nav-link text-white fw-bold"
           >Tabla</RouterLink

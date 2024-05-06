@@ -1,7 +1,7 @@
 import routes from '@/routes/index'
 import FrontView from '@/cityhoops/views/IndexView.vue'
 import CompetitionHomeView from '@/cityhoops/views/HomeView.vue'
-import CompetitionRankingsView from '@/cityhoops/views/RankingsView.vue'
+import CompetitionStatsView from '@/cityhoops/views/StatsView.vue'
 import CompetitionGamesView from '@/cityhoops/views/GamesView.vue'
 import CompetitionTeamsView from '@/cityhoops/views/TeamsView.vue'
 import BracketView from '@/cityhoops/views/BracketView.vue'
@@ -43,9 +43,9 @@ if (frontViewChildren) {
         component: CompetitionHomeView
       },
       {
-        path: 'ranking/:phase?/:group?',
-        name: 'competition-standing',
-        component: CompetitionRankingsView
+        path: 'stats/:phase?/:group?',
+        name: 'competition-stats',
+        component: CompetitionStatsView
       },
       {
         path: 'games/:phase?/:group?',

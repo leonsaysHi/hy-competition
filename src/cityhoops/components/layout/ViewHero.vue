@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import HeroBg from '@/cityhoops/assets/hero-bg.png'
-console.log(HeroBg)
 const styleObj = {
   backgroundImage: `url(${HeroBg})`
 }
