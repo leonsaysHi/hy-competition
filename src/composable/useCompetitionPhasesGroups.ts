@@ -24,12 +24,14 @@ export default function useCompetitionPhasesGroups() {
       return (phase || '0') as string
     },
     set(v) {
+      const params = {
+        phase: v,
+        group: '0'
+      }
+      // console.log('change phase', params)
       router.push({
         name: route.name as string,
-        params: {
-          phase: v,
-          group: '0'
-        }
+        params
       })
     }
   })
@@ -39,12 +41,14 @@ export default function useCompetitionPhasesGroups() {
       return (group || '0') as string
     },
     set(v) {
+      const params = {
+        ...route.params,
+        group: v
+      }
+      // console.log('change group', params)
       router.replace({
         name: route.name as string,
-        params: {
-          ...route.params,
-          group: v
-        }
+        params
       })
     }
   })
@@ -82,6 +86,9 @@ export default function useCompetitionPhasesGroups() {
   )
 
   watchEffect(() => {
+    if (route.params?.phase && route.params?.group) {
+      return 
+    }
     const hasPhases = Array.isArray(computedPhases?.value) && computedPhases?.value.length > 1
     const hasGroups = selectedPhase.value && selectedPhase.value.groups.length > 1
     const params = {} as { phase: string; group?: string }
@@ -95,6 +102,7 @@ export default function useCompetitionPhasesGroups() {
       params.phase = params.phase || '0'
     }
     if (params.phase) {
+      // console.log('init', params)
       router.replace({
         ...route,
         params
