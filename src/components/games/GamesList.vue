@@ -26,8 +26,8 @@
                     >
                       <strong class="font-score fs-3 lh-1 pt-1">{{ team.finalScore }}</strong>
                     </div>
-                    <template v-if="idx===0">
-                        <SpinnerComp grow variant="success" size="sm" />
+                    <template v-if="idx === 0">
+                      <SpinnerComp grow variant="success" size="sm" />
                     </template>
                   </template>
                 </div>

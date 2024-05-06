@@ -149,16 +149,18 @@ const computedItems = computed(() => {
   // pagination
   const sliceFirstIdx = (props.currentPage - 1) * props.perPage
   const sliceEnd =
-    props.perPage > 0 ? Math.min(results.length, sliceFirstIdx + props.perPage) : props.limit ? props.limit : results.length
-  return results
-    .slice(sliceFirstIdx, sliceEnd)
-    .map((row: TableItem) => {
-      return Object.keys(row).reduce((item: TableItem, key: string, idx: number) => {
-        const field = props.fields.find((field: TableField) => field.key === key)
-        item[key] = field?.formatter ? field.formatter(row[key], row, idx) : row[key]
-        return item
-      }, {})
-    })
+    props.perPage > 0
+      ? Math.min(results.length, sliceFirstIdx + props.perPage)
+      : props.limit
+        ? props.limit
+        : results.length
+  return results.slice(sliceFirstIdx, sliceEnd).map((row: TableItem) => {
+    return Object.keys(row).reduce((item: TableItem, key: string, idx: number) => {
+      const field = props.fields.find((field: TableField) => field.key === key)
+      item[key] = field?.formatter ? field.formatter(row[key], row, idx) : row[key]
+      return item
+    }, {})
+  })
 })
 const tableClass = computed(() => {
   const result = [props.class]

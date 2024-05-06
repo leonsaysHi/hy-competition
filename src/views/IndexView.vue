@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import ViewHeader from '@/components/layout/ViewHeader.vue'
 import ViewFooter from '@/components/layout/ViewFooter.vue'
-
 </script>
 
 <template>

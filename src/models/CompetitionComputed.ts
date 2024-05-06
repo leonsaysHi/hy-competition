@@ -104,26 +104,24 @@ export const getPlayerStatsFromGames = (
   playerId: PlayerId,
   games: GameComputedClass[]
 ): PlayerStats => {
-  return games
-    .reduce((ranking: PlayerStats, game: GameComputedClass) => {
-      playerStatsKeys
-        .map((opt: Option) => opt.value as PlayerStatKey)
-        .forEach((key: PlayerStatKey) => {
-          const statValue = game.boxScore[playerId][key]
-          ranking[key] = ranking[key] ? ranking[key] + statValue : statValue
-        })
-      return ranking
-    }, {} as PlayerStats)
+  return games.reduce((ranking: PlayerStats, game: GameComputedClass) => {
+    playerStatsKeys
+      .map((opt: Option) => opt.value as PlayerStatKey)
+      .forEach((key: PlayerStatKey) => {
+        const statValue = game.boxScore[playerId][key]
+        ranking[key] = ranking[key] ? ranking[key] + statValue : statValue
+      })
+    return ranking
+  }, {} as PlayerStats)
 }
 const getPlayerRankingFromGames = (
   playerId: PlayerId,
   games: GameComputedClass[]
 ): PlayerRankingStats => {
-  const playedgames = games
-    .filter(
-      (game: GameComputedClass) =>
-        game.isFinished && game.boxScore[playerId] && !game.boxScore[playerId].dnp
-    )
+  const playedgames = games.filter(
+    (game: GameComputedClass) =>
+      game.isFinished && game.boxScore[playerId] && !game.boxScore[playerId].dnp
+  )
   const result = {
     gp: playedgames.length,
     ...getPlayerStatsFromGames(playerId, playedgames)
@@ -141,7 +139,41 @@ const getPlayerRankingFromGames = (
     ...updatePlayerBoxScoreCalculations(result)
   }
 }
-
+const getGroupBracket = (teams: TeamId[], games: GameComputedClass[]): Bracket => {
+  let teamsLength = teams.length
+  let matchupId = 0
+  const rounds: Bracket = []
+  while (teamsLength > 1) {
+    teamsLength *= 0.5
+    const roundGames: GameComputedClass[] = games.splice(0, teamsLength)
+    while (roundGames.length < teamsLength) {
+      roundGames.push({} as GameComputedClass)
+    }
+    const round: BracketRound = roundGames.map(
+      (game: GameComputedClass, roundGameIdx: number): BracketMatchup => {
+        matchupId++
+        const isFinal = teamsLength <= 1
+        // roundGameIdx // 0, 1, 2, 3
+        const roundIdx = rounds.length // 0, 1, 2, 3
+        return {
+          game,
+          matchupId,
+          roundIdx,
+          roundGameIdx,
+          isFinal,
+          winnersFrom:
+            !game.id && roundIdx > 0
+              ? [roundGameIdx * 2, roundGameIdx * 2 + 1].map((idx: number) => {
+                  return rounds[roundIdx - 1][idx]
+                })
+              : undefined
+        }
+      }
+    )
+    rounds.push(round)
+  }
+  return rounds
+}
 export default class CompetitionClass {
   row: Competition
   games: Game[]
@@ -155,14 +187,14 @@ export default class CompetitionClass {
 
   get computedPhases(): CompetitionPhaseComputed[] {
     const phases = Array.isArray(this.row.phases)
-      ? this.row.phases
-        .map((phase: Phase, idx: number): CompetitionPhaseComputed => {
+      ? this.row.phases.map((phase: Phase, idx: number): CompetitionPhaseComputed => {
           const { type } = phase
           const dateStart = phase.datetime
           const dateEnd = this.row.phases[idx + 1] ? this.row.phases[idx + 1].datetime : undefined
           const phaseGames = this.games
             .filter((game: Game) => {
-              const isPhaseGame =  isAfter(game.datetime, dateStart) && (!dateEnd || isAfter(dateEnd, game.datetime))
+              const isPhaseGame =
+                isAfter(game.datetime, dateStart) && (!dateEnd || isAfter(dateEnd, game.datetime))
               return isPhaseGame
             })
             .map((game: Game): GameComputedClass => new GameComputedClass(this.row.id, game))
@@ -171,10 +203,9 @@ export default class CompetitionClass {
           )
           // each group:
           const groups = phase.groups.map((groupTeams: TeamId[]): CompetitionGroupComputed => {
-
             // games
-            const groupGames = phaseGames.filter(
-              (game: GameComputedClass) => game.row.teams.every((teamId: TeamId) => groupTeams.includes(teamId))
+            const groupGames = phaseGames.filter((game: GameComputedClass) =>
+              game.row.teams.every((teamId: TeamId) => groupTeams.includes(teamId))
             )
 
             // standing:
@@ -230,7 +261,6 @@ export default class CompetitionClass {
                   (player: CompetitionPlayer) => {
                     const playerId: PlayerId = player.id
                     const ranking = getPlayerRankingFromGames(playerId, groupGames)
-                    console.log(ranking)
                     return {
                       teamId: team.id,
                       playerId: player.id,
@@ -250,11 +280,17 @@ export default class CompetitionClass {
               []
             )
 
+            // bracket:
+            const bracket =
+              type === 'playoffs' ? getGroupBracket(groupTeams, groupGames.slice()) : undefined
+
+
             // returns CompetitionGroupComputed
             return {
               standing,
               ranking,
-              games: groupGames
+              games: groupGames,
+              bracket,
             }
           })
 
@@ -319,7 +355,7 @@ export default class CompetitionClass {
         phase.groups.forEach((group: CompetitionGroupComputed) => {
           group.standing.forEach((stand: CompetitionStanding) => {
             const idx = standingList.findIndex(
-              (r: CompetitionStandingComputed) => r.id === stand.teamId
+              (r: CompetitionStandingComputed) => r.teamId === stand.teamId
             )
             const newStand =
               idx > -1
@@ -333,7 +369,7 @@ export default class CompetitionClass {
               const key = opt.value as TeamStatKey
               newStand[key] += stand[key] || 0
             })
-            newStand.hist.push(...stand.hist)
+            newStand.hist.push(...stand.hist.filter(Boolean))
             newStand.hist = newStand.hist.slice(newStand.hist.length - 5, newStand.hist.length)
             if (idx === -1) {
               standingList.push(newStand)

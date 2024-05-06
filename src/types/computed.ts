@@ -8,6 +8,7 @@ export interface CompetitionGroupComputed {
   games: GameComputedClass[]
   standing: CompetitionStanding[]
   ranking: CompetitionRanking[]
+  bracket?: Bracket
 }
 export interface CompetitionPhaseComputed {
   type: PhaseType

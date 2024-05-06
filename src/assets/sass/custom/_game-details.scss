@@ -1,64 +1,84 @@
 .game-details {
-    .result {
-      display: grid;
-      grid-template-columns: 1fr 40% 1fr;
-      grid-template-rows: auto;
-      .score, .live { display: none; }
+  .result {
+    display: grid;
+    grid-template-columns: 1fr 40% 1fr;
+    grid-template-rows: auto;
+    .score,
+    .live {
+      display: none;
+    }
+    grid-template-areas:
+      't0logo gdetails t1logo'
+      't0name gdetails t1name';
+    &.-is-finished {
+      grid-template-columns: 1fr 20% 20% 1fr;
       grid-template-areas:
-          "t0logo gdetails t1logo"
-          "t0name gdetails t1name";
-      &.-is-finished {
-        grid-template-columns: 1fr 20% 20% 1fr;
-        grid-template-areas:
-          "t0logo t0score t1score t1logo"
-          "t0name t0score t1score t1name";
-        .g.details { display: none; }
-        .score { display: flex; }
-      }
-      &.-is-live {
-        grid-template-columns: 1fr 20% 20% 1fr;
-        grid-template-areas:
-          "t0logo t0score t1score t1logo"
-          "t0name glive glive t1name";
-        .g.details { display: none; }
-        .score, .live { display: flex; }
-      }
-
-      column-gap: map-get($spacers, 1);
-      row-gap: map-get($spacers, 1);
-
-      .t0.name {
-        grid-area: t0name;
-      }
-      .t0.logo {
-        grid-area: t0logo;
-      }
-      .t0.score {
-        grid-area: t0score;
-      }
-      .t1.name {
-        grid-area: t1name;
-      }
-      .t1.logo {
-        grid-area: t1logo;
-      }
-      .t1.score {
-        grid-area: t1score;
-      }
+        't0logo t0score t1score t1logo'
+        't0name t0score t1score t1name';
       .g.details {
-        grid-area: gdetails;
+        display: none;
       }
-      .g.live {
-        grid-area: glive;
-      }
-
-      .name, .logo, .score, .live {
+      .score {
         display: flex;
-        justify-content: center;
       }
-      .name { align-items: start; }
-      .logo { align-items: end; }
-      .score { align-items: center; }
+    }
+    &.-is-live {
+      grid-template-columns: 1fr 20% 20% 1fr;
+      grid-template-areas:
+        't0logo t0score t1score t1logo'
+        't0name glive glive t1name';
+      .g.details {
+        display: none;
+      }
+      .score,
+      .live {
+        display: flex;
+      }
+    }
 
+    column-gap: map-get($spacers, 1);
+    row-gap: map-get($spacers, 1);
+
+    .t0.name {
+      grid-area: t0name;
+    }
+    .t0.logo {
+      grid-area: t0logo;
+    }
+    .t0.score {
+      grid-area: t0score;
+    }
+    .t1.name {
+      grid-area: t1name;
+    }
+    .t1.logo {
+      grid-area: t1logo;
+    }
+    .t1.score {
+      grid-area: t1score;
+    }
+    .g.details {
+      grid-area: gdetails;
+    }
+    .g.live {
+      grid-area: glive;
+    }
+
+    .name,
+    .logo,
+    .score,
+    .live {
+      display: flex;
+      justify-content: center;
+    }
+    .name {
+      align-items: start;
+    }
+    .logo {
+      align-items: end;
+    }
+    .score {
+      align-items: center;
     }
   }
+}

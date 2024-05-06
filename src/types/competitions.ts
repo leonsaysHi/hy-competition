@@ -16,12 +16,13 @@ export interface Phase {
 }
 export interface BracketMatchup {
   game: GameComputedClass
-  matchupIdx: number
   roundIdx: number
   roundGameIdx: number
   isFinal: boolean
-  matchupStyleObj: any,
   winnersFrom: BracketMatchup[] | undefined
+  matchupId: number
+  matchupStyleObj?: { [key: string]: string }
+  vrStyleObj?: { [key: string]: string }
 }
 export type BracketRound = BracketMatchup[]
 export type Bracket = BracketRound[]

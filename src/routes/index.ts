@@ -14,7 +14,6 @@ import PlayerDetailsView from '@/views/players/DetailsView.vue'
 import adminRoutes from './admin'
 import boxScoreRoutes from './box-score-recorder'
 
-
 const routes = [
     {
       path: '/',

@@ -146,7 +146,7 @@ const es = {
     lastUpdate: 'Última actualización'
   },
   bracket: {
-    winnerFrom: 'Ganador de {n}',
+    winnerFrom: 'Ganador de {n}'
   },
   //
   global: {

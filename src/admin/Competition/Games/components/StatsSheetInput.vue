@@ -1,9 +1,6 @@
 <template>
   <div class="hstack gap-1">
-    <ButtonComp
-      variant="primary"
-      :disabled="disabled"
-      @click="handleOpenRecord"
+    <ButtonComp variant="primary" :disabled="disabled" @click="handleOpenRecord"
       >Record box-score</ButtonComp
     >
     <ButtonComp class="ms-auto" variant="danger" :disabled="disabled" @click="handleDelete"
@@ -61,7 +58,7 @@ const handleOpenRecord = () => {
   const recordRoute = { name: 'box-score-record', params: { competitionId, gameId } }
   const route = router.resolve(recordRoute)
   const url = new URL(route.href, window.location.origin).href
-  window.open(url,'_blank')
+  window.open(url, '_blank')
   router.push({ name: 'admin-competition-games', params: { competitionId } })
 }
 
