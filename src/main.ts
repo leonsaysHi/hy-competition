@@ -14,7 +14,6 @@ const router = createRouter({
 })
 router
     .beforeEach(async (to, from, next) => {
-        console.log('test')
         const accessRequired = to.matched?.find(r => Array.isArray(r.meta?.authRequired))?.meta?.authRequired as (string[] | undefined)
         if (Array.isArray(accessRequired) && accessRequired.length > 0 && !isAdmin.value) {
             next({ name: 'login' })
