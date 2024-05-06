@@ -117,6 +117,10 @@ const routes = [
       },
       component: () => import('@/admin/IndexView.vue'),
       children: adminRoutes
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      component: () => import('@/views/NotFound.vue')
     }
   ]
 
