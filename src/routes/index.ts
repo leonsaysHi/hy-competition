@@ -90,16 +90,32 @@ const routes = [
           // this generates a separate chunk (About.[hash].js) for this route
           // which is lazy-loaded when the route is visited.
           component: () => import('@/views/AboutView.vue')
-        }
+        },
+        {
+          path: '/login',
+          name: 'login',
+          component: () => import('@/views/LoginView.vue')
+        },
+        {
+          path: '/logout',
+          name: 'logout',
+          component: () => import('@/views/LogoutView.vue')
+        },
       ]
     },
     {
       path: '/box-score-record',
+      meta: {
+        authRequired: ['admin']
+      },
       component: () => import('@/box-score-recorder/IndexView.vue'),
       children: boxScoreRoutes
     },
     {
       path: '/admin',
+      meta: {
+        authRequired: ['admin']
+      },
       component: () => import('@/admin/IndexView.vue'),
       children: adminRoutes
     }
