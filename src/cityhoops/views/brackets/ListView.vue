@@ -109,7 +109,7 @@ const selectedGroup = computed<CompetitionGroupComputed | undefined>(() => {
       <template v-if="isAdmin">
         <div class="mb-3 hstack justify-content-end">
           <RouterLink
-            class="btn btn-light"
+            class="btn btn-warning"
             :to="{ name: 'bracket-admin', params: { competitionId } }"
             >Admin</RouterLink
           >

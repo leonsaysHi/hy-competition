@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SpinnerComp from '@/components/SpinnerComp.vue';
 import useAuthentification from '@/composable/useAuthentification'
 import { watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -17,5 +18,8 @@ watchEffect(async () => {
 </script>
 
 <template>
-  <div>Loging out...</div>
+  <div class="vstack gap-2 align-items-center">
+    <SpinnerComp />
+    Logging out...
+    </div>
 </template>

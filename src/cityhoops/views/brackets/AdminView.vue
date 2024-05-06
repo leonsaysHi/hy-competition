@@ -129,12 +129,15 @@ const handleDelete = async () => {
       <div class="py-5"><SpinnerComp /></div>
     </template>
     <template v-else>
-      <p class="hstack gap-3 align-items-baseline">
-        <strong>Can create new brackets?</strong>
-        No
-        <CheckComp v-model="canCreate" :value="true" :uncheck-value="false" switch></CheckComp>
-        Yes
-      </p>
+      <div class="mb-3 hstack justify-content-between">
+        <div class="hstack gap-3 align-items-baseline">
+          <strong>Can create new brackets?</strong>
+          No
+          <CheckComp v-model="canCreate" :value="true" :uncheck-value="false" switch></CheckComp>
+          Yes
+        </div>
+        <RouterLink :to="{ name: 'logout' }" class="btn btn-warning">Logout</RouterLink>
+      </div>
       <TableComp
         :fields="fields"
         :items="items"
