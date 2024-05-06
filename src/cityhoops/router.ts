@@ -17,49 +17,65 @@ import CompetitionPlayerDetailsView from '@/views/competition/PlayerDetailsView.
 const cityhoopsRoutes = routes.slice()
 
 const frontViewIdx = cityhoopsRoutes.findIndex((r: any) => r.path === '/')
-const competitionViewIdx = cityhoopsRoutes[frontViewIdx].children.findIndex(
-  (r: any) => r.path === '/competition/:competitionId'
-)
-cityhoopsRoutes[frontViewIdx].path = '/'
 cityhoopsRoutes[frontViewIdx].component = FrontView
-cityhoopsRoutes[frontViewIdx].children[competitionViewIdx].children = [
-  {
-    path: ':phase?/:group?',
-    name: 'competition',
-    component: CompetitionHomeView
-  },
-  {
-    path: 'ranking/:phase?/:group?',
-    name: 'competition-standing',
-    component: CompetitionRankingsView
-  },
-  {
-    path: 'games/:phase?/:group?',
-    name: 'competition-games',
-    component: CompetitionGamesView
-  },
-  {
-    path: 'teams',
-    name: 'competition-teams',
-    component: CompetitionTeamsView
-  },
 
-  {
-    path: 'game/:gameId',
-    name: 'competition-game',
-    component: CompetitionGameDetailsView
-  },
-  {
-    path: 'team/:teamId',
-    name: 'competition-team',
-    component: CompetitionTeamDetailsView
-  },
-  {
-    path: 'player/:playerId',
-    name: 'competition-player',
-    component: CompetitionPlayerDetailsView
+const frontViewChildren = frontViewIdx > -1 ? cityhoopsRoutes[frontViewIdx].children : undefined
+
+if (frontViewChildren) {
+  // remove compatitions list
+  const competitionsListIdx = frontViewChildren.findIndex((r: any) => r.name === 'home')
+  if (competitionsListIdx > -1) {
+    frontViewChildren[competitionsListIdx].redirect = { name: 'not-found' }
   }
-]
+
+  // replace competitions pages
+  const competitionViewIdx = frontViewChildren.findIndex(
+    (r: any) => r.path === '/competition/:competitionId'
+  )
+  const competitionViewChildren =
+    competitionViewIdx > -1 ? frontViewChildren[competitionViewIdx]?.children : undefined
+
+  if (Array.isArray(competitionViewChildren)) {
+    frontViewChildren[competitionViewIdx].children = [
+      {
+        path: ':phase?/:group?',
+        name: 'competition',
+        component: CompetitionHomeView
+      },
+      {
+        path: 'ranking/:phase?/:group?',
+        name: 'competition-standing',
+        component: CompetitionRankingsView
+      },
+      {
+        path: 'games/:phase?/:group?',
+        name: 'competition-games',
+        component: CompetitionGamesView
+      },
+      {
+        path: 'teams',
+        name: 'competition-teams',
+        component: CompetitionTeamsView
+      },
+
+      {
+        path: 'game/:gameId',
+        name: 'competition-game',
+        component: CompetitionGameDetailsView
+      },
+      {
+        path: 'team/:teamId',
+        name: 'competition-team',
+        component: CompetitionTeamDetailsView
+      },
+      {
+        path: 'player/:playerId',
+        name: 'competition-player',
+        component: CompetitionPlayerDetailsView
+      }
+    ]
+  }
+}
 
 cityhoopsRoutes.push({
   path: '/brackets',

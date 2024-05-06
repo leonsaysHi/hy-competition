@@ -14,7 +14,9 @@ import type {
 import type { ScoresComputed } from '@/models/GameComputed'
 import type { TeamId } from '@/types/teams'
 import type { BracketMatchup } from '@/types/competitions'
+import useAuthentification from '@/composable/useAuthentification'
 
+const { isAdmin } = useAuthentification()
 const competitionId = 'YNZaQiwQDMPHCWsE1KrQ'
 const { computedPhases } = useCompetition(competitionId)
 const { isReady, rows, admin } = useBracketsLib()
@@ -104,6 +106,15 @@ const selectedGroup = computed<CompetitionGroupComputed | undefined>(() => {
       <div class="py-5"><SpinnerComp /></div>
     </template>
     <template v-else>
+      <template v-if="isAdmin">
+        <div class="mb-3 hstack justify-content-end">
+          <RouterLink
+            class="btn btn-light"
+            :to="{ name: 'bracket-admin', params: { competitionId } }"
+            >Admin</RouterLink
+          >
+        </div>
+      </template>
       <TableComp
         :fields="fields"
         :items="items"
