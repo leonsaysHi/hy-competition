@@ -20,7 +20,7 @@ const frontViewIdx = cityhoopsRoutes.findIndex((r: any) => r.path === '/')
 const competitionViewIdx = cityhoopsRoutes[frontViewIdx].children.findIndex(
   (r: any) => r.path === '/competition/:competitionId'
 )
-cityhoopsRoutes[frontViewIdx].path = '/x'
+cityhoopsRoutes[frontViewIdx].path = '/'
 cityhoopsRoutes[frontViewIdx].component = FrontView
 cityhoopsRoutes[frontViewIdx].children[competitionViewIdx].children = [
   {
@@ -83,6 +83,9 @@ cityhoopsRoutes.push({
     {
       path: 'admin-comp-brackets/:competitionId',
       name: 'bracket-admin',
+      meta: {
+        authRequired: ['admin']
+      },
       component: AdminBrackets
     }
   ]
