@@ -65,7 +65,7 @@ const winners = computed(() => {
 })
 
 const items = computed(() => {
-  if (!admin.value?.canCreate) {
+  if (admin.value?.canCreate) {
     return []
   }
   return (
@@ -126,7 +126,7 @@ const selectedGroup = computed<CompetitionGroupComputed | undefined>(() => {
       >
         <template #empty>
           <p class="text-body-secondary text-center">
-            <template v-if="!admin.value?.canCreate"> No se puede ver los brackets aun </template>
+            <template v-if="admin.value?.canCreate"> No se puede ver los brackets aun </template>
             <template v-else> Ningun bracket por ahora </template>
             .
           </p>
