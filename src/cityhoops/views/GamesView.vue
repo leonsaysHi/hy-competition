@@ -11,13 +11,8 @@ import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
 
 const { t } = useI18n()
-const {
-  selectedPhaseIdx,
-  phasesOptions,
-  selectedGroupIdx,
-  selectedGroup,
-  groupsOptions
-} = useCompetitionPhasesGroups()
+const { selectedPhaseIdx, phasesOptions, selectedGroupIdx, selectedGroup, groupsOptions } =
+  useCompetitionPhasesGroups()
 
 type GameView = 'prev' | 'next'
 const currentGamesView = ref<GameView>('prev')
@@ -30,9 +25,11 @@ const prevNextGamesList = computed<GameComputedClass[]>(() => {
   })
 })
 const liveGamesList = computed<GameComputedClass[]>(() => {
-  return selectedGroup.value?.games
-    .filter((game: GameComputedClass) => !game.isFinished && game.isLive) || []
-
+  return (
+    selectedGroup.value?.games.filter(
+      (game: GameComputedClass) => !game.isFinished && game.isLive
+    ) || []
+  )
 })
 
 const gamesViewOptions = computed<Option[]>(() => {
@@ -40,17 +37,22 @@ const gamesViewOptions = computed<Option[]>(() => {
     {
       text: t('global.previous', 2),
       value: 'prev',
-      disabled: !selectedGroup.value?.games.some((game: GameComputedClass) => game.isFinished && !game.isLive)
+      disabled: !selectedGroup.value?.games.some(
+        (game: GameComputedClass) => game.isFinished && !game.isLive
+      )
     },
     {
       text: t('global.upcoming', 2),
       value: 'next',
-      disabled: !selectedGroup.value?.games.some((game: GameComputedClass) => !game.isFinished && !game.isLive) 
+      disabled: !selectedGroup.value?.games.some(
+        (game: GameComputedClass) => !game.isFinished && !game.isLive
+      )
     }
   ]
 })
 
-const handleSetGamesView = (opt: Option) => currentGamesView.value = opt.value as unknown as GameView
+const handleSetGamesView = (opt: Option) =>
+  (currentGamesView.value = opt.value as unknown as GameView)
 
 watch(
   () => gamesViewOptions.value,
@@ -58,7 +60,7 @@ watch(
     const optIdx = val.findIndex((opt: Option) => !opt.disabled)
     currentGamesView.value = optIdx > -1 ? (val[optIdx].value as 'prev' | 'next') : 'prev'
   },
-  {immediate: true}
+  { immediate: true }
 )
 </script>
 <template>

@@ -47,6 +47,8 @@ export interface CompetitionDoc {
   phases: Phase[]
   statsInput: StatsInputType
   trackedStats: PlayerStatKey[]
+  mediasURL: string
+  rulesURL: string
   lastUpdate: Date
 }
 

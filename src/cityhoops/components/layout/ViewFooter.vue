@@ -20,8 +20,9 @@ import CompetitionNavigation from '../CompetitionNavigation.vue'
           <h5>Contáctanos</h5>
           <p>
             Nuestros datos de contacto son:
-            <br />Cel/WhatsApp: 507 6611-6363 / 507 6616-2625 <br />E-mail:
-            contacto@cityhoopspty.com
+            <br />Cel/WhatsApp: <a href="tel:+507-6611-6363">507 6611-6363</a> /
+            <a href="tel:+507-6616-2625">507 6616-2625</a> <br />E-mail:
+            <a href="mailto:contacto@cityhoopspty.com">contacto@cityhoopspty.com</a>
           </p>
         </div>
       </div>

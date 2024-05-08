@@ -1,11 +1,10 @@
 <script lang="ts" setup>
 import { useRoute } from 'vue-router'
 import SocialsNav from './SocialsNav.vue'
+import useCompetition from '@/composable/useCompetition'
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string | undefined }
-const handleAboutUs = () => {
-  window.scrollTo(0, document.body.scrollHeight)
-}
+const { row } = useCompetition(competitionId)
 </script>
 <template>
   <template v-if="!competitionId"> No competition. </template>
@@ -36,9 +35,11 @@ const handleAboutUs = () => {
           class="nav-link text-white fw-bold"
           >Equipos</RouterLink
         >
-        <a @click="handleAboutUs" class="nav-link text-white fw-bold cursor-pointer"
-          >Sobre la liga</a
-        >
+        <template v-if="row?.rulesURL">
+          <a :href="row.rulesURL" target="_blank" class="nav-link text-white fw-bold cursor-pointer"
+            >Sobre la liga</a
+          >
+        </template>
       </nav>
       <div class="ms-auto d-lg-none"><SocialsNav /></div>
     </div>

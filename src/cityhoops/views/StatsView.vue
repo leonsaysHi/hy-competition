@@ -7,14 +7,8 @@ import DropdownComp from '@/components/DropdownComp.vue'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
 
-const {
-  selectedPhaseIdx,
-  phasesOptions,
-  selectedGroupIdx,
-  selectedGroup,
-  groupsOptions
-} = useCompetitionPhasesGroups()
-
+const { selectedPhaseIdx, phasesOptions, selectedGroupIdx, selectedGroup, groupsOptions } =
+  useCompetitionPhasesGroups()
 </script>
 <template>
   <div>

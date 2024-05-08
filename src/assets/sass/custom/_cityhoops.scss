@@ -4,6 +4,10 @@ header {
 footer {
   background-color: $blue-600;
   color: white;
+  a:link,
+  a:visited {
+    color: $orange-200;
+  }
 }
 .hero {
   background-size: auto;
