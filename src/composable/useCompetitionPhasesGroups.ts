@@ -87,7 +87,7 @@ export default function useCompetitionPhasesGroups() {
 
   watchEffect(() => {
     if (route.params?.phase && route.params?.group) {
-      return 
+      return
     }
     const hasPhases = Array.isArray(computedPhases?.value) && computedPhases?.value.length > 1
     const hasGroups = selectedPhase.value && selectedPhase.value.groups.length > 1

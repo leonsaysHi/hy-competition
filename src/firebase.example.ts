@@ -1,9 +1,7 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 
-export const admins = [
-  'leon.ronssin@gmail.com'
-]
+export const admins = ['leon.ronssin@gmail.com']
 
 // Your web app's Firebase configuration
 const firebaseConfig = {

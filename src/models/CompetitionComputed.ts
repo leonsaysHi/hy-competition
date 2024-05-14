@@ -284,13 +284,12 @@ export default class CompetitionClass {
             const bracket =
               type === 'playoffs' ? getGroupBracket(groupTeams, groupGames.slice()) : undefined
 
-
             // returns CompetitionGroupComputed
             return {
               standing,
               ranking,
               games: groupGames,
-              bracket,
+              bracket
             }
           })
 
