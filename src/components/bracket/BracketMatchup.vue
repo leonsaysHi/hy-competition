@@ -12,7 +12,7 @@
           <i class="bi bi-trophy-fill"></i>
         </template>
         <template v-else>
-          {{ matchup.matchupIdx }}
+          {{ matchup.matchupId }}
         </template>
       </div>
       <div
@@ -97,7 +97,7 @@ const matchupTeams = computed<(MatchupTeam | undefined)[]>(() => {
           const scores: ScoresComputed[] = matchup.game.scores
           const winner = scores?.find((row: ScoresComputed) => row.winner)
           return {
-            winnerFrom: matchup.matchupIdx,
+            winnerFrom: matchup.matchupId,
             ...(winner ? getTeam(winner.id) : {})
           }
         })

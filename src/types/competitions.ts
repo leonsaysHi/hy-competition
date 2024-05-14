@@ -15,7 +15,7 @@ export interface Phase {
   datetime: Date
 }
 export interface BracketMatchup {
-  game: GameComputedClass
+  game?: GameComputedClass
   roundIdx: number
   roundGameIdx: number
   isFinal: boolean
