@@ -154,7 +154,8 @@ interface MatchupTeam extends ScoresComputed, Team {
 }
 const matchupTeams = computed<(MatchupTeam | undefined)[]>(() => {
   const scores = props.matchup.game?.scores
-    ? props.matchup.game.scores.map((row: ScoresComputed | undefined) => {
+    ? props.matchup.game.scores
+      .map((row: ScoresComputed | undefined) => {
         return row
           ? {
               ...getTeam(row.id),

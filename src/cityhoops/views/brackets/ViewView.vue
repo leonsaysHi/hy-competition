@@ -12,9 +12,12 @@ import useLibs from '@/composable/useLibs'
 import useBracketsLib, { type BracketItem } from '@/cityhoops/composable/useBracketsLib'
 import { useRoute } from 'vue-router'
 import FieldComp from '@/components/FieldComp.vue'
+import useAuthentification from '@/composable/useAuthentification'
+import TeamLogo from '@/components/teams/TeamLogo.vue'
 
 const competitionId = 'YNZaQiwQDMPHCWsE1KrQ'
 
+const { isAdmin } = useAuthentification()
 const route = useRoute()
 const { bracketId } = route.params as { bracketId: string }
 
@@ -32,46 +35,24 @@ const selectedGroup = computed<CompetitionGroupComputed | undefined>(() => {
     : undefined
 })
 
-const emptyBracket = ref<Bracket | undefined>()
+const createdBracket = ref<Bracket | undefined>()
 const gotEmptyBracket = watch(
   () => selectedGroup.value?.bracket,
   (bracket: Bracket | undefined) => {
     if (Array.isArray(bracket) && bracket.length > 0) {
-      emptyBracket.value = bracket.map((round: BracketRound, roundIdx: number) => {
-        return round.map(
-          (matchup: BracketMatchup) =>
-            ({
-              ...matchup,
-              game: roundIdx > 0 ? {} : matchup.game
-            }) as BracketMatchup
-        )
-      })
-      gotEmptyBracket()
-    }
-  },
-  { immediate: true }
-)
-
-const bracketRow = computed(() =>
-  Array.isArray(rows.value)
-    ? rows.value.find((row: BracketItem) => row.id === bracketId)
-    : undefined
-)
-const title = computed<string | undefined>(() => bracketRow.value?.title)
-const selectedWinners = computed<[]>(() => bracketRow.value?.winners || [])
-const finalScore = computed<any | undefined>(() => bracketRow.value?.final || [])
-
-const winnerTeamId = computed(() => {
-  const final = selectedWinners.value?.slice(-1)
-  return final?.[0]?.[0] as TeamId
-})
-
-const createdBracket = computed<Bracket>((): Bracket => {
-  return emptyBracket.value
-    ? emptyBracket.value.map((round: BracketRound, roundIdx: number) => {
-        return round.map((matchup: BracketMatchup) => {
-          const scores = matchup.winnersFrom
-            ? matchup.winnersFrom.reduce(
+      const createdBracketValue = bracket
+        .map((round: BracketRound, roundIdx: number) => {
+          return round.map((matchup: BracketMatchup) => {
+            
+            const { roundGameIdx } = matchup
+            const winnersFrom = !matchup.winnersFrom && roundIdx > 0 
+                ? [roundGameIdx * 2, roundGameIdx * 2 + 1].map((idx: number) => {
+                    return bracket[roundIdx - 1][idx]
+                  })
+                : matchup.winnersFrom || []
+            
+            const scores = winnersFrom
+            ? winnersFrom.reduce(
                 (acc: (ScoresComputed | undefined)[], mu: BracketMatchup) => {
                   const { roundIdx, roundGameIdx } = mu
                   const teamId =
@@ -93,14 +74,34 @@ const createdBracket = computed<Bracket>((): Bracket => {
                 [] as (ScoresComputed | undefined)[]
               )
             : []
-          return {
-            ...matchup,
-            game: roundIdx > 0 ? { scores } : matchup.game
-          }
+          
+            return {
+              ...matchup,
+              game : roundIdx === 0 ? matchup.game : { scores }
+            } as BracketMatchup
+          })
         })
-      })
-    : ([] as Bracket)
+      createdBracket.value = createdBracketValue
+      gotEmptyBracket()
+    }
+  },
+  { immediate: true }
+)
+
+const bracketRow = computed(() =>
+  Array.isArray(rows.value)
+    ? rows.value.find((row: BracketItem) => row.id === bracketId)
+    : undefined
+)
+const title = computed<string | undefined>(() => bracketRow.value?.title)
+const selectedWinners = computed<(string | undefined)[][]>(() => bracketRow.value?.winners || [])
+const finalScore = computed<any | undefined>(() => bracketRow.value?.final || [])
+
+const winnerTeamId = computed(() => {
+  const final = selectedWinners.value?.slice(-1)
+  return final?.[0]?.[0] as TeamId
 })
+
 </script>
 <template>
   <div>
@@ -118,6 +119,18 @@ const createdBracket = computed<Bracket>((): Bracket => {
         <h3>{{ title }}</h3>
       </FieldComp>
       <BracketView :bracket="createdBracket" :disabled="true" :selected-winners="selectedWinners" />
+      <template v-if="isAdmin">
+        <hr />
+        <div class="row">
+          <template v-for="(round, rIdx) in selectedWinners" :key="rIdx">
+            <div class="col">
+              <template v-for="teamId in round" :key="teamId">
+                <div><TeamLogo :team-id="teamId" /></div>
+              </template>
+            </div>
+          </template>
+        </div>
+      </template>
     </template>
   </div>
 </template>

@@ -15,14 +15,12 @@ import { add } from '@/utils/maths'
 import FieldComp from '@/components/FieldComp.vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import useBracketsLib from '@/cityhoops/composable/useBracketsLib'
-import { useRouter } from 'vue-router'
 
 export type BracketSelection = (TeamId | undefined)[][]
 export type BracketFinalScore = { [key: TeamId]: number }
 
 const { admin, writeRows } = useBracketsLib()
 
-const router = useRouter()
 const competitionId = 'YNZaQiwQDMPHCWsE1KrQ'
 
 const { isReady, computedPhases } = useCompetition(competitionId)
