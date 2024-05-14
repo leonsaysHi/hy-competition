@@ -18,8 +18,5 @@ watchEffect(async () => {
 </script>
 
 <template>
-  <div class="vstack gap-2 align-items-center">
-    <SpinnerComp />
-    Logging out...
-  </div>
+  <div>Loging out...</div>
 </template>
