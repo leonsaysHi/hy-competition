@@ -173,8 +173,16 @@ const matchupTeams = computed<(MatchupTeam | undefined)[]>(() => {
           ...(winner ? getTeam(winner.id) : {})
         }
       })
-    : []
-
+    : props.matchup.winnersFrom
+      ? props.matchup.winnersFrom.map((matchup: BracketMatchup) => {
+          const scores: ScoresComputed[] = matchup.game.scores
+          const winner = scores?.find((row: ScoresComputed) => row.winner)
+          return {
+            winnerFrom: matchup.matchupId,
+            ...(winner ? getTeam(winner.id) : {})
+          }
+        })
+      : undefined
   return [scores[0] || winnersFrom[0] || undefined, scores[1] || winnersFrom[1] || undefined]
 })
 
