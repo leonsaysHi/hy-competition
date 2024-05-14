@@ -44,9 +44,9 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
         class="mb-3 result"
         :class="{ '-is-finished': gameComputed.isFinished, '-is-live': gameComputed.isLive }"
       >
-        <div class="g details">
+        <div class="g details text-center">
           {{ gameComputed.date?.long }}
-          <span class="text-body-secondary">{{ gameComputed.date.time }}</span>
+          <br /><span class="text-body-secondary">{{ gameComputed.date.time }}</span>
         </div>
         <template v-for="(item, idx) in gameComputed.scores" :key="item.id">
           <div :class="`t${idx} name`">
@@ -56,14 +56,16 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
             <TeamLogo class="d-none d-lg-block" :team-id="item.id" :size="100" />
             <TeamLogo class="d-lg-none" :team-id="item.id" :size="60" />
           </div>
-          <div
-            :class="[
-              `t${idx} score pt-2 pb-1 px-3 rounded-2`,
-              item.winner ? 'bg-success-subtle' : 'bg-danger-subtle'
-            ]"
-          >
-            <strong class="display-1 font-score">{{ item.finalScore }}</strong>
-          </div>
+          <template v-if="gameComputed.isLive || gameComputed.isFinished">
+            <div
+              :class="[
+                `t${idx} score pt-2 pb-1 px-3 rounded-2`,
+                item.winner ? 'bg-success-subtle' : 'bg-danger-subtle'
+              ]"
+            >
+              <strong class="display-1 font-score">{{ item.finalScore }}</strong>
+            </div>
+          </template>
         </template>
         <template v-if="gameComputed.isLive">
           <div class="g live d-flex align-items-center gap-2">
