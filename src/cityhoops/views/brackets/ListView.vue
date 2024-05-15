@@ -15,6 +15,7 @@ import type { ScoresComputed } from '@/models/GameComputed'
 import type { TeamId } from '@/types/teams'
 import type { BracketMatchup } from '@/types/competitions'
 import useAuthentification from '@/composable/useAuthentification'
+import type GameComputedClass from '@/models/GameComputed'
 
 const { isAdmin } = useAuthentification()
 const competitionId = 'YNZaQiwQDMPHCWsE1KrQ'
@@ -64,17 +65,33 @@ const winners = computed(() => {
   )
 })
 
+const finalResult = computed<{ total: number, game: GameComputedClass } | undefined>(() => {
+  const finalMatchup:BracketMatchup | undefined = selectedGroup.value?.bracket?.flat
+    ? selectedGroup.value.bracket
+      .flat()
+      .find((matchup: BracketMatchup) => matchup.isFinal && matchup.game?.isFinished)
+    : undefined
+  if (!finalMatchup?.game?.scores) { 
+    return undefined
+  }
+  const game = finalMatchup.game
+  const total = finalMatchup.game.scores.reduce((total: number, score: ScoresComputed) => total + score.finalScore, 0)
+  return {
+    total, 
+    game
+  }
+})
 const items = computed(() => {
   if (admin.value?.canCreate) {
     return []
   }
-  return (
-    rows.value?.map((row: BracketItem) => {
-      const bracketwinners = row.winners.flat() as TeamId[]
+  const result = Array.isArray(rows.value)
+    ? rows.value.map((row: BracketItem) => {
+      const bracketWinners = row.winners.flat() as TeamId[]
       const points = teams.value.reduce((result: number, teamId: TeamId) => {
-        const wins = winners.value.filter((tId: TeamId) => teamId === tId).length
-        const bracketWins = bracketwinners.filter((tId: TeamId) => teamId === tId).length
-        let corrects = Math.min(wins, bracketWins)
+        const realTeamWins = winners.value.filter((tId: TeamId) => teamId === tId).length
+        const bracketTeamWins = bracketWinners.filter((tId: TeamId) => teamId === tId).length
+        let corrects = Math.min(realTeamWins, bracketTeamWins)
         let pts = 2
         while (corrects > 0) {
           result += pts
@@ -83,12 +100,28 @@ const items = computed(() => {
         }
         return result
       }, 0)
+
+      const finalScores = finalResult.value?.game?.scores
+      const isFinalistsCorrect = finalScores
+        ? Object.keys(row.final)
+          .every((teamId: TeamId) => finalScores
+            .findIndex((score: ScoresComputed) => score.id === teamId) > -1
+          )
+        : undefined
+      const winnerTeamId = finalResult.value?.game?.scores
+          .find((score: ScoresComputed) => score.winner)?.id
+      const isFinalWinnerCorrect = winnerTeamId === row.winners[row.winners.length - 1][0]
+      const finalDiff = finalScores && isFinalistsCorrect && isFinalWinnerCorrect
+        ? finalScores.reduce((total: number, score: ScoresComputed) => total + score.finalScore - row.final[score.id], 0) 
+        : null
       return {
         ...row,
-        points
+        points,
+        finalDiff
       }
-    }) || []
-  )
+    })
+    : []
+  return result
 })
 
 const selectedGroup = computed<CompetitionGroupComputed | undefined>(() => {
@@ -132,7 +165,12 @@ const selectedGroup = computed<CompetitionGroupComputed | undefined>(() => {
           </p>
         </template>
         <template #points="{ value, item }">
-          <strong>{{ value }}</strong>
+          <div class="hstack gap-2">
+            <strong>{{ value }}</strong>
+            <template v-if="item.finalDiff !== null">
+              <small>+/- {{ item.finalDiff < 0 ? item.finalDiff * -1 : item.finalDiff }}</small>
+            </template>
+          </div>
         </template>
         <template #dateCreated="{ value }">
           {{ formatDate(value).long }}
