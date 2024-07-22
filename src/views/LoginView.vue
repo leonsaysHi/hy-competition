@@ -17,7 +17,11 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="p-4 d-flex justify-content-center">
-    <ButtonComp @click="handleSignIn"> Sign In with Google </ButtonComp>
+  <div class="p-4 d-flex flex-column align-items-center">
+    <p class="mb-5">
+      <ButtonComp @click="handleSignIn"> Sign In with Google</ButtonComp>
+    </p>
+    <p class="small text-body-secondary">1.0.2</p>
+
   </div>
 </template>

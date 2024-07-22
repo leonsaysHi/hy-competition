@@ -8,7 +8,7 @@ export default function useAuthentification() {
   const isAdmin = computed<boolean>(
     () => typeof user.value?.email === 'string' && admins.includes(user.value?.email)
   )
-  const logIn = () => signInWithPopup(auth, new GoogleAuthProvider())
+  const logIn = () => signInWithPopup(auth, new GoogleAuthProvider()).catch((err) => alert(err.message))
   const logOut = () => signOut(auth)
   return {
     logIn,
