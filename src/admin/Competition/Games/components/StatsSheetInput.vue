@@ -56,10 +56,13 @@ const handleConfirmDelete = () => {
 
 const handleOpenRecord = () => {
   const recordRoute = { name: 'box-score-record', params: { competitionId, gameId } }
+  /*
   const route = router.resolve(recordRoute)
-  const url = new URL(route.href, window.location.origin).href
+  const isProd = window.location.pathname.includes('/app/')
+  const url = new URL(route.href, window.location.origin + (isProd ? '/app' : '')).href
   window.open(url, '_blank')
-  router.push({ name: 'admin-competition-games', params: { competitionId } })
+  */
+  router.push(recordRoute)
 }
 
 const handleDelete = async () => {
