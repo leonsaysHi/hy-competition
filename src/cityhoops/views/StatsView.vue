@@ -26,7 +26,7 @@ const { selectedPhaseIdx, phasesOptions, selectedGroupIdx, selectedGroup, groups
           />
         </template>
         <template v-if="groupsOptions && groupsOptions.length > 1">
-          <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons />
+          <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons button-variant="light" />
         </template>
       </template>
     </ViewHero>
