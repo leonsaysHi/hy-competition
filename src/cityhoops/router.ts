@@ -3,6 +3,7 @@ import FrontView from '@/cityhoops/views/IndexView.vue'
 import CompetitionHomeView from '@/cityhoops/views/HomeView.vue'
 import CompetitionStatsView from '@/cityhoops/views/StatsView.vue'
 import CompetitionGamesView from '@/cityhoops/views/GamesView.vue'
+import CompetitionTeamView from '@/cityhoops/views/TeamView.vue'
 import CompetitionTeamsView from '@/cityhoops/views/TeamsView.vue'
 import BracketView from '@/cityhoops/views/BracketView.vue'
 import CreateBracket from '@/cityhoops/views/brackets/CreateView.vue'
@@ -11,7 +12,6 @@ import ListBrackets from '@/cityhoops/views/brackets/ListView.vue'
 import AdminBrackets from '@/cityhoops/views/brackets/AdminView.vue'
 
 import CompetitionGameDetailsView from '@/views/competition/GameDetailsView.vue'
-import CompetitionTeamDetailsView from '@/views/competition/TeamDetailsView.vue'
 import CompetitionPlayerDetailsView from '@/views/competition/PlayerDetailsView.vue'
 
 const cityhoopsRoutes = routes.slice()
@@ -22,7 +22,7 @@ cityhoopsRoutes[frontViewIdx].component = FrontView
 const frontViewChildren = frontViewIdx > -1 ? cityhoopsRoutes[frontViewIdx].children : undefined
 
 if (frontViewChildren) {
-  // remove compatitions list
+  // remove competitions list
   const competitionsListIdx = frontViewChildren.findIndex((r: any) => r.name === 'home')
   if (competitionsListIdx > -1) {
     frontViewChildren[competitionsListIdx].redirect = { name: 'not-found' }
@@ -66,7 +66,7 @@ if (frontViewChildren) {
       {
         path: 'team/:teamId',
         name: 'competition-team',
-        component: CompetitionTeamDetailsView
+        component: CompetitionTeamView
       },
       {
         path: 'player/:playerId',
