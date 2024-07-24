@@ -45,7 +45,6 @@ export default function useCompetitionPhasesGroups() {
         ...route.params,
         group: v
       }
-      // console.log('change group', params)
       router.replace({
         name: route.name as string,
         params

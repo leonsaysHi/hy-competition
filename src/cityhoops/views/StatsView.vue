@@ -6,9 +6,17 @@ import ViewHero from '../components/layout/ViewHero.vue'
 import DropdownComp from '@/components/DropdownComp.vue'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
+import { computed } from 'vue'
 
-const { selectedPhaseIdx, phasesOptions, selectedGroupIdx, selectedGroup, groupsOptions } =
+const { selectedPhaseIdx, selectedPhase, phasesOptions, groupsOptions, selectedGroupIdx, selectedGroup } =
   useCompetitionPhasesGroups()
+
+const overallRanking = computed(() => {
+  return groupsOptions.value?.reduce((acc: typeof CompetitionRanking[], opt) => {
+      const ranking = selectedPhase.value?.groups[Number(opt.value)]?.ranking || []
+      return acc.concat(ranking)
+    }, [])
+})
 </script>
 <template>
   <div>
@@ -37,7 +45,7 @@ const { selectedPhaseIdx, phasesOptions, selectedGroupIdx, selectedGroup, groups
       <h2>Tabla</h2>
       <CompetitionStanding :value="selectedGroup.standing" />
       <h2>Líderes por categorías</h2>
-      <CompetitionRanking :value="selectedGroup.ranking" :limit="25" />
+      <CompetitionRanking :value="overallRanking" :limit="25" />
     </template>
   </div>
 </template>
