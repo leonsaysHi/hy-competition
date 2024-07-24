@@ -57,7 +57,7 @@
         <template v-if="item.dnp === true">-</template>
         <template v-else>
           {{
-            item.gp
+            item.gp && showAvg
               ? formatAvg(getAvg(getCalculated(item).pts, item.gp))
               : item.ftm + 2 * item.fgm + 3 * item.fg3m
           }}
@@ -65,11 +65,11 @@
       </template>
       <template #ftm="{ value, item }">
         <template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
       </template>
       <template #fta="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
       </template>
       <template #ftprc="{ item }"
         ><template v-if="item.dnp === true">-</template>
@@ -77,11 +77,11 @@
       </template>
       <template #fgm="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
       </template>
       <template #fga="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
       </template>
       <template #fgprc="{ item }"
         ><template v-if="item.dnp === true">-</template>
@@ -89,11 +89,11 @@
       </template>
       <template #fg3m="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
       </template>
       <template #fg3a="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
       </template>
       <template #fg3prc="{ item }"
         ><template v-if="item.dnp === true">-</template>
@@ -101,47 +101,47 @@
       </template>
       <template #dreb="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
       </template>
       <template #oreb="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
       </template>
       <template #reb="{ item }"
         ><template v-if="item.dnp === true">-</template>
         <template v-else>
           {{
-            item.gp ? formatAvg(getAvg(getCalculated(item).reb, item.gp)) : getCalculated(item).reb
+             item.gp && showAvg ? formatAvg(getAvg(getCalculated(item).reb, item.gp)) : getCalculated(item).reb
           }}</template
         >
       </template>
       <template #ast="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
       </template>
       <template #stl="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
       </template>
       <template #blk="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
       </template>
       <template #blka="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
       </template>
       <template #tov="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
       </template>
       <template #fcm="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
       </template>
       <template #fdr="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
       </template>
       <template #footerid>
         <span class="fw-lighter">{{ t('global.total', 2) }}</span>
@@ -188,6 +188,7 @@ const { t } = useI18n()
 interface IProps {
   fields: TableField[]
   items: TableItem[]
+  showAvg?: boolean
   limit?: number
   showLogo?: boolean
   showTotal?: boolean
@@ -196,6 +197,7 @@ interface IProps {
 }
 const props = withDefaults(defineProps<IProps>(), {
   limit: 0,
+  showAvg: true,
   showTotal: false,
   showLogo: false,
   sortedKey: undefined,

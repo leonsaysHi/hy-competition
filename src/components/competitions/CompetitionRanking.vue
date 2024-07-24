@@ -14,11 +14,13 @@ interface IProps {
   value: CompetitionRanking[]
   limit?: number
   teamId?: TeamId
+  showAvg?: boolean
 }
 
 const props = withDefaults(defineProps<IProps>(), {
   limit: 0,
-  teamId: undefined
+  teamId: undefined,
+  showAvg: true
 })
 
 const rankingKeys: PlayerRankingKey[] = ['gp', 'pts', 'fg3m', 'reb', 'ast', 'blk', 'stl', 'tov']
@@ -71,6 +73,7 @@ const items = computed(() =>
     :fields="fields"
     :items="items"
     :limit="limit"
+    :show-avg="showAvg"
     sorted-key="pts"
     sorted-direction="desc"
   ></StatsTableComp>
