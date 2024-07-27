@@ -304,6 +304,7 @@ export default class CompetitionClass {
 
             // returns CompetitionGroupComputed
             return {
+              name: group.name,
               standing,
               ranking,
               games: groupGames,
