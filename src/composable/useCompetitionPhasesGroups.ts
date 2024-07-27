@@ -78,7 +78,7 @@ export default function useCompetitionPhasesGroups() {
       ? selectedPhase.value?.groups.map(
           (row: CompetitionGroupComputed, idx: any): Option => ({
             value: idx.toString(),
-            text: t('global.group') + ` ${idx + 1}`
+            text: row.name
           })
         )
       : undefined
