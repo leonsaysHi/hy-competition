@@ -7,10 +7,10 @@
       <div class="col">
         <div class="card">
           <div class="card-header text-center">
-            <strong>Group {{ gIdx + 1 }}</strong>
+            <strong>{{ group.name }}</strong>
           </div>
           <ul class="list-group list-group-flush">
-            <template v-for="teamId in group" :key="teamId">
+            <template v-for="teamId in group.teams" :key="teamId">
               <li class="list-group-item d-flex justify-content-between gap-3">
                 <span>{{ getTeamName(teamId) }}</span>
               </li>
@@ -23,13 +23,13 @@
 </template>
 
 <script setup lang="ts">
-import type { TeamId } from '@/types/teams'
 import useLibs from '@/composable/useLibs'
+import type { PhaseGroup } from '@/types/competitions';
 
 const { getTeamName } = useLibs()
 
 interface IProps {
-  value: TeamId[][]
+  value: PhaseGroup[]
 }
 withDefaults(defineProps<IProps>(), {})
 </script>

@@ -17,6 +17,7 @@ import SpinnerComp from '@/components/SpinnerComp.vue'
 import PhaseMenu from './components/PhaseMenu.vue'
 import useCompetition from '@/composable/useCompetition'
 import { formatDate } from '@/utils/dates'
+import type { Phase, PhaseGroup } from '@/types/competitions'
 
 const route = useRoute()
 const { competitionId } = route.params
@@ -72,12 +73,12 @@ const fields: TableField[] = [
 ]
 
 const teamsOptionsByGroups = computed((): Option[][] => {
-  const currentPhase = row.value?.phases[row.value?.phases.length - 1]
-  const groups = currentPhase?.groups
+  const currentPhase:Phase | undefined = row.value?.phases[row.value?.phases.length - 1]
+  const groups:PhaseGroup[] | undefined = currentPhase?.groups
   return Array.isArray(groups) && groups.length
-    ? groups?.map((group: TeamId[]): Option[] => {
+    ? groups?.map((group: PhaseGroup): Option[] => {
         return [
-          ...group.map((teamId: TeamId): Option => {
+          ...group.teams.map((teamId: TeamId): Option => {
             const team = getCompetitionTeam(teamId) as CompetitionTeam
             return {
               value: teamId,
