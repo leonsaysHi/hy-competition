@@ -28,7 +28,7 @@ const overallRanking = computed<typeof CompetitionRanking[]>((): typeof Competit
     </template>
     <template v-else>
       <div class="d-flex justify-content-between gap-3">
-        <h2>Tabla</h2>
+        <h2>Tabla {{ selectedGroup.name }}</h2>
         <div>
           <template v-if="phasesOptions && phasesOptions.length > 1">
             <DropdownComp
