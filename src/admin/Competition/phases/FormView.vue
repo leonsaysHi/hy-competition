@@ -26,6 +26,7 @@ import AddPhaseForm from '@/admin/competition/forms/AddPhaseForm.vue'
 import useLibs from '@/composable/useLibs'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
+import type { Phase } from '@/types/competitions'
 
 const route = useRoute()
 const router = useRouter()
@@ -49,7 +50,7 @@ const teamsOptions = computed((): Option[] => {
 })
 
 // Add phase
-const handleAddPhase = async (data) => {
+const handleAddPhase = async (data: Phase) => {
   const phases = Array.isArray(row.value?.phases) ? row.value.phases : []
   phases.push(data)
   await writeCompetitionDoc({

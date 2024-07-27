@@ -5,7 +5,7 @@ import FieldComp from '@/components/FieldComp.vue'
 import type { Option } from '@/types/comp-fields'
 import InputComp from '@/components/InputComp.vue'
 import PhaseGroupsInput from '@/admin/competition/phases/components/PhaseGroupsInput.vue'
-import type { PhaseType } from '@/types/competitions'
+import type { PhaseGroup, PhaseType } from '@/types/competitions'
 import type { TeamId } from '@/types/teams'
 import ButtonComp from '@/components/ButtonComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<IProps>(), {
 
 type FormData = {
   type: PhaseType
-  groups: TeamId[][]
+  groups: PhaseGroup[]
   datetime: Date
 }
 const getDefaultData = (): FormData => ({
@@ -36,7 +36,9 @@ const groupLengthMax = computed(() => (data.value.type === 'groups' ? 4 : 2))
 const { competitionPhases: phasesOptions } = useOptionsLib()
 
 const unassignedTeamsOptions = computed(() => {
-  const assignedTeams = data.value.groups.flat()
+  const assignedTeams = data.value.groups.reduce((acc: TeamId[], gr:PhaseGroup) => {
+    return [...acc, ...gr.teams]
+  }, [])
   return props.teamsOptions.filter((opt: Option) => !assignedTeams.includes(opt.value))
 })
 
@@ -46,8 +48,8 @@ watch(
     const newGroups = []
     let idx = 0
     while (idx < groupsLength.value) {
-      const gr = data.value.groups[idx] || []
-      newGroups.push(gr.slice())
+      const gr = data.value.groups[idx] || { name: `Group ${idx + 1}`, teams: [] }
+      newGroups.push({ ...gr })
       idx++
     }
     data.value.groups = newGroups

@@ -7,10 +7,12 @@
       <div class="col">
         <div class="card">
           <div class="card-header text-center">
-            <strong>Group {{ gIdx + 1 }}</strong>
+            <FieldComp label="Group name">
+              <InputComp type="text" v-model="model[gIdx].name" />
+            </FieldComp>
           </div>
           <ul class="list-group list-group-flush">
-            <template v-for="teamId in group" :key="teamId">
+            <template v-for="teamId in group.teams" :key="teamId">
               <li class="list-group-item d-flex justify-content-between gap-3">
                 <span>{{ getTeamName(teamId) }}</span>
                 <ButtonComp
@@ -23,7 +25,7 @@
             </template>
             <li class="list-group-item">
               <SelectComp
-                v-model="model[gIdx][model[gIdx].length]"
+                v-model="model[gIdx].teams[model[gIdx].teams.length]"
                 :options="props.options"
                 placeholder="Add team..."
                 :disabled="!props.options.length"
@@ -43,11 +45,14 @@ import SelectComp from '@/components/SelectComp.vue'
 import type { Option } from '@/types/comp-fields'
 import useLibs from '@/composable/useLibs'
 import ButtonComp from '@/components/ButtonComp.vue'
+import type { PhaseGroup } from '@/types/competitions'
+import InputComp from '@/components/InputComp.vue'
+import FieldComp from '@/components/FieldComp.vue'
 
 const { getTeamName } = useLibs()
 
 interface IProps {
-  modelValue: TeamId[][]
+  modelValue: PhaseGroup[]
   options: Option[]
   isEdit?: boolean
 }
@@ -58,18 +63,19 @@ const props = withDefaults(defineProps<IProps>(), {
 
 const emit = defineEmits(['update:modelValue'])
 const model = computed({
-  get: (): TeamId[][] => props.modelValue,
-  set: (val: TeamId[][]) =>
+  get: (): PhaseGroup[] => props.modelValue,
+  set: (val: PhaseGroup[]) =>
     emit(
       'update:modelValue',
-      val.map((group) => group.filter(Boolean))
+      val.map((group) => group.teams.filter(Boolean))
     )
 })
 
 const handleRemoveTeam = (gIdx: number, tId: TeamId) => {
-  const newValue = model.value.slice()
-  const idx = newValue[gIdx].findIndex((teamId: TeamId) => teamId === tId)
-  newValue[gIdx].splice(idx, 1)
-  model.value = newValue
+  const groupTeamsList = model.value[gIdx].teams
+  const newTeamsList = groupTeamsList.slice()
+  const idx = newTeamsList.findIndex((teamId: TeamId) => teamId === tId)
+  newTeamsList.splice(idx, 1)
+  model.value[gIdx].teams = newTeamsList
 }
 </script>

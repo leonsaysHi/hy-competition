@@ -1,4 +1,4 @@
-import type { Competition, CompetitionId, Phase } from '@/types/competitions'
+import type { Competition, CompetitionId, Phase, PhaseGroup } from '@/types/competitions'
 import type { CompetitionPlayer, PlayerDoc } from '@/types/players'
 import { Timestamp } from 'firebase/firestore'
 import type { DocumentData, QueryDocumentSnapshot, SnapshotOptions } from 'firebase/firestore'
@@ -22,7 +22,11 @@ export const competitionConverter = {
       phases: Array.isArray(row.phases)
         ? row.phases.map((phase: Phase) => ({
             ...phase,
-            groups: phase.groups.map((group: TeamId[]) => group.join(';'))
+            groups: phase.groups.map((group: TeamId[] | PhaseGroup, idx: number): PhaseGroup => {
+              return Array.isArray(group) // when group was TeamId[].join(';')
+                ? { name: `Group ${idx + 1}`, teams: group }
+                : group
+            })
           }))
         : [],
       lastUpdate: dateToFireStore(new Date())
@@ -31,7 +35,7 @@ export const competitionConverter = {
   },
   fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions) => {
     const data = snapshot.data(options)!
-    return {
+    const payload = {
       id: snapshot.id as CompetitionId,
       games: [],
       teams: [],
@@ -39,11 +43,16 @@ export const competitionConverter = {
       phases: Array.isArray(data.phases)
         ? (data.phases.map((phase) => ({
             ...phase,
-            groups: phase.groups.map((group: string) => group.split(';'))
+            groups: phase.groups.map((group: string | PhaseGroup, idx: number) => {
+              return typeof group === 'string' // when group was TeamId[].join(';')
+                ? { name: `Group ${idx + 1}`, teams: group.split(';') }
+                : group
+            }) as Phase
           })) as Phase[])
         : [],
       lastUpdate: data.lastUpdate ? dateFromFirestore(data.lastUpdate) : new Date()
     }
+    return payload
   }
 }
 export const competitionPlayerConverter = {

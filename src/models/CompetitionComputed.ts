@@ -1,4 +1,4 @@
-import type { Competition, Phase } from '@/types/competitions'
+import type { Competition, Phase, PhaseGroup } from '@/types/competitions'
 import type { Game } from '@/types/games'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import type { Option } from '@/types/comp-fields'
@@ -202,14 +202,14 @@ export default class CompetitionClass {
             compareAsc(a.row.datetime, b.row.datetime)
           )
           // each group:
-          const groups = phase.groups.map((groupTeams: TeamId[]): CompetitionGroupComputed => {
+          const groups = phase.groups.map((group: PhaseGroup): CompetitionGroupComputed => {
             // games
             const groupGames = phaseGames.filter((game: GameComputedClass) =>
-              game.row.teams.every((teamId: TeamId) => groupTeams.includes(teamId))
+              game.row.teams.every((teamId: TeamId) => group.teams.includes(teamId))
             )
 
             // standing:
-            const standing: CompetitionStanding[] = groupTeams.reduce(
+            const standing: CompetitionStanding[] = group.teams.reduce(
               (standing: CompetitionStanding[], teamId: TeamId) => {
                 const teamGames: GameComputedClass[] = groupGames.filter(
                   (game: GameComputedClass) => game.row.teams.includes(teamId) && game.isFinished
@@ -247,12 +247,12 @@ export default class CompetitionClass {
               if (type === 'groups') {
                 standing[idx].pos = standing[idx].gp ? idx + 1 : standing.length + 1
               } else {
-                standing[idx].playoff = groupTeams.length / (row.wins + 1)
+                standing[idx].playoff = group.teams.length / (row.wins + 1)
               }
             })
 
             // ranking:
-            const ranking: CompetitionRanking[] = groupTeams.reduce(
+            const ranking: CompetitionRanking[] = group.teams.reduce(
               (ranking: CompetitionRanking[], teamId: TeamId) => {
                 const team = this.teams.find(
                   (team: CompetitionTeam) => team.id === teamId
@@ -282,7 +282,7 @@ export default class CompetitionClass {
 
             // bracket:
             const bracket =
-              type === 'playoffs' ? getGroupBracket(groupTeams, groupGames.slice()) : undefined
+              type === 'playoffs' ? getGroupBracket(group.teams, groupGames.slice()) : undefined
 
             // returns CompetitionGroupComputed
             return {
