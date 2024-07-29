@@ -2,7 +2,7 @@
   <div class="w-100 overflow-x-auto">
     <TableComp
       :fields="fields"
-      :items="items"
+      :items="computedItems"
       :limit="limit"
       :footer="footerItem"
       :sorted-key="sortedKey"
@@ -57,19 +57,19 @@
         <template v-if="item.dnp === true">-</template>
         <template v-else>
           {{
-            item.gp && showAvg
-              ? formatAvg(getAvg(getCalculated(item).pts, item.gp))
-              : item.ftm + 2 * item.fgm + 3 * item.fg3m
+            item.gp && !showCumul
+              ? formatAvg(item.pts)
+              : item.pts
           }}
         </template>
       </template>
       <template #ftm="{ value, item }">
         <template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && !showCumul ? formatAvg(value) : value }}</template>
       </template>
       <template #fta="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && !showCumul ? formatAvg(value) : value }}</template>
       </template>
       <template #ftprc="{ item }"
         ><template v-if="item.dnp === true">-</template>
@@ -77,11 +77,11 @@
       </template>
       <template #fgm="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && !showCumul ? formatAvg(value) : value }}</template>
       </template>
       <template #fga="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && !showCumul ? formatAvg(value) : value }}</template>
       </template>
       <template #fgprc="{ item }"
         ><template v-if="item.dnp === true">-</template>
@@ -89,11 +89,11 @@
       </template>
       <template #fg3m="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && !showCumul ? formatAvg(value) : value }}</template>
       </template>
       <template #fg3a="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && !showCumul ? formatAvg(value) : value }}</template>
       </template>
       <template #fg3prc="{ item }"
         ><template v-if="item.dnp === true">-</template>
@@ -101,47 +101,47 @@
       </template>
       <template #dreb="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && !showCumul ? formatAvg(value) : value }}</template>
       </template>
       <template #oreb="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && !showCumul ? formatAvg(value) : value }}</template>
       </template>
       <template #reb="{ item }"
         ><template v-if="item.dnp === true">-</template>
         <template v-else>
           {{
-             item.gp && showAvg ? formatAvg(getAvg(getCalculated(item).reb, item.gp)) : getCalculated(item).reb
+            item.gp && !showCumul ? formatAvg(value) : getCalculated(item).reb
           }}</template
         >
       </template>
       <template #ast="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && !showCumul ? formatAvg(value) : value }}</template>
       </template>
       <template #stl="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && !showCumul ? formatAvg(value) : value }}</template>
       </template>
       <template #blk="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && !showCumul ? formatAvg(value) : value }}</template>
       </template>
       <template #blka="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && !showCumul ? formatAvg(value) : value }}</template>
       </template>
       <template #tov="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && !showCumul ? formatAvg(value) : value }}</template>
       </template>
       <template #fcm="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && !showCumul ? formatAvg(value) : value }}</template>
       </template>
       <template #fdr="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
-        <template v-else> {{ item.gp && showAvg ? formatAvg(getAvg(value, item.gp)) : value }}</template>
+        <template v-else> {{ item.gp && !showCumul ? formatAvg(value) : value }}</template>
       </template>
       <template #footerid>
         <span class="fw-lighter">{{ t('global.total', 2) }}</span>
@@ -160,9 +160,6 @@
       </template>
       <template #footerpts>
         {{ footerItem.ftm + 2 * footerItem.fgm + 3 * footerItem.fg3m }}
-      </template>
-      <template #footerpir>
-        {{ getCalculated(footerItem).pir }}
       </template>
       <template #footerreb>
         {{ footerItem.oreb + footerItem.dreb }}
@@ -183,6 +180,7 @@ import useLibs from '@/composable/useLibs'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import useOptionsLib from '@/composable/useOptionsLib'
+import type { PlayerStatKey } from '@/types/stats'
 const { t } = useI18n()
 
 interface IProps {
@@ -190,6 +188,7 @@ interface IProps {
   items: TableItem[]
   showAvg?: boolean
   limit?: number
+  showCumul?: boolean
   showLogo?: boolean
   showTotal?: boolean
   sortedKey?: string | undefined
@@ -197,7 +196,7 @@ interface IProps {
 }
 const props = withDefaults(defineProps<IProps>(), {
   limit: 0,
-  showAvg: true,
+  showCumul: false,
   showTotal: false,
   showLogo: false,
   sortedKey: undefined,
@@ -207,25 +206,42 @@ const props = withDefaults(defineProps<IProps>(), {
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
 const { getTeamName, getPlayerName, getCompetition } = useLibs()
-const { playerRankingKeys, getCategory } = useOptionsLib()
+const { playerStatsKeys, playerRankingKeys, getCategory } = useOptionsLib()
 const getCalculated = (item) => {
-  const { fta, ftm, fga, fgm, fg3a, fg3m, oreb, dreb, ast, stl, blk, blka, fdr, fcm, tov } = item
+  const { fta, ftm, fga, fgm, fg3a, fg3m, oreb, dreb } = item
   const ftprc = getPerc(fta, ftm)
   const fgprc = getPerc(fga, fgm)
   const fg3prc = getPerc(fg3a, fg3m)
   const pts = ftm + 2 * fgm + 3 * fg3m
   const reb = oreb + dreb
-  const pir =
-    pts + reb + ast + stl + blk + fdr - (fga - fgm + (fg3a - fg3m) + (fta - ftm) + tov + blka + fcm)
   return {
     ftprc,
     fgprc,
     fg3prc,
     pts,
-    reb,
-    pir
+    reb
   }
 }
+const computedItems = computed(() => {
+  const statKeys: PlayerStatKey[] = playerStatsKeys.map((opt: Option) => opt.value as PlayerStatKey)
+  return props.items
+    .map((item) => {
+      const length = item.gp as number || 1
+      const calculated = getCalculated(item)
+      item.pts = calculated.pts
+      if (!props.showCumul || length < 2) {
+        item.pts = getAvg(item.pts, length)
+        statKeys
+          .forEach((key) => {
+              const total = (item[key] || 0) as number
+              item[key] = getAvg(total, length)
+          })
+      } else {
+        item.pts = item.ftm + 2 * item.fgm + 3 * item.fg3m
+      }
+      return item
+    })
+})
 const footerItem = computed(() => {
   if (!props.showTotal) {
     return undefined
