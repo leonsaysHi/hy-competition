@@ -4,7 +4,7 @@ import StatsTableComp from '@/components/StatsTableComp.vue'
 
 import type { CompetitionRanking, CompetitionRankingComputed } from '@/types/computed'
 import type { TableField } from '@/types/comp-table'
-import type { PlayerRankingKey, PlayerStatKey, PlayerStats } from '@/types/stats'
+import type { PlayerRankingKey, PlayerStats } from '@/types/stats'
 
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
