@@ -4,9 +4,11 @@ import StatsTableComp from '@/components/StatsTableComp.vue'
 
 import type { CompetitionRanking, CompetitionRankingComputed } from '@/types/computed'
 import type { TableField } from '@/types/comp-table'
-import type { PlayerRankingKey } from '@/types/stats'
+import type { PlayerRankingKey, PlayerStatKey, PlayerStats } from '@/types/stats'
 
 import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
+import useCompetition from '@/composable/useCompetition'
 const { t } = useI18n()
 
 interface IProps {
@@ -14,12 +16,30 @@ interface IProps {
   limit?: number
 }
 
+const route = useRoute()
+const { competitionId } = route.params as { competitionId: string; playerId: string }
+
 const props = withDefaults(defineProps<IProps>(), {
   limit: 0
 })
+const { row } = useCompetition(competitionId)
 
-const rankingKeys: PlayerRankingKey[] = ['gp', 'pts', 'fg3m', 'reb', 'ast', 'blk', 'stl', 'tov']
-
+const rankingKeys = computed<PlayerRankingKey[]>(() => {
+  const keys = ['gp', 'pts', 'fg3m', 'ast', 'reb', 'blk', 'stl', 'tov'] as PlayerRankingKey[]
+  return keys
+    .filter((key:PlayerRankingKey) => {
+      switch(key) {
+        case 'gp': 
+        case 'pts': 
+          return true
+        case 'reb':
+          return row.value?.trackedStats.includes('dreb') || row.value?.trackedStats.includes('oreb')
+        default: 
+          return row.value?.trackedStats.includes(key as keyof PlayerStats)
+      }
+    }) || []
+    
+})
 const fields = computed(() => [
   {
     label: t('options.rankingStats.text.pos'),
@@ -29,7 +49,7 @@ const fields = computed(() => [
   },
   { label: t('global.player', 2), key: 'id' },
   { label: t('global.team', 2), key: 'teamId' },
-  ...rankingKeys.map(
+  ...rankingKeys.value.map(
     (key: PlayerRankingKey): TableField => ({
       key,
       label: t(`options.playerStats.text.${key}`),

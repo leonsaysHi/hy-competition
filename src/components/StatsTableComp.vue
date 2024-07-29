@@ -161,9 +161,6 @@
       <template #footerpts>
         {{ footerItem.ftm + 2 * footerItem.fgm + 3 * footerItem.fg3m }}
       </template>
-      <template #footerpir>
-        {{ getCalculated(footerItem).pir }}
-      </template>
       <template #footerreb>
         {{ footerItem.oreb + footerItem.dreb }}
       </template>
