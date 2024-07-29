@@ -48,7 +48,11 @@ const overallRanking = computed<typeof CompetitionRanking[]>((): typeof Competit
       <CompetitionStanding :value="selectedGroup.standing" />
       <hr />
       <h2>Líderes por categorías</h2>
-      <CompetitionRanking :value="overallRanking" :limit="25" />
+      <CompetitionRanking 
+        :value="overallRanking" 
+        :limit="25" 
+        show-cumul 
+      />
     </template>
   </div>
 </template>

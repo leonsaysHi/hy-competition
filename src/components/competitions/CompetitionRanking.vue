@@ -16,7 +16,7 @@ interface IProps {
   value: CompetitionRanking[]
   limit?: number
   teamId?: TeamId
-  showAvg?: boolean
+  showCumul?: boolean
 }
 
 const route = useRoute()
@@ -25,7 +25,7 @@ const { competitionId } = route.params as { competitionId: string; playerId: str
 const props = withDefaults(defineProps<IProps>(), {
   limit: 0,
   teamId: undefined,
-  showAvg: true
+  showCumul: false
 })
 const { row } = useCompetition(competitionId)
 
@@ -83,7 +83,7 @@ const items = computed(() =>
     :fields="fields"
     :items="items"
     :limit="limit"
-    :show-avg="showAvg"
+    :show-cumul="showCumul"
     sorted-key="pts"
     sorted-direction="desc"
   ></StatsTableComp>
