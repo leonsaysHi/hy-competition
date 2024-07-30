@@ -107,7 +107,7 @@
         ><template v-if="item.dnp === true">-</template>
         <template v-else> {{ item.gp && !showCumul ? formatAvg(value) : value }}</template>
       </template>
-      <template #reb="{ item }"
+      <template #reb="{ value, item }"
         ><template v-if="item.dnp === true">-</template>
         <template v-else>
           {{
@@ -228,8 +228,10 @@ const computedItems = computed(() => {
       const length = item.gp as number || 1
       const calculated = getCalculated(item)
       item.pts = calculated.pts
+      item.reb = calculated.reb
       if (!props.showCumul || length < 2) {
         item.pts = getAvg(item.pts, length)
+        item.reb = getAvg(item.reb, length)
         statKeys
           .forEach((key) => {
               const total = (item[key] || 0) as number
