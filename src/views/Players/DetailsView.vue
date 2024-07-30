@@ -20,7 +20,6 @@ const player = computed(() => getPlayer(playerId))
 
 const fieldsKeys: PlayerRankingKey[] = [
   'gp',
-  'pir',
   'pts',
   'fgprc',
   'fg3prc',
@@ -51,12 +50,6 @@ const stats = computed(() => {
         0
       )
     : 0
-  const pir = Array.isArray(rows.value)
-    ? rows.value?.reduce(
-        (total: number, item: CompetitionRankingComputed) => (total += item.pir * item.gp),
-        0
-      )
-    : 0
   return [
     {
       key: 'gp',
@@ -67,11 +60,6 @@ const stats = computed(() => {
       key: 'pts',
       text: t('options.playerStats.long.ptsavg'),
       value: formatAvg(getAvg(pts, gp))
-    },
-    {
-      key: 'pir',
-      text: t('options.playerStats.long.pir'),
-      value: formatAvg(getAvg(pir, gp))
     }
   ]
 })
@@ -108,7 +96,11 @@ const items = computed(() => {
           </template>
         </div>
       </div>
-      <StatsTableComp :fields="fields" :items="items" show-logo></StatsTableComp>
+      <StatsTableComp 
+        :fields="fields" 
+        :items="items" 
+        show-logo
+      ></StatsTableComp>
     </template>
   </div>
 </template>
