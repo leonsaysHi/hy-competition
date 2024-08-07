@@ -36,7 +36,15 @@ watch(
 </script>
 <template>
   <template v-if="isReady">
-    <h1>{{ row?.title }}</h1>
+    <div class="d-flex align-items-start justify-content-between gap-3">
+      <h1>{{ row?.title }}</h1>
+      <RouterLink
+        class="btn btn-light"
+        :to="{ name: 'competition', params: { competitionId } }"
+        >View</RouterLink
+      >
+    </div>
+    
   </template>
   <template v-if="isReady && !rostersValid">
     <AlertComp variant="warning"
