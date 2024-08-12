@@ -16,9 +16,9 @@ import SelectComp from '@/components/SelectComp.vue'
 import CheckComp from '@/components/CheckComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
-import CheckGroupComp from '@/components/CheckGroupComp.vue'
-import type { AwardItem, PlayerStatKey } from '@/types/stats'
+import type { AwardItem, PlayerTrackedStatKey } from '@/types/stats'
 import AwardsInput from '../components/AwardsInput.vue'
+import TrackedStatsInput from '../components/TrackedStatsInput.vue'
 import useCompetition from '@/composable/useCompetition'
 import useLibs from '@/composable/useLibs'
 import type { PlayerId, GenderKey } from '@/types/players'
@@ -39,7 +39,7 @@ type FormData = {
   gender?: GenderKey
   phases: Phase[]
   statsInput: StatsInputType
-  trackedStats: PlayerStatKey[]
+  trackedStats: PlayerTrackedStatKey[]
   awards: AwardItem[]
   isActive?: Boolean
 }
@@ -47,8 +47,7 @@ const {
   competitionSports: sportsOptions,
   competitionCategories: categoriesOptions,
   genders: gendersOptions,
-  competitionStatsInput: statsInputOptions,
-  playerStatsKeys: statsKeysOptions
+  competitionStatsInput: statsInputOptions
 } = useOptionsLib()
 const { getPlayerName } = useLibs()
 const { allPlayers } = useCompetition(props.value.id)
@@ -76,6 +75,7 @@ const playersOptions = computed(() =>
     }
   })
 )
+
 const emit = defineEmits(['submit'])
 
 const handleSubmit = (ev: Event) => {
@@ -117,12 +117,10 @@ const handleSubmit = (ev: Event) => {
       />
     </FieldComp>
     <template v-if="data.statsInput === 'sheet'">
-      <FieldComp label="Tracked stats">
-        <CheckGroupComp
+      <FieldComp label="Extra tracked stats">
+        <TrackedStatsInput
           v-model="data.trackedStats"
-          :options="statsKeysOptions"
           :disabled="isBusy"
-          buttons
         />
       </FieldComp>
     </template>
