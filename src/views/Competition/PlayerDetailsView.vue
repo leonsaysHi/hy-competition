@@ -111,7 +111,6 @@ const statsItem = computed<TableItem[]>(() => {
       </div>
       <StatsTableComp :fields="statsFields" :items="statsItem"></StatsTableComp>
       <hr />
-      <h3>{{ t('global.game', 2) }}</h3>
       <PlayerGamesList :items="playerGames" />
     </template>
   </div>

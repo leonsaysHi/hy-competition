@@ -80,5 +80,9 @@ const items = computed(() =>
     :limit="limit"
     sorted-key="pts"
     sorted-direction="desc"
-  ></StatsTableComp>
+  >
+    <template #title>
+      <slot name="title"></slot>
+    </template>
+    </StatsTableComp>
 </template>

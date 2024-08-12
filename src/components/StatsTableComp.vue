@@ -1,4 +1,10 @@
 <template>
+  <div class="d-flex gap-3 justify-content-between">
+    <div><slot name="title"></slot></div>
+    <div>
+      <CheckComp v-model="showCumul" button button-size="sm">Show totals</CheckComp>
+    </div>
+  </div>
   <div class="w-100 overflow-x-auto">
     <TableComp
       :fields="fields"
@@ -173,8 +179,9 @@ import { durationFormat } from '@/utils/dates'
 import type { TableField, TableItem } from '@/types/comp-table'
 import type { Option } from '@/types/comp-fields'
 import TableComp from '@/components/TableComp.vue'
+import CheckComp from '@/components/CheckComp.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { getAvg, getPerc, formatAvg, formatPerc, getOrd } from '@/utils/maths'
 import useLibs from '@/composable/useLibs'
 import { useRoute } from 'vue-router'
@@ -187,7 +194,7 @@ interface IProps {
   fields: TableField[]
   items: TableItem[]
   limit?: number
-  showCumul?: boolean
+  forceCumul?: boolean
   showLogo?: boolean
   showTotal?: boolean
   sortedKey?: string | undefined
@@ -195,11 +202,16 @@ interface IProps {
 }
 const props = withDefaults(defineProps<IProps>(), {
   limit: 0,
-  showCumul: false,
+  forceCumul: false,
   showTotal: false,
   showLogo: false,
   sortedKey: undefined,
   sortedDirection: undefined
+})
+const _showCumul = ref(false)
+const showCumul = computed({
+  get: () => props.forceCumul || _showCumul.value,
+  set: (val) => _showCumul.value = val
 })
 
 const route = useRoute()
