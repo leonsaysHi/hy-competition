@@ -111,7 +111,7 @@
         ><template v-if="item.dnp === true">-</template>
         <template v-else>
           {{
-            item.gp && !showCumul ? formatAvg(value) : getCalculated(item).reb
+            item.gp && !showCumul ? formatAvg(getCalculated(item).reb) : getCalculated(item).reb
           }}</template
         >
       </template>
