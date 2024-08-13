@@ -1,9 +1,9 @@
 <template>
   <div class="d-flex gap-3 justify-content-between">
     <div><slot name="title"></slot></div>
-    <template v-if="!forceCumul">
+    <template v-if="!_forceCumul">
       <div class="pb-2">
-        <CheckComp v-model="showCumul" button button-size="sm">Show totals</CheckComp>
+        <CheckComp v-model="showCumul" switch button-size="sm">Show totals</CheckComp>
       </div>
     </template>
   </div>
