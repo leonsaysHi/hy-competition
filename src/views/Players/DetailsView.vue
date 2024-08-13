@@ -108,7 +108,7 @@ const items = computed(() => {
           </template>
         </div>
       </div>
-      <StatsTableComp :fields="fields" :items="items" show-logo></StatsTableComp>
+      <StatsTableComp :fields="fields" :items="items" show-logo show-avg show-avg-ui></StatsTableComp>
     </template>
   </div>
 </template>

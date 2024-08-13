@@ -63,7 +63,7 @@ const computedGames = computed<TableItem[]>(() => {
 </script>
 
 <template>
-  <StatsTableComp :fields="fields" :items="computedGames" show-logo force-cumul>
+  <StatsTableComp :fields="fields" :items="computedGames" show-logo>
     <template #title><h3>{{ t('global.game', 2) }}</h3></template>
   </StatsTableComp>
 </template>

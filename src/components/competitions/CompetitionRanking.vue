@@ -80,6 +80,8 @@ const items = computed(() =>
     :limit="limit"
     sorted-key="pts"
     sorted-direction="desc"
+    show-avg
+    show-avg-ui
   >
     <template #title>
       <slot name="title"></slot>
