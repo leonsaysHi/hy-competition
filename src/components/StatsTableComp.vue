@@ -1,9 +1,11 @@
 <template>
   <div class="d-flex gap-3 justify-content-between">
     <div><slot name="title"></slot></div>
-    <div>
-      <CheckComp v-model="showCumul" button button-size="sm">Show totals</CheckComp>
-    </div>
+    <template v-if="!forceCumul">
+      <div class="pb-2">
+        <CheckComp v-model="showCumul" button button-size="sm">Show totals</CheckComp>
+      </div>
+    </template>
   </div>
   <div class="w-100 overflow-x-auto">
     <TableComp
@@ -188,13 +190,13 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import useOptionsLib from '@/composable/useOptionsLib'
 import type { PlayerStatKey } from '@/types/stats'
+import useCompetition from '@/composable/useCompetition'
 const { t } = useI18n()
 
 interface IProps {
   fields: TableField[]
   items: TableItem[]
   limit?: number
-  forceCumul?: boolean
   showLogo?: boolean
   showTotal?: boolean
   sortedKey?: string | undefined
@@ -202,22 +204,26 @@ interface IProps {
 }
 const props = withDefaults(defineProps<IProps>(), {
   limit: 0,
-  forceCumul: false,
   showTotal: false,
   showLogo: false,
   sortedKey: undefined,
   sortedDirection: undefined
 })
-const _showCumul = ref(false)
-const showCumul = computed({
-  get: () => props.forceCumul || _showCumul.value,
-  set: (val) => _showCumul.value = val
-})
+
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
 const { getTeamName, getPlayerName, getCompetition } = useLibs()
 const { playerStatsKeys, playerRankingKeys, getCategory } = useOptionsLib()
+const { row } = useCompetition(competitionId)
+
+const _showCumul = ref(false)
+const forceCumul = computed(() => !row.value?.trackedStats.includes('gp'))
+const showCumul = computed({
+  get: () => forceCumul.value || _showCumul.value,
+  set: (val) => _showCumul.value = val
+})
+
 const getCalculated = (item) => {
   const { fta, ftm, fga, fgm, fg3a, fg3m, oreb, dreb } = item
   const ftprc = getPerc(fta, ftm)
@@ -239,18 +245,20 @@ const computedItems = computed(() => {
     .map((item) => {
       const length = item.gp as number || 1
       const calculated = getCalculated(item)
-      item.pts = calculated.pts
-      if (!props.showCumul || length < 2) {
-        item.pts = getAvg(item.pts, length)
+      const row = {
+        ...item
+      }
+      row.pts = calculated.pts
+      console.log('avg?', !showCumul.value)
+      if (!showCumul.value) {
+        row.pts = getAvg(item.pts, length)
         statKeys
           .forEach((key) => {
-              const total = (item[key] || 0) as number
-              item[key] = getAvg(total, length)
+            const total = (item[key] || 0) as number
+            row[key] = getAvg(total, length)
           })
-      } else {
-        item.pts = item.ftm + 2 * item.fgm + 3 * item.fg3m
       }
-      return item
+      return row
     })
 })
 const footerItem = computed(() => {

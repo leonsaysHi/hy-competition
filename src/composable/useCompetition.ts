@@ -23,14 +23,14 @@ import type {
   CompetitionRankingComputed
 } from '@/types/computed'
 import useOptionsLib from './useOptionsLib'
-import type { PlayerRankingKey, PlayerStatKey, PlayerStats, PlayerTrackedStatKey } from '@/types/stats'
+import type { PlayerRankingKey, PlayerStatKey, PlayerStats, PlayerTrackedStatKey, StatsGroupDef } from '@/types/stats'
 
 import i18n from '@/i18n'
 const t = (path: string): string => i18n.global.t(path)
 
 export default function useCompetition(competitionId: CompetitionId | undefined) {
   const { isReady: isLibsReady, getCompetition } = useLibs()
-  const { playerStatsKeys, playerRankingKeys } = useOptionsLib()
+  const { playerStatsKeys, competitionStatsGroups, playerRankingKeys } = useOptionsLib()
 
   const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`).withConverter(
     gameConverter
@@ -209,9 +209,18 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   })
 
   // stats 
-  const trackedPlayerRankingKeys = computed<PlayerRankingKey[]>(() => 
-    playerRankingKeys
-      .filter((opt: Option) => row.value?.trackedStats.includes(opt.value as PlayerTrackedStatKey)) 
+  const trackedPlayerRankingKeys = computed<PlayerRankingKey[]>(() => {
+    const optionalKeys: PlayerTrackedStatKey[] = competitionStatsGroups
+      .filter((group: StatsGroupDef) => group.value)
+      .reduce((acc: PlayerTrackedStatKey[], group: StatsGroupDef) => {
+        acc.push(...group.keys)
+        return acc
+      }, [])
+    return playerRankingKeys
+      .filter((opt: Option) => {
+        const key = opt.value as PlayerTrackedStatKey
+        return !optionalKeys.includes(key) || row.value?.trackedStats.includes(key)
+      }) 
       .reduce(
         (result: Option[], opt: Option) => {
           const key = opt.value as PlayerStatKey
@@ -254,8 +263,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
         },
         []
       )
-      // awards[])
-  )
+})
 
     
 

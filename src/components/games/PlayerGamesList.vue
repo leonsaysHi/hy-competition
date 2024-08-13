@@ -3,53 +3,38 @@ import GameComputedClass from '@/models/GameComputed'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import StatsTableComp from '@/components/StatsTableComp.vue'
-import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
 import type { Option } from '@/types/comp-fields'
 import useCompetition from '@/composable/useCompetition'
 import type { CompetitionTeam } from '@/types/teams'
 import { useI18n } from 'vue-i18n'
-import type { PlayerStatKey } from '@/types/stats'
+import type { CompetitionId } from '@/types/competitions'
 const { t } = useI18n()
 
 const route = useRoute()
-const { competitionId, playerId } = route.params
+const { competitionId, playerId } = route.params as { competitionId: string; playerId: string }
 
 interface IProps {
   items: GameComputedClass[]
 }
 const props = withDefaults(defineProps<IProps>(), {})
 
-const { playerStatsSheetKeys } = useOptionsLib()
-const { row, getPlayerCompetitionTeam } = useCompetition(competitionId)
-
-const boxScoreKeys = computed<Option[]>(() => {
-  if (!row.value?.statsInput) {
-    return []
-  }
-  return playerStatsSheetKeys.filter((opt: Option) =>
-    row.value?.trackedStats.includes(opt.value as PlayerStatKey)
-  )
-})
+const { getPlayerCompetitionTeam, trackedPlayerRankingKeys } = useCompetition(competitionId)
 
 const fields = computed(() => {
   const fields = [
     { key: 'datetime', label: t('global.date'), tdClass: 'pt-1 lh-1' },
     { key: 'teamId', label: t('global.gameDetails.opponent.text') },
     { key: 'isWin', label: '', tdClass: 'text-center' },
-    ...boxScoreKeys.value.reduce(
-      (fields: TableField[], opt): TableField[] => [
-        ...fields,
-        {
+    ...trackedPlayerRankingKeys.value.map(
+      (opt: Option): TableField => ({
           key: opt.value,
           label: opt.text,
           sortable: true,
           thClass: 'text-end',
           tdClass: 'text-end'
-        }
-      ],
-      []
-    )
+        })
+      ),
   ]
   const ptsField = {
     key: 'pts',
@@ -78,7 +63,7 @@ const computedGames = computed<TableItem[]>(() => {
 </script>
 
 <template>
-  <StatsTableComp :fields="fields" :items="computedGames" show-logo>
+  <StatsTableComp :fields="fields" :items="computedGames" show-logo force-cumul>
     <template #title><h3>{{ t('global.game', 2) }}</h3></template>
   </StatsTableComp>
 </template>
