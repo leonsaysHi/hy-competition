@@ -199,12 +199,14 @@ interface IProps {
   limit?: number
   showLogo?: boolean
   showTotal?: boolean
+  forceCumul?: boolean
   sortedKey?: string | undefined
   sortedDirection?: 'asc' | 'desc' | undefined
 }
 const props = withDefaults(defineProps<IProps>(), {
   limit: 0,
   showTotal: false,
+  forceCumul: false,
   showLogo: false,
   sortedKey: undefined,
   sortedDirection: undefined
@@ -218,9 +220,9 @@ const { playerStatsKeys, playerRankingKeys, getCategory } = useOptionsLib()
 const { row } = useCompetition(competitionId)
 
 const _showCumul = ref(false)
-const forceCumul = computed(() => !row.value?.trackedStats.includes('gp'))
+const _forceCumul = computed(() => props.forceCumul || !row.value?.trackedStats.includes('gp'))
 const showCumul = computed({
-  get: () => forceCumul.value || _showCumul.value,
+  get: () => _forceCumul.value || _showCumul.value,
   set: (val) => _showCumul.value = val
 })
 
