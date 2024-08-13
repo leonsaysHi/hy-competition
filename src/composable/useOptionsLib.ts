@@ -1,6 +1,6 @@
 import type { CompetitionCategorie, CompetitionSport, PhaseType } from '@/types/competitions'
 import type { GenderKey } from '@/types/players'
-import type { PlayerStatKey, TeamStatKey, PlayerRankingKey, AwardKey, StatsGroupDef } from '@/types/stats'
+import type { PlayerStatKey, TeamStatKey, AwardKey, StatsGroupDef } from '@/types/stats'
 import type { Option } from '@/types/comp-fields'
 import i18n from '@/i18n'
 
