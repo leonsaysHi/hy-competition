@@ -7,7 +7,6 @@ import type {
   Competition,
   CompetitionCategorie,
   CompetitionDoc,
-  CompetitionId,
   CompetitionSport,
   Phase,
   StatsInputType
@@ -64,7 +63,7 @@ const data = ref<FormData>({
   gender: undefined,
   category: undefined,
   isActive: false,
-  statsInput: statsInputOptions[0],
+  statsInput: statsInputOptions[0].value,
   trackedStats: [],
   ...props.value,
 
@@ -104,7 +103,7 @@ const handleDelete = async () => {
       <ButtonComp variant="primary" type="submit" :is-busy="isBusy" size="lg">Save</ButtonComp>
     </div>
     <hr>
-    <FieldComp label="Title">
+    <FieldComp label="Title" required>
       <InputComp v-model="data.title" :disabled="isBusy" required />
     </FieldComp>
     <FieldComp label="is active" class="d-flex gap-3 justify-content-end">
