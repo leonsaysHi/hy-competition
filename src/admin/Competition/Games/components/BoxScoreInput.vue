@@ -8,6 +8,7 @@ import CheckComp from '@/components/CheckComp.vue'
 
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
+import type { Option } from '@/types/comp-fields'
 import type { PlayerId } from '@/types/players'
 import { useRoute } from 'vue-router'
 import useOptionsLib from '@/composable/useOptionsLib'
@@ -16,7 +17,7 @@ const route = useRoute()
 const { competitionId } = route.params
 
 const { getPlayerName } = useLibs()
-const { getPlayerNumber, row } = useCompetition(competitionId)
+const { getPlayerNumber, row, trackedPlayerStatsKey } = useCompetition(competitionId)
 const { playerStatsKeys } = useOptionsLib()
 
 interface IProps {
@@ -27,20 +28,15 @@ const props = withDefaults(defineProps<IProps>(), {
   disabled: false
 })
 
-const statsFields = computed(() =>
-  playerStatsKeys
-    .filter((opt) => row.value?.trackedStats.includes(opt.value))
-    .map((opt) => ({
-      key: opt.value,
-      label: opt.text
-    }))
-)
-const fields = computed<TableField[]>(() => [
-  { key: 'number', label: '' },
-  { key: 'name', label: 'Players' },
-  ...statsFields.value,
-  { key: 'dnp', label: '' }
-])
+const fields = computed<TableField[]>(() => {
+  return [
+    { key: 'number', label: '' },
+    { key: 'name', label: 'Players' },
+    ...trackedPlayerStatsKey.value.map(({ value: key, text: label }: Option) => (
+      { key, label }
+    ))
+  ] 
+})
 
 const emit = defineEmits(['update:modelValue', 'input'])
 
@@ -78,7 +74,7 @@ const items = computed((): TableItem[][] => {
         v-model="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp || disabled"
+        :disabled="model[item.id].dnp === 1 || disabled"
       />
     </template>
     <template #fta="{ key, item }">
@@ -86,7 +82,7 @@ const items = computed((): TableItem[][] => {
         v-model="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp || disabled"
+        :disabled="model[item.id].dnp === 1 || disabled"
       />
     </template>
     <template #ftm="{ key, item }">
@@ -94,7 +90,7 @@ const items = computed((): TableItem[][] => {
         v-model="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp || disabled"
+        :disabled="model[item.id].dnp === 1 || disabled"
       />
     </template>
     <template #fga="{ key, item }">
@@ -102,7 +98,7 @@ const items = computed((): TableItem[][] => {
         v-model="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp || disabled"
+        :disabled="model[item.id].dnp === 1 || disabled"
       />
     </template>
     <template #fgm="{ key, item }">
@@ -110,7 +106,7 @@ const items = computed((): TableItem[][] => {
         v-model="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp || disabled"
+        :disabled="model[item.id].dnp === 1 || disabled"
       />
     </template>
     <template #fg3a="{ key, item }">
@@ -118,7 +114,7 @@ const items = computed((): TableItem[][] => {
         v-model="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp || disabled"
+        :disabled="model[item.id].dnp === 1 || disabled"
       />
     </template>
     <template #fg3m="{ key, item }">
@@ -126,7 +122,7 @@ const items = computed((): TableItem[][] => {
         v-model="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp || disabled"
+        :disabled="model[item.id].dnp === 1 || disabled"
       />
     </template>
     <template #dreb="{ key, item }">
@@ -134,7 +130,7 @@ const items = computed((): TableItem[][] => {
         v-model="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp || disabled"
+        :disabled="model[item.id].dnp === 1 || disabled"
       />
     </template>
     <template #oreb="{ key, item }">
@@ -142,7 +138,7 @@ const items = computed((): TableItem[][] => {
         v-model="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp || disabled"
+        :disabled="model[item.id].dnp === 1 || disabled"
       />
     </template>
     <template #ast="{ key, item }">
@@ -150,7 +146,7 @@ const items = computed((): TableItem[][] => {
         v-model="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp || disabled"
+        :disabled="model[item.id].dnp === 1 || disabled"
       />
     </template>
     <template #stl="{ key, item }">
@@ -158,7 +154,7 @@ const items = computed((): TableItem[][] => {
         v-model="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp || disabled"
+        :disabled="model[item.id].dnp === 1 || disabled"
       />
     </template>
     <template #blk="{ key, item }">
@@ -166,7 +162,7 @@ const items = computed((): TableItem[][] => {
         v-model="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp || disabled"
+        :disabled="model[item.id].dnp === 1 || disabled"
       />
     </template>
     <template #blka="{ key, item }">
@@ -174,7 +170,7 @@ const items = computed((): TableItem[][] => {
         v-model="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp || disabled"
+        :disabled="model[item.id].dnp === 1 || disabled"
       />
     </template>
     <template #tov="{ key, item }">
@@ -182,7 +178,7 @@ const items = computed((): TableItem[][] => {
         v-model="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp || disabled"
+        :disabled="model[item.id].dnp === 1 || disabled"
       />
     </template>
     <template #fcm="{ key, item }">
@@ -190,7 +186,7 @@ const items = computed((): TableItem[][] => {
         v-model="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp || disabled"
+        :disabled="model[item.id].dnp === 1 || disabled"
       />
     </template>
     <template #fdr="{ key, item }">
@@ -198,14 +194,14 @@ const items = computed((): TableItem[][] => {
         v-model="model[item.id][key]"
         type="number"
         size="sm"
-        :disabled="model[item.id].dnp || disabled"
+        :disabled="model[item.id].dnp === 1 || disabled"
       />
     </template>
     <template #dnp="{ key, item }">
       <CheckComp
         v-model="model[item.id][key]"
-        :value="false"
-        :uncheck-value="true"
+        :value="1"
+        :uncheck-value="0"
         :disabled="disabled"
         switch
       ></CheckComp>

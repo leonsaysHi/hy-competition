@@ -62,7 +62,7 @@
         {{ value }}
       </template>
       <template #pts="{ item }">
-        <template v-if="item.dnp === true">-</template>
+        <template v-if="item.dnp === 1">-</template>
         <template v-else>
           {{
             item.gp && _showAvg
@@ -72,51 +72,51 @@
         </template>
       </template>
       <template #ftm="{ value, item }">
-        <template v-if="item.dnp === true">-</template>
+        <template v-if="item.dnp === 1">-</template>
         <template v-else> {{ item.gp && _showAvg ? formatAvg(value) : value }}</template>
       </template>
       <template #fta="{ value, item }"
-        ><template v-if="item.dnp === true">-</template>
+        ><template v-if="item.dnp === 1">-</template>
         <template v-else> {{ item.gp && _showAvg ? formatAvg(value) : value }}</template>
       </template>
       <template #ftprc="{ item }"
-        ><template v-if="item.dnp === true">-</template>
+        ><template v-if="item.dnp === 1">-</template>
         <template v-else> {{ formatPerc(getCalculated(item).ftprc) }}</template>
       </template>
       <template #fgm="{ value, item }"
-        ><template v-if="item.dnp === true">-</template>
+        ><template v-if="item.dnp === 1">-</template>
         <template v-else> {{ item.gp && _showAvg ? formatAvg(value) : value }}</template>
       </template>
       <template #fga="{ value, item }"
-        ><template v-if="item.dnp === true">-</template>
+        ><template v-if="item.dnp === 1">-</template>
         <template v-else> {{ item.gp && _showAvg ? formatAvg(value) : value }}</template>
       </template>
       <template #fgprc="{ item }"
-        ><template v-if="item.dnp === true">-</template>
+        ><template v-if="item.dnp === 1">-</template>
         <template v-else> {{ formatPerc(getCalculated(item).fgprc) }}</template>
       </template>
       <template #fg3m="{ value, item }"
-        ><template v-if="item.dnp === true">-</template>
+        ><template v-if="item.dnp === 1">-</template>
         <template v-else> {{ item.gp && _showAvg ? formatAvg(value) : value }}</template>
       </template>
       <template #fg3a="{ value, item }"
-        ><template v-if="item.dnp === true">-</template>
+        ><template v-if="item.dnp === 1">-</template>
         <template v-else> {{ item.gp && _showAvg ? formatAvg(value) : value }}</template>
       </template>
       <template #fg3prc="{ item }"
-        ><template v-if="item.dnp === true">-</template>
+        ><template v-if="item.dnp === 1">-</template>
         <template v-else> {{ formatPerc(getCalculated(item).fg3prc) }}</template>
       </template>
       <template #dreb="{ value, item }"
-        ><template v-if="item.dnp === true">-</template>
+        ><template v-if="item.dnp === 1">-</template>
         <template v-else> {{ item.gp && _showAvg ? formatAvg(value) : value }}</template>
       </template>
       <template #oreb="{ value, item }"
-        ><template v-if="item.dnp === true">-</template>
+        ><template v-if="item.dnp === 1">-</template>
         <template v-else> {{ item.gp && _showAvg ? formatAvg(value) : value }}</template>
       </template>
       <template #reb="{ item }"
-        ><template v-if="item.dnp === true">-</template>
+        ><template v-if="item.dnp === 1">-</template>
         <template v-else>
           {{
             item.gp && _showAvg ? formatAvg(getCalculated(item).reb) : getCalculated(item).reb
@@ -124,31 +124,31 @@
         >
       </template>
       <template #ast="{ value, item }"
-        ><template v-if="item.dnp === true">-</template>
+        ><template v-if="item.dnp === 1">-</template>
         <template v-else> {{ item.gp && _showAvg ? formatAvg(value) : value }}</template>
       </template>
       <template #stl="{ value, item }"
-        ><template v-if="item.dnp === true">-</template>
+        ><template v-if="item.dnp === 1">-</template>
         <template v-else> {{ item.gp && _showAvg ? formatAvg(value) : value }}</template>
       </template>
       <template #blk="{ value, item }"
-        ><template v-if="item.dnp === true">-</template>
+        ><template v-if="item.dnp === 1">-</template>
         <template v-else> {{ item.gp && _showAvg ? formatAvg(value) : value }}</template>
       </template>
       <template #blka="{ value, item }"
-        ><template v-if="item.dnp === true">-</template>
+        ><template v-if="item.dnp === 1">-</template>
         <template v-else> {{ item.gp && _showAvg ? formatAvg(value) : value }}</template>
       </template>
       <template #tov="{ value, item }"
-        ><template v-if="item.dnp === true">-</template>
+        ><template v-if="item.dnp === 1">-</template>
         <template v-else> {{ item.gp && _showAvg ? formatAvg(value) : value }}</template>
       </template>
       <template #fcm="{ value, item }"
-        ><template v-if="item.dnp === true">-</template>
+        ><template v-if="item.dnp === 1">-</template>
         <template v-else> {{ item.gp && _showAvg ? formatAvg(value) : value }}</template>
       </template>
       <template #fdr="{ value, item }"
-        ><template v-if="item.dnp === true">-</template>
+        ><template v-if="item.dnp === 1">-</template>
         <template v-else> {{ item.gp && _showAvg ? formatAvg(value) : value }}</template>
       </template>
       <template #footerid>
@@ -183,7 +183,7 @@ import type { Option } from '@/types/comp-fields'
 import TableComp from '@/components/TableComp.vue'
 import CheckComp from '@/components/CheckComp.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { getAvg, getPerc, formatAvg, formatPerc, getOrd } from '@/utils/maths'
 import useLibs from '@/composable/useLibs'
 import { useRoute } from 'vue-router'
@@ -223,7 +223,7 @@ const { playerStatsKeys, playerRankingKeys, getCategory } = useOptionsLib()
 const { row } = useCompetition(competitionId)
 
 const _showAvg = ref<boolean>(props.showAvg)
-const _showAvgUi = computed<boolean>(() => props.showAvgUi && Boolean(row.value?.trackedStats.includes('gp')))
+const _showAvgUi = computed<boolean>(() => props.showAvgUi && Boolean(row.value?.trackedStats.includes('dnp')))
 
 
 const getCalculated = (item) => {
@@ -242,7 +242,8 @@ const getCalculated = (item) => {
   }
 }
 const computedItems = computed(() => {
-  const statKeys: PlayerStatKey[] = playerStatsKeys.map((opt: Option) => opt.value as PlayerStatKey)
+  const statKeys: PlayerStatKey[] = playerStatsKeys
+    .map((opt: Option) => opt.value as PlayerStatKey)
   return props.items
     .map((item) => {
       const length = item.gp as number || 1

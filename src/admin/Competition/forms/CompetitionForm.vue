@@ -7,11 +7,13 @@ import type {
   Competition,
   CompetitionCategorie,
   CompetitionDoc,
+  CompetitionId,
   CompetitionSport,
   Phase,
   StatsInputType
 } from '@/types/competitions'
 
+import ModalComp from '@/components/ModalComp.vue'
 import SelectComp from '@/components/SelectComp.vue'
 import CheckComp from '@/components/CheckComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
@@ -22,7 +24,9 @@ import TrackedStatsInput from '../components/TrackedStatsInput.vue'
 import useCompetition from '@/composable/useCompetition'
 import useLibs from '@/composable/useLibs'
 import type { PlayerId, GenderKey } from '@/types/players'
-
+import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 interface IProps {
   value: Competition
   isBusy?: boolean
@@ -51,6 +55,7 @@ const {
 } = useOptionsLib()
 const { getPlayerName } = useLibs()
 const { allPlayers } = useCompetition(props.value.id)
+const { deleteCompetitionDoc: deleteCompetition } = useCompetitionAdmin(props.value.id)
 
 const data = ref<FormData>({
   title: '',
@@ -78,13 +83,27 @@ const playersOptions = computed(() =>
 
 const emit = defineEmits(['submit'])
 
+// Save
 const handleSubmit = (ev: Event) => {
   ev.preventDefault()
   emit('submit', data.value as CompetitionDoc)
 }
+// Delete
+const deleteModal = ref<typeof ModalComp>()
+const handleConfirmDelete = () => {
+  deleteModal.value?.show()
+}
+const handleDelete = async () => {
+  await deleteCompetition(props.value as Competition)
+  router.replace({ name: 'admin' })
+}
 </script>
 <template>
   <form @submit="handleSubmit">
+    <div class="d-flex justify-content-end gap-2">
+      <ButtonComp variant="primary" type="submit" :is-busy="isBusy" size="lg">Save</ButtonComp>
+    </div>
+    <hr>
     <FieldComp label="Title">
       <InputComp v-model="data.title" :disabled="isBusy" required />
     </FieldComp>
@@ -117,7 +136,7 @@ const handleSubmit = (ev: Event) => {
       />
     </FieldComp>
     <template v-if="data.statsInput === 'sheet'">
-      <FieldComp label="Extra tracked stats">
+      <FieldComp label="Extra tracked statistics">
         <TrackedStatsInput
           v-model="data.trackedStats"
           :disabled="isBusy"
@@ -127,8 +146,24 @@ const handleSubmit = (ev: Event) => {
     <FieldComp label="Awards">
       <AwardsInput v-model="data.awards" :players-options="playersOptions" />
     </FieldComp>
+    <hr>
     <div class="d-flex justify-content-end gap-2">
-      <ButtonComp variant="primary" type="submit" :is-busy="isBusy">Save</ButtonComp>
+      <ButtonComp variant="danger" :is-busy="isBusy" size="lg" @click="() => handleConfirmDelete()">Delete</ButtonComp>
+      <ButtonComp variant="primary" type="submit" :is-busy="isBusy" :disable="!props.value.id" size="lg">Save</ButtonComp>
     </div>
   </form>
+  <ModalComp ref="deleteModal" title="Delete player" ok-variant="danger" @ok="handleDelete">
+    <h6>Are you sure you want to delete competition <strong>{{ props.value?.title || 'n/a' }}</strong>?</h6>
+    <p>This will permanently delete teams compositions and games results.</p>
+    <template #modal-ok="{ okTitle, okVariant, okDisabled }">
+      <ButtonComp
+        :variant="okVariant"
+        :disabled="okDisabled"
+        :is-busy="isBusy"
+        @click="handleDelete"
+      >
+        {{ okTitle }}
+      </ButtonComp>
+    </template>
+  </ModalComp>
 </template>

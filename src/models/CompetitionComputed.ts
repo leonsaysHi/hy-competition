@@ -127,7 +127,7 @@ const getPlayerRankingFromGames = (
 ): PlayerRankingStats => {
   const playedgames = games.filter(
     (game: GameComputedClass) =>
-      game.isFinished && game.boxScore[playerId] && !game.boxScore[playerId].dnp
+      game.isFinished && game.boxScore[playerId] && game.boxScore[playerId].dnp === 0
   )
   const result = {
     gp: playedgames.length,

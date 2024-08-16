@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import type { Option } from '@/types/comp-fields'
 import type { Game, GameDocBoxScore, GameDocScores, GameId } from '@/types/games'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import { ref, computed } from 'vue'
@@ -9,7 +10,7 @@ import ScoresInput from '@/admin/competition/games/components/ScoresInput.vue'
 import StatsSheetInput from '@/admin/competition/games/components/StatsSheetInput.vue'
 import BoxScoreInput from '@/admin/competition/games/components/BoxScoreInput.vue'
 import AwardsInput from '@/admin/competition/components/AwardsInput.vue'
-import type { AwardItem, PlayerStatKey } from '@/types/stats'
+import type { AwardItem, PlayerTrackedStatKey, PlayerTrackedStats } from '@/types/stats'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
@@ -69,7 +70,7 @@ const boxscoreByTeams = computed({
         [teamId]: team.players.reduce((boxscore: GameDocBoxScore, player) => {
           const bs = data.value.boxscore[player.id] || {}
           playerStatsSheetKeys.forEach((opt: Option) => {
-            const key: PlayerStatKey = opt.value
+            const key = opt.value as PlayerTrackedStatKey
             bs[key] = key in bs ? bs[key] : 0
           })
           return {

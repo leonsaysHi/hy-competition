@@ -49,7 +49,7 @@ const playerGames = computed<GameComputedClass[]>(() => {
           return (
             game.isFinished &&
             Object.keys(game.boxscore).includes(playerId) &&
-            !game.boxscore[playerId].dnp
+            game.boxscore[playerId].dnp === 0
           )
         })
         .map((game: Game) => new GameComputedClass(competitionId, game))

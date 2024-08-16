@@ -192,6 +192,44 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
     updateCompetitionLastUpdate(batch)
     await batch.commit()
   }
+
+  const deleteCompetitionDoc = async (payload: Competition) => {
+    // remove computed
+    await updateCompetitionComputeds({ 
+      ...payload, 
+      isActive: false 
+    })
+    const batch = deleteCompetitionDocBatch(payload)
+    await batch.commit()
+  }
+  const deleteCompetitionDocBatch = (
+    row: Competition,
+    batch: WriteBatch = writeBatch(db)
+  ): WriteBatch => {
+    const { 
+      id,
+      games,
+      teams,
+      ...competitionDoc
+    }: {
+      id: CompetitionId,
+      games: Game[]
+      teams: CompetitionTeam[]
+      competitionDoc: CompetitionDoc
+    } = row
+    // delete teams:
+    teams.forEach((team: CompetitionTeam) => {
+      deleteTeamBatch(team, batch)
+    })
+    // delete games
+    games.forEach((game: Game) => {
+      deleteGameBatch(game, batch)
+    })
+    // delete competition
+    const competitionRef = id ? doc(competitionsColl, id) : doc(competitionsColl)
+    batch.delete(competitionRef)
+    return batch
+  }
   const writeCompetitionDocBatch = (
     row: Competition,
     batch: WriteBatch = writeBatch(db)
@@ -290,6 +328,7 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
     // Admin competition
     // writeCompetition,
     writeCompetitionDoc,
+    deleteCompetitionDoc,
     updateCompetitionLastUpdate,
     updateCompetitionComputeds,
 

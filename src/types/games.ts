@@ -1,4 +1,4 @@
-import type { AwardItem, PlayerStats } from './stats'
+import type { AwardItem, PlayerBoxScore } from './stats'
 import type { CompetitionPlayer, PlayerDoc, PlayerId } from './players'
 import type { TeamId } from './teams'
 
@@ -13,7 +13,7 @@ export interface Rosters {
 }
 
 // GameDoc
-export type GameDocBoxScore = { [key: PlayerId]: PlayerStats & { dnp: boolean } }
+export type GameDocBoxScore = { [key: PlayerId]: PlayerBoxScore }
 export type GameDocScores = { [key: TeamId]: number[] }
 
 export interface GameDoc {

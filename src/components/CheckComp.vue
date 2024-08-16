@@ -20,9 +20,9 @@
 import type { Size } from '@/types/comp-fields';
 import { computed } from 'vue'
 interface IProps {
-  modelValue: boolean | string
-  value?: boolean | string
-  uncheckValue?: boolean | string
+  modelValue: boolean | string | number
+  value?: boolean | string | number
+  uncheckValue?: boolean | string | number
   placeholder?: string
   readonly?: boolean
   required?: boolean

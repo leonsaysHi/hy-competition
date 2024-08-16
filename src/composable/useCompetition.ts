@@ -30,7 +30,7 @@ const t = (path: string): string => i18n.global.t(path)
 
 export default function useCompetition(competitionId: CompetitionId | undefined) {
   const { isReady: isLibsReady, getCompetition } = useLibs()
-  const { playerStatsKeys, competitionStatsGroups, playerRankingKeys } = useOptionsLib()
+  const { playerStatsKeys, playerStatsSheetKeys, competitionStatsGroups, playerRankingKeys } = useOptionsLib()
 
   const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`).withConverter(
     gameConverter
@@ -120,7 +120,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
                     {} as PlayerStats
                   )
                 : {}),
-              dnp: playerBoxscore?.dnp || false
+              dnp: playerBoxscore?.dnp === 1 ? 1 : 0
             }
           })
           return boxscore
@@ -208,8 +208,18 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     return competitionClass?.competitionStandings
   })
 
-  // stats 
-  const trackedPlayerRankingKeys = computed<PlayerRankingKey[]>(() => {
+  // stats sheet input:
+  const trackedPlayerStatsKey = computed<Option[]>(() => {
+    return playerStatsSheetKeys
+      .filter((opt: Option) => row.value?.trackedStats.includes(opt.value as PlayerTrackedStatKey))
+      .map((opt: Option) => ({
+        text: t(`options.playerStats.text.${opt.value}`),
+        long: t(`options.playerStats.long.${opt.value}`),
+        value: opt.value
+      }))
+  })
+  // stats sheet output:
+  const trackedPlayerRankingKeys = computed<Option[]>(() => {
     const optionalKeys: PlayerTrackedStatKey[] = competitionStatsGroups
       .filter((group: StatsGroupDef) => group.value)
       .reduce((acc: PlayerTrackedStatKey[], group: StatsGroupDef) => {
@@ -278,6 +288,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     allPlayers,
 
     // stats
+    trackedPlayerStatsKey,
     trackedPlayerRankingKeys,
 
     getGame,

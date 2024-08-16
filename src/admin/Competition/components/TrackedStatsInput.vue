@@ -5,6 +5,7 @@
     :disabled="disabled"
     buttons
   />
+  <p class="small text-body-tertiary">"Game played": mark player assistance for each games. "Field goal attemps": allow shooting % calculation.</p>
 </template>
 
 <script setup lang="ts">
