@@ -154,24 +154,11 @@ interface MatchupTeam extends ScoresComputed, Team {
   winnerFrom: number
 }
 const matchupTeams = computed<(MatchupTeam | undefined)[]>(() => {
-  const scores = props.matchup.game?.scores
-    ? props.matchup.game.scores
-      .map((row: ScoresComputed | undefined) => {
-        return row
-          ? {
-              ...getTeam(row.id),
-              ...row
-            }
-          : undefined
-      })
-    : []
-  const winnersFrom = Array.isArray(props.matchup.winnersFrom)
-    ? props.matchup.winnersFrom.map((matchup: BracketMatchup) => {
-        const scores: ScoresComputed[] = matchup.game.scores
-        const winner = scores?.find((row: ScoresComputed) => row.winner)
+  return props.matchup.game?.scores
+    ? props.matchup.game.scores.map((row: ScoresComputed) => {
         return {
-          winnerFrom: matchup.matchupId,
-          ...(winner ? getTeam(winner.id) : {})
+          ...getTeam(row.id),
+          ...row
         }
       })
     : props.matchup.winnersFrom
@@ -188,7 +175,6 @@ const matchupTeams = computed<(MatchupTeam | undefined)[]>(() => {
         }, {
           id: 'tbd',
         }]
-    return [scores[0] || winnersFrom[0] || undefined, scores[1] || winnersFrom[1] || undefined]
 })
 
 const hasTeams = computed(() => {

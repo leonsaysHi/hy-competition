@@ -15,39 +15,22 @@ const { t } = useI18n()
 interface IProps {
   value: CompetitionRanking[]
   limit?: number
-  teamId?: TeamId
-  showCumul?: boolean
+  showAvg?: boolean
+  showAvgUi?: boolean
 }
+const props = withDefaults(defineProps<IProps>(), {
+  limit: 0,
+  showAvg: true,
+  showAvgUi: true
+})
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string; playerId: string }
 
-const props = withDefaults(defineProps<IProps>(), {
-  limit: 0,
-  teamId: undefined,
-  showCumul: false
-})
 const { 
   row,
   trackedPlayerRankingKeys
 } = useCompetition(competitionId)
- /*
-const rankingKeys = computed<PlayerRankingKey[]>(() => {
-  const keys = ['gp', 'pts', 'fg3m', 'ast', 'reb', 'blk', 'stl', 'tov'] as PlayerRankingKey[]
-  return keys
-    .filter((key:PlayerRankingKey) => {
-      switch(key) {
-        case 'gp': 
-        case 'pts': 
-          return true
-        case 'reb':
-          return row.value?.trackedStats.includes('dreb') || row.value?.trackedStats.includes('oreb')
-        default: 
-          return row.value?.trackedStats.includes(key as keyof PlayerStats)
-      }
-    }) || []    
-})
-*/
 const fields = computed(() => [
   {
     label: t('options.rankingStats.text.pos'),
@@ -87,8 +70,8 @@ const items = computed(() =>
     :limit="limit"
     sorted-key="pts"
     sorted-direction="desc"
-    :show-avg="!showCumul"
-    show-avg-ui
+    :show-avg="showAvg"
+    :show-avg-ui="showAvgUi"
   >
     <template #title>
       <slot name="title"></slot>

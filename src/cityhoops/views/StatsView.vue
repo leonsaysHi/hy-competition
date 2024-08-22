@@ -51,7 +51,7 @@ const overallRanking = computed<typeof CompetitionRanking[]>((): typeof Competit
       <CompetitionRanking 
         :value="overallRanking" 
         :limit="25" 
-        show-cumul 
+        :show-avg="false"
       />
     </template>
   </div>
