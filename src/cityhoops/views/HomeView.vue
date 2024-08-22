@@ -103,7 +103,7 @@ const nextGames = computed<GameComputedClass[]>(() => {
         <div class="mb-3 d-flex justify-content-center">
           <RouterLink
             class="btn btn-primary btn-lg text-white"
-            :to="{ name: 'competition-standing' }"
+            :to="{ name: 'competition-stats' }"
             >Ver tabla completa</RouterLink
           >
         </div>
