@@ -27,8 +27,11 @@ const props = withDefaults(defineProps<IProps>(), {
   teamId: undefined,
   showCumul: false
 })
-const { row } = useCompetition(competitionId)
-
+const { 
+  row,
+  trackedPlayerRankingKeys
+} = useCompetition(competitionId)
+ /*
 const rankingKeys = computed<PlayerRankingKey[]>(() => {
   const keys = ['gp', 'pts', 'fg3m', 'ast', 'reb', 'blk', 'stl', 'tov'] as PlayerRankingKey[]
   return keys
@@ -42,10 +45,9 @@ const rankingKeys = computed<PlayerRankingKey[]>(() => {
         default: 
           return row.value?.trackedStats.includes(key as keyof PlayerStats)
       }
-    }) || []
-    
+    }) || []    
 })
-
+*/
 const fields = computed(() => [
   {
     label: t('options.rankingStats.text.pos'),
@@ -55,10 +57,10 @@ const fields = computed(() => [
   },
   { label: t('global.player', 2), key: 'id' },
   { label: t('global.team', 2), key: 'teamId' },
-  ...rankingKeys.value.map(
-    (key: PlayerRankingKey): TableField => ({
-      key,
-      label: t(`options.playerStats.text.${key}`),
+  ...trackedPlayerRankingKeys.value.map(
+    (opt: Option): TableField => ({
+      key: opt.value,
+      label: opt.text,
       sortable: true,
       thClass: 'text-end',
       tdClass: 'text-end'
@@ -86,5 +88,11 @@ const items = computed(() =>
     :show-cumul="showCumul"
     sorted-key="pts"
     sorted-direction="desc"
-  ></StatsTableComp>
+    show-avg
+    show-avg-ui
+  >
+    <template #title>
+      <slot name="title"></slot>
+    </template>
+    </StatsTableComp>
 </template>

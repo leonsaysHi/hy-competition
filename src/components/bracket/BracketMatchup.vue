@@ -25,7 +25,7 @@
         <div class="flex-grow-1">
           <template v-for="(team, tIdx) in matchupTeams" :key="team?.id || tIdx">
             <div class="py-1 px-2 hstack gap-1 align-items-center">
-              <template v-if="team?.id">
+              <template v-if="team?.id && team?.id !== 'tbd'">
                 <TeamLogo :team-id="team.id" :size="25" />
                 <div class="ms-1 d-flex align-items-center">
                   <span
@@ -41,8 +41,9 @@
                 </div>
               </template>
               <template v-else>
-                <span class="text-body-secondary">{{
-                  t('bracket.winnerFrom', { n: team?.winnerFrom })
+                <span class="text-body-secondary">{{ team?.id === 'tbd' 
+                  ? 'TBD'
+                  : t('bracket.winnerFrom', { n: team?.winnerFrom })
                 }}</span>
               </template>
               <div class="ms-auto hstack">
@@ -175,15 +176,19 @@ const matchupTeams = computed<(MatchupTeam | undefined)[]>(() => {
       })
     : props.matchup.winnersFrom
       ? props.matchup.winnersFrom.map((matchup: BracketMatchup) => {
-          const scores: ScoresComputed[] = matchup.game.scores
+          const scores: ScoresComputed[] = matchup.game?.scores
           const winner = scores?.find((row: ScoresComputed) => row.winner)
           return {
             winnerFrom: matchup.matchupId,
             ...(winner ? getTeam(winner.id) : {})
           }
         })
-      : undefined
-  return [scores[0] || winnersFrom[0] || undefined, scores[1] || winnersFrom[1] || undefined]
+      : [{
+          id: 'tbd',
+        }, {
+          id: 'tbd',
+        }]
+    return [scores[0] || winnersFrom[0] || undefined, scores[1] || winnersFrom[1] || undefined]
 })
 
 const hasTeams = computed(() => {
