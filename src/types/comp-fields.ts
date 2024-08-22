@@ -1,5 +1,6 @@
 export type Option = {
   text: string
+  long?: string
   value: string | number | undefined
   disabled?: boolean
 }

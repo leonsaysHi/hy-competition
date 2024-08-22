@@ -17,11 +17,12 @@
 </template>
 
 <script setup lang="ts">
+import type { Size } from '@/types/comp-fields';
 import { computed } from 'vue'
 interface IProps {
-  modelValue: boolean | string
-  value?: boolean | string
-  uncheckValue?: boolean | string
+  modelValue: boolean | string | number
+  value?: boolean | string | number
+  uncheckValue?: boolean | string | number
   placeholder?: string
   readonly?: boolean
   required?: boolean
@@ -29,6 +30,7 @@ interface IProps {
   inline?: boolean
   switch?: boolean
   button?: boolean
+  buttonSize?: Size
   isValid?: boolean
   isInvalid?: boolean
 }
@@ -42,6 +44,7 @@ const props = withDefaults(defineProps<IProps>(), {
   inline: false,
   switch: false,
   button: false,
+  buttonSize: 'md',
   isValid: false,
   isInvalid: false
 })
@@ -80,6 +83,7 @@ const computedLabelClass = computed(() => {
   if (props.button) {
     result.push('btn')
     result.push(model.value === props.value ? 'btn-primary' : 'btn-outline-secondary')
+    result.push('btn-' + props.buttonSize)
   } else {
     result.push('form-check-label')
   }

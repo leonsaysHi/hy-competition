@@ -5,6 +5,7 @@
         v-model="model[opt.value]"
         :switch="switches"
         :button="buttons"
+        :button-size="size"
         :readonly="readonly"
         :disabled="disabled"
         :inline="inline"
@@ -16,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Option } from '@/types/comp-fields'
+import type { Option, Size } from '@/types/comp-fields'
 import { computed } from 'vue'
 import CheckComp from '@/components/CheckComp.vue'
 interface IProps {
@@ -27,6 +28,7 @@ interface IProps {
   inline?: boolean
   switches?: boolean
   buttons?: boolean
+  size?: Size
   isValid?: boolean
   isInvalid?: boolean
 }
@@ -37,6 +39,7 @@ const props = withDefaults(defineProps<IProps>(), {
   inline: false,
   switches: false,
   buttons: false,
+  size: 'md',
   isValid: false,
   isInvalid: false
 })

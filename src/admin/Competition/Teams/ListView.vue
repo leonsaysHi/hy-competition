@@ -126,15 +126,13 @@ const handleRemove = async () => {
         @submit="handleAddTeam"
       />
       <ModalComp ref="deleteModal" title="Confirm removal" ok-title="Remove" ok-variant="danger">
-        <p>
-          Sure to remove team
-          <strong>{{ getTeam(deleteTeam?.id)?.title }}</strong> from team.
-        </p>
+        <h6>Are you sure you want to delete team <strong>{{ getTeam(deleteTeam?.id)?.title }}</strong> from this competition?</h6>
+        <p>This will permanently delete teams compositions and its games results.</p>
         <template #modal-ok="{ okTitle, okVariant, okDisabled }">
           <ButtonComp
             :variant="okVariant"
             :disabled="okDisabled"
-            :isBusy="deletePlayerIsBusy"
+            :is-busy="deletePlayerIsBusy"
             @click="handleRemove"
           >
             {{ okTitle }}
