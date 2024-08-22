@@ -255,7 +255,7 @@ const computedItems = computed(() => {
       row.pts = calculated.pts
       console.log('avg?', _showAvg.value)
       if (_showAvg.value) {
-        row.pts = getAvg(item.pts as number, length)
+        row.pts = getAvg(item.pts, length)
         statKeys
           .forEach((key) => {
             const total = (item[key] || 0) as number

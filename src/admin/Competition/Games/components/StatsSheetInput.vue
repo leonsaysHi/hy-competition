@@ -1,8 +1,14 @@
 <template>
   <div class="hstack gap-1">
-    <ButtonComp variant="primary" :disabled="disabled" @click="handleOpenRecord"
-      >Record box-score</ButtonComp
+    <template v-if="!disabled">
+      <RouterLink class="btn btn-primary" :to="{ name: 'box-score-record', params: { competitionId, gameId } }"
+      >Record box-score</RouterLink
     >
+    </template>
+    <template v-else>
+      <ButtonComp disabled variant="primary">Record box-score</ButtonComp>
+    </template>
+    
     <ButtonComp class="ms-auto" variant="danger" :disabled="disabled" @click="handleDelete"
       >Reset</ButtonComp
     >
