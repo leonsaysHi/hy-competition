@@ -16,7 +16,7 @@ import type { Option } from '@/types/comp-fields'
 import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
 import type { CompetitionRanking } from '@/types/computed'
-import type { PlayerRankingKey, PlayerStatKey } from '@/types/stats'
+import type { PlayerStatKey } from '@/types/stats'
 
 import { useI18n } from 'vue-i18n'
 import GameComputedClass from '@/models/GameComputed'
