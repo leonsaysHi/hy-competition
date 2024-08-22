@@ -85,14 +85,13 @@ const items = computed(() =>
     :fields="fields"
     :items="items"
     :limit="limit"
-    :show-cumul="showCumul"
     sorted-key="pts"
     sorted-direction="desc"
-    show-avg
+    :show-avg="!showCumul"
     show-avg-ui
   >
     <template #title>
       <slot name="title"></slot>
     </template>
-    </StatsTableComp>
+  </StatsTableComp>
 </template>
