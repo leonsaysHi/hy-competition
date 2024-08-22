@@ -9,11 +9,13 @@ import type { PlayerRankingKey, PlayerStats } from '@/types/stats'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
+import type { TeamId } from '@/types/teams'
 const { t } = useI18n()
 
 interface IProps {
   value: CompetitionRankingComputed[]
   limit?: number
+  teamId?: TeamId
   showAvg?: boolean
   showAvgUi?: boolean
 }
@@ -52,7 +54,9 @@ const fields = computed(() => [
 const items = computed(() =>
   Array.isArray(props.value)
     ? props.value
-        .filter((row: CompetitionRanking) => row.gp > 0)
+        .filter(
+          (row: CompetitionRanking) => row.gp > 0 && (!props.teamId || row.teamId === props.teamId)
+        )
         .map((row: CompetitionRanking) => ({
           ...row,
           id: row.playerId
