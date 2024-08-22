@@ -253,7 +253,6 @@ const computedItems = computed(() => {
         ...item
       }
       row.pts = calculated.pts
-      console.log('avg?', _showAvg.value)
       if (_showAvg.value) {
         row.pts = getAvg(item.pts, length)
         statKeys
