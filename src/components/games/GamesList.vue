@@ -4,7 +4,7 @@
       <div class="list-group-item text-center text-body-secondary">No games.</div>
     </template>
     <template v-else>
-      <template v-for="gameComputed in items" :key="gameComputed.id">
+      <template v-for="gameComputed in sortedItems" :key="gameComputed.id">
         <RouterLink
           class="hstack gap-2 list-group-item list-group-item-action lh-1"
           :to="gameComputed.to"
@@ -74,12 +74,21 @@
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import GameComputedClass from '@/models/GameComputed'
 import SpinnerComp from '../SpinnerComp.vue'
+import { compareAsc } from 'date-fns'
 import { useI18n } from 'vue-i18n'
+import { computed } from 'vue';
 const { t } = useI18n()
 interface IProps {
   items: GameComputedClass[]
 }
-withDefaults(defineProps<IProps>(), {})
+const props = withDefaults(defineProps<IProps>(), {})
+const sortedItems = computed(() => {
+  const result = props.items.slice()
+  result.sort((a:GameComputedClass, b:GameComputedClass) =>  {
+    return compareAsc(b.row.datetime, a.row.datetime)
+  })
+  return result
+})
 </script>
 <style lang="scss" scoped>
 .team {
