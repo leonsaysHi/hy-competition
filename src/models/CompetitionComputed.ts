@@ -214,7 +214,7 @@ export default class CompetitionClass {
             })
             .map((game: Game): GameComputedClass => new GameComputedClass(this.row.id, game))
           phaseGames.sort((a: GameComputedClass, b: GameComputedClass) =>
-            compareAsc(a.row.datetime, b.row.datetime)
+            compareAsc(b.row.datetime, a.row.datetime)
           )
           // each group:
           const groups = phase.groups.map((group: PhaseGroup): CompetitionGroupComputed => {

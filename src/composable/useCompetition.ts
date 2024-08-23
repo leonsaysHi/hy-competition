@@ -23,8 +23,8 @@ import type {
   CompetitionRankingComputed
 } from '@/types/computed'
 import useOptionsLib from './useOptionsLib'
-import type { PlayerRankingKey, PlayerStatKey, PlayerStats, PlayerTrackedStatKey, StatsGroupDef } from '@/types/stats'
-
+import type { PlayerStatKey, PlayerStats, PlayerTrackedStatKey, StatsGroupDef } from '@/types/stats'
+import { compareAsc } from 'date-fns'
 import i18n from '@/i18n'
 const t = (path: string): string => i18n.global.t(path)
 
@@ -126,6 +126,9 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
           return boxscore
         }, {})
       }
+    })
+    games.sort((a:Game, b:Game) =>  {
+      return compareAsc(a.datetime, b.datetime)
     })
     return {
       ...(competitionRow as Competition),
