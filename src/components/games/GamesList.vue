@@ -74,7 +74,6 @@
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import GameComputedClass from '@/models/GameComputed'
 import SpinnerComp from '../SpinnerComp.vue'
-import { compareAsc } from 'date-fns'
 import { useI18n } from 'vue-i18n'
 import { computed } from 'vue';
 const { t } = useI18n()
@@ -84,9 +83,7 @@ interface IProps {
 const props = withDefaults(defineProps<IProps>(), {})
 const sortedItems = computed(() => {
   const result = props.items.slice()
-  result.sort((a:GameComputedClass, b:GameComputedClass) =>  {
-    return compareAsc(b.row.datetime, a.row.datetime)
-  })
+  result.reverse()
   return result
 })
 </script>
