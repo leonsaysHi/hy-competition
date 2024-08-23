@@ -30,14 +30,12 @@ const { t } = useI18n()
 const { getGender, getCategory } = useOptionsLib()
 
 const nextGames = computed<GameComputedClass[]>(() => {
-  const result = Array.isArray(selectedGroup.value?.games)
-    ? selectedGroup.value.games.filter((game: GameComputedClass) => {
-        return !game.isFinished || game.isLive
-      })
-    : []
-  result.sort((a: GameComputedClass, b: GameComputedClass) =>
-    compareAsc(a.row.datetime, b.row.datetime)
-  )
+  const games = Array.isArray(selectedGroup.value?.games) ? selectedGroup.value.games.slice() : []
+  games.reverse()
+  const result = games
+    .filter((game: GameComputedClass) => {
+      return !game.isFinished || game.isLive
+    })
   return result.slice(
     0,
     selectedGroup.value?.standing
