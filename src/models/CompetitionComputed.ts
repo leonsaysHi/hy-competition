@@ -334,9 +334,13 @@ export default class CompetitionClass {
             if (idx > -1) {
               playerStatsKeys.forEach((opt: Option) => {
                 const key = opt.value as PlayerStatKey
-                rankingList[idx][key] = rankingList[idx][key]
-                  ? rankingList[idx][key] + rank[key]
-                  : rank[key]
+                if (isNaN(rank[key]) || rank[key] === undefined) {
+                  console.warn('rank with undefined value for', key, rank)
+                }
+                const val = rank[key] || 0
+                rankingList[idx][key] = typeof rankingList[idx][key] === 'number'
+                  ? rankingList[idx][key] + val
+                  : val
               })
               rankingList[idx].gp += rank.gp
               rankingList[idx].awards.push(
