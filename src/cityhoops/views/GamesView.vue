@@ -74,19 +74,21 @@ watch(
       <ViewHero>
         <h1>Resultados</h1>
         <template #nav>
-          <template v-if="phasesOptions && phasesOptions.length > 1">
-            <DropdownComp
-              v-model="selectedPhaseIdx"
-              :options="phasesOptions"
-              variant="light"
-              size="lg"
-              class="fw-bold fz-5"
-              :disabled="phasesOptions.length === 1"
-            />
-          </template>
-          <template v-if="groupsOptions && groupsOptions.length > 1">
-            <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons button-variant="light" />
-          </template>
+          <div class="vstack gap-1">
+            <template v-if="phasesOptions && phasesOptions.length > 1">
+              <DropdownComp
+                v-model="selectedPhaseIdx"
+                :options="phasesOptions"
+                variant="light"
+                size="lg"
+                class="fw-bold fz-5"
+                :disabled="phasesOptions.length === 1"
+              />
+            </template>
+            <template v-if="groupsOptions && groupsOptions.length > 1">
+              <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons button-variant="light" />
+            </template>
+          </div>
         </template>
       </ViewHero>
       <template v-if="liveGamesList.length">

@@ -22,14 +22,8 @@ const overallRanking = computed<typeof CompetitionRanking[]>((): typeof Competit
   <div>
     <ViewHero>
       <h1>Tabla y estadística</h1>
-    </ViewHero>
-    <template v-if="!selectedGroup">
-      <div class="py-5"><SpinnerComp /></div>
-    </template>
-    <template v-else>
-      <div class="d-flex justify-content-between gap-3">
-        <h2>Tabla: {{ selectedGroup.name }}</h2>
-        <div>
+      <template #nav>
+        <div class="vstack gap-1">
           <template v-if="phasesOptions && phasesOptions.length > 1">
             <DropdownComp
               v-model="selectedPhaseIdx"
@@ -40,6 +34,16 @@ const overallRanking = computed<typeof CompetitionRanking[]>((): typeof Competit
               :disabled="phasesOptions.length === 1"
             />
           </template>
+        </div>
+      </template>
+    </ViewHero>
+    <template v-if="!selectedGroup">
+      <div class="py-5"><SpinnerComp /></div>
+    </template>
+    <template v-else>
+      <div class="d-flex justify-content-between gap-3">
+        <h2>Tabla: {{ selectedGroup.name }}</h2>
+        <div class="d-flex flex-column justify-content-end mb-2">
           <template v-if="groupsOptions && groupsOptions.length > 1">
             <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons button-variant="light" />
           </template>
