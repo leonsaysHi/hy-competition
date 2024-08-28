@@ -8,7 +8,7 @@
         <div class="card">
           <div class="card-header text-center">
             <FieldComp label="Group name">
-              <InputComp type="text" v-model="model[gIdx].name" />
+              <InputComp type="text" v-model="model[gIdx].title" />
             </FieldComp>
           </div>
           <ul class="list-group list-group-flush">
@@ -19,6 +19,7 @@
                   variant="light"
                   size="sm"
                   class="btn-close"
+                  :disabled="disabled"
                   @click="() => handleRemoveTeam(gIdx, teamId)"
                 />
               </li>
@@ -28,7 +29,7 @@
                 v-model="model[gIdx].teams[model[gIdx].teams.length]"
                 :options="props.options"
                 placeholder="Add team..."
-                :disabled="!props.options.length"
+                :disabled="!props.options.length || disabled"
               />
             </li>
           </ul>
@@ -55,10 +56,12 @@ interface IProps {
   modelValue: PhaseGroup[]
   options: Option[]
   isEdit?: boolean
+  disabled?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
   options: () => [],
-  isEdit: false
+  isEdit: false,
+  disabled: false
 })
 
 const emit = defineEmits(['update:modelValue'])

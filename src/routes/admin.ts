@@ -35,7 +35,7 @@ const adminRoutes = [
             component: () => import('@/admin/Competitions/phases/ListView.vue')
           },
           {
-            path: 'edit',
+            path: 'edit/:phaseIdx?',
             name: 'admin-competition-edit-phase',
             component: () => import('@/admin/Competitions/phases/FormView.vue')
           }

@@ -12,25 +12,43 @@ import useOptionsLib from '@/composable/useOptionsLib'
 import AlertComp from '@/components/AlertComp.vue'
 
 interface IProps {
+  value: FormData | undefined
   teamsOptions: Option[]
   isBusy?: boolean
+  isGroupDisabled?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
-  isBusy: false
+  isBusy: false,
+  isGroupDisabled: false
 })
 
 type FormData = {
+  title: String
   type: PhaseType
   groups: PhaseGroup[]
   datetime: Date
 }
 const getDefaultData = (): FormData => ({
+  title: '',
   type: undefined,
   groups: [],
   datetime: new Date()
 })
-const groupsLength = ref(1)
-const data = ref<FormData>(getDefaultData())
+
+
+const groupsLength = ref(
+  Math.max(
+    1, 
+    Array.isArray(props.value?.groups) 
+      ? props.value.groups.length
+      : 1
+  )
+)
+const data = ref<FormData>({
+  ...getDefaultData(),
+  ...props.value
+})
+
 const groupLengthMax = computed(() => (data.value.type === 'groups' ? 4 : 2))
 
 const { competitionPhases: phasesOptions } = useOptionsLib()
@@ -64,26 +82,32 @@ const handleSubmit = async (ev: Event) => {
 </script>
 <template>
   <form @submit="handleSubmit">
-    <div class="row">
-      <div class="col">
-        <FieldComp label="Phase type">
-          <SelectComp
-            v-model="data.type"
-            :options="phasesOptions"
-            placeholder="Select phase..."
-            @change="groupsLength = 1"
-            required
-          />
+    <FieldComp label="Phase type">
+      <SelectComp
+        v-model="data.type"
+        :options="phasesOptions"
+        placeholder="Select phase..."
+        @change="groupsLength = 1"
+        required
+      />
+    </FieldComp>
+    <div class="row row-cols-2">
+      <div>
+        <FieldComp label="Title">
+          <InputComp v-model="data.title" :disabled="isBusy" required />
         </FieldComp>
       </div>
-      <div class="col">
+      <div>
         <FieldComp label="Start date">
-          <InputComp v-model="data.datetime" type="datetime-local" required />
+          <InputComp v-model="data.datetime" type="datetime-local" :disabled="isBusy" required />
         </FieldComp>
       </div>
-      <div class="col">
+    </div>
+    <hr />
+    <div class="row row-cols-2">
+      <div>
         <FieldComp label="Number of groups">
-          <InputComp v-model="groupsLength" type="number" :min="1" :max="groupLengthMax" required />
+          <InputComp v-model="groupsLength" :disabled="isGroupDisabled || isBusy" type="number" :min="1" :max="groupLengthMax" required />
         </FieldComp>
       </div>
     </div>
@@ -92,6 +116,7 @@ const handleSubmit = async (ev: Event) => {
         v-model="data.groups"
         :groupsLength="groupsLength"
         :options="unassignedTeamsOptions"
+        :disabled="isGroupDisabled || isBusy"
         is-edit
       />
     </FieldComp>
@@ -102,7 +127,7 @@ const handleSubmit = async (ev: Event) => {
           >{{ unassignedTeamsOptions.length }} unassigned teams.</AlertComp
         >
       </template>
-      <ButtonComp type="submit" variant="primary">Start new phase</ButtonComp>
+      <ButtonComp type="submit" variant="primary" :disabled="isBusy">Save</ButtonComp>
     </div>
   </form>
 </template>
