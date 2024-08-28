@@ -68,7 +68,7 @@ export default function useCompetitionPhasesGroups() {
       ? computedPhases.value?.map(
           (row: CompetitionPhaseComputed, idx: any): Option => ({
             value: idx.toString(),
-            text: competitionPhases.find((opt) => opt.value === row.type)?.text as string
+            text: row.title
           })
         )
       : undefined
@@ -78,7 +78,7 @@ export default function useCompetitionPhasesGroups() {
       ? selectedPhase.value?.groups.map(
           (row: CompetitionGroupComputed, idx: any): Option => ({
             value: idx.toString(),
-            text: row.name
+            text: row.title
           })
         )
       : undefined

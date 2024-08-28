@@ -203,7 +203,7 @@ export default class CompetitionClass {
   get computedPhases(): CompetitionPhaseComputed[] {
     const phases = Array.isArray(this.row.phases)
       ? this.row.phases.map((phase: Phase, idx: number): CompetitionPhaseComputed => {
-          const { type } = phase
+          const { type, title } = phase
           const dateStart = phase.datetime
           const dateEnd = this.row.phases[idx + 1] ? this.row.phases[idx + 1].datetime : undefined
           const phaseGames = this.games
@@ -217,7 +217,7 @@ export default class CompetitionClass {
             compareAsc(b.row.datetime, a.row.datetime)
           )
           // each group:
-          const groups = phase.groups.map((group: PhaseGroup): CompetitionGroupComputed => {
+          const groups = phase.groups.map((group: PhaseGroup, idx: Number): CompetitionGroupComputed => {
             // games
             const groupGames = phaseGames.filter((game: GameComputedClass) =>
               game.row.teams.every((teamId: TeamId) => group.teams.includes(teamId))
@@ -305,7 +305,7 @@ export default class CompetitionClass {
 
             // returns CompetitionGroupComputed
             return {
-              name: group.name,
+              title: group.title,
               standing,
               ranking,
               games: groupGames,
@@ -314,6 +314,7 @@ export default class CompetitionClass {
           })
 
           return {
+            title,
             type,
             groups
           }

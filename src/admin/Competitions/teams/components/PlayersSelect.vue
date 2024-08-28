@@ -49,8 +49,8 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 
-import AddTeamPlayerForm from '@/admin/competition/forms/AddTeamPlayerForm.vue'
-import TeamPlayerForm from '@/admin/competition/forms/TeamPlayerForm.vue'
+import AddTeamPlayerForm from '@/admin/Competitions/forms/AddTeamPlayerForm.vue'
+import TeamPlayerForm from '@/admin/Competitions/forms/TeamPlayerForm.vue'
 import TableComp from '@/components/TableComp.vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import type { TableField, TableItem } from '@/types/comp-table'
