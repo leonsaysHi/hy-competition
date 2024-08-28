@@ -226,9 +226,13 @@ export default class CompetitionClass {
             // standing:
             const standing: CompetitionStanding[] = group.teams.reduce(
               (standing: CompetitionStanding[], teamId: TeamId) => {
-                const teamGames: GameComputedClass[] = groupGames.filter(
-                  (game: GameComputedClass) => game.row.teams.includes(teamId) && game.isFinished
-                )
+                const teamGames: GameComputedClass[] = groupGames
+                  .filter(
+                    (game: GameComputedClass) => game.row.teams.includes(teamId) && game.isFinished
+                  )
+                teamGames.sort((a:GameComputedClass, b:GameComputedClass) =>  {
+                  return compareAsc(b.row.datetime, a.row.datetime)
+                })
                 const hist: GamesHist = new Array(5).fill(0).map((n: number, idx: number) => {
                   const game = teamGames[idx]
                   if (!game?.isFinished) return 0
@@ -330,9 +334,13 @@ export default class CompetitionClass {
             if (idx > -1) {
               playerStatsKeys.forEach((opt: Option) => {
                 const key = opt.value as PlayerStatKey
-                rankingList[idx][key] = rankingList[idx][key]
-                  ? rankingList[idx][key] + rank[key]
-                  : rank[key]
+                if (isNaN(rank[key]) || rank[key] === undefined) {
+                  console.warn('rank with undefined value for', key, rank)
+                }
+                const val = rank[key] || 0
+                rankingList[idx][key] = typeof rankingList[idx][key] === 'number'
+                  ? rankingList[idx][key] + val
+                  : val
               })
               rankingList[idx].gp += rank.gp
               rankingList[idx].awards.push(

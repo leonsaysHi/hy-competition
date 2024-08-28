@@ -5,7 +5,7 @@ import ButtonComp from '@/components/ButtonComp.vue'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
 import { computed, ref } from 'vue'
-import CompetitionForm from '@/admin/competition/forms/CompetitionForm.vue'
+import CompetitionForm from '@/admin/Competitions/forms/CompetitionForm.vue'
 import { formatDistanceToNow, compareAsc } from 'date-fns'
 import type { Competition } from '@/types/competitions'
 const { isReady, competitionsRows: rows } = useLibs()
