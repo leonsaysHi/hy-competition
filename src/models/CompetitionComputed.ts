@@ -171,6 +171,9 @@ const getGroupBracket = (teams: TeamId[], games: GameComputedClass[]): Bracket =
     rounds.push(roundMatchups)
   }
   // fill with games
+  games.sort((a: GameComputedClass, b: GameComputedClass) =>
+    compareAsc(a.row.datetime, b.row.datetime)
+  )
   rounds.forEach((roundMatchups: BracketRound) => {
     const roundGames: GameComputedClass[] = games.splice(0, roundMatchups.length)
     roundGames.forEach((game: GameComputedClass) => {
