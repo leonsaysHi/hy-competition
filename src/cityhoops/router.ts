@@ -11,8 +11,8 @@ import ViewBracket from '@/cityhoops/views/brackets/ViewView.vue'
 import ListBrackets from '@/cityhoops/views/brackets/ListView.vue'
 import AdminBrackets from '@/cityhoops/views/brackets/AdminView.vue'
 
-import CompetitionGameDetailsView from '@/views/competition/GameDetailsView.vue'
-import CompetitionPlayerDetailsView from '@/views/competition/PlayerDetailsView.vue'
+import CompetitionGameDetailsView from '@/views/Competitions/GameDetailsView.vue'
+import CompetitionPlayerDetailsView from '@/views/Competitions/PlayerDetailsView.vue'
 
 const cityhoopsRoutes = routes.slice()
 
