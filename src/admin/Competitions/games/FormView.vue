@@ -4,7 +4,7 @@ import useCompetition from '@/composable/useCompetition'
 
 import useLibs from '@/composable/useLibs'
 import SpinnerComp from '@/components/SpinnerComp.vue'
-import GameForm from '@/admin/competition/forms/GameForm.vue'
+import GameForm from '@/admin/Competitions/forms/GameForm.vue'
 import { computed, ref } from 'vue'
 import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
 const { isReady: isLibsReady, getTeamName } = useLibs()
