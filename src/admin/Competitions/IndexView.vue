@@ -46,14 +46,18 @@ watch(
     </div>
     
   </template>
-  <template v-if="isReady && !rostersValid">
-    <AlertComp variant="warning"
-      >You should add at least 2 teams to the competition. All teams should have at least 5
-      players.</AlertComp
-    >
-  </template>
-  <template v-if="isReady && rostersValid && !currentPhaseValid">
-    <AlertComp variant="warning">You should initiate a competition phase.</AlertComp>
+  <template v-if="isReady">
+    <template v-if="!teamsValid">
+      <AlertComp variant="warning"
+        >You should add at least 2 teams to the competition.</AlertComp>
+    </template>
+    <template v-else-if="!rostersValid">
+      <AlertComp variant="warning"
+        >All teams should have at least 5 players.</AlertComp>
+    </template>
+    <template v-else-if="!currentPhaseValid">
+      <AlertComp variant="warning">You should initiate a first competition phase.</AlertComp>
+    </template>
   </template>
   <ul class="nav nav-tabs mb-4">
     <li class="nav-item">
@@ -85,7 +89,7 @@ watch(
         class="nav-link"
         :class="{
           active: rName?.includes('phase'),
-          disabled: !isReady || !teamsValid
+          disabled: !isReady || !teamsValid || !rostersValid
         }"
         :to="{ ...route, name: 'admin-competition-phases' }"
       >

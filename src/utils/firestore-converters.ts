@@ -35,7 +35,7 @@ export const competitionConverter = {
           .map((phase: Phase) => {
             return {
               ...phase,
-              title: phase.title || phase.type + '/',
+              title: phase.title || phase.type,
               groups: Array.isArray(phase.groups) 
                 ? phase.groups
                   .map((group: PhaseGroup, idx:Number) => {
