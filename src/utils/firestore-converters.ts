@@ -19,16 +19,6 @@ export const competitionConverter = {
   toFirestore: (row: Competition): DocumentData => {
     const payload = {
       ...row,
-      phases: Array.isArray(row.phases)
-        ? row.phases.map((phase: Phase) => ({
-            ...phase,
-            groups: phase.groups.map((group: TeamId[] | PhaseGroup, idx: number): PhaseGroup => {
-              return Array.isArray(group) // when group was TeamId[].join(';')
-                ? { name: `Group ${idx + 1}`, teams: group }
-                : group
-            })
-          }))
-        : [],
       lastUpdate: dateToFireStore(new Date())
     }
     return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null)) as DocumentData
@@ -41,14 +31,22 @@ export const competitionConverter = {
       teams: [],
       ...data,
       phases: Array.isArray(data.phases)
-        ? (data.phases.map((phase) => ({
-            ...phase,
-            groups: phase.groups.map((group: string | PhaseGroup, idx: number) => {
-              return typeof group === 'string' // when group was TeamId[].join(';')
-                ? { name: `Group ${idx + 1}`, teams: group.split(';') }
-                : group
-            }) as Phase
-          })) as Phase[])
+        ? data.phases
+          .map((phase: Phase) => {
+            return {
+              ...phase,
+              title: phase.title || phase.type + '/',
+              groups: Array.isArray(phase.groups) 
+                ? phase.groups
+                  .map((group: PhaseGroup, idx:Number) => {
+                    return {
+                      ...group,
+                      title: group.title || group['name'] || idx.toString()
+                    }
+                  })
+                : []
+            }
+          })
         : [],
       lastUpdate: data.lastUpdate ? dateFromFirestore(data.lastUpdate) : new Date()
     }

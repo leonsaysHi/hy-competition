@@ -5,12 +5,14 @@ import type { PlayerBoxScore, PlayerRankingStats, TeamStandingStats } from './st
 import type { TeamId } from './teams'
 
 export interface CompetitionGroupComputed {
+  title: string
   games: GameComputedClass[]
   standing: CompetitionStanding[]
   ranking: CompetitionRanking[]
   bracket?: Bracket
 }
 export interface CompetitionPhaseComputed {
+  title: string
   type: PhaseType
   groups: CompetitionGroupComputed[]
 }

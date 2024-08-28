@@ -10,10 +10,11 @@ export type CompetitionCategorie = 'u17' | 'u21' | 'senior' | '+35'
 export type PhaseType = 'groups' | 'playins' | 'playoffs' | undefined
 export type StatsInputType = 'sheet' | undefined
 export type PhaseGroup = {
-  name: string,
+  title: string
   teams: TeamId[]
 }
 export interface Phase {
+  title: string
   type: PhaseType
   groups: PhaseGroup[]
   datetime: Date

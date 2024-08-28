@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import CompetitionForm from '@/admin/competition/forms/CompetitionForm.vue'
+import CompetitionForm from '@/admin/Competitions/forms/CompetitionForm.vue'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import useCompetition from '@/composable/useCompetition'
 import useCompetitionAdmin from '@/composable/useCompetitionAdmin'

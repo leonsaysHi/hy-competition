@@ -53,7 +53,7 @@ watch(
     >
   </template>
   <template v-if="isReady && rostersValid && !currentPhaseValid">
-    <AlertComp variant="warning"> You should initiate a competition phase. </AlertComp>
+    <AlertComp variant="warning">You should initiate a competition phase.</AlertComp>
   </template>
   <ul class="nav nav-tabs mb-4">
     <li class="nav-item">
@@ -75,7 +75,7 @@ watch(
         :to="{ ...route, name: 'admin-competition-teams' }"
       >
         Teams
-        <template v-if="!rostersValid">
+        <template v-if="isReady && !rostersValid">
           <span class="text-danger"><i class="bi bi-exclamation-triangle-fill"></i></span>
         </template>
       </RouterLink>
@@ -88,7 +88,12 @@ watch(
           disabled: !isReady || !teamsValid
         }"
         :to="{ ...route, name: 'admin-competition-phases' }"
-        >Phases</RouterLink
+      >
+        Phases
+        <template v-if="isReady && !currentPhaseValid">
+          <span class="text-danger"><i class="bi bi-exclamation-triangle-fill"></i></span>
+        </template>
+      </RouterLink
       >
     </li>
     <li class="nav-item">
