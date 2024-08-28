@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import PlayersSelect from './components/PlayersSelect.vue'
-import TeamForm from '@/admin/competition/forms/TeamForm.vue'
+import TeamForm from '@/admin/Competitions/forms/TeamForm.vue'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import SpinnerComp from '@/components/SpinnerComp.vue'
