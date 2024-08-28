@@ -80,7 +80,7 @@ const handleCreate = async (payload) => {
         </template>
       </template>
     </div>
-    <ModalComp ref="addModal" title="Create new competition" hide-footer>
+    <ModalComp ref="addModal" title="Create new competition" size="lg" hide-footer>
       <template v-if="newCompetitiondata">
         <CompetitionForm :value="newCompetitiondata" @submit="handleCreate" />
       </template>

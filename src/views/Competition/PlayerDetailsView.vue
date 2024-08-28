@@ -25,14 +25,15 @@ const route = useRoute()
 const { competitionId, playerId } = route.params as { competitionId: string; playerId: string }
 
 const { getPlayerName } = useLibs()
-const { playerRankingKeys, playerStatsSheetKeys } = useOptionsLib()
+const { playerRankingKeys } = useOptionsLib()
 const {
   isReady: isCompetitionReady,
   row,
   getCompetitionPlayer,
   getPlayerCompetitionTeam,
   games,
-  competitionRankings
+  competitionRankings,
+  trackedPlayerRankingKeys
 } = useCompetition(competitionId)
 
 const competitionTeam = computed<CompetitionTeam | undefined>(() =>
@@ -48,68 +49,23 @@ const playerGames = computed<GameComputedClass[]>(() => {
           return (
             game.isFinished &&
             Object.keys(game.boxscore).includes(playerId) &&
-            !game.boxscore[playerId].dnp
+            game.boxscore[playerId].dnp === 0
           )
         })
         .map((game: Game) => new GameComputedClass(competitionId, game))
     : []
 })
 
-const boxScoreKeys = computed<Option[]>(() => {
-  if (!row.value?.statsInput) {
-    return []
-  }
-  return playerStatsSheetKeys.filter((opt: Option) =>
-    row.value?.trackedStats.includes(opt.value as PlayerStatKey)
-  )
-})
-
 const statsFields = computed<TableField[]>(() => {
-  const fields = [
-    {
-      key: 'gp',
-      label: t('options.playerStats.text.gp'),
+  const fields = trackedPlayerRankingKeys.value.map(
+    (opt: Option): TableField => ({
+      key: opt.value,
+      label: opt.text,
       sortable: true,
       thClass: 'text-end',
-      tdClass: 'text-end',
-      tfClass: 'text-end fw-bold'
-    },
-    ...boxScoreKeys.value.reduce(
-      (fields: TableField[], opt): TableField[] => [
-        ...fields,
-        {
-          key: opt.value,
-          label: opt.text,
-          sortable: true,
-          thClass: 'text-end',
-          tdClass: 'text-end',
-          tfClass: 'text-end fw-bold'
-        }
-      ],
-      []
-    )
-  ]
-  const ptsField = {
-    key: 'pts',
-    label: t('options.playerStats.text.pts'),
-    sortable: true,
-    thClass: 'text-end',
-    tdClass: 'text-end',
-    tfClass: 'text-end fw-bold'
-  }
-  const pirField = {
-    key: 'pir',
-    label: t('options.playerStats.text.pir'),
-    sortable: true,
-    thClass: 'text-end',
-    tdClass: 'text-end',
-    tfClass: 'text-end fw-bold'
-  }
-  if (row.value?.statsInput === 'play-by-play') {
-    fields.splice(fields.findIndex((field) => field.key === 'time') + 1, 0, ptsField, pirField)
-  } else {
-    fields.splice(fields.findIndex((field) => field.key === 'gp') + 1, 0, ptsField)
-  }
+      tdClass: 'text-end'
+    })
+  )
   return fields
 })
 
@@ -153,9 +109,8 @@ const statsItem = computed<TableItem[]>(() => {
           </div>
         </div>
       </div>
-      <StatsTableComp :fields="statsFields" :items="statsItem"></StatsTableComp>
+      <StatsTableComp :fields="statsFields" :items="statsItem" show-avg show-avg-ui></StatsTableComp>
       <hr />
-      <h3>{{ t('global.game', 2) }}</h3>
       <PlayerGamesList :items="playerGames" />
     </template>
   </div>

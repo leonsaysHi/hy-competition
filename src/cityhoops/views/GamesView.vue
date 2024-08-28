@@ -18,18 +18,20 @@ type GameView = 'prev' | 'next'
 const currentGamesView = ref<GameView>('prev')
 
 const prevNextGamesList = computed<GameComputedClass[]>(() => {
-  return selectedGroup.value?.games.filter((game: GameComputedClass) => {
-    return currentGamesView.value === 'prev'
-      ? game.isFinished && !game.isLive
-      : !game.isFinished && !game.isLive
-  })
+  const games = Array.isArray(selectedGroup.value?.games) ? selectedGroup.value.games.slice() : []
+  games.reverse()
+  return games
+    .filter((game: GameComputedClass) => {
+      return currentGamesView.value === 'prev'
+        ? game.isFinished && !game.isLive
+        : !game.isFinished && !game.isLive
+    })
 })
 const liveGamesList = computed<GameComputedClass[]>(() => {
-  return (
-    selectedGroup.value?.games.filter(
-      (game: GameComputedClass) => !game.isFinished && game.isLive
-    ) || []
-  )
+  const games = Array.isArray(selectedGroup.value?.games) ? selectedGroup.value.games.slice() : []
+  games.reverse()
+  return games
+    .filter((game: GameComputedClass) => !game.isFinished && game.isLive)
 })
 
 const gamesViewOptions = computed<Option[]>(() => {

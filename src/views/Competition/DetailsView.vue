@@ -76,27 +76,29 @@ watch(
 )
 
 const groupGames = computed<GameComputedClass[]>(() => {
-  const result = Array.isArray(selectedGroup.value?.games)
-    ? selectedGroup.value.games.filter((game: GameComputedClass) => {
-        return currentGamesView.value === 'prev'
-          ? game.isFinished && !game.isLive
-          : currentGamesView.value === 'next'
-            ? !game.isFinished && !game.isLive
-            : !game.isFinished && game.isLive
-      })
-    : []
+  const games = Array.isArray(selectedGroup.value?.games) ? selectedGroup.value.games.slice() : []
+  const result = games
+    .filter((game: GameComputedClass) => {
+      return currentGamesView.value === 'prev'
+        ? game.isFinished && !game.isLive
+        : currentGamesView.value === 'next'
+          ? !game.isFinished && !game.isLive
+          : !game.isFinished && game.isLive
+    })
   result.sort((a: GameComputedClass, b: GameComputedClass) =>
     currentGamesView.value === 'prev'
       ? compareAsc(b.row.datetime, a.row.datetime)
       : compareAsc(a.row.datetime, b.row.datetime)
   )
-  return result.slice(
-    0,
-    Math.max(
-      Math.round(selectedGroup.value.standing.length * 0.5),
-      Math.min(4, selectedGroup.value.standing.length)
-    )
-  )
+  return Array.isArray(selectedGroup.value?.standing)
+    ? result.slice(
+      0,
+      Math.max(
+        Math.round(selectedGroup.value.standing.length * 0.5),
+        Math.min(4, selectedGroup.value.standing.length)
+      )
+    ) 
+    : result
 })
 </script>
 <template>
@@ -155,8 +157,11 @@ const groupGames = computed<GameComputedClass[]>(() => {
           </ul>
         </div>
         <GamesList class="mb-3" :items="groupGames" />
-        <h3>{{ t('global.ranking') }}</h3>
-        <CompetitionRanking :value="selectedGroup.ranking" :limit="15" />
+        <CompetitionRanking :value="selectedGroup.ranking" :limit="15">
+          <template #title>
+            <h3>{{ t('global.ranking') }}</h3>
+          </template>
+        </CompetitionRanking>
       </template>
     </template>
   </div>

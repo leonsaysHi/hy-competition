@@ -86,7 +86,7 @@ const statsFields: TableField[] = [
       <CompetitionRanking 
       :value="competitionRankings" 
       :team-id="teamId" 
-      show-cumul
+      :show-avg="false"
       class="mb-2" 
       />
       <h3>{{ t('global.game', 2) }}</h3>

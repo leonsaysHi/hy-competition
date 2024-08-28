@@ -22,7 +22,8 @@ const es = {
     },
     stats: {
       sheet: 'Stats sheet',
-      playbyplay: 'Play-by-Play'
+      playbyplay: 'Play-by-Play',
+      showavg: 'Monstrar promedios',
     },
     playerStats: {
       text: {

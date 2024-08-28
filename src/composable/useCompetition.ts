@@ -16,17 +16,21 @@ import {
   competitionPlayerConverter
 } from '@/utils/firestore-converters'
 import CompetitionClass from '@/models/CompetitionComputed'
+import type { Option } from '@/types/comp-fields'
 import type {
   CompetitionPhaseComputed,
   CompetitionStandingComputed,
   CompetitionRankingComputed
 } from '@/types/computed'
 import useOptionsLib from './useOptionsLib'
-import type { PlayerStatKey, PlayerStats } from '@/types/stats'
+import type { PlayerStatKey, PlayerStats, PlayerTrackedStatKey, StatsGroupDef } from '@/types/stats'
+import { compareAsc } from 'date-fns'
+import i18n from '@/i18n'
+const t = (path: string): string => i18n.global.t(path)
 
 export default function useCompetition(competitionId: CompetitionId | undefined) {
   const { isReady: isLibsReady, getCompetition } = useLibs()
-  const { playerStatsKeys } = useOptionsLib()
+  const { playerStatsKeys, playerStatsSheetKeys, competitionStatsGroups, playerRankingKeys } = useOptionsLib()
 
   const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`).withConverter(
     gameConverter
@@ -116,12 +120,15 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
                     {} as PlayerStats
                   )
                 : {}),
-              dnp: playerBoxscore?.dnp || false
+              dnp: playerBoxscore?.dnp === 1 ? 1 : 0
             }
           })
           return boxscore
         }, {})
       }
+    })
+    games.sort((a:Game, b:Game) =>  {
+      return compareAsc(a.datetime, b.datetime)
     })
     return {
       ...(competitionRow as Competition),
@@ -204,6 +211,76 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     return competitionClass?.competitionStandings
   })
 
+  // stats sheet input:
+  const trackedPlayerStatsKey = computed<Option[]>(() => {
+    return playerStatsSheetKeys
+      .filter((opt: Option) => row.value?.trackedStats.includes(opt.value as PlayerTrackedStatKey))
+      .map((opt: Option) => ({
+        text: t(`options.playerStats.text.${opt.value}`),
+        long: t(`options.playerStats.long.${opt.value}`),
+        value: opt.value
+      }))
+  })
+  // stats sheet output:
+  const trackedPlayerRankingKeys = computed<Option[]>(() => {
+    const optionalKeys: PlayerTrackedStatKey[] = competitionStatsGroups
+      .filter((group: StatsGroupDef) => group.value)
+      .reduce((acc: PlayerTrackedStatKey[], group: StatsGroupDef) => {
+        acc.push(...group.keys)
+        return acc
+      }, [])
+    return playerRankingKeys
+      .filter((opt: Option) => {
+        const key = opt.value as PlayerTrackedStatKey
+        return !optionalKeys.includes(key) || row.value?.trackedStats.includes(key)
+      }) 
+      .reduce(
+        (result: Option[], opt: Option) => {
+          const key = opt.value as PlayerStatKey
+          result.push(opt)
+          if (key === 'oreb') {
+            result.push({
+              text: t(`options.playerStats.text.reb`),
+              long: t(`options.playerStats.long.reb`),
+              value: 'reb'
+            })
+          } else if (key === 'dreb' && !row.value?.trackedStats.includes('oreb')) {
+            result.splice(result.length - 1, 1, {
+              text: t(`options.playerStats.text.reb`),
+              long: t(`options.playerStats.long.reb`),
+              value: 'reb'
+            })
+          }
+          if (key === 'fta') {
+            result.push({
+              text: t(`options.playerStats.text.ftprc`),
+              long: t(`options.playerStats.long.ftprc`),
+              value: 'ftprc'
+            })
+          }
+          if (key === 'fga') {
+            result.push({
+              text: t(`options.playerStats.text.fgprc`),
+              long: t(`options.playerStats.long.fgprc`),
+              value: 'ftprc'
+            })
+          }
+          if (key === 'fg3a') {
+            result.push({
+              text: t(`options.playerStats.text.fg3prc`),
+              long: t(`options.playerStats.long.fg3prc`),
+              value: 'fg3prc'
+            })
+          }
+          return result
+        },
+        []
+      )
+})
+
+    
+
+
   return {
     isReady,
     row,
@@ -212,6 +289,10 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     config,
     allTeams,
     allPlayers,
+
+    // stats
+    trackedPlayerStatsKey,
+    trackedPlayerRankingKeys,
 
     getGame,
     getCompetitionTeam,

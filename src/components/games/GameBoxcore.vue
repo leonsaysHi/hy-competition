@@ -104,5 +104,6 @@ const boxScoreItems = computed(() => {
     sorted-key="pts"
     sorted-direction="desc"
     show-total
+    force-cumul
   ></StatsTableComp>
 </template>

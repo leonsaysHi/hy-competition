@@ -16,36 +16,22 @@ interface IProps {
   value: CompetitionRanking[]
   limit?: number
   teamId?: TeamId
-  showCumul?: boolean
+  showAvg?: boolean
+  showAvgUi?: boolean
 }
+const props = withDefaults(defineProps<IProps>(), {
+  limit: 0,
+  showAvg: true,
+  showAvgUi: true
+})
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string; playerId: string }
 
-const props = withDefaults(defineProps<IProps>(), {
-  limit: 0,
-  teamId: undefined,
-  showCumul: false
-})
-const { row } = useCompetition(competitionId)
-
-const rankingKeys = computed<PlayerRankingKey[]>(() => {
-  const keys = ['gp', 'pts', 'fg3m', 'ast', 'reb', 'blk', 'stl', 'tov'] as PlayerRankingKey[]
-  return keys
-    .filter((key:PlayerRankingKey) => {
-      switch(key) {
-        case 'gp': 
-        case 'pts': 
-          return true
-        case 'reb':
-          return row.value?.trackedStats.includes('dreb') || row.value?.trackedStats.includes('oreb')
-        default: 
-          return row.value?.trackedStats.includes(key as keyof PlayerStats)
-      }
-    }) || []
-    
-})
-
+const { 
+  row,
+  trackedPlayerRankingKeys
+} = useCompetition(competitionId)
 const fields = computed(() => [
   {
     label: t('options.rankingStats.text.pos'),
@@ -55,10 +41,10 @@ const fields = computed(() => [
   },
   { label: t('global.player', 2), key: 'id' },
   { label: t('global.team', 2), key: 'teamId' },
-  ...rankingKeys.value.map(
-    (key: PlayerRankingKey): TableField => ({
-      key,
-      label: t(`options.playerStats.text.${key}`),
+  ...trackedPlayerRankingKeys.value.map(
+    (opt: Option): TableField => ({
+      key: opt.value,
+      label: opt.text,
       sortable: true,
       thClass: 'text-end',
       tdClass: 'text-end'
@@ -83,8 +69,13 @@ const items = computed(() =>
     :fields="fields"
     :items="items"
     :limit="limit"
-    :show-cumul="showCumul"
     sorted-key="pts"
     sorted-direction="desc"
-  ></StatsTableComp>
+    :show-avg="showAvg"
+    :show-avg-ui="showAvgUi"
+  >
+    <template #title>
+      <slot name="title"></slot>
+    </template>
+  </StatsTableComp>
 </template>
