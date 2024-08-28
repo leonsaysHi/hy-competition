@@ -8,7 +8,6 @@ import { computed } from 'vue'
 import useOptionsLib from '@/composable/useOptionsLib'
 import CompetitionStanding from '@/components/competitions/CompetitionStanding.vue'
 import GamesList from '@/components/games/GamesList.vue'
-import { compareAsc } from 'date-fns'
 import { useI18n } from 'vue-i18n'
 import type GameComputedClass from '@/models/GameComputed'
 import ViewHero from '../components/layout/ViewHero.vue'
@@ -63,19 +62,21 @@ const nextGames = computed<GameComputedClass[]>(() => {
           <p>{{ getCategory(row?.category)?.text }}</p>
         </div>
         <template #nav>
-          <template v-if="phasesOptions && phasesOptions.length > 1">
-            <DropdownComp
-              v-model="selectedPhaseIdx"
-              :options="phasesOptions"
-              variant="light"
-              size="lg"
-              class="fw-bold fz-5"
-              :disabled="phasesOptions.length === 1"
-            />
-          </template>
-          <template v-if="groupsOptions && groupsOptions.length > 1">
-            <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons button-variant="light" />
-          </template>
+          <div class="vstack gap-1">
+            <template v-if="phasesOptions && phasesOptions.length > 1">
+              <DropdownComp
+                v-model="selectedPhaseIdx"
+                :options="phasesOptions"
+                variant="light"
+                size="lg"
+                class="fw-bold fz-5"
+                :disabled="phasesOptions.length === 1"
+              />
+            </template>
+            <template v-if="groupsOptions && groupsOptions.length > 1">
+              <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons button-variant="light" />
+            </template>
+          </div>
         </template>
       </ViewHero>
 
