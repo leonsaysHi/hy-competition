@@ -33,24 +33,31 @@ const {
   trackedPlayerRankingKeys
 } = useCompetition(competitionId)
 const fields = computed(() => [
-  {
-    label: t('options.rankingStats.text.pos'),
-    key: 'pos',
-    thClass: 'text-center',
-    tdClass: 'text-center'
-  },
-  { label: t('global.player', 2), key: 'id' },
-  { label: t('global.team', 2), key: 'teamId' },
-  ...trackedPlayerRankingKeys.value.map(
-    (opt: Option): TableField => ({
-      key: opt.value,
-      label: opt.text,
-      sortable: true,
-      thClass: 'text-end',
-      tdClass: 'text-end'
-    })
-  )
-])
+    {
+      label: t('options.rankingStats.text.pos'),
+      key: 'pos',
+      thClass: 'text-center',
+      tdClass: 'text-center'
+    },
+    { label: t('global.player', 2), key: 'id' },
+    { label: t('global.team', 2), key: 'teamId' },
+    ...trackedPlayerRankingKeys.value.map(
+      (opt: Option): TableField => ({
+        key: opt.value,
+        label: opt.text,
+        sortable: true,
+        thClass: 'text-end',
+        tdClass: 'text-end'
+      })
+    )
+  ]
+  .filter((field) => {
+    if (props.teamId) {
+      const removeKey = ['pos', 'teamId']
+      return !removeKey.includes(field.key)
+    }
+  })
+)
 const items = computed(() =>
   Array.isArray(props.value)
     ? props.value
