@@ -26,12 +26,20 @@
           <template v-for="(team, tIdx) in matchupTeams" :key="tIdx">
             <div class="py-1 px-2 hstack gap-1 align-items-center">
               <template v-if="team?.id && team?.id !== 'tbd'">
-                <TeamLogo :team-id="team.id" :size="25" />
-                <div class="ms-1 d-flex align-items-center">
-                  <span class="font-team" :class="{ 'fw-bold': team.winner }">
-                    {{ team.title }}
-                  </span>
-                </div>
+                <RouterLink 
+                  class="hstack gap-1 font-team text-reset"
+                  :to="{ name: 'competition-team', params: { competitionId: matchup.game?.competitionId, teamId: team.id } }"
+                >
+                  <TeamLogo :team-id="team.id" :size="25" />
+                  <div class="ms-1 d-flex align-items-center">
+                    <span 
+                      class="font-team" 
+                      :class="{ 'fw-bold': team.winner }" 
+                    >
+                      {{ team.title }}
+                    </span>
+                  </div>
+                </RouterLink>
               </template>
               <template v-else>
                 <span class="text-body-secondary">{{ team?.id === 'tbd' 
@@ -40,12 +48,13 @@
                 }}</span>
               </template>
               <template v-if="team && matchup.game?.isFinished">
-                <div
-                  class="ms-auto d-flex justify-content-end align-items-center px-1 rounded-1 border border-2"
+                <RouterLink
+                  class="ms-auto d-flex justify-content-end align-items-center px-1 rounded-1 border border-2 text-reset text-decoration-none"
                   :class="[team.winner ? 'border-win' : 'border-loss', team?.winner && 'fw-bold']"
+                  :to="{ name: 'competition-game', params: { competitionId: matchup.game?.competitionId, gameId: matchup.game.id } }"
                 >
                   {{ team.finalScore }}
-                </div>
+                </RouterLink>
               </template>
             </div>
           </template>
