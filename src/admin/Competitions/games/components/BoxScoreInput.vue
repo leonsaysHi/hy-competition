@@ -11,14 +11,12 @@ import useCompetition from '@/composable/useCompetition'
 import type { Option } from '@/types/comp-fields'
 import type { PlayerId } from '@/types/players'
 import { useRoute } from 'vue-router'
-import useOptionsLib from '@/composable/useOptionsLib'
 
 const route = useRoute()
 const { competitionId } = route.params
 
 const { getPlayerName } = useLibs()
-const { getPlayerNumber, row, trackedPlayerStatsKey } = useCompetition(competitionId)
-const { playerStatsKeys } = useOptionsLib()
+const { getPlayerNumber,  trackedPlayerStatsKey } = useCompetition(competitionId)
 
 interface IProps {
   modelValue: GameDocBoxScore

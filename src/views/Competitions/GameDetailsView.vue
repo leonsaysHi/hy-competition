@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
-import GameBoxcore from '@/components/games/GameBoxcore.vue'
+import GameBoxscore from '@/components/games/GameBoxscore.vue'
 import GameTeamsStats from '@/components/games/GameTeamsStats.vue'
 import GamePeriods from '@/components/games/GamePeriods.vue'
 import SpinnerComp from '@/components/SpinnerComp.vue'
@@ -110,7 +110,7 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
           <GameTeamsStats :boxscore="gameComputed.boxScore" :teams="competitionTeams" />
         </template>
         <template v-if="statView === 1">
-          <GameBoxcore :boxscore="gameComputed.boxScore" :teams="competitionTeams" />
+          <GameBoxscore :boxscore="gameComputed.row.boxscore" :teams="competitionTeams" />
         </template>
       </template>
     </template>

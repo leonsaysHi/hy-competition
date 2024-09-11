@@ -1,7 +1,10 @@
 import numeral from 'numeral'
 // numeral.locale('es')
 
-export function add(total: number, a: number): number {
+export function add(total: number = 0, a: number = 0): number {
+  if (isNaN(total) || isNaN(a)) {
+    console.warn('isNaN', total, a)
+  }
   return total + a
 }
 export function getAvg(total: number, length: number) {

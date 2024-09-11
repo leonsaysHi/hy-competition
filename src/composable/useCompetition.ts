@@ -23,14 +23,17 @@ import type {
   CompetitionRankingComputed
 } from '@/types/computed'
 import useOptionsLib from './useOptionsLib'
-import type { PlayerStatKey, PlayerStats, PlayerTrackedStatKey, StatsGroupDef } from '@/types/stats'
+import type { PlayerStatLineKey, PlayerStatLine, PlayerTrackedStatKey, StatsGroupDef } from '@/types/stats'
 import { compareAsc } from 'date-fns'
 import i18n from '@/i18n'
+import useStatsKeys from './useStatsKeys'
 const t = (path: string): string => i18n.global.t(path)
 
 export default function useCompetition(competitionId: CompetitionId | undefined) {
   const { isReady: isLibsReady, getCompetition } = useLibs()
-  const { playerStatsKeys, playerStatsSheetKeys, competitionStatsGroups, playerRankingKeys } = useOptionsLib()
+  const { competitionStatsGroups, playerRankingKeys } = useOptionsLib()
+  const { playerStatsKeys } = useStatsKeys()
+  
 
   const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`).withConverter(
     gameConverter
@@ -72,12 +75,12 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
       return undefined
     }
     const competitionRow = getCompetition(competitionId)
-    const getDefaultPlayerBoxScore = (): PlayerStats => {
+    const getDefaultPlayerCalculatedStats = (): PlayerStatLine => {
       return {
-        ...playerStatsKeys.reduce((playerStats: PlayerStats, opt) => {
-          playerStats[opt.value] = 0
-          return playerStats
-        }, {} as PlayerStats)
+        ...playerStatsKeys.reduce((result: PlayerStatLine, key:PlayerStatLineKey) => {
+          result[key] = 0
+          return result
+        }, {} as PlayerStatLine)
       }
     }
     const teams = competitionTeams.value.map((team: CompetitionTeam) => {
@@ -107,17 +110,17 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
           const players: PlayerId[] =
             team.players?.map((player: CompetitionPlayer): PlayerId => player.id) || []
           players.forEach((playerId: PlayerId) => {
-            const emptyBoxscore: PlayerStats = getDefaultPlayerBoxScore()
+            const emptyBoxscore: PlayerStatLine = getDefaultPlayerCalculatedStats()
             const playerBoxscore = game.boxscore[playerId]
             boxscore[playerId] = {
               ...emptyBoxscore,
               ...(playerBoxscore
-                ? (Object.keys(emptyBoxscore) as PlayerStatKey[]).reduce(
-                    (playerStats: PlayerStats, key: PlayerStatKey) => {
+                ? (Object.keys(emptyBoxscore) as PlayerStatLineKey[]).reduce(
+                    (playerStats: PlayerStatLine, key: PlayerStatLineKey) => {
                       playerStats[key] = key in playerBoxscore ? playerBoxscore[key] : 0
                       return playerStats
                     },
-                    {} as PlayerStats
+                    {} as PlayerStatLine
                   )
                 : {}),
               dnp: playerBoxscore?.dnp === 1 ? 1 : 0
@@ -213,12 +216,12 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
 
   // stats sheet input:
   const trackedPlayerStatsKey = computed<Option[]>(() => {
-    return playerStatsSheetKeys
-      .filter((opt: Option) => row.value?.trackedStats.includes(opt.value as PlayerTrackedStatKey))
-      .map((opt: Option) => ({
-        text: t(`options.playerStats.text.${opt.value}`),
-        long: t(`options.playerStats.long.${opt.value}`),
-        value: opt.value
+    return playerStatsKeys
+      .filter((key: PlayerStatLineKey) => row.value?.trackedStats.includes(key as PlayerStatLineKey))
+      .map((key: PlayerStatLineKey) => ({
+        text: t(`options.playerStats.text.${key}`),
+        long: t(`options.playerStats.long.${key}`),
+        value: key
       }))
   })
   // stats sheet output:
@@ -236,7 +239,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
       }) 
       .reduce(
         (result: Option[], opt: Option) => {
-          const key = opt.value as PlayerStatKey
+          const key = opt.value as PlayerStatLineKey
           result.push(opt)
           if (key === 'oreb') {
             result.push({

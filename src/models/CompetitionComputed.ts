@@ -8,22 +8,19 @@ import type {
 } from '@/types/competitions'
 import type { Game } from '@/types/games'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
-import type { Option } from '@/types/comp-fields'
 import { compareAsc, isAfter } from 'date-fns'
 import type {
   AwardItem,
   TeamStats,
   PlayerRankingStats,
-  PlayerStats,
-  PlayerStatKey,
+  PlayerStatLine,
+  PlayerStatLineKey,
   TeamStatKey,
   GamesHist,
-  TeamStandingStats,
-  PlayerBoxScore
+  PlayerCalculatedStats
 } from '@/types/stats'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
-import { getPerc } from '@/utils/maths'
-import useOptionsLib from '@/composable/useOptionsLib'
+import { add, getPerc } from '@/utils/maths'
 import GameComputedClass, { type ScoresComputed } from './GameComputed'
 import type {
   CompetitionGroupComputed,
@@ -33,61 +30,40 @@ import type {
   CompetitionStanding,
   CompetitionStandingComputed
 } from '@/types/computed'
+import useStatsKeys from '@/composable/useStatsKeys'
 
-const { playerStatsKeys, teamStandingKeys } = useOptionsLib() // !gp !awards
+const { 
+  playerStatsKeys,
+  getEmptyPlayerStatLine,
+  teamStandingKeys, 
+  getEmptyTeamStats,
+  getPlayerCalculatedStatsFromStats,
 
-export const getTeamStatsFromGames = (
-  teamId: TeamId,
-  games: GameComputedClass[] = []
-): TeamStats => {
-  const getEmptyStanding = () => ({
-    ...teamStandingKeys.reduce((result: TeamStats, opt: Option) => {
-      return {
-        ...result,
-        [opt.value]: 0
-      }
-    }, {} as TeamStats)
-  })
-  games.sort((a: GameComputedClass, b: GameComputedClass) =>
-    compareAsc(a.row.datetime, b.row.datetime)
-  )
-  const { gp, wins, ptsfv, ptsag }: TeamStats = games.reduce(
-    (result: TeamStats, game: GameComputedClass): TeamStats => {
-      const teamScore = game.getTeamScore(teamId)?.finalScore || 0
-      const oppScore = game.getOppScore(teamId)?.finalScore || 0
-      const diff = teamScore - oppScore
-      return {
-        gp: result.gp + 1,
-        wins: result.wins + (diff > 0 ? 1 : 0),
-        ptsfv: result.ptsfv + teamScore,
-        ptsag: result.ptsag + oppScore
-      }
-    },
-    getEmptyStanding()
-  )
-  return {
-    gp,
-    wins,
-    ptsfv,
-    ptsag
-  }
-}
+} = useStatsKeys()
+
+
 const getTeamPhaseStanding = (teamId: TeamId, games: GameComputedClass[]): TeamStats => {
-  const { gp, wins, ptsfv, ptsag }: TeamStats = getTeamStatsFromGames(
-    teamId,
-    games.filter((game: GameComputedClass) => game.isFinished)
-  )
-  const result: TeamStats = {
-    gp,
-    wins,
-    ptsfv,
-    ptsag
-  }
+  const result: TeamStats = games
+    .filter((game: GameComputedClass) => game.isFinished)
+    .reduce(
+      (result: TeamStats, game: GameComputedClass): TeamStats => {
+        const teamScore = game.getTeamScore(teamId)?.finalScore || 0
+        const oppScore = game.getOppScore(teamId)?.finalScore || 0
+        const diff = teamScore - oppScore
+        return {
+          gp: result.gp + 1,
+          wins: result.wins + (diff > 0 ? 1 : 0),
+          ptsfv: result.ptsfv + teamScore,
+          ptsag: result.ptsag + oppScore
+        }
+      },
+      getEmptyTeamStats()
+    )
   return result
 }
-const updatePlayerBoxScoreCalculations = (
-  boxscore: PlayerBoxScore | CompetitionRanking
-): PlayerBoxScore | CompetitionRanking => {
+const updatePlayerCalculatedStatsCalculations = (
+  boxscore: PlayerStatLine | PlayerCalculatedStats | CompetitionRanking
+): PlayerCalculatedStats | CompetitionRanking => {
   const { fta = 0, ftm = 0, fga = 0, fgm = 0, fg3a = 0, fg3m = 0, oreb = 0, dreb = 0 } =
     boxscore
   const ftprc = getPerc(fta, ftm)
@@ -107,41 +83,50 @@ const updatePlayerBoxScoreCalculations = (
 export const getPlayerStatsFromGames = (
   playerId: PlayerId,
   games: GameComputedClass[]
-): PlayerStats => {
-  return games.reduce((ranking: PlayerStats, game: GameComputedClass) => {
-    playerStatsKeys
-      .map((opt: Option) => opt.value as PlayerStatKey)
-      .forEach((key: PlayerStatKey) => {
-        const statValue = game.boxScore[playerId][key]
-        ranking[key] = ranking[key] ? ranking[key] + statValue : statValue
-      })
-    return ranking
-  }, {} as PlayerStats)
+): PlayerStatLine => {
+  return games
+    .filter(
+      (game: GameComputedClass) =>
+        game.isFinished && game.boxScore[playerId] && game.boxScore[playerId].dnp === 0
+    )
+    .reduce((result: PlayerStatLine, game: GameComputedClass) => {
+      playerStatsKeys
+        .forEach((key: PlayerStatLineKey) => {
+          result[key] = add(result[key], game.boxScore[playerId][key])
+        })
+      return result
+    }, getEmptyPlayerStatLine() as PlayerStatLine)
 }
 const getPlayerRankingFromGames = (
   playerId: PlayerId,
   games: GameComputedClass[]
 ): PlayerRankingStats => {
-  const playedgames = games.filter(
-    (game: GameComputedClass) =>
-      game.isFinished && game.boxScore[playerId] && game.boxScore[playerId].dnp === 0
-  )
-  const result = {
+  const playedgames = games
+    .filter(
+      (game: GameComputedClass) =>
+        game.isFinished && game.row.boxscore[playerId] && game.row.boxscore[playerId].dnp === 0
+    )
+  const rows: PlayerStatLine[] = playedgames
+    .reduce((acc: PlayerStatLine[], game: GameComputedClass) => {
+      acc.push(game.row.boxscore[playerId])
+      return acc
+    }, [])
+  const boxscore: PlayerCalculatedStats = getPlayerCalculatedStatsFromStats(rows) 
+  const awards = playedgames
+    .reduce((awards: AwardItem[], game: GameComputedClass) => {
+      return [
+        ...awards,
+        ...game.row.awards
+          .filter((row: AwardItem) => row.id === playerId)
+          .map((row: AwardItem) => ({ ...row, gameId: game.id }))
+      ]
+    }, [] as AwardItem[])
+  const ranking: PlayerRankingStats = {
     gp: playedgames.length,
-    ...getPlayerStatsFromGames(playerId, playedgames)
+    ...boxscore,
+    awards,
   } as PlayerRankingStats
-  result.awards = playedgames.reduce((awards: AwardItem[], game: GameComputedClass) => {
-    return [
-      ...awards,
-      ...game.row.awards
-        .filter((row: AwardItem) => row.id === playerId)
-        .map((row: AwardItem) => ({ ...row, gameId: game.id }))
-    ]
-  }, [])
-  return {
-    ...result,
-    ...updatePlayerBoxScoreCalculations(result)
-  }
+  return ranking
 }
 const getGroupBracket = (teams: TeamId[], games: GameComputedClass[]): Bracket => {
   let roundTeamsLength = teams.length
@@ -336,8 +321,7 @@ export default class CompetitionClass {
               (r: CompetitionRankingComputed) => r.playerId === rank.playerId
             )
             if (idx > -1) {
-              playerStatsKeys.forEach((opt: Option) => {
-                const key = opt.value as PlayerStatKey
+              playerStatsKeys.forEach((key: PlayerStatKey) => {
                 if (isNaN(rank[key]) || rank[key] === undefined) {
                   console.warn('rank with undefined value for', key, rank)
                 }
@@ -363,22 +347,13 @@ export default class CompetitionClass {
       .map((playerRank: CompetitionRankingComputed) => {
         return {
           ...playerRank,
-          ...updatePlayerBoxScoreCalculations(playerRank)
+          ...updatePlayerCalculatedStatsCalculations(playerRank)
         }
       })
   }
 
   // each teams overall stats
   get competitionStandings(): CompetitionStandingComputed[] {
-    const getEmptyStandingStats = (): TeamStandingStats => ({
-      ...teamStandingKeys.reduce((stats: TeamStats, opt: Option) => {
-        return {
-          ...stats,
-          [opt.value]: 0
-        }
-      }, {} as TeamStats),
-      hist: []
-    })
     return this.computedPhases.reduce(
       (standingList: CompetitionStandingComputed[], phase: CompetitionPhaseComputed) => {
         phase.groups.forEach((group: CompetitionGroupComputed) => {
@@ -392,10 +367,10 @@ export default class CompetitionClass {
                 : ({
                     ...stand,
                     id: this.row.id,
-                    ...getEmptyStandingStats()
+                    ...getEmptyTeamStats(),
+                    hist: []
                   } as CompetitionStandingComputed)
-            teamStandingKeys.forEach((opt: Option) => {
-              const key = opt.value as TeamStatKey
+            teamStandingKeys.forEach((key: TeamStatKey) => {
               newStand[key] += stand[key] || 0
             })
             newStand.hist.push(...stand.hist.filter(Boolean))

@@ -2,23 +2,24 @@
 import { computed, ref, watchEffect } from 'vue'
 import StatsTableComp from '@/components/StatsTableComp.vue'
 
-import useOptionsLibs from '@/composable/useOptionsLib'
-import type { Option } from '@/types/comp-fields'
 import type { TableField } from '@/types/comp-table'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
-import type { CompetitionPlayer } from '@/types/players'
+import type { CompetitionPlayer, PlayerId } from '@/types/players'
 
 import TeamLogo from '../teams/TeamLogo.vue'
-import type { GameBoxScoreComputed } from '@/types/computed'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
 import type { CompetitionId } from '@/types/competitions'
-import type { PlayerStatKey } from '@/types/stats'
+import type { PlayerCalculatedStatsKey, PlayerStatLineKey } from '@/types/stats'
+import useStatsKeys from '@/composable/useStatsKeys'
+import type { GameDocBoxScore } from '@/types/games'
+
+const { getPlayerCalculatedStatsFromStats } = useStatsKeys()
 const { t } = useI18n()
 
 interface IProps {
-  boxscore: GameBoxScoreComputed
+  boxscore: GameDocBoxScore
   teams: CompetitionTeam[]
 }
 
@@ -27,14 +28,14 @@ const props = withDefaults(defineProps<IProps>(), {})
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: CompetitionId }
 const { row } = useCompetition(competitionId)
-const { playerStatsSheetKeys } = useOptionsLibs()
+const { PlayerCalculatedStatsKeys } = useStatsKeys()
 
-const boxScoreKeys = computed<Option[]>(() => {
+const boxScoreKeys = computed<PlayerCalculatedStatsKey[]>(() => {
   if (!row.value?.statsInput) {
     return []
   }
-  return playerStatsSheetKeys.filter((opt: Option) =>
-    row.value?.trackedStats.includes(opt.value as PlayerStatKey)
+  return PlayerCalculatedStatsKeys.filter((key: PlayerCalculatedStatsKey) =>
+    row.value?.trackedStats.includes(key)
   )
 })
 
@@ -43,11 +44,11 @@ const fields = computed(() => {
     { label: '#', key: 'number' },
     { label: t('global.player'), key: 'id', tdClass: 'fw-bold' },
     ...boxScoreKeys.value.reduce(
-      (fields: TableField[], opt): TableField[] => [
+      (fields: TableField[], key: PlayerCalculatedStatsKey): TableField[] => [
         ...fields,
         {
-          key: opt.value,
-          label: opt.text,
+          key,
+          label: t(`options.playerStats.text.${key}`),
           sortable: true,
           thClass: 'text-end',
           tdClass: 'text-end',
@@ -73,12 +74,15 @@ const currentTeamId = ref<TeamId | undefined>()
 watchEffect(() => {
   currentTeamId.value = Array.isArray(props.teams) && props.teams[0] ? props.teams[0].id : undefined
 })
-const boxScoreItems = computed(() => {
+const items = computed(() => {
   const team = props.teams.find((team: CompetitionTeam) => team.id === currentTeamId.value)
-  return team?.players.map((player: CompetitionPlayer) => ({
-    ...player,
-    ...props.boxscore[player.id]
-  }))
+  return team?.players.map((player: CompetitionPlayer) => {
+    const playerId: PlayerId = player.id
+    return {
+      ...player,
+      ...getPlayerCalculatedStatsFromStats([ props.boxscore[playerId] ])
+    }
+  })
 })
 </script>
 <template>
@@ -100,10 +104,9 @@ const boxScoreItems = computed(() => {
   </ul>
   <StatsTableComp
     :fields="fields"
-    :items="boxScoreItems"
+    :items="items"
     sorted-key="pts"
     sorted-direction="desc"
     show-total
-    force-cumul
   ></StatsTableComp>
 </template>

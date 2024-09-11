@@ -189,8 +189,8 @@ import useLibs from '@/composable/useLibs'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import useOptionsLib from '@/composable/useOptionsLib'
-import type { PlayerStatKey } from '@/types/stats'
 import useCompetition from '@/composable/useCompetition'
+import useStatsKeys from '@/composable/useStatsKeys'
 const { t } = useI18n()
 
 interface IProps {
@@ -219,7 +219,8 @@ const props = withDefaults(defineProps<IProps>(), {
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
 const { getTeamName, getPlayerName, getCompetition } = useLibs()
-const { playerStatsKeys, playerRankingKeys, getCategory } = useOptionsLib()
+const { playerRankingKeys, getCategory } = useOptionsLib()
+const { playerStatsKeys } = useStatsKeys()
 const { row } = useCompetition(competitionId)
 
 const _showAvg = ref<boolean>(props.showAvg)
@@ -242,8 +243,6 @@ const getCalculated = (item) => {
   }
 }
 const computedItems = computed(() => {
-  const statKeys: PlayerStatKey[] = playerStatsKeys
-    .map((opt: Option) => opt.value as PlayerStatKey)
   return props.items
     .map((item) => {
       const length = item.gp as number || 1
@@ -254,7 +253,7 @@ const computedItems = computed(() => {
       row.pts = calculated.pts
       if (_showAvg.value) {
         row.pts = getAvg(item.pts, length)
-        statKeys
+        playerStatsKeys
           .forEach((key) => {
             const total = (item[key] || 0) as number
             row[key] = getAvg(total, length)

@@ -1,22 +1,16 @@
 <script lang="ts" setup>
-import type { Option } from '@/types/comp-fields'
 import { computed } from 'vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
-import type { PlayerRankingKey, PlayerStatKey } from '@/types/stats'
+import type { PlayerCalculatedStats, PlayerStatKey } from '@/types/stats'
 import type { GameBoxScoreComputed } from '@/types/computed'
-import { TeamId, CompetitionTeam } from '@/types/teams'
-import { PlayerId } from '@/types/players'
-import { useRoute } from 'vue-router'
-import useOptionsLib from '@/composable/useOptionsLib'
-import useCompetition from '@/composable/useCompetition'
+import type { TeamId, CompetitionTeam } from '@/types/teams'
+import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import useLibs from '@/composable/useLibs'
 import { useI18n } from 'vue-i18n'
+import useStatsKeys from '@/composable/useStatsKeys'
 
 const { t } = useI18n()
-const route = useRoute()
-const { competitionId } = route.params
-const { row: competition } = useCompetition(competitionId)
-const { playerStatsKeys } = useOptionsLib()
+const { playerStatsKeys } = useStatsKeys()
 const { getTeamName } = useLibs()
 
 interface IProps {
@@ -26,27 +20,19 @@ interface IProps {
 
 const props = withDefaults(defineProps<IProps>(), {})
 
-const competitionStatsKeys = computed<PlayerStatKey[]>(() => {
-  return competition.value?.trackedStats
-    ? playerStatsKeys
-        .filter((opt: Option) =>
-          competition.value.trackedStats.includes(opt.value as PlayerRankingKey)
-        )
-        .map((opt: Option) => opt.value as PlayerStatKey)
-    : []
-})
+
 
 const teamsTotalsByStats = computed(() => {
   return props.teams.reduce((teams, team: CompetitionTeam) => {
     const teamId: TeamId = team.id
-    teams[teamId] = competitionStatsKeys.value.reduce((totals, statKey: PlayerStatKey) => {
-      const boxscores: PlayerBoxScore[] = team.players.map(
-        (player: CompetitionPlayer): PlayerBoxScore => {
+    teams[teamId] = playerStatsKeys.reduce((totals, key: PlayerStatKey) => {
+      const boxscores: PlayerCalculatedStats[] = team.players.map(
+        (player: CompetitionPlayer): PlayerCalculatedStats => {
           const playerId: PlayerId = player.id
           return props.boxscore[playerId]
         }
       )
-      totals[statKey] = boxscores.reduce((tot: number, bs: PlayerBoxScore) => tot + bs[statKey], 0)
+      totals[key] = boxscores.reduce((tot: number, bs: PlayerCalculatedStats) => tot + bs[key], 0)
       return totals
     }, {})
     return teams
@@ -57,13 +43,13 @@ const teamsBarsByStats = computed(() => {
     result[teamId] = {}
     return result
   }, {})
-  competitionStatsKeys.value.forEach((statKey: PlayerStatKey) => {
+  playerStatsKeys.forEach((key: PlayerStatKey) => {
     const vals = Object.keys(teamsTotalsByStats.value).map((teamId: TeamId) => {
-      return teamsTotalsByStats.value[teamId][statKey]
+      return teamsTotalsByStats.value[teamId][key]
     })
     const hightVal = Math.max(...vals)
     Object.keys(teamsTotalsByStats.value).forEach((teamId: TeamId, idx: number) => {
-      result[teamId][statKey] = Math.floor((vals[idx] * 40) / hightVal)
+      result[teamId][key] = Math.floor((vals[idx] * 40) / hightVal)
     })
   })
   return result
@@ -85,17 +71,17 @@ const teamsBarsByStats = computed(() => {
       </div>
     </div>
   </div>
-  <template v-for="(statKey, idx) in competitionStatsKeys" :key="statKey">
+  <template v-for="(key, idx) in playerStatsKeys" :key="key">
     <template v-if="idx"><hr /></template>
     <div class="row row-cols-3 g-4">
       <div class="col text-end display-4 fw-bold vstack justify-content-center">
-        {{ teamsTotalsByStats[teams[0].id][statKey] }}
+        {{ teamsTotalsByStats[teams[0].id][key] }}
       </div>
       <div class="col text-center fw-bold vstack justify-content-center">
-        {{ t('options.playerStats.long.' + statKey) }}
+        {{ t('options.playerStats.long.' + key) }}
       </div>
       <div class="col display-4 fw-bold vstack justify-content-center">
-        {{ teamsTotalsByStats[teams[1].id][statKey] }}
+        {{ teamsTotalsByStats[teams[1].id][key] }}
       </div>
     </div>
     <div class="progress-stacked" style="height: 5px">
@@ -103,12 +89,12 @@ const teamsBarsByStats = computed(() => {
         class="progress"
         role="progressbar"
         aria-label="Segment one"
-        :style="`width: ${teamsBarsByStats[teams[0].id][statKey]}%;`"
+        :style="`width: ${teamsBarsByStats[teams[0].id][key]}%;`"
       >
         <div
           class="progress-bar"
           :class="
-            teamsBarsByStats[teams[0].id][statKey] >= teamsBarsByStats[teams[1].id][statKey]
+            teamsBarsByStats[teams[0].id][key] >= teamsBarsByStats[teams[1].id][key]
               ? 'bg-success'
               : 'bg-secondary'
           "
@@ -121,12 +107,12 @@ const teamsBarsByStats = computed(() => {
         aria-valuenow="30"
         aria-valuemin="0"
         aria-valuemax="100"
-        :style="`width: ${teamsBarsByStats[teams[1].id][statKey]}%;`"
+        :style="`width: ${teamsBarsByStats[teams[1].id][key]}%;`"
       >
         <div
           class="progress-bar"
           :class="
-            teamsBarsByStats[teams[0].id][statKey] <= teamsBarsByStats[teams[1].id][statKey]
+            teamsBarsByStats[teams[0].id][key] <= teamsBarsByStats[teams[1].id][key]
               ? 'bg-success'
               : 'bg-secondary'
           "

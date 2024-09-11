@@ -4,7 +4,7 @@ import StatsTableComp from '@/components/StatsTableComp.vue'
 
 import type { CompetitionRanking, CompetitionRankingComputed } from '@/types/computed'
 import type { TableField } from '@/types/comp-table'
-import type { PlayerRankingKey, PlayerStats } from '@/types/stats'
+import type { Option } from '@/types/comp-fields'
 
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
@@ -28,10 +28,7 @@ const props = withDefaults(defineProps<IProps>(), {
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string; playerId: string }
 
-const { 
-  row,
-  trackedPlayerRankingKeys
-} = useCompetition(competitionId)
+const { trackedPlayerRankingKeys } = useCompetition(competitionId)
 const fields = computed(() => [
     {
       label: t('options.rankingStats.text.pos'),
@@ -43,7 +40,7 @@ const fields = computed(() => [
     { label: t('global.team', 2), key: 'teamId' },
     ...trackedPlayerRankingKeys.value.map(
       (opt: Option): TableField => ({
-        key: opt.value,
+        key: opt.value as string,
         label: opt.text,
         sortable: true,
         thClass: 'text-end',
@@ -56,6 +53,7 @@ const fields = computed(() => [
       const removeKey = ['pos', 'teamId']
       return !removeKey.includes(field.key)
     }
+    return true
   })
 )
 const items = computed(() =>

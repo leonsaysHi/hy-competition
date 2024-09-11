@@ -9,6 +9,7 @@ import useCompetition from '@/composable/useCompetition'
 import type { CompetitionTeam } from '@/types/teams'
 import { useI18n } from 'vue-i18n'
 import type { CompetitionId } from '@/types/competitions'
+import useStatsKeys from '@/composable/useStatsKeys'
 const { t } = useI18n()
 
 const route = useRoute()
@@ -19,6 +20,7 @@ interface IProps {
 }
 const props = withDefaults(defineProps<IProps>(), {})
 
+const { getPlayerCalculatedStatsFromStats } = useStatsKeys()
 const { getPlayerCompetitionTeam, trackedPlayerRankingKeys } = useCompetition(competitionId)
 
 const fields = computed(() => {
@@ -48,17 +50,19 @@ const fields = computed(() => {
   return fields
 })
 const computedGames = computed<TableItem[]>(() => {
-  return props.items.map((game: GameComputedClass) => {
-    const team = getPlayerCompetitionTeam(playerId) as CompetitionTeam
-    const opp = game.getOppScore(team?.id)
-    return {
-      datetime: game.date.short,
-      isFinished: game.isFinished,
-      isWin: !opp?.winner,
-      teamId: opp?.id,
-      ...game.boxScore[playerId]
-    }
-  })
+  return props.items
+    .map((game: GameComputedClass) => {
+      const team = getPlayerCompetitionTeam(playerId) as CompetitionTeam
+      const opp = game.getOppScore(team?.id)
+      //console.log(game.row.boxscore[playerId])
+      return {
+        datetime: game.date.short,
+        isFinished: game.isFinished,
+        isWin: !opp?.winner,
+        teamId: opp?.id,
+        ...getPlayerCalculatedStatsFromStats([game.row.boxscore[playerId]])
+      }
+    })
 })
 </script>
 

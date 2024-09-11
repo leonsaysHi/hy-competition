@@ -10,20 +10,20 @@ import ScoresInput from '@/admin/Competitions/games/components/ScoresInput.vue'
 import StatsSheetInput from '@/admin/Competitions/games/components/StatsSheetInput.vue'
 import BoxScoreInput from '@/admin/Competitions/games/components/BoxScoreInput.vue'
 import AwardsInput from '@/admin/Competitions/components/AwardsInput.vue'
-import type { AwardItem, PlayerTrackedStatKey, PlayerTrackedStats } from '@/types/stats'
+import type { AwardItem, PlayerStatKey } from '@/types/stats'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import { useRoute } from 'vue-router'
 import type { CompetitionId } from '@/types/competitions'
 import CheckComp from '@/components/CheckComp.vue'
-import useOptionsLib from '@/composable/useOptionsLib'
+import useStatsKeys from '@/composable/useStatsKeys'
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: CompetitionId; gameId: GameId }
 const { row, getCompetitionTeam: getCompetitionTeam } = useCompetition(competitionId)
 const { getTeamName, getPlayerName } = useLibs()
-const { playerStatsSheetKeys } = useOptionsLib()
+const { playerStatsKeys } = useStatsKeys()
 interface IProps {
   value: FormData
   competitionTeams?: CompetitionTeam[]
@@ -69,8 +69,7 @@ const boxscoreByTeams = computed({
         ...acc,
         [teamId]: team.players.reduce((boxscore: GameDocBoxScore, player) => {
           const bs = data.value.boxscore[player.id] || {}
-          playerStatsSheetKeys.forEach((opt: Option) => {
-            const key = opt.value as PlayerTrackedStatKey
+          playerStatsKeys.forEach((key: PlayerStatKey) => {
             bs[key] = key in bs ? bs[key] : 0
           })
           return {
@@ -141,7 +140,6 @@ const handleSubmit = (ev: Event) => {
           >(Can't edit/delete Finished games)</small
         ></CheckComp
       >
-
       <CheckComp v-model="data.isLive" switch>Is live</CheckComp>
     </FieldComp>
     <hr />
