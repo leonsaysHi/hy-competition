@@ -9,7 +9,7 @@ import useCompetition from '@/composable/useCompetition'
 import type { CompetitionTeam } from '@/types/teams'
 import { useI18n } from 'vue-i18n'
 import type { CompetitionId } from '@/types/competitions'
-import useStatsKeys from '@/composable/useStatsKeys'
+import useStats from '@/composable/useStats'
 const { t } = useI18n()
 
 const route = useRoute()
@@ -20,7 +20,7 @@ interface IProps {
 }
 const props = withDefaults(defineProps<IProps>(), {})
 
-const { getPlayerCalculatedStatsFromStats } = useStatsKeys()
+const { getPlayerCalculatedStatsFromStats } = useStats()
 const { getPlayerCompetitionTeam, trackedPlayerRankingKeys } = useCompetition(competitionId)
 
 const fields = computed(() => {

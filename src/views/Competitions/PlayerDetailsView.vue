@@ -28,7 +28,6 @@ const { getPlayerName } = useLibs()
 const { playerRankingKeys } = useOptionsLib()
 const {
   isReady: isCompetitionReady,
-  row,
   getCompetitionPlayer,
   getPlayerCompetitionTeam,
   games,

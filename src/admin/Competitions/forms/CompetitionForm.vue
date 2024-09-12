@@ -17,7 +17,7 @@ import SelectComp from '@/components/SelectComp.vue'
 import CheckComp from '@/components/CheckComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
-import type { AwardItem, PlayerTrackedStatKey } from '@/types/stats'
+import type { AwardItem, PlayerStatLineKey } from '@/types/stats'
 import AwardsInput from '../components/AwardsInput.vue'
 import TrackedStatsInput from '../components/TrackedStatsInput.vue'
 import useCompetition from '@/composable/useCompetition'
@@ -42,7 +42,7 @@ type FormData = {
   gender?: GenderKey
   phases: Phase[]
   statsInput: StatsInputType
-  trackedStats: PlayerTrackedStatKey[]
+  trackedStats: PlayerStatLineKey[]
   awards: AwardItem[]
   isActive?: Boolean
 }

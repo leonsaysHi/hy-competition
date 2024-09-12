@@ -17,13 +17,13 @@ import useCompetition from '@/composable/useCompetition'
 import { useRoute } from 'vue-router'
 import type { CompetitionId } from '@/types/competitions'
 import CheckComp from '@/components/CheckComp.vue'
-import useStatsKeys from '@/composable/useStatsKeys'
+import useStats from '@/composable/useStats'
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: CompetitionId; gameId: GameId }
 const { row, getCompetitionTeam: getCompetitionTeam } = useCompetition(competitionId)
 const { getTeamName, getPlayerName } = useLibs()
-const { playerStatsKeys } = useStatsKeys()
+const { playerStatsKeys } = useStats()
 interface IProps {
   value: FormData
   competitionTeams?: CompetitionTeam[]

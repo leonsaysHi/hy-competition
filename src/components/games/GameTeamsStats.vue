@@ -7,10 +7,10 @@ import type { TeamId, CompetitionTeam } from '@/types/teams'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import useLibs from '@/composable/useLibs'
 import { useI18n } from 'vue-i18n'
-import useStatsKeys from '@/composable/useStatsKeys'
+import useStats from '@/composable/useStats'
 
 const { t } = useI18n()
-const { playerStatsKeys } = useStatsKeys()
+const { playerStatsKeys } = useStats()
 const { getTeamName } = useLibs()
 
 interface IProps {

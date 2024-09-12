@@ -107,7 +107,7 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
           </li>
         </ul>
         <template v-if="statView === 0">
-          <GameTeamsStats :boxscore="gameComputed.boxScore" :teams="competitionTeams" />
+          <GameTeamsStats :boxscore="gameComputed.row.boxscore" :teams="competitionTeams" />
         </template>
         <template v-if="statView === 1">
           <GameBoxscore :boxscore="gameComputed.row.boxscore" :teams="competitionTeams" />

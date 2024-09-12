@@ -12,10 +12,10 @@ import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
 import type { CompetitionId } from '@/types/competitions'
 import type { PlayerCalculatedStatsKey, PlayerStatLineKey } from '@/types/stats'
-import useStatsKeys from '@/composable/useStatsKeys'
+import useStats from '@/composable/useStats'
 import type { GameDocBoxScore } from '@/types/games'
 
-const { getPlayerCalculatedStatsFromStats } = useStatsKeys()
+const { getPlayerCalculatedStatsFromStats, playerCalculatedStatsKeys } = useStats()
 const { t } = useI18n()
 
 interface IProps {
@@ -28,13 +28,12 @@ const props = withDefaults(defineProps<IProps>(), {})
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: CompetitionId }
 const { row } = useCompetition(competitionId)
-const { PlayerCalculatedStatsKeys } = useStatsKeys()
 
 const boxScoreKeys = computed<PlayerCalculatedStatsKey[]>(() => {
   if (!row.value?.statsInput) {
     return []
   }
-  return PlayerCalculatedStatsKeys.filter((key: PlayerCalculatedStatsKey) =>
+  return playerCalculatedStatsKeys.filter((key: PlayerCalculatedStatsKey) =>
     row.value?.trackedStats.includes(key)
   )
 })

@@ -1,8 +1,9 @@
 
-import type { TeamStatKey, PlayerStatLineKey, TeamStats, PlayerStatLine, PlayerCalculatedStats, PlayerCalculatedStatsKey } from '@/types/stats'
+import type { TeamStatKey, PlayerStatLineKey, TeamStats, PlayerStatLine, PlayerCalculatedStats, PlayerCalculatedStatsKey, PlayerGamesStats, PlayerGamesStatsKey } from '@/types/stats'
 import { add, getPerc } from '@/utils/maths'
-export default function useStatsKeys() {
+export default function useStats() {
 
+  // Stats object keys: (1 game stats)
   const ft: PlayerStatLineKey[] = ['ftm', 'fta']
   const fg: PlayerStatLineKey[] = ['fgm', 'fga']
   const fg3: PlayerStatLineKey[] = ['fg3m', 'fg3a']
@@ -17,6 +18,7 @@ export default function useStatsKeys() {
     ..._morekeys,
     'dnp'
   ]
+
   const getEmptyPlayerStatLine = ():PlayerStatLine => ({
     ...playerStatsKeys
       .reduce((result: PlayerStatLine, key: PlayerStatLineKey) => {
@@ -25,7 +27,16 @@ export default function useStatsKeys() {
       }, {} as PlayerStatLine)
   })
 
-  const getPlayerCalculatedStatsFromStats = (rows: PlayerStatLine[] = []):PlayerCalculatedStats => {
+  // Cumulated games stats object: (n game stats)
+  const playerGamesStatsKeys: PlayerGamesStatsKey[] = [
+    ...ft,
+    ...fg,
+    ...fg3,
+    ...reb,
+    ..._morekeys,
+    'dnp'
+  ]
+  const getPlayerGamesStatsFromStatLines = (rows: PlayerStatLine[] = []): PlayerGamesStats => {
     if (!Array.isArray(rows)) {
       console.warn('not an array of stats')
     }
@@ -39,8 +50,22 @@ export default function useStatsKeys() {
         getEmptyPlayerStatLine()
       )
     // calculs
-    const { fta, ftm, fga, fgm, fg3a, fg3m, oreb, dreb, dnp } = acc
+    const { dnp } = acc
     const gp = rows.length - dnp
+    return {
+      gp,
+      ...acc,
+    }
+  }
+
+  const getPlayerCalculatedStatsFromStats = (rows: PlayerStatLine[] = []):PlayerCalculatedStats => {
+    if (!Array.isArray(rows)) {
+      console.warn('not an array of stats')
+    }
+    const acc: PlayerGamesStats = getPlayerGamesStatsFromStatLines(rows)
+    
+    // calculs
+    const { fta, ftm, fga, fgm, fg3a, fg3m, oreb, dreb } = acc
     const ftprc = getPerc(fta, ftm)
     const fgprc = getPerc(fga, fgm)
     const fg3prc = getPerc(fg3a, fg3m)
@@ -48,7 +73,6 @@ export default function useStatsKeys() {
     const reb = oreb + dreb
     return {
       ...acc,
-      gp,
       ftprc,
       fgprc,
       fg3prc,
@@ -57,7 +81,7 @@ export default function useStatsKeys() {
     } as PlayerCalculatedStats
   }
 
-  const PlayerCalculatedStatsKeys: PlayerCalculatedStatsKey[] = [
+  const playerCalculatedStatsKeys: PlayerCalculatedStatsKey[] = [
     'pts',
     ...ft,
     'ftprc',
@@ -72,7 +96,7 @@ export default function useStatsKeys() {
   ]
 
   const getEmptyPlayerCalculatedStats = () => ({
-    ...PlayerCalculatedStatsKeys
+    ...playerCalculatedStatsKeys
       .reduce((result: PlayerCalculatedStats, key: PlayerCalculatedStatsKey) => {
         result[key] = 0
         return result
@@ -96,13 +120,16 @@ export default function useStatsKeys() {
 
 
   return {
-
-    // player inputed stats
+    // player single game stats
     playerStatsKeys,
     getEmptyPlayerStatLine,
 
+    // player multiple games stats
+    playerGamesStatsKeys,
+    getPlayerGamesStatsFromStatLines,
+
     // player computed stats (pts, reb, perc)
-    PlayerCalculatedStatsKeys,
+    playerCalculatedStatsKeys,
     getEmptyPlayerCalculatedStats,
     getPlayerCalculatedStatsFromStats,
     

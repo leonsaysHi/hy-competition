@@ -190,7 +190,7 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import useOptionsLib from '@/composable/useOptionsLib'
 import useCompetition from '@/composable/useCompetition'
-import useStatsKeys from '@/composable/useStatsKeys'
+import useStats from '@/composable/useStats'
 const { t } = useI18n()
 
 interface IProps {
@@ -220,7 +220,7 @@ const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
 const { getTeamName, getPlayerName, getCompetition } = useLibs()
 const { playerRankingKeys, getCategory } = useOptionsLib()
-const { playerStatsKeys } = useStatsKeys()
+const { playerStatsKeys } = useStats()
 const { row } = useCompetition(competitionId)
 
 const _showAvg = ref<boolean>(props.showAvg)
