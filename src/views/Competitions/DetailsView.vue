@@ -16,6 +16,8 @@ import type GameComputedClass from '@/models/GameComputed'
 import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
 import BracketView from '@/components/bracket/BracketView.vue'
 
+import GamesClass from '@/models/Games'
+
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
 
@@ -33,51 +35,41 @@ const {
 const { t } = useI18n()
 const { getGender, getCategory } = useOptionsLib()
 
+const currentGamesView = ref<'prev' | 'next' | 'live'>('prev')
+
+const groupGames = computed(() => {
+  return row.value ? 
+    new GamesClass(row.value, row.value?.games)
+      .phase(Number(selectedPhaseIdx.value))
+      .group(Number(selectedGroupIdx.value))
+      .getComputed()
+    : []
+})
 const gamesViewOptions = computed<Option[]>(() => {
   return [
     {
       text: t('global.gameDetails.live'),
       value: 'live',
-      disabled:
-        !selectedGroup.value ||
-        !selectedGroup.value?.games.some((game: GameComputedClass) => game.isLive)
+      disabled: !groupGames.value.some((game: GameComputedClass) => game.isLive)
     },
     {
       text: t('global.previous', 2),
       value: 'prev',
-      disabled:
-        !selectedGroup.value ||
-        !selectedGroup.value?.games.some(
-          (game: GameComputedClass) => game.isFinished && !game.isLive
-        )
+      disabled: !groupGames.value.some(
+        (game: GameComputedClass) => game.isFinished && !game.isLive
+      )
     },
     {
       text: t('global.upcoming', 2),
       value: 'next',
-      disabled:
-        !selectedGroup.value ||
-        !selectedGroup.value?.games.some(
-          (game: GameComputedClass) => !game.isFinished && !game.isLive
-        )
+      disabled: !groupGames.value.some(
+        (game: GameComputedClass) => !game.isFinished && !game.isLive
+      )
     }
   ]
 })
-
-const currentGamesView = ref<'prev' | 'next' | 'live'>('prev')
-
-watch(
-  () => gamesViewOptions.value,
-  (val: Option[]) => {
-    const optIdx = val.findIndex((opt: Option) => !opt.disabled)
-    if (optIdx > -1) {
-      currentGamesView.value = val[optIdx].value as 'prev' | 'next' | 'live'
-    }
-  }
-)
-
-const groupGames = computed<GameComputedClass[]>(() => {
-  const games = Array.isArray(selectedGroup.value?.games) ? selectedGroup.value.games.slice() : []
-  const result = games
+const gamesList = computed<GameComputedClass[]>(() => {
+  const result = groupGames.value
     .filter((game: GameComputedClass) => {
       return currentGamesView.value === 'prev'
         ? game.isFinished && !game.isLive
@@ -100,6 +92,15 @@ const groupGames = computed<GameComputedClass[]>(() => {
     ) 
     : result
 })
+watch(
+  () => gamesViewOptions.value,
+  (val: Option[]) => {
+    const optIdx = val.findIndex((opt: Option) => !opt.disabled)
+    if (optIdx > -1) {
+      currentGamesView.value = val[optIdx].value as 'prev' | 'next' | 'live'
+    }
+  }
+)
 </script>
 <template>
   <div>
@@ -156,7 +157,7 @@ const groupGames = computed<GameComputedClass[]>(() => {
             </template>
           </ul>
         </div>
-        <GamesList class="mb-3" :items="groupGames" />
+        <GamesList class="mb-3" :items="gamesList" />
         <CompetitionRanking :value="selectedGroup.ranking" :limit="15">
           <template #title>
             <h3>{{ t('global.ranking') }}</h3>

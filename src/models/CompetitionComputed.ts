@@ -8,7 +8,7 @@ import type {
 } from '@/types/competitions'
 import type { Game } from '@/types/games'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
-import { compareAsc, isAfter, isEqual } from 'date-fns'
+import { compareAsc } from 'date-fns'
 import type {
   AwardItem,
   TeamStats,
@@ -36,9 +36,7 @@ const {
   teamStandingKeys, 
   getEmptyTeamStats,
   getPlayerCalculatedStatsFromStatLines,
-
 } = useStats()
-
 
 const getTeamStanding = (
   teamId: TeamId, 

@@ -2,9 +2,7 @@ import type { CompetitionGroupComputed, CompetitionPhaseComputed } from '@/types
 import type { Option } from '@/types/comp-fields'
 import { computed, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
 import useCompetition from './useCompetition'
-import useOptionsLib from './useOptionsLib'
 
 export default function useCompetitionPhasesGroups() {
   const router = useRouter()
@@ -15,8 +13,6 @@ export default function useCompetitionPhasesGroups() {
     group: string
   }
   const { computedPhases } = useCompetition(competitionId)
-  const { competitionPhases } = useOptionsLib()
-  const { t } = useI18n()
 
   const selectedPhaseIdx = computed<string>({
     get() {
