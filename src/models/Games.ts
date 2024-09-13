@@ -1,7 +1,7 @@
 import type { Competition, Phase, PhaseGroup } from "@/types/competitions"
 import type { Game } from "@/types/games"
 import type { CompetitionPlayer, PlayerId } from "@/types/players"
-import type { CompetitionTeam, Team, TeamId } from "@/types/teams"
+import type { CompetitionTeam, TeamId } from "@/types/teams"
 import { compareAsc, isAfter } from "date-fns"
 import GameComputedClass from "./GameComputed"
 

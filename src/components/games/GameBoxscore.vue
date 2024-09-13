@@ -15,7 +15,7 @@ import type { PlayerCalculatedStatsKey, PlayerStatLineKey } from '@/types/stats'
 import useStats from '@/composable/useStats'
 import type { GameDocBoxScore } from '@/types/games'
 
-const { getPlayerCalculatedStatsFromStats, playerCalculatedStatsKeys } = useStats()
+const { getPlayerCalculatedStatsFromStatLines, playerCalculatedStatsKeys } = useStats()
 const { t } = useI18n()
 
 interface IProps {
@@ -79,7 +79,7 @@ const items = computed(() => {
     const playerId: PlayerId = player.id
     return {
       ...player,
-      ...getPlayerCalculatedStatsFromStats([ props.boxscore[playerId] ])
+      ...getPlayerCalculatedStatsFromStatLines([ props.boxscore[playerId] ])
     }
   })
 })

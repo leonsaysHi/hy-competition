@@ -35,7 +35,7 @@ import GamesClass from './Games'
 const { 
   teamStandingKeys, 
   getEmptyTeamStats,
-  getPlayerCalculatedStatsFromStats,
+  getPlayerCalculatedStatsFromStatLines,
 
 } = useStats()
 
@@ -77,7 +77,7 @@ const getPlayerRanking = (
       acc.push(game.row.boxscore[playerId])
       return acc
     }, [])
-  const boxscore: PlayerCalculatedStats = getPlayerCalculatedStatsFromStats(statlines) 
+  const boxscore: PlayerCalculatedStats = getPlayerCalculatedStatsFromStatLines(statlines) 
   const awards = playedgames
     .reduce((awards: AwardItem[], game: GameComputedClass) => {
       return [
@@ -155,6 +155,8 @@ export default class CompetitionClass {
     this.teams = row.teams as CompetitionTeam[]
   }
 
+  // Standing & ranking by phases/groups
+  // for competition views
   get computedPhases(): CompetitionPhaseComputed[] {
     const phases = Array.isArray(this.row.phases)
       ? this.row.phases
@@ -278,7 +280,8 @@ export default class CompetitionClass {
     return phases
   }
 
-  // each players overall stats:
+  // Players overall stats:
+  // for player details
   get competitionRankings(): CompetitionRankingComputed[] {
     const playerGames = new GamesClass(this.row, this.games)
       .finished(true)
@@ -305,7 +308,8 @@ export default class CompetitionClass {
       }, [])
   }
 
-  // each teams overall stats
+  // Teams overall results
+  // for team details
   get competitionStandings(): CompetitionStandingComputed[] {
     return this.computedPhases.reduce(
       (standingList: CompetitionStandingComputed[], phase: CompetitionPhaseComputed) => {

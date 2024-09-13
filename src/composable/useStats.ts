@@ -58,7 +58,7 @@ export default function useStats() {
     }
   }
 
-  const getPlayerCalculatedStatsFromStats = (rows: PlayerStatLine[] = []):PlayerCalculatedStats => {
+  const getPlayerCalculatedStatsFromStatLines = (rows: PlayerStatLine[] = []):PlayerCalculatedStats => {
     if (!Array.isArray(rows)) {
       console.warn('not an array of stats')
     }
@@ -131,7 +131,7 @@ export default function useStats() {
     // player computed stats (pts, reb, perc)
     playerCalculatedStatsKeys,
     getEmptyPlayerCalculatedStats,
-    getPlayerCalculatedStatsFromStats,
+    getPlayerCalculatedStatsFromStatLines,
     
     // teams results
     teamStandingKeys,

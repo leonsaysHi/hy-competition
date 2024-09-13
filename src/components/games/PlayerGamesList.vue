@@ -20,7 +20,7 @@ interface IProps {
 }
 const props = withDefaults(defineProps<IProps>(), {})
 
-const { getPlayerCalculatedStatsFromStats } = useStats()
+const { getPlayerCalculatedStatsFromStatLines } = useStats()
 const { getPlayerCompetitionTeam, trackedPlayerRankingKeys } = useCompetition(competitionId)
 
 const fields = computed(() => {
@@ -60,7 +60,7 @@ const computedGames = computed<TableItem[]>(() => {
         isFinished: game.isFinished,
         isWin: !opp?.winner,
         teamId: opp?.id,
-        ...getPlayerCalculatedStatsFromStats([game.row.boxscore[playerId]])
+        ...getPlayerCalculatedStatsFromStatLines([game.row.boxscore[playerId]])
       }
     })
 })

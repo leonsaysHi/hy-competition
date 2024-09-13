@@ -10,7 +10,7 @@ import ScoresInput from '@/admin/Competitions/games/components/ScoresInput.vue'
 import StatsSheetInput from '@/admin/Competitions/games/components/StatsSheetInput.vue'
 import BoxScoreInput from '@/admin/Competitions/games/components/BoxScoreInput.vue'
 import AwardsInput from '@/admin/Competitions/components/AwardsInput.vue'
-import type { AwardItem, PlayerStatKey } from '@/types/stats'
+import type { AwardItem, PlayerStatLine, PlayerStatLineKey } from '@/types/stats'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
@@ -23,7 +23,7 @@ const route = useRoute()
 const { competitionId } = route.params as { competitionId: CompetitionId; gameId: GameId }
 const { row, getCompetitionTeam: getCompetitionTeam } = useCompetition(competitionId)
 const { getTeamName, getPlayerName } = useLibs()
-const { playerStatsKeys } = useStats()
+const { getEmptyPlayerStatLine } = useStats()
 interface IProps {
   value: FormData
   competitionTeams?: CompetitionTeam[]
@@ -68,10 +68,10 @@ const boxscoreByTeams = computed({
       return {
         ...acc,
         [teamId]: team.players.reduce((boxscore: GameDocBoxScore, player) => {
-          const bs = data.value.boxscore[player.id] || {}
-          playerStatsKeys.forEach((key: PlayerStatKey) => {
-            bs[key] = key in bs ? bs[key] : 0
-          })
+          const bs: PlayerStatLine = {
+            ...getEmptyPlayerStatLine(),
+            ...data.value.boxscore[player.id]
+          }
           return {
             ...boxscore,
             [player.id]: bs
@@ -81,13 +81,14 @@ const boxscoreByTeams = computed({
     }, {})
   },
   set: (val) => {
-    data.value.boxscore = val.reduce(
-      (boxscore: GameDocBoxScore, bs: GameDocBoxScore) => ({
-        ...boxscore,
-        ...bs
-      }),
-      {}
-    )
+    data.value.boxscore = val
+      .reduce(
+        (boxscore: GameDocBoxScore, bs: GameDocBoxScore) => ({
+          ...boxscore,
+          ...bs
+        }),
+        {}
+      )
   }
 })
 

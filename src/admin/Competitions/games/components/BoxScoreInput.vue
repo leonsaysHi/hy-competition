@@ -43,9 +43,10 @@ const model = computed({
   set: (val: GameDocBoxScore) => emit('update:modelValue', val)
 })
 
-const items = computed((): TableItem[][] => {
+const items = computed((): TableItem[] => {
   const result = model.value
-    ? Object.keys(model.value)?.map((playerId: PlayerId): TableItem[] => {
+    ? Object.keys(model.value)
+      .map((playerId: PlayerId): TableItem => {
         return {
           id: playerId,
           number: getPlayerNumber(playerId),
@@ -54,7 +55,7 @@ const items = computed((): TableItem[][] => {
         }
       })
     : []
-  result.sort((a, b) => a.number - b.number)
+  result.sort((a, b) => Number(a.number) - Number(b.number))
   return result
 })
 </script>

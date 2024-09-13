@@ -1,57 +1,62 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
-import type { PlayerCalculatedStats, PlayerStatKey } from '@/types/stats'
-import type { GameBoxScoreComputed } from '@/types/computed'
+import type { Option } from '@/types/comp-fields'
+import type { PlayerCalculatedStats, PlayerStatLine, PlayerStatLineKey } from '@/types/stats'
 import type { TeamId, CompetitionTeam } from '@/types/teams'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import useLibs from '@/composable/useLibs'
 import { useI18n } from 'vue-i18n'
 import useStats from '@/composable/useStats'
+import { useRoute } from 'vue-router'
+import useCompetition from '@/composable/useCompetition'
+import type { GameDocBoxScore } from '@/types/games'
 
 const { t } = useI18n()
-const { playerStatsKeys } = useStats()
 const { getTeamName } = useLibs()
+const route = useRoute()
+const { competitionId } = route.params as { competitionId: string; gameId: string }
 
+const { trackedPlayerRankingKeys } = useCompetition(competitionId)
+const { playerCalculatedStatsKeys, getPlayerCalculatedStatsFromStatLines } = useStats()
 interface IProps {
-  boxscore: GameBoxScoreComputed
+  boxscore: GameDocBoxScore
   teams: CompetitionTeam[]
 }
 
 const props = withDefaults(defineProps<IProps>(), {})
 
-
-
+const statKeys = computed<PlayerStatLineKey[]>(() => {
+  return trackedPlayerRankingKeys.value
+    .map((opt: Option)  => opt.value as PlayerStatLineKey)
+    .filter((key: PlayerStatLineKey) => playerCalculatedStatsKeys.includes(key))
+})
 const teamsTotalsByStats = computed(() => {
-  return props.teams.reduce((teams, team: CompetitionTeam) => {
-    const teamId: TeamId = team.id
-    teams[teamId] = playerStatsKeys.reduce((totals, key: PlayerStatKey) => {
-      const boxscores: PlayerCalculatedStats[] = team.players.map(
-        (player: CompetitionPlayer): PlayerCalculatedStats => {
-          const playerId: PlayerId = player.id
-          return props.boxscore[playerId]
-        }
-      )
-      totals[key] = boxscores.reduce((tot: number, bs: PlayerCalculatedStats) => tot + bs[key], 0)
-      return totals
-    }, {})
-    return teams
-  }, {})
+  const bs:GameDocBoxScore = props.boxscore
+  return props.teams.reduce((result, team: CompetitionTeam) => {
+    const statLines: PlayerStatLine[] = team.players
+      .map((player: CompetitionPlayer) => bs[player.id] || {} as PlayerStatLine)
+    result[team.id] = getPlayerCalculatedStatsFromStatLines(statLines)
+    return result
+  }, {} as { [key: TeamId]: PlayerCalculatedStats })
 })
 const teamsBarsByStats = computed(() => {
-  const result = Object.keys(teamsTotalsByStats.value).reduce((result, teamId: TeamId) => {
+  const result:{ [key: TeamId]: { [key: PlayerStatLineKey]: number } } =  {}
+  Object.keys(teamsTotalsByStats.value).forEach((teamId: TeamId) => {
     result[teamId] = {}
     return result
-  }, {})
-  playerStatsKeys.forEach((key: PlayerStatKey) => {
-    const vals = Object.keys(teamsTotalsByStats.value).map((teamId: TeamId) => {
-      return teamsTotalsByStats.value[teamId][key]
-    })
-    const hightVal = Math.max(...vals)
-    Object.keys(teamsTotalsByStats.value).forEach((teamId: TeamId, idx: number) => {
-      result[teamId][key] = Math.floor((vals[idx] * 40) / hightVal)
-    })
   })
+  statKeys.value
+    .forEach((key: PlayerStatLineKey) => {
+      const vals = Object.keys(teamsTotalsByStats.value)
+        .map((teamId: TeamId) => {
+          return teamsTotalsByStats.value[teamId][key]
+        })
+      const hightVal = Math.max(...vals)
+      Object.keys(teamsTotalsByStats.value).forEach((teamId: TeamId, idx: number) => {
+        result[teamId][key] = Math.floor((vals[idx] * 45) / hightVal)
+      })
+    })
   return result
 })
 </script>
@@ -71,7 +76,7 @@ const teamsBarsByStats = computed(() => {
       </div>
     </div>
   </div>
-  <template v-for="(key, idx) in playerStatsKeys" :key="key">
+  <template v-for="(key, idx) in statKeys" :key="key">
     <template v-if="idx"><hr /></template>
     <div class="row row-cols-3 g-4">
       <div class="col text-end display-4 fw-bold vstack justify-content-center">
