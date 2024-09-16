@@ -37,60 +37,70 @@ const { getGender, getCategory } = useOptionsLib()
 
 const currentGamesView = ref<'prev' | 'next' | 'live'>('prev')
 
-const groupGames = computed(() => {
-  return row.value ? 
+
+const pastGamesList = computed<GameComputedClass[]>(() => {
+  const result = row.value ? 
     new GamesClass(row.value, row.value?.games)
       .phase(Number(selectedPhaseIdx.value))
       .group(Number(selectedGroupIdx.value))
+      .finished(true)
+      .live(false)
       .getComputed()
     : []
+  result.reverse()
+  return result
 })
+const liveGamesList = computed<GameComputedClass[]>(() => {
+  const result = row.value 
+    ? new GamesClass(row.value, row.value?.games)
+      .phase(Number(selectedPhaseIdx.value))
+      .group(Number(selectedGroupIdx.value))
+      .finished(false)
+      .live(true)
+      .getComputed()
+    : []
+  return result
+})
+const upcomingGamesList = computed<GameComputedClass[]>(() => {
+  const result = row.value 
+    ? new GamesClass(row.value, row.value?.games)
+      .phase(Number(selectedPhaseIdx.value))
+      .group(Number(selectedGroupIdx.value))
+      .finished(false)
+      .live(false)
+      .getComputed()
+    : []
+  const teamsLength = Array.isArray(selectedGroup.value?.standing) ? Math.round(selectedGroup.value.standing.length * .5) : 4
+  return Array.isArray(selectedGroup.value?.standing)
+    ? result.slice(0, teamsLength) 
+    : result
+})
+
 const gamesViewOptions = computed<Option[]>(() => {
   return [
     {
       text: t('global.gameDetails.live'),
       value: 'live',
-      disabled: !groupGames.value.some((game: GameComputedClass) => game.isLive)
+      disabled: !liveGamesList.value.length
     },
     {
       text: t('global.previous', 2),
       value: 'prev',
-      disabled: !groupGames.value.some(
-        (game: GameComputedClass) => game.isFinished && !game.isLive
-      )
+      disabled: !pastGamesList.value.length
     },
     {
       text: t('global.upcoming', 2),
       value: 'next',
-      disabled: !groupGames.value.some(
-        (game: GameComputedClass) => !game.isFinished && !game.isLive
-      )
+      disabled: !upcomingGamesList.value.length
     }
   ]
 })
 const gamesList = computed<GameComputedClass[]>(() => {
-  const result = groupGames.value
-    .filter((game: GameComputedClass) => {
-      return currentGamesView.value === 'prev'
-        ? game.isFinished && !game.isLive
-        : currentGamesView.value === 'next'
-          ? !game.isFinished && !game.isLive
-          : !game.isFinished && game.isLive
-    })
-  result.sort((a: GameComputedClass, b: GameComputedClass) =>
-    currentGamesView.value === 'prev'
-      ? compareAsc(b.row.datetime, a.row.datetime)
-      : compareAsc(a.row.datetime, b.row.datetime)
-  )
-  return Array.isArray(selectedGroup.value?.standing)
-    ? result.slice(
-      0,
-      Math.max(
-        Math.round(selectedGroup.value.standing.length * 0.5),
-        Math.min(4, selectedGroup.value.standing.length)
-      )
-    ) 
-    : result
+  return currentGamesView.value === 'prev'
+        ? pastGamesList.value
+        : currentGamesView.value === 'live'
+          ? liveGamesList.value
+          : upcomingGamesList.value
 })
 watch(
   () => gamesViewOptions.value,

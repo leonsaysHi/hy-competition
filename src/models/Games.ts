@@ -25,28 +25,28 @@ export default class GamesClass {
     this.isLive = undefined
   }
 
-  phase(phaseIdx: number | undefined) {
-    this.phaseIdx = phaseIdx
+  phase(val: number | undefined) {
+    this.phaseIdx = val
     return this
   }
-  group(groupIdx: number | undefined) {
+  group(val: number | undefined) {
     if (this.phaseIdx === undefined) {
         console.warn('Should select phase first')
         return this
     }
-    this.groupIdx = groupIdx
+    this.groupIdx = val
     if (this.groupIdx === undefined) {
         this.phaseIdx = undefined
     }
     return this
   }
-  team(teamId: TeamId | undefined) {
-    this.teamId = teamId
+  team(val: TeamId | undefined) {
+    this.teamId = val
     return this
   }
-  player(playerId: PlayerId) { // sets team
+  player(val: PlayerId) { // sets team
     const team = this.competition.teams.find((team: CompetitionTeam) => {
-      return team.players.findIndex((player: CompetitionPlayer) => player.id === playerId) > -1
+      return team.players.findIndex((player: CompetitionPlayer) => player.id === val) > -1
     })
     if (!team) {
       console.warn('unknown player')
@@ -54,12 +54,12 @@ export default class GamesClass {
     }
     return this.team(team.id)
   }
-  finished(isFinished: boolean | undefined) {
-    this.isFinished = isFinished
+  finished(val: boolean | undefined) {
+    this.isFinished = val
     return this
   }
-  live(isLive: boolean | undefined) {
-    this.isLive = isLive
+  live(val: boolean | undefined) {
+    this.isLive = val
     return this
   }
 
@@ -80,11 +80,11 @@ export default class GamesClass {
   get ():Game[] {
     const phase = this.getPhase()
     const group = this.getGroup()
-    return this.competition.games
+    const result = this.competition.games
       .filter((game: Game) => {
         // isFinished | isLive
-        const matchIsFinished = this.isFinished === undefined || game.isFinished === this.isFinished
-        const matchIsLive = this.isLive === undefined || game.isLive === this.isLive
+        const matchIsFinished = this.isFinished === undefined || (!this.isFinished && !game.isFinished) || game.isFinished === this.isFinished
+        const matchIsLive = this.isLive === undefined || (!this.isLive && !game.isLive) || game.isLive === this.isLive
         // Phase
         const nextPhaseIdx = Number(this.phaseIdx) + 1 
         const nextPhase = this.phaseIdx !== undefined && this.competition.phases[nextPhaseIdx]
@@ -107,6 +107,7 @@ export default class GamesClass {
           matchTeam
       })
       .sort((a: Game, b: Game) => compareAsc(b.datetime, a.datetime))
+    return result
   }
 
   getComputed ():GameComputedClass[] {
