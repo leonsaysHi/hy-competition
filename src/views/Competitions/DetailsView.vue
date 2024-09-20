@@ -69,7 +69,10 @@ const prevGamesList = computed<GameComputedClass[]>(() => {
       .getComputed()
     : []
   result.reverse()
-  return result
+  const teamsLength = Array.isArray(selectedGroup.value?.standing) ? Math.round(selectedGroup.value.standing.length * .5) : 4
+  return Array.isArray(selectedGroup.value?.standing)
+    ? result.slice(0, teamsLength) 
+    : result
 })
 
 const liveGamesList = computed<GameComputedClass[]>(() => {
