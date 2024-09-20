@@ -17,13 +17,14 @@ const es = {
       }
     },
     phases: {
+      overall: 'Total',
       groups: 'Phase regulares',
       playoffs: 'Playoffs'
     },
     stats: {
       sheet: 'Stats sheet',
       playbyplay: 'Play-by-Play',
-      showavg: 'Monstrar promedios',
+      showavg: 'en promedios',
     },
     playerStats: {
       text: {

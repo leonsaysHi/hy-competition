@@ -63,7 +63,7 @@ const phasesOptions = computed(() => {
   return Array.isArray(row.value?.phases) 
     ? [
         {
-          text: 'Overall',
+          text: t('options.phases.overall'),
           value: undefined
         },
         ...row.value.phases
