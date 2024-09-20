@@ -17,13 +17,14 @@ const es = {
       }
     },
     phases: {
+      overall: 'Total',
       groups: 'Phase regulares',
       playoffs: 'Playoffs'
     },
     stats: {
       sheet: 'Stats sheet',
       playbyplay: 'Play-by-Play',
-      showavg: 'Monstrar promedios',
+      showavg: 'en promedios',
     },
     playerStats: {
       text: {
@@ -125,6 +126,7 @@ const es = {
         wins: 'W',
         ptsfv: 'Pts+',
         ptsag: 'Pts-',
+        ptsdiff: '+/-',
         hist: 'Últimos'
       },
       long: {
@@ -133,6 +135,7 @@ const es = {
         wins: 'Ganados',
         ptsfv: 'Puntos anotados',
         ptsag: 'Puntos encajados',
+        ptsdiff: 'Diferencia de pts',
         hist: 'Últimos juegos'
       }
     }
