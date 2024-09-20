@@ -13,6 +13,7 @@ import type GameComputedClass from '@/models/GameComputed'
 import ViewHero from '../components/layout/ViewHero.vue'
 import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
 import BracketView from '@/components/bracket/BracketView.vue'
+import GamesClass from '@/models/Games'
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
@@ -28,22 +29,31 @@ const {
 const { t } = useI18n()
 const { getGender, getCategory } = useOptionsLib()
 
-const nextGames = computed<GameComputedClass[]>(() => {
-  const games = Array.isArray(selectedGroup.value?.games) ? selectedGroup.value.games.slice() : []
-  games.reverse()
-  const result = games
-    .filter((game: GameComputedClass) => {
-      return !game.isFinished || game.isLive
-    })
-  return result.slice(
-    0,
-    selectedGroup.value?.standing
-      ? Math.max(
-          Math.round(selectedGroup.value?.standing.length * 0.5),
-          Math.min(4, selectedGroup.value?.standing.length)
-        )
-      : 5
-  )
+const selectedGames = computed<GameComputedClass[]>(() => {
+  console.log('>>>')
+  return row.value ? 
+    new GamesClass(row.value, row.value?.games)
+      .phase(Number(selectedPhaseIdx.value))
+      .group(Number(selectedGroupIdx.value))
+      .finished(true)
+      .live(false)
+      .getComputed()
+    : []
+})
+
+const nextGamesList = computed<GameComputedClass[]>(() => {
+  const result = row.value 
+    ? new GamesClass(row.value, row.value?.games)
+      .phase(Number(selectedPhaseIdx.value))
+      .group(Number(selectedGroupIdx.value))
+      .finished(false)
+      .live(false)
+      .getComputed()
+    : []
+  const teamsLength = Array.isArray(selectedGroup.value?.standing) ? Math.round(selectedGroup.value.standing.length * .5) : 4
+  return Array.isArray(selectedGroup.value?.standing)
+    ? result.slice(0, teamsLength) 
+    : result
 })
 </script>
 <template>
@@ -82,7 +92,7 @@ const nextGames = computed<GameComputedClass[]>(() => {
 
       <template v-if="selectedPhase && selectedGroup">
         <h2>{{ t('global.game', 2) }}</h2>
-        <GamesList class="mb-3" :items="nextGames" />
+        <GamesList class="mb-3" :items="nextGamesList" />
         <div class="mb-3 d-flex justify-content-center">
           <RouterLink
             class="btn btn-primary btn-lg text-white"
@@ -97,7 +107,7 @@ const nextGames = computed<GameComputedClass[]>(() => {
         </template>
         <template v-else>
           <h3>{{ t('global.standing') }}</h3>
-          <CompetitionStanding :value="selectedGroup.standing" />
+          <CompetitionStanding :games="selectedGames" />
         </template>
         <div class="mb-3 d-flex justify-content-center">
           <RouterLink

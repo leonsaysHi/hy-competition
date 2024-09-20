@@ -7,16 +7,39 @@ import DropdownComp from '@/components/DropdownComp.vue'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
 import { computed } from 'vue'
+import type GameComputedClass from '@/models/GameComputed'
+import GamesClass from '@/models/Games'
+import { useRoute } from 'vue-router'
+import useCompetition from '@/composable/useCompetition'
 
-const { selectedPhaseIdx, selectedPhase, phasesOptions, groupsOptions, selectedGroupIdx, selectedGroup } =
+const route = useRoute()
+const { competitionId } = route.params as { competitionId: string }
+const { row } = useCompetition(competitionId)
+const { selectedPhaseIdx, phasesOptions, groupsOptions, selectedGroupIdx, selectedGroup } =
   useCompetitionPhasesGroups()
 
-const overallRanking = computed<typeof CompetitionRanking[]>((): typeof CompetitionRanking[] => {
-  return groupsOptions.value?.reduce((acc: typeof CompetitionRanking[], opt) => {
-      const ranking = selectedPhase.value?.groups[Number(opt.value)]?.ranking || []
-      return acc.concat(ranking)
-    }, [])
+const standingGames = computed<GameComputedClass[]>(() => {
+  const result = row.value ? 
+    new GamesClass(row.value, row.value?.games)
+      .phase(Number(selectedPhaseIdx.value))
+      .group(Number(selectedGroupIdx.value))
+      .finished(true)
+      .live(false)
+      .getComputed()
+    : []
+  result.reverse()
+  return result
 })
+
+const rankingGames = computed<GameComputedClass[]>(() => {
+  return row.value ? 
+    new GamesClass(row.value, row.value?.games)
+      .finished(true)
+      .live(false)
+      .getComputed()
+    : []
+})
+
 </script>
 <template>
   <div>
@@ -49,11 +72,11 @@ const overallRanking = computed<typeof CompetitionRanking[]>((): typeof Competit
           </template>
         </div>
       </div>
-      <CompetitionStanding :value="selectedGroup.standing" />
+      <CompetitionStanding :games="standingGames" />
       <hr />
       <h2>Líderes por categorías</h2>
       <CompetitionRanking 
-        :value="overallRanking" 
+        :games="rankingGames" 
         :limit="25" 
         :show-avg="false"
       />
