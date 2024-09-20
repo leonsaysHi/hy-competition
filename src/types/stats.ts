@@ -4,7 +4,7 @@ import type { PlayerId } from './players'
 
 export type StatsGroupValue = 'dnp' | 'fga' | 'oreb' | 'tov' | 'blka' | 'f'
 export interface StatsGroupDef {
-  keys: PlayerTrackedStatKey[]
+  keys: PlayerStatLineKey[]
   value?: StatsGroupValue
   text?: string
 }
@@ -19,7 +19,7 @@ export interface AwardItem {
 }
 
 // Player Stats
-export interface PlayerStats {
+export interface PlayerStatLine {
   ftm: number
   fta: number
   fgm: number
@@ -35,35 +35,29 @@ export interface PlayerStats {
   tov: number
   fcm: number
   fdr: number
-}
-export type PlayerStatKey = keyof PlayerStats
-
-// Player Tracked stats
-export interface PlayerTrackedStats extends PlayerStats {
   dnp: number
 }
-export type PlayerTrackedStatKey = keyof PlayerTrackedStats
-
-// Player Status Input Sheet
-export interface PlayerStatSheet extends PlayerStats {
-  dnp: boolean
-}
-export type PlayerStatSheetKey = keyof PlayerStatSheet
+export type PlayerStatLineKey = keyof PlayerStatLine
 
 // Player Stats Game Computed (calculated pts, reb, perc)
-export interface PlayerBoxScore extends PlayerTrackedStats {
+export interface PlayerGamesStats extends PlayerStatLine {
+  gp: number
+}
+export type PlayerGamesStatsKey = keyof PlayerGamesStats
+
+export interface PlayerCalculatedStats extends PlayerGamesStats {
   pts: number
   reb: number
   ftprc: number
   fgprc: number
   fg3prc: number
-  awards: AwardItem[]
 }
+export type PlayerCalculatedStatsKey = keyof PlayerCalculatedStats
 
 
 // Players Competition Ranking Table
-export interface PlayerRankingStats extends PlayerBoxScore {
-  gp: number
+export interface PlayerRankingStats extends PlayerCalculatedStats {
+  awards?: AwardItem[]
 }
 export type PlayerRankingKey = keyof PlayerRankingStats
 

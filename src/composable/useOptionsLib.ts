@@ -1,6 +1,6 @@
 import type { CompetitionCategorie, CompetitionSport, PhaseType } from '@/types/competitions'
 import type { GenderKey } from '@/types/players'
-import type { PlayerStatKey, TeamStatKey, AwardKey, StatsGroupDef, PlayerTrackedStatKey } from '@/types/stats'
+import type { PlayerStatKey, TeamStatKey, AwardKey, StatsGroupDef } from '@/types/stats'
 import type { Option } from '@/types/comp-fields'
 import i18n from '@/i18n'
 
@@ -71,7 +71,7 @@ export default function usePlayersLib() {
   }))
 
   const playerStatsSheetKeys: { value: PlayerStatKey; text: string; long: string }[] = competitionStatsGroups
-    .reduce((acc: PlayerTrackedStatKey[], group: StatsGroupDef) => {
+    .reduce((acc: PlayerStatKey[], group: StatsGroupDef) => {
         acc.push(...group.keys)
         return acc
       }, [])

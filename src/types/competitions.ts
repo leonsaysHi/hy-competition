@@ -1,4 +1,4 @@
-import type { AwardItem, PlayerTrackedStatKey } from './stats'
+import type { AwardItem, PlayerStatLineKey } from './stats'
 import type { CompetitionTeam, TeamId } from './teams'
 import type { Game } from './games'
 import type { GenderKey } from './players'
@@ -51,9 +51,7 @@ export interface CompetitionDoc {
   isOver: boolean
   phases: Phase[]
   statsInput: StatsInputType
-  trackedStats: PlayerTrackedStatKey[]
-  mediasURL: string
-  rulesURL: string
+  trackedStats: PlayerStatLineKey[]
   lastUpdate: Date
 }
 

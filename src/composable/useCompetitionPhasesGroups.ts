@@ -2,9 +2,7 @@ import type { CompetitionGroupComputed, CompetitionPhaseComputed } from '@/types
 import type { Option } from '@/types/comp-fields'
 import { computed, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
 import useCompetition from './useCompetition'
-import useOptionsLib from './useOptionsLib'
 
 export default function useCompetitionPhasesGroups() {
   const router = useRouter()
@@ -15,8 +13,6 @@ export default function useCompetitionPhasesGroups() {
     group: string
   }
   const { computedPhases } = useCompetition(competitionId)
-  const { competitionPhases } = useOptionsLib()
-  const { t } = useI18n()
 
   const selectedPhaseIdx = computed<string>({
     get() {
@@ -63,8 +59,8 @@ export default function useCompetitionPhasesGroups() {
       : undefined
   )
 
-  const phasesOptions = computed<Option[] | undefined>(() =>
-    Array.isArray(computedPhases.value)
+  const phasesOptions = computed<Option[] | undefined>(() => {
+    const result = Array.isArray(computedPhases.value)
       ? computedPhases.value?.map(
           (row: CompetitionPhaseComputed, idx: any): Option => ({
             value: idx.toString(),
@@ -72,9 +68,10 @@ export default function useCompetitionPhasesGroups() {
           })
         )
       : undefined
-  )
-  const groupsOptions = computed<Option[] | undefined>(() =>
-    Array.isArray(selectedPhase.value?.groups)
+    return result
+  })
+  const groupsOptions = computed<Option[] | undefined>(() => {
+    const result = Array.isArray(selectedPhase.value?.groups)
       ? selectedPhase.value?.groups.map(
           (row: CompetitionGroupComputed, idx: any): Option => ({
             value: idx.toString(),
@@ -82,7 +79,8 @@ export default function useCompetitionPhasesGroups() {
           })
         )
       : undefined
-  )
+      return result
+  })
 
   watchEffect(() => {
     if (route.params?.phase && route.params?.group) {

@@ -1,14 +1,14 @@
 import type GameComputedClass from '@/models/GameComputed'
 import type { Bracket, CompetitionId, PhaseType } from './competitions'
 import type { PlayerId } from './players'
-import type { PlayerBoxScore, PlayerRankingStats, TeamStandingStats } from './stats'
+import type { PlayerCalculatedStats, PlayerGamesStats, PlayerRankingStats, TeamStandingStats } from './stats'
 import type { TeamId } from './teams'
 
 export interface CompetitionGroupComputed {
   title: string
   games: GameComputedClass[]
   standing: CompetitionStanding[]
-  ranking: CompetitionRanking[]
+  stats: CompetitionPlayerStats[]
   bracket?: Bracket
 }
 export interface CompetitionPhaseComputed {
@@ -28,7 +28,14 @@ export interface CompetitionStandingComputed extends CompetitionStanding {
   id: CompetitionId
 }
 // BoxScore
-export type GameBoxScoreComputed = { [key: PlayerId]: PlayerBoxScore }
+export type GameBoxScoreComputed = { [key: PlayerId]: PlayerCalculatedStats }
+
+export interface CompetitionPlayerStats extends PlayerGamesStats {
+  playerId: PlayerId
+  teamId: TeamId
+  id?: CompetitionId
+  number: string
+}
 
 // Players rankings
 export interface CompetitionRanking extends PlayerRankingStats {

@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import CheckGroupComp from '@/components/CheckGroupComp.vue'
-import type { PlayerStatKey, PlayerTrackedStatKey, StatsGroupDef, StatsGroupValue } from '@/types/stats';
+import type { PlayerStatLineKey, StatsGroupDef, StatsGroupValue } from '@/types/stats';
 import type { Option } from '@/types/comp-fields';
 import useOptionsLib from '@/composable/useOptionsLib';
 
@@ -20,7 +20,7 @@ const {
 } = useOptionsLib()
 
 interface IProps {
-  modelValue: PlayerStatKey[]
+  modelValue: PlayerStatLineKey[]
   disabled?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
@@ -33,7 +33,7 @@ const model = computed({
     return statsGroups
       .filter((group: StatsGroupDef) => group.value)
       .reduce((acc: StatsGroupValue[], group: StatsGroupDef) => {
-        const isSelected = group.keys.some((k:PlayerTrackedStatKey) => props.modelValue.includes(k))
+        const isSelected = group.keys.some((k:PlayerStatLineKey) => props.modelValue.includes(k))
         if (isSelected) {
           acc.push(group.value as StatsGroupValue)
         }
@@ -41,9 +41,9 @@ const model = computed({
       }, []) as []
   },
   set: (val: StatsGroupValue[]) => {
-    const newVal: PlayerTrackedStatKey[] = val
+    const newVal: PlayerStatLineKey[] = val
         .reduce(
-          (acc: PlayerTrackedStatKey[], key: StatsGroupValue) => {
+          (acc: PlayerStatLineKey[], key: StatsGroupValue) => {
             const group = statsGroups.find((group: StatsGroupDef) => key === group.value)
             return [
               ...acc,
