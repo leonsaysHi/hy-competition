@@ -4,7 +4,7 @@ import type GameComputedClass from '@/models/GameComputed'
 import type { CompetitionPlayerStats, CompetitionStanding } from '@/types/computed'
 import type { CompetitionPlayer } from '@/types/players'
 import type { TeamStatKey, PlayerStatLineKey, TeamStats, PlayerStatLine, PlayerCalculatedStats, PlayerCalculatedStatsKey, PlayerGamesStats, PlayerGamesStatsKey, GamesHist } from '@/types/stats'
-import type { CompetitionTeam } from '@/types/teams'
+import type { CompetitionTeam, TeamId } from '@/types/teams'
 import { add, getPerc } from '@/utils/maths'
 export default function useStats() {
 
@@ -187,8 +187,10 @@ export default function useStats() {
     const result: CompetitionStanding[] = teams
       .reduce((standing: CompetitionStanding[], team: CompetitionTeam) => {
           const teamId = team.id
+          const teamGames = games
+            .filter((game: GameComputedClass) => game.row.teams.includes(teamId))
           const hist: GamesHist = new Array(5).fill(0).map((n: number, idx: number) => {
-            const game = games[idx]
+            const game = teamGames[idx]
             if (!game?.isFinished) return 0
             return game.scores.findIndex(
               (score: ScoresComputed) => score.id === teamId && score.winner
@@ -199,7 +201,7 @@ export default function useStats() {
           hist.reverse()
           standing.push({
             teamId,
-            ...games
+            ...teamGames
               .reduce(
                 (result: TeamStats, game: GameComputedClass): TeamStats => {
                   const teamScore = game.getTeamScore(teamId)?.finalScore || 0
@@ -220,6 +222,16 @@ export default function useStats() {
         },
         []
       )
+      result.sort((a: CompetitionStanding, b: CompetitionStanding) => {
+        const getPct = (st: CompetitionStanding) => st.gp / st.wins
+        const getDiff = (st: CompetitionStanding) => st.ptsfv - st.ptsag
+        const aPct = getPct(a)
+        const bPct = getPct(b)
+        const bestWinningPerc = aPct - bPct
+        const mostPlayedGames = b.gp - a.gp
+        const bestDiff = getDiff(b) - getDiff(a)
+        return bestWinningPerc || mostPlayedGames || bestDiff
+      })
     return result
   }
 

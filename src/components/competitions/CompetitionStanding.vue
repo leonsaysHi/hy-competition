@@ -13,14 +13,18 @@ import type GameComputedClass from '@/models/GameComputed'
 import useStats from '@/composable/useStats'
 import useCompetition from '@/composable/useCompetition'
 import type { TableField } from '@/types/comp-table'
+import type { CompetitionTeam, TeamId } from '@/types/teams'
+import type { CompetitionStanding } from '@/types/computed'
 
 
 
 interface IProps {
-  games: GameComputedClass[]
+  games?: GameComputedClass[]
+  teams?: CompetitionTeam[]
 }
 const props = withDefaults(defineProps<IProps>(), {
-  games: () => []
+  games: () => [],
+  teams: () => []
 })
 
 const route = useRoute()
@@ -30,7 +34,6 @@ const { teamStandingKeys } = useOptionsLibs()
 const { getStandingsForGames } = useStats()
 
 const { getTeamName } = useLibs()
-const { teams } = useCompetition(competitionId)
 const fields = [
   {
     label: t('options.rankingStats.text.pos'),
@@ -62,8 +65,12 @@ const fields = [
     tdClass: 'text-center'
   }
 ]
-const items = computed(() => {
-  const items = getStandingsForGames(teams.value, props.games)
+const items = computed<CompetitionStanding[]>(() => {
+  const items = getStandingsForGames(props.teams, props.games)
+    .map((row: CompetitionStanding, idx: number) => ({
+      ...row,
+      pos: idx + 1
+    }))
   return items
 })
 </script>
