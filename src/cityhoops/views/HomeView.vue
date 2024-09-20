@@ -14,10 +14,11 @@ import ViewHero from '../components/layout/ViewHero.vue'
 import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
 import BracketView from '@/components/bracket/BracketView.vue'
 import GamesClass from '@/models/Games'
+import type { CompetitionTeam } from '@/types/teams'
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
-const { isReady, row } = useCompetition(competitionId)
+const { isReady, row, getCompetitionTeam } = useCompetition(competitionId)
 const {
   selectedPhaseIdx,
   selectedPhase,
@@ -30,7 +31,6 @@ const { t } = useI18n()
 const { getGender, getCategory } = useOptionsLib()
 
 const selectedGames = computed<GameComputedClass[]>(() => {
-  console.log('>>>')
   return row.value ? 
     new GamesClass(row.value, row.value?.games)
       .phase(Number(selectedPhaseIdx.value))
@@ -39,6 +39,12 @@ const selectedGames = computed<GameComputedClass[]>(() => {
       .live(false)
       .getComputed()
     : []
+})
+
+const standingTeams = computed<CompetitionTeam[]>(() => {
+  // :/
+  return selectedGroup.value?.standing
+    .map((row) => getCompetitionTeam(row.teamId))
 })
 
 const nextGamesList = computed<GameComputedClass[]>(() => {
@@ -107,7 +113,7 @@ const nextGamesList = computed<GameComputedClass[]>(() => {
         </template>
         <template v-else>
           <h3>{{ t('global.standing') }}</h3>
-          <CompetitionStanding :games="selectedGames" />
+          <CompetitionStanding :teams="standingTeams" :games="selectedGames" />
         </template>
         <div class="mb-3 d-flex justify-content-center">
           <RouterLink

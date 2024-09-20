@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import TableComp from '@/components/TableComp.vue'
@@ -19,13 +19,16 @@ import type { CompetitionTeam } from '@/types/teams'
 
 import { useI18n } from 'vue-i18n'
 import GameComputedClass from '@/models/GameComputed'
+import GamesClass from '@/models/Games'
+import type { Phase } from '@/types/competitions'
+import RadioGroupComp from '@/components/RadioGroupComp.vue'
 const { t } = useI18n()
 const route = useRoute()
 const { competitionId, teamId } = route.params as { competitionId: string; teamId: string }
 
 const { getTeamName } = useLibs()
 const { teamStandingKeys } = useOptionsLib()
-const { isReady, games, teams, competitionStandings, competitionRankings } =
+const { isReady, row, games, teams, competitionStandings, competitionRankings } =
   useCompetition(competitionId)
 
 const competitionComputed = computed<CompetitionStandingComputed | undefined>(() => {
@@ -47,6 +50,33 @@ const teamGames = computed<GameComputedClass[]>(() =>
         .map((game: Game) => new GameComputedClass(competitionId, game))
     : []
 )
+
+const selectedPhase = ref<undefined | number>(undefined)
+const phasesOptions = computed(() => {
+  return Array.isArray(row.value?.phases) 
+    ? [
+        {
+          text: t('options.phases.overall'),
+          value: undefined
+        },
+        ...row.value.phases
+          .map((phase: Phase, idx: number) => ({
+            text: phase.title,
+            value: idx
+          }))
+    ]
+    : []
+})
+const rankingGames = computed<GameComputedClass[]>(() => {
+  return row.value ? 
+    new GamesClass(row.value, row.value?.games)
+      .phase(selectedPhase.value)
+      .finished(true)
+      .live(false)
+      .getComputed()
+    : []
+})
+
 const statsFields: TableField[] = [
   ...teamStandingKeys.map(
     (opt: Option): TableField => ({
@@ -77,19 +107,29 @@ const statsFields: TableField[] = [
         <TeamLogo :team-id="teamId" :size="150" />
         <div class="display-3 fw-bold font-team">{{ getTeamName(teamId) }}</div>
       </div>
-      <TableComp :fields="statsFields" :items="statsItem" class="mb-4">
+      <TableComp :fields="statsFields" :items="statsItem">
         <template #hist="{ value }">
           <LastGames :items="value" :length="5" />
         </template>
       </TableComp>
-      <h3>{{ t('global.ranking') }}</h3>
+      <h3 class="mt-3">{{ t('global.ranking') }}</h3>
       <CompetitionRanking 
-      :value="competitionRankings" 
+      :games="rankingGames" 
       :team-id="teamId" 
       :show-avg="false"
-      class="mb-2" 
-      />
-      <h3>{{ t('global.game', 2) }}</h3>
+      >
+        <template #filters>
+          <RadioGroupComp 
+            v-model="selectedPhase" 
+            :options="phasesOptions" 
+            button-variant="light"
+            button-variant-active="primary"
+            size="sm" 
+            buttons 
+          />
+        </template>
+      </CompetitionRanking>
+      <h3 class="mt-3">{{ t('global.game', 2) }}</h3>
       <GamesList :items="teamGames" />
     </template>
   </div>
