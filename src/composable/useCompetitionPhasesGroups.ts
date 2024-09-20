@@ -60,7 +60,7 @@ export default function useCompetitionPhasesGroups() {
       : undefined
   )
 
-  const phasesOptions = computed<Option[] | undefined>(() => {
+  const phasesOptions = computed<Option[]>(() => {
     const result = Array.isArray(computedPhases.value)
       ? computedPhases.value?.map(
           (row: CompetitionPhaseComputed, idx: any): Option => ({
@@ -68,10 +68,10 @@ export default function useCompetitionPhasesGroups() {
             text: row.title
           })
         )
-      : undefined
+      : []
     return result
   })
-  const groupsOptions = computed<Option[] | undefined>(() => {
+  const groupsOptions = computed<Option[]>(() => {
     const result = Array.isArray(selectedPhase.value?.groups)
       ? selectedPhase.value?.groups.map(
           (row: CompetitionGroupComputed, idx: any): Option => ({
@@ -79,7 +79,7 @@ export default function useCompetitionPhasesGroups() {
             text: row.title
           })
         )
-      : undefined
+      : []
       return result
   })
 

@@ -4,7 +4,6 @@ import { useRoute } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import TableComp from '@/components/TableComp.vue'
 import ImageComp from '@/components/ImageComp.vue'
-import SelectComp from '@/components/SelectComp.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import GamesList from '@/components/games/GamesList.vue'
 import CompetitionRanking from '@/components/competitions/CompetitionRanking.vue'
@@ -12,7 +11,7 @@ import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import useOptionsLib from '@/composable/useOptionsLib'
 import LastGames from '@/components/games/LastGames.vue'
-import type { CompetitionPhaseComputed, CompetitionRankingComputed, CompetitionStandingComputed } from '@/types/computed'
+import type { CompetitionStandingComputed } from '@/types/computed'
 import type { TableField, TableItem } from '@/types/comp-table'
 import type { Option } from '@/types/comp-fields'
 import type { CompetitionTeam } from '@/types/teams'
@@ -20,9 +19,7 @@ import type { CompetitionTeam } from '@/types/teams'
 import { useI18n } from 'vue-i18n'
 import GameComputedClass from '@/models/GameComputed'
 import GamesClass from '@/models/Games'
-import type { GetCompletionsAtPositionOptions } from 'typescript'
-import type { Competition, Phase } from '@/types/competitions'
-import ButtonComp from '@/components/ButtonComp.vue'
+import type { Phase } from '@/types/competitions'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 const { t } = useI18n()
 const route = useRoute()
@@ -30,12 +27,12 @@ const { competitionId, teamId } = route.params as { competitionId: string; teamI
 
 const { getTeamName } = useLibs()
 const { teamStandingKeys } = useOptionsLib()
-const { isReady, row, teams, games, competitionStandings, computedPhases } = useCompetition(competitionId)
+const { isReady, row, teams, games, competitionStandings } = useCompetition(competitionId)
 
 const statsFields: TableField[] = [
   ...teamStandingKeys.map(
     (opt: Option): TableField => ({
-      key: opt.value,
+      key: opt.value as string,
       label: opt.text,
       thClass: 'text-center',
       tdClass: 'text-center'
@@ -58,7 +55,7 @@ const statsItem = computed<TableItem[]>(() => {
   return competitionComputed.value ? [competitionComputed.value as unknown as TableItem] : []
 })
 
-const selectedPhase = ref<undefined | number>(undefined)
+const selectedPhaseIdx = ref<undefined | number>(undefined)
 const phasesOptions = computed(() => {
   return Array.isArray(row.value?.phases) 
     ? [
@@ -90,7 +87,7 @@ const gamesList = computed(() => row.value && Array.isArray(games.value)
 const rankingGames = computed<GameComputedClass[]>(() => {
   return row.value ? 
     new GamesClass(row.value, row.value?.games)
-      .phase(selectedPhase.value)
+      .phase(selectedPhaseIdx.value)
       .finished(true)
       .live(false)
       .getComputed()
@@ -130,7 +127,7 @@ const rankingGames = computed<GameComputedClass[]>(() => {
       >
         <template #filters>
           <RadioGroupComp 
-            v-model="selectedPhase" 
+            v-model="selectedPhaseIdx" 
             :options="phasesOptions" 
             button-variant="light"
             button-variant-active="primary"

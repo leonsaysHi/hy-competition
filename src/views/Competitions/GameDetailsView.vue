@@ -30,7 +30,7 @@ const gameComputed = computed<GameComputed | undefined>(() =>
 const statView = ref<number>(0)
 const competitionTeams = computed<CompetitionTeam[]>(() => {
   return row.value?.teams.map((teamId: TeamId): CompetitionTeam => {
-    return getCompetitionTeam(teamId)
+    return getCompetitionTeam(teamId) as CompetitionTeam
   }) as CompetitionTeam[]
 })
 </script>

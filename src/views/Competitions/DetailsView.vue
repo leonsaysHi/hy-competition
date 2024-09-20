@@ -24,10 +24,8 @@ const { isReady, row, getCompetitionTeam } = useCompetition(competitionId)
 const {
   selectedPhaseIdx,
   selectedPhase,
-  phasesOptions,
   selectedGroupIdx,
   selectedGroup,
-  groupsOptions,
   
 } = useCompetitionPhasesGroups()
 
@@ -169,7 +167,7 @@ watch(
       <template v-if="selectedPhase && selectedGroup">
         <template v-if="selectedPhase.type === 'playoffs'">
           <h3>{{ t('global.playoffs') }}</h3>
-          <BracketView :bracket="selectedGroup.bracket" />
+          <BracketView :games="selectedGames" :teams="standingTeams" />
         </template>
         <template v-else>
           <h3>{{ t('global.standing') }}</h3>

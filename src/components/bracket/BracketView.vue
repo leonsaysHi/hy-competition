@@ -13,8 +13,6 @@
                 :matchup="matchup"
                 :is-final="matchup.isFinal"
                 :disabled="disabled"
-                :selected-winners="selectedWinners"
-                @select-winner="(teamId: TeamId) => handleSelectMatchupWinner(matchup, teamId)"
               />
             </div>
           </template>
@@ -39,20 +37,26 @@
 import { computed } from 'vue'
 import Matchup from './BracketMatchup.vue'
 import type { Bracket, BracketMatchup, BracketRound } from '@/types/competitions'
-import type { TeamId } from '@/types/teams'
-import type { BracketSelection } from '@/cityhoops/views/brackets/CreateView.vue'
+import type GameComputedClass from '@/models/GameComputed';
+import type { CompetitionTeam } from '@/types/teams';
+import useBracket from '@/composable/useBracket';
 
 interface IProps {
-  bracket: Bracket | undefined
+  games?: GameComputedClass[]
+  teams?: CompetitionTeam[]
   disabled?: boolean
-  selectedWinners?: BracketSelection
 }
 const props = withDefaults(defineProps<IProps>(), {
-  disabled: false,
-  selectedWinners: undefined
+  games: () => [],
+  teams: () => [],
+  disabled: false
 })
 
-const emit = defineEmits(['select-winner'])
+const { getBracketForGames } = useBracket()
+const bracket = computed(() => {
+  return getBracketForGames(props.teams, props.games)
+})
+
 
 const gridTotalRows = computed(() => {
   return Array.isArray(rounds.value) && Array.isArray(rounds.value[0]) ? rounds.value[0].length : 0
@@ -60,8 +64,8 @@ const gridTotalRows = computed(() => {
 
 const rounds = computed<Bracket>(() => {
   let matchupRowSpan = 1
-  return Array.isArray(props.bracket)
-    ? props.bracket.map((round: BracketRound) => {
+  return Array.isArray(bracket.value)
+    ? bracket.value.map((round: BracketRound) => {
         matchupRowSpan *= 2
         return round.map((matchup: BracketMatchup) => {
           const { roundIdx, roundGameIdx, isFinal } = matchup
@@ -111,9 +115,6 @@ const gridStyle = computed(() => {
   }
 })
 
-const handleSelectMatchupWinner = (matchup: BracketMatchup, teamId: TeamId) => {
-  emit('select-winner', matchup, teamId)
-}
 </script>
 
 <style lang="scss" scoped>

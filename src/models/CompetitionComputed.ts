@@ -9,13 +9,6 @@ import type {
 import type { Game } from '@/types/games'
 import type { CompetitionTeam, TeamId } from '@/types/teams'
 import { compareAsc } from 'date-fns'
-import type {
-  TeamStats,
-  PlayerStatLine,
-  GamesHist,
-  PlayerGamesStats
-} from '@/types/stats'
-import type { CompetitionPlayer } from '@/types/players'
 import GameComputedClass, { type ScoresComputed } from './GameComputed'
 import type {
   CompetitionGroupComputed,

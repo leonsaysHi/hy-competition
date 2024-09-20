@@ -27,16 +27,16 @@ const { row, getCompetitionTeam } = useCompetition(competitionId)
 const { writeGame: addCompetitionGame, deleteGame: deleteCompetitionGame } =
   useCompetitionAdmin(competitionId)
 
-const selectedPhase = ref<number | undefined>()
+const selectedPhaseIdx = ref<number | undefined>()
 
 const gamesItems = computed(() => {
   const result = Array.isArray(row?.value?.games)
     ? row?.value?.games
         .filter((game: Game) => {
-          if (selectedPhase.value === undefined) {
+          if (selectedPhaseIdx.value === undefined) {
             return true
           }
-          const phaseIdx = selectedPhase.value
+          const phaseIdx = selectedPhaseIdx.value
           const phase = row.value?.phases[phaseIdx]
           const nextPhase = row.value?.phases[phaseIdx + 1]
           const isAfterCurrentPhase = isAfter(game.datetime, phase?.datetime)
@@ -128,7 +128,7 @@ const handleDelete = async () => {
       <SpinnerComp />
     </template>
     <template v-else>
-      <PhaseMenu v-model="selectedPhase" :phases="row?.phases" class="mb-2" />
+      <PhaseMenu v-model="selectedPhaseIdx" :phases="row?.phases" class="mb-2" />
       <TableComp :fields="fields" :items="gamesItems">
         <template #datetime="{ value }">
           <div class="vstack">
