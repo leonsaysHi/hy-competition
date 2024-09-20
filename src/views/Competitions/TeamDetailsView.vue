@@ -83,6 +83,7 @@ const gamesList = computed(() => row.value && Array.isArray(games.value)
     .finished(true)
     .live(false)
     .getComputed()
+    .reverse()
   : []
 )
 

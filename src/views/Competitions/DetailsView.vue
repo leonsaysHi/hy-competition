@@ -14,11 +14,12 @@ import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
 import BracketView from '@/components/bracket/BracketView.vue'
 
 import GamesClass from '@/models/Games'
+import type { CompetitionTeam } from '@/types/teams'
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
 
-const { isReady, row } = useCompetition(competitionId)
+const { isReady, row, getCompetitionTeam } = useCompetition(competitionId)
 
 const {
   selectedPhaseIdx,
@@ -26,7 +27,8 @@ const {
   phasesOptions,
   selectedGroupIdx,
   selectedGroup,
-  groupsOptions
+  groupsOptions,
+  
 } = useCompetitionPhasesGroups()
 
 const { t } = useI18n()
@@ -49,6 +51,12 @@ const selectedGames = computed<GameComputedClass[]>(() => {
       .live(false)
       .getComputed()
     : []
+})
+
+const standingTeams = computed<CompetitionTeam[]>(() => {
+  // :/
+  return selectedGroup.value?.standing
+    .map((row) => getCompetitionTeam(row.teamId))
 })
 
 const prevGamesList = computed<GameComputedClass[]>(() => {
@@ -78,7 +86,7 @@ const liveGamesList = computed<GameComputedClass[]>(() => {
 
 const nextGamesList = computed<GameComputedClass[]>(() => {
   const result = row.value 
-    ? new GamesClass(row.value, row.value?.games)
+    ? new GamesClass(row.value, row.value.games)
       .phase(Number(selectedPhaseIdx.value))
       .group(Number(selectedGroupIdx.value))
       .finished(false)
@@ -162,7 +170,7 @@ watch(
         </template>
         <template v-else>
           <h3>{{ t('global.standing') }}</h3>
-          <CompetitionStanding :games="selectedGames" />
+          <CompetitionStanding :games="selectedGames" :teams="standingTeams" />
         </template>
         <div class="d-flex align-items-end justify-content-between">
           <h3>{{ t('global.game', 2) }}</h3>
