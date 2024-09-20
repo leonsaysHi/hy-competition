@@ -11,11 +11,11 @@ import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
 import type { CompetitionId } from '@/types/competitions'
-import type { PlayerCalculatedStatsKey, PlayerStatLineKey } from '@/types/stats'
+import type { PlayerCalculatedStatsKey } from '@/types/stats'
 import useStats from '@/composable/useStats'
 import type { GameDocBoxScore } from '@/types/games'
 
-const { getPlayerCalculatedStatsFromStatLines, playerCalculatedStatsKeys } = useStats()
+const { getPlayerCalculatedStatsFromPlayerGamesStats, mergeStatLines, playerCalculatedStatsKeys } = useStats()
 const { t } = useI18n()
 
 interface IProps {
@@ -79,7 +79,9 @@ const items = computed(() => {
     const playerId: PlayerId = player.id
     return {
       ...player,
-      ...getPlayerCalculatedStatsFromStatLines([ props.boxscore[playerId] ])
+      ...getPlayerCalculatedStatsFromPlayerGamesStats(
+        [ mergeStatLines([ props.boxscore[playerId] ]) ]
+      )
     }
   })
 })

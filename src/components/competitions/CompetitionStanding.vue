@@ -5,22 +5,32 @@ import LastGames from '@/components/games/LastGames.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import useLibs from '@/composable/useLibs'
 import useOptionsLibs from '@/composable/useOptionsLib'
-import type { CompetitionStanding } from '@/types/computed'
 import { useRoute } from 'vue-router'
 import { getOrd } from '@/utils/maths'
 
 import { useI18n } from 'vue-i18n'
-const { t } = useI18n()
-const { teamStandingKeys } = useOptionsLibs()
-const route = useRoute()
-const { competitionId } = route.params
+import type GameComputedClass from '@/models/GameComputed'
+import useStats from '@/composable/useStats'
+import useCompetition from '@/composable/useCompetition'
+import type { TableField } from '@/types/comp-table'
+
+
 
 interface IProps {
-  value: CompetitionStanding[]
+  games: GameComputedClass[]
 }
+const props = withDefaults(defineProps<IProps>(), {
+  games: () => []
+})
 
-const props = withDefaults(defineProps<IProps>(), {})
+const route = useRoute()
+const { competitionId } = route.params as { competitionId: string;  }
+const { t } = useI18n()
+const { teamStandingKeys } = useOptionsLibs()
+const { getStandingsForGames } = useStats()
+
 const { getTeamName } = useLibs()
+const { teams } = useCompetition(competitionId)
 const fields = [
   {
     label: t('options.rankingStats.text.pos'),
@@ -47,7 +57,7 @@ const fields = [
   }
 ]
 const items = computed(() => {
-  const items = props.value.slice()
+  const items = getStandingsForGames(teams.value, props.games)
   return items
 })
 </script>

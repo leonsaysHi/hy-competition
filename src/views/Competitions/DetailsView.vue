@@ -1,16 +1,13 @@
 <script lang="ts" setup>
 import { useRoute } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
-import DropdownComp from '@/components/DropdownComp.vue'
 import useCompetition from '@/composable/useCompetition'
 import { computed, ref, watch } from 'vue'
-import type { Option } from '@/types/comp-fields'
-import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
+import PhaseGroupSelect from '@/components/competitions/PhaseGroupSelect.vue'
 import CompetitionStanding from '@/components/competitions/CompetitionStanding.vue'
 import CompetitionRanking from '@/components/competitions/CompetitionRanking.vue'
 import GamesList from '@/components/games/GamesList.vue'
-import { compareAsc } from 'date-fns'
 import { useI18n } from 'vue-i18n'
 import type GameComputedClass from '@/models/GameComputed'
 import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
@@ -35,10 +32,26 @@ const {
 const { t } = useI18n()
 const { getGender, getCategory } = useOptionsLib()
 
-const currentGamesView = ref<'prev' | 'next' | 'live'>('prev')
+type GamesListValue = 'prev' | 'next' | 'live'
+interface GamesListOption {
+  text: String
+  value: GamesListValue
+  disabled: Boolean
+}
+const currentGamesView = ref<GamesListValue>('prev')
 
+const selectedGames = computed<GameComputedClass[]>(() => {
+  return row.value ? 
+    new GamesClass(row.value, row.value?.games)
+      .phase(Number(selectedPhaseIdx.value))
+      .group(Number(selectedGroupIdx.value))
+      .finished(true)
+      .live(false)
+      .getComputed()
+    : []
+})
 
-const pastGamesList = computed<GameComputedClass[]>(() => {
+const prevGamesList = computed<GameComputedClass[]>(() => {
   const result = row.value ? 
     new GamesClass(row.value, row.value?.games)
       .phase(Number(selectedPhaseIdx.value))
@@ -50,6 +63,7 @@ const pastGamesList = computed<GameComputedClass[]>(() => {
   result.reverse()
   return result
 })
+
 const liveGamesList = computed<GameComputedClass[]>(() => {
   const result = row.value 
     ? new GamesClass(row.value, row.value?.games)
@@ -61,7 +75,8 @@ const liveGamesList = computed<GameComputedClass[]>(() => {
     : []
   return result
 })
-const upcomingGamesList = computed<GameComputedClass[]>(() => {
+
+const nextGamesList = computed<GameComputedClass[]>(() => {
   const result = row.value 
     ? new GamesClass(row.value, row.value?.games)
       .phase(Number(selectedPhaseIdx.value))
@@ -76,36 +91,49 @@ const upcomingGamesList = computed<GameComputedClass[]>(() => {
     : result
 })
 
-const gamesViewOptions = computed<Option[]>(() => {
+const gamesListOptions = computed<GamesListOption[]>(() => {
   return [
     {
       text: t('global.gameDetails.live'),
-      value: 'live',
+      value: 'live' as GamesListValue,
       disabled: !liveGamesList.value.length
     },
     {
       text: t('global.previous', 2),
-      value: 'prev',
-      disabled: !pastGamesList.value.length
+      value: 'prev' as GamesListValue,
+      disabled: !prevGamesList.value.length
     },
     {
       text: t('global.upcoming', 2),
-      value: 'next',
-      disabled: !upcomingGamesList.value.length
+      value: 'next' as GamesListValue,
+      disabled: !nextGamesList.value.length
     }
   ]
 })
+
 const gamesList = computed<GameComputedClass[]>(() => {
-  return currentGamesView.value === 'prev'
-        ? pastGamesList.value
-        : currentGamesView.value === 'live'
-          ? liveGamesList.value
-          : upcomingGamesList.value
+  const games = row.value ? 
+    new GamesClass(row.value, row.value?.games)
+      .phase(Number(selectedPhaseIdx.value))
+      .group(Number(selectedGroupIdx.value))
+    : undefined
+  if (!games) { 
+    return []
+  }
+  const result = currentGamesView.value === 'prev'
+      ? prevGamesList.value
+      : currentGamesView.value === 'live'
+        ? liveGamesList.value
+        : nextGamesList.value
+
+  return result
 })
+
+
 watch(
-  () => gamesViewOptions.value,
-  (val: Option[]) => {
-    const optIdx = val.findIndex((opt: Option) => !opt.disabled)
+  () => gamesListOptions.value,
+  (val: GamesListOption[]) => {
+    const optIdx = val.findIndex((opt: GamesListOption) => !opt.disabled)
     if (optIdx > -1) {
       currentGamesView.value = val[optIdx].value as 'prev' | 'next' | 'live'
     }
@@ -124,23 +152,8 @@ watch(
     <template v-if="!isReady">
       <SpinnerComp />
     </template>
-    <template v-else-if="!phasesOptions?.length || !groupsOptions?.length">
-      <p>Error: No phase.</p>
-    </template>
     <template v-else>
-      <div class="mb-3 hstack gap-3">
-        <DropdownComp
-          v-model="selectedPhaseIdx"
-          :options="phasesOptions"
-          variant="light"
-          size="lg"
-          class="fw-bold fz-5"
-          :disabled="phasesOptions.length === 1"
-        />
-        <template v-if="groupsOptions.length > 1">
-          <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons />
-        </template>
-      </div>
+      <PhaseGroupSelect class="mb-3" />
       <hr />
       <template v-if="selectedPhase && selectedGroup">
         <template v-if="selectedPhase.type === 'playoffs'">
@@ -149,12 +162,12 @@ watch(
         </template>
         <template v-else>
           <h3>{{ t('global.standing') }}</h3>
-          <CompetitionStanding :value="selectedGroup.standing" />
+          <CompetitionStanding :games="selectedGames" />
         </template>
         <div class="d-flex align-items-end justify-content-between">
           <h3>{{ t('global.game', 2) }}</h3>
           <ul class="nav nav-underline justify-content-end">
-            <template v-for="opt in gamesViewOptions" :key="opt.value">
+            <template v-for="opt in gamesListOptions" :key="opt.value">
               <li class="nav-item">
                 <a
                   class="nav-link"
@@ -168,11 +181,10 @@ watch(
           </ul>
         </div>
         <GamesList class="mb-3" :items="gamesList" />
-        <CompetitionRanking :value="selectedGroup.ranking" :limit="15">
-          <template #title>
-            <h3>{{ t('global.ranking') }}</h3>
-          </template>
-        </CompetitionRanking>
+        <div class="d-flex gap-3 justify-content-between">
+          <h3>{{ t('global.ranking') }}</h3>
+        </div>
+        <CompetitionRanking :games="selectedGames" :limit="15" show-avg-ui />
       </template>
     </template>
   </div>

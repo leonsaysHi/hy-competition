@@ -57,7 +57,7 @@ export type PlayerCalculatedStatsKey = keyof PlayerCalculatedStats
 
 // Players Competition Ranking Table
 export interface PlayerRankingStats extends PlayerCalculatedStats {
-  awards: AwardItem[]
+  awards?: AwardItem[]
 }
 export type PlayerRankingKey = keyof PlayerRankingStats
 

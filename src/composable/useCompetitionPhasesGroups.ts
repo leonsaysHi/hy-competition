@@ -60,8 +60,8 @@ export default function useCompetitionPhasesGroups() {
       : undefined
   )
 
-  const phasesOptions = computed<Option[] | undefined>(() =>
-    Array.isArray(computedPhases.value)
+  const phasesOptions = computed<Option[] | undefined>(() => {
+    const result = Array.isArray(computedPhases.value)
       ? computedPhases.value?.map(
           (row: CompetitionPhaseComputed, idx: any): Option => ({
             value: idx.toString(),
@@ -69,9 +69,10 @@ export default function useCompetitionPhasesGroups() {
           })
         )
       : undefined
-  )
-  const groupsOptions = computed<Option[] | undefined>(() =>
-    Array.isArray(selectedPhase.value?.groups)
+    return result
+  })
+  const groupsOptions = computed<Option[] | undefined>(() => {
+    const result = Array.isArray(selectedPhase.value?.groups)
       ? selectedPhase.value?.groups.map(
           (row: CompetitionGroupComputed, idx: any): Option => ({
             value: idx.toString(),
@@ -79,7 +80,8 @@ export default function useCompetitionPhasesGroups() {
           })
         )
       : undefined
-  )
+      return result
+  })
 
   watchEffect(() => {
     if (route.params?.phase && route.params?.group) {

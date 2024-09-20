@@ -18,7 +18,7 @@ const route = useRoute()
 const { competitionId } = route.params as { competitionId: string; gameId: string }
 
 const { trackedPlayerRankingKeys } = useCompetition(competitionId)
-const { playerCalculatedStatsKeys, getPlayerCalculatedStatsFromStatLines } = useStats()
+const { playerCalculatedStatsKeys, getPlayerCalculatedStatsFromPlayerGamesStats, mergeStatLines } = useStats()
 interface IProps {
   boxscore: GameDocBoxScore
   teams: CompetitionTeam[]
@@ -36,7 +36,7 @@ const teamsTotalsByStats = computed(() => {
   return props.teams.reduce((result, team: CompetitionTeam) => {
     const statLines: PlayerStatLine[] = team.players
       .map((player: CompetitionPlayer) => bs[player.id] || {} as PlayerStatLine)
-    result[team.id] = getPlayerCalculatedStatsFromStatLines(statLines)
+    result[team.id] = getPlayerCalculatedStatsFromPlayerGamesStats([ mergeStatLines(statLines) ])
     return result
   }, {} as { [key: TeamId]: PlayerCalculatedStats })
 })

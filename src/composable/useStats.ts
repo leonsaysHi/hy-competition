@@ -1,5 +1,10 @@
 
-import type { TeamStatKey, PlayerStatLineKey, TeamStats, PlayerStatLine, PlayerCalculatedStats, PlayerCalculatedStatsKey, PlayerGamesStats, PlayerGamesStatsKey } from '@/types/stats'
+import type { ScoresComputed } from '@/models/GameComputed'
+import type GameComputedClass from '@/models/GameComputed'
+import type { CompetitionPlayerStats, CompetitionStanding } from '@/types/computed'
+import type { CompetitionPlayer } from '@/types/players'
+import type { TeamStatKey, PlayerStatLineKey, TeamStats, PlayerStatLine, PlayerCalculatedStats, PlayerCalculatedStatsKey, PlayerGamesStats, PlayerGamesStatsKey, GamesHist } from '@/types/stats'
+import type { CompetitionTeam } from '@/types/teams'
 import { add, getPerc } from '@/utils/maths'
 export default function useStats() {
 
@@ -36,7 +41,15 @@ export default function useStats() {
     ..._morekeys,
     'dnp'
   ]
-  const getPlayerGamesStatsFromStatLines = (rows: PlayerStatLine[] = []): PlayerGamesStats => {
+  const getEmptyPlayerGamesStats = ():PlayerGamesStats => ({
+    ...playerGamesStatsKeys
+      .reduce((result: PlayerGamesStats, key: PlayerGamesStatsKey) => {
+        result[key] = 0
+        return result
+      }, {} as PlayerGamesStats)
+  })
+
+  const mergeStatLines = (rows: PlayerStatLine[] = []): PlayerGamesStats => {
     if (!Array.isArray(rows)) {
       console.warn('not an array of stats')
     }
@@ -50,20 +63,45 @@ export default function useStats() {
         getEmptyPlayerStatLine()
       )
     // calculs
-    const { dnp } = acc
-    const gp = rows.length - dnp
+    const dnps = rows.reduce((tot: number, row: PlayerStatLine) => {
+        tot += row.dnp
+        return tot
+      }, 0)
+    const gp = rows.length - dnps
     return {
       gp,
       ...acc,
     }
   }
-
-  const getPlayerCalculatedStatsFromStatLines = (rows: PlayerStatLine[] = []):PlayerCalculatedStats => {
+  const mergePlayerGamesStats = (rows: PlayerGamesStats[] = []): PlayerGamesStats => {
     if (!Array.isArray(rows)) {
       console.warn('not an array of stats')
     }
-    const acc: PlayerGamesStats = getPlayerGamesStatsFromStatLines(rows)
-    
+    const acc = rows
+      .reduce((acc: PlayerGamesStats, row: PlayerGamesStats) => {
+          playerStatsKeys.forEach((key: PlayerStatLineKey) => {
+            acc[key] = add(acc[key], row[key])
+          })
+          return acc
+        }, 
+        getEmptyPlayerGamesStats()
+      )
+    // calculs
+    const gp = rows
+      .reduce((tot: number, row: PlayerGamesStats) => {
+        return add(tot, Number(row.gp))
+      }, 0)
+    return {
+      ...acc,
+      gp
+    }
+  }
+
+  const getPlayerCalculatedStatsFromPlayerGamesStats = (rows: PlayerGamesStats[] = []):PlayerCalculatedStats => {
+    if (!Array.isArray(rows)) {
+      console.warn('not an array of stats')
+    }
+    const acc: PlayerGamesStats = mergePlayerGamesStats(rows)
     // calculs
     const { fta, ftm, fga, fgm, fg3a, fg3m, oreb, dreb } = acc
     const ftprc = getPerc(fta, ftm)
@@ -118,24 +156,96 @@ export default function useStats() {
       }, {} as TeamStats)
   })
 
+  const getPlayersStatsForGames = (teams: CompetitionTeam[], games: GameComputedClass[]): CompetitionPlayerStats[] => {
+    const playersStats = teams
+      .reduce((result: CompetitionPlayerStats[], team: CompetitionTeam): CompetitionPlayerStats[] => {
+        const statslines = team.players
+          .map((player: CompetitionPlayer) => {
+            const statlines: PlayerStatLine[] = games
+              .filter(
+                (game: GameComputedClass) => game.row.boxscore[player.id] && game.row.boxscore[player.id].dnp === 0
+              )
+              .reduce((acc: PlayerStatLine[], game: GameComputedClass) => {
+                acc.push(game.row.boxscore[player.id])
+                return acc
+              }, [])
+            const gamesStats: PlayerGamesStats = mergeStatLines(statlines)
+            return {
+              teamId: team.id,
+              playerId: player.id,
+              number: player.number,
+              ...gamesStats,
+            }
+          })
+        result.push(...statslines)
+        return result
+      }, [])
+    return playersStats               
+  }
+
+  const getStandingsForGames = (teams: CompetitionTeam[], games: GameComputedClass[]):CompetitionStanding[] => {
+    const result: CompetitionStanding[] = teams
+      .reduce((standing: CompetitionStanding[], team: CompetitionTeam) => {
+          const teamId = team.id
+          const hist: GamesHist = new Array(5).fill(0).map((n: number, idx: number) => {
+            const game = games[idx]
+            if (!game?.isFinished) return 0
+            return game.scores.findIndex(
+              (score: ScoresComputed) => score.id === teamId && score.winner
+            ) > -1
+              ? 1
+              : -1
+          })
+          hist.reverse()
+          standing.push({
+            teamId,
+            ...games
+              .reduce(
+                (result: TeamStats, game: GameComputedClass): TeamStats => {
+                  const teamScore = game.getTeamScore(teamId)?.finalScore || 0
+                  const oppScore = game.getOppScore(teamId)?.finalScore || 0
+                  const diff = teamScore - oppScore
+                  return {
+                    gp: result.gp + 1,
+                    wins: result.wins + (diff > 0 ? 1 : 0),
+                    ptsfv: result.ptsfv + teamScore,
+                    ptsag: result.ptsag + oppScore
+                  }
+                },
+                getEmptyTeamStats()
+              ),
+            hist
+          })
+          return standing
+        },
+        []
+      )
+    return result
+  }
+
 
   return {
     // player single game stats
     playerStatsKeys,
+    mergeStatLines,
     getEmptyPlayerStatLine,
 
     // player multiple games stats
     playerGamesStatsKeys,
-    getPlayerGamesStatsFromStatLines,
+    mergePlayerGamesStats,
 
     // player computed stats (pts, reb, perc)
     playerCalculatedStatsKeys,
     getEmptyPlayerCalculatedStats,
-    getPlayerCalculatedStatsFromStatLines,
+    getPlayerCalculatedStatsFromPlayerGamesStats,
     
     // teams results
     teamStandingKeys,
-    getEmptyTeamStats
+    getEmptyTeamStats,
+
+    // methods
+    getPlayersStatsForGames,
+    getStandingsForGames,
 
   }
 }

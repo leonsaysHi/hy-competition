@@ -66,7 +66,7 @@ export default class GamesClass {
   getPhase():Phase | undefined {
     const { phaseIdx } = this
     const { phases } = this.competition
-    return phaseIdx !== undefined 
+    return Array.isArray(phases) && phaseIdx !== undefined 
         ? phases[phaseIdx] 
         : undefined
   }
@@ -77,7 +77,7 @@ export default class GamesClass {
         : undefined
   }
 
-  get ():Game[] {
+  get():Game[] {
     const phase = this.getPhase()
     const group = this.getGroup()
     const result = this.competition.games
@@ -87,7 +87,7 @@ export default class GamesClass {
         const matchIsLive = this.isLive === undefined || (!this.isLive && !game.isLive) || game.isLive === this.isLive
         // Phase
         const nextPhaseIdx = Number(this.phaseIdx) + 1 
-        const nextPhase = this.phaseIdx !== undefined && this.competition.phases[nextPhaseIdx]
+        const nextPhase = this.phaseIdx !== undefined && Array.isArray(this.competition.phases)
           ? this.competition.phases[nextPhaseIdx] 
           : undefined
         const dateStart = phase?.datetime
