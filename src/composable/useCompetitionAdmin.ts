@@ -25,7 +25,7 @@ import CompetitionClass from '@/models/CompetitionComputed'
 import type { CompetitionTeam, CompetitionTeamDoc, TeamId } from '@/types/teams'
 import type { Game, GameId } from '@/types/games'
 import type { CompetitionPlayer, PlayerId } from '@/types/players'
-import type { CompetitionRankingComputed, CompetitionStandingComputed } from '@/types/computed'
+import type { CompetitionPlayerComputed, CompetitionStandingComputed } from '@/types/computed'
 
 export default function useCompetitionAdmin(competitionId: CompetitionId | undefined) {
   const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`).withConverter(
@@ -254,8 +254,8 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
     const batch: WriteBatch = writeBatch(db)
     if (payload.isActive) {
       const computedClass = new CompetitionClass(payload)
-      writePlayersCompetitionComputed(computedClass.competitionRankings, batch)
-      writeTeamsCompetitionComputed(computedClass.competitionStandings, batch)
+      writePlayersCompetitionComputed(computedClass.competitionPlayerStatsToSave, batch)
+      writeTeamsCompetitionComputed(computedClass.competitionStandingsToSave, batch)
     } else {
       const { id: competitionId } = payload
       payload.teams.forEach((team: CompetitionTeam) => {
@@ -270,10 +270,10 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
   }
 
   const writePlayersCompetitionComputed = (
-    rows: CompetitionRankingComputed[],
+    rows: CompetitionPlayerComputed[],
     batch: WriteBatch = writeBatch(db)
   ): WriteBatch => {
-    rows.forEach((row: CompetitionRankingComputed) => {
+    rows.forEach((row: CompetitionPlayerComputed) => {
       const { playerId, id } = row
       const computedCollection = collection(
         doc(playersColl, playerId),

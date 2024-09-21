@@ -13,8 +13,10 @@ import GameComputedClass, { type ScoresComputed } from './GameComputed'
 import type {
   CompetitionGroupComputed,
   CompetitionPhaseComputed,
+  CompetitionPlayerComputed,
   CompetitionPlayerStats,
   CompetitionStanding,
+  CompetitionStandingComputed,
 } from '@/types/computed'
 import useStats from '@/composable/useStats'
 import GamesClass from './Games'
@@ -92,21 +94,29 @@ export default class CompetitionClass {
     return phases
   }
 
-  // Players overall stats
-  get competitionRankings(): CompetitionPlayerStats[] {
+  // Players competition computed payload 
+  get competitionPlayerStatsToSave(): CompetitionPlayerComputed[] {
     const competitionGames = new GamesClass(this.row, this.games)
       .finished(true)
       .live(false)
       .getComputed()
     return getPlayersStatsForGames(this.teams, competitionGames)
+      .map((row: CompetitionPlayerStats) => ({
+        id: this.row.id,
+        ...row
+      }))
   }
 
-  // Teams overall results
-  get competitionStandings(): CompetitionStanding[] {
+  // Teams competition computed payload
+  get competitionStandingsToSave(): CompetitionStandingComputed[] {
     const competitionGames = new GamesClass(this.row, this.games)
       .finished(true)
       .live(false)
       .getComputed()
     return getStandingsForGames(this.teams, competitionGames)
+      .map((row: CompetitionStanding) => ({
+        id: this.row.id,
+        ...row
+      }))
   }
 }

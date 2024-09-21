@@ -11,7 +11,7 @@ import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import useOptionsLib from '@/composable/useOptionsLib'
 import LastGames from '@/components/games/LastGames.vue'
-import type { CompetitionStandingComputed } from '@/types/computed'
+import type { CompetitionStanding } from '@/types/computed'
 import type { TableField, TableItem } from '@/types/comp-table'
 import type { Option } from '@/types/comp-fields'
 import type { CompetitionTeam } from '@/types/teams'
@@ -21,13 +21,14 @@ import GameComputedClass from '@/models/GameComputed'
 import GamesClass from '@/models/Games'
 import type { Phase } from '@/types/competitions'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
+import useStats from '@/composable/useStats'
 const { t } = useI18n()
 const route = useRoute()
 const { competitionId, teamId } = route.params as { competitionId: string; teamId: string }
-
+const { getStandingsForGames } = useStats()
 const { getTeamName } = useLibs()
 const { teamStandingKeys } = useOptionsLib()
-const { isReady, row, teams, games, competitionStandings } = useCompetition(competitionId)
+const { isReady, row, teams, games } = useCompetition(competitionId)
 
 const statsFields: TableField[] = [
   ...teamStandingKeys.map(
@@ -46,9 +47,19 @@ const statsFields: TableField[] = [
   }
 ]
 
-const competitionComputed = computed<CompetitionStandingComputed | undefined>(() => {
-  return competitionStandings.value?.find(
-    (stand: CompetitionStandingComputed) => stand.teamId === teamId
+const competitionComputed = computed<CompetitionStanding | undefined>(() => {
+  const standings = getStandingsForGames(
+    teams.value, 
+    row.value 
+      ?  new GamesClass(row.value, games.value)
+        .team(teamId)
+        .finished(true)
+        .live(false)
+        .getComputed()
+      : []
+  )
+  return standings.find(
+    (row: CompetitionStanding) => row.teamId === teamId
   )
 })
 const statsItem = computed<TableItem[]>(() => {

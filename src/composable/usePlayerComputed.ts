@@ -4,7 +4,7 @@ import { collection } from 'firebase/firestore'
 import type { PlayerId } from '@/types/players'
 import { computed, type Ref } from 'vue'
 import { computedRankingConverter } from '@/utils/firestore-converters'
-import type { CompetitionRankingComputed } from '@/types/computed'
+import type { CompetitionPlayerComputed } from '@/types/computed'
 
 export default function usePlayerComputed(playerId: PlayerId) {
   const computedCompetitionsCollection = collection(
@@ -13,7 +13,7 @@ export default function usePlayerComputed(playerId: PlayerId) {
   ).withConverter(computedRankingConverter)
 
   const rows = useFirestore(computedCompetitionsCollection, undefined) as Ref<
-    CompetitionRankingComputed[] | undefined
+    CompetitionPlayerComputed[] | undefined
   >
 
   const isReady = computed(() => Array.isArray(rows.value) && rows.value.every(Boolean))

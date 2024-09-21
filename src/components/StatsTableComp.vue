@@ -186,7 +186,7 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import useOptionsLib from '@/composable/useOptionsLib'
 import useStats from '@/composable/useStats'
-import type { CompetitionPlayerStats, CompetitionRanking } from '@/types/computed'
+import type { CompetitionPlayerCalculatedStats, CompetitionPlayerStats } from '@/types/computed'
 const { t } = useI18n()
 
 interface IProps {
@@ -235,7 +235,7 @@ const getCalculated = (item) => {
 const computedItems = computed(() => {
   return props.items
     .map((item) => {
-      const row: CompetitionRanking = {
+      const row: CompetitionPlayerCalculatedStats = {
         ...item,
         ...getPlayerCalculatedStatsFromPlayerGamesStats([item])
       }

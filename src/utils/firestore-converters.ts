@@ -5,7 +5,7 @@ import type { DocumentData, QueryDocumentSnapshot, SnapshotOptions } from 'fireb
 import { dateToTimeStamp } from '@/utils/dates'
 import type { CompetitionTeamDoc, TeamDoc, TeamId } from '@/types/teams'
 import type { GameDoc } from '@/types/games'
-import type { CompetitionRankingComputed, CompetitionStandingComputed } from '@/types/computed'
+import type { CompetitionPlayerComputed, CompetitionStandingComputed } from '@/types/computed'
 
 const dateFromFirestore = (ts: Timestamp): Date => {
   return ts.toDate()
@@ -136,7 +136,7 @@ export const playerConverter = {
 }
 
 export const computedRankingConverter = {
-  toFirestore: (row: CompetitionRankingComputed): DocumentData => {
+  toFirestore: (row: CompetitionPlayerComputed): DocumentData => {
     const payload = {
       ...row
     }

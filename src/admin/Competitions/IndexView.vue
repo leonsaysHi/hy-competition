@@ -22,7 +22,7 @@ const rostersValid = computed(
     teamsValid.value && row.value?.teams.every((team: CompetitionTeam) => team.players.length >= 5)
 )
 
-// Updates computed on compatition update
+// Updates computed on competition update
 watch(
   () => row.value?.lastUpdate,
   (val, oldVal) => {

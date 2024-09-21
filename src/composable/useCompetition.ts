@@ -19,8 +19,6 @@ import CompetitionClass from '@/models/CompetitionComputed'
 import type { Option } from '@/types/comp-fields'
 import type {
   CompetitionPhaseComputed,
-  CompetitionStandingComputed,
-  CompetitionRankingComputed
 } from '@/types/computed'
 import useOptionsLib from './useOptionsLib'
 import type { PlayerStatLineKey, PlayerStatLine, StatsGroupDef } from '@/types/stats'
@@ -203,16 +201,19 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
       isReady.value && row.value ? new CompetitionClass(row.value) : undefined
     return competitionClass ? competitionClass.computedPhases : undefined
   })
-  const competitionRankings = computed<CompetitionRankingComputed[] | undefined>(() => {
+
+  /*
+  const competition_Rankings = computed<CompetitionRankingComputed[] | undefined>(() => {
     const competitionClass =
       isReady.value && row.value ? new CompetitionClass(row.value) : undefined
-    return competitionClass?.competitionRankings
+    return competitionClass?.competition_Rankings
   })
-  const competitionStandings = computed<CompetitionStandingComputed[] | undefined>(() => {
+  const competition_Standings = computed<CompetitionStandingComputed[] | undefined>(() => {
     const competitionClass =
       isReady.value && row.value ? new CompetitionClass(row.value) : undefined
-    return competitionClass?.competitionStandings
+    return competitionClass?.competition_Standings
   })
+  */
 
   // stats sheet input:
   const trackedPlayerStatsKey = computed<Option[]>(() => {
@@ -305,7 +306,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
 
     //computed
     computedPhases,
-    competitionRankings,
-    competitionStandings
+    // competition_Rankings,
+    // competition_Standings
   }
 }
