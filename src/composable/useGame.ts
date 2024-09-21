@@ -1,8 +1,7 @@
-import type { CompetitionId, Roster, RosterPlayer, Rosters } from '@/types/competitions'
-
-import type { CompetitionTeam, TeamId } from '@/types/teams'
-import type { Game, GameId } from '@/types/games'
-import type { CompetitionPlayer, PlayerId } from '@/types/players'
+import type { CompetitionId } from '@/types/competitions'
+import type { CompetitionTeam, TeamId } from '@/types/team'
+import type { Game, GameId, Roster, RosterPlayer, Rosters } from '@/types/games'
+import type { CompetitionPlayer, PlayerId } from '@/types/player'
 
 import useLibs from '@/composable/useLibs'
 import { computed } from 'vue'

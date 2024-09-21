@@ -2,9 +2,10 @@
 import type { ScoresComputed } from '@/models/GameComputed'
 import type GameComputedClass from '@/models/GameComputed'
 import type { CompetitionPlayerStats, CompetitionStanding } from '@/types/computed'
-import type { CompetitionPlayer } from '@/types/players'
-import type { TeamStatKey, PlayerStatLineKey, TeamStats, PlayerStatLine, PlayerCalculatedStats, PlayerCalculatedStatsKey, PlayerGamesStats, PlayerGamesStatsKey, GamesHist } from '@/types/stats'
-import type { CompetitionTeam, TeamId } from '@/types/teams'
+import type { CompetitionPlayer } from '@/types/player'
+import type { PlayerStatLineKey, PlayerStatLine, PlayerCalculatedStats, PlayerCalculatedStatsKey, PlayerGamesStats, PlayerGamesStatsKey, GamesHist } from '@/types/player-stats'
+import type { TeamStatKey, TeamStats } from '@/types/team-stats'
+import type { CompetitionTeam } from '@/types/team'
 import { add, getPerc } from '@/utils/maths'
 export default function useStats() {
 

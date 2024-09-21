@@ -14,11 +14,10 @@ import LastGames from '@/components/games/LastGames.vue'
 import type { CompetitionStanding } from '@/types/computed'
 import type { TableField, TableItem } from '@/types/comp-table'
 import type { Option } from '@/types/comp-fields'
-import type { CompetitionTeam } from '@/types/teams'
+import type { CompetitionTeam } from '@/types/team'
 
 import { useI18n } from 'vue-i18n'
 import GameComputedClass from '@/models/GameComputed'
-import GamesClass from '@/models/Games'
 import type { Phase } from '@/types/competitions'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import useStats from '@/composable/useStats'
@@ -28,7 +27,7 @@ const { competitionId, teamId } = route.params as { competitionId: string; teamI
 const { getStandingsForGames } = useStats()
 const { getTeamName } = useLibs()
 const { teamStandingKeys } = useOptionsLib()
-const { isReady, row, teams, games } = useCompetition(competitionId)
+const { isReady, row, teams, filterGames } = useCompetition(competitionId)
 
 const statsFields: TableField[] = [
   ...teamStandingKeys.map(
@@ -50,13 +49,11 @@ const statsFields: TableField[] = [
 const competitionComputed = computed<CompetitionStanding | undefined>(() => {
   const standings = getStandingsForGames(
     teams.value, 
-    row.value 
-      ?  new GamesClass(row.value, games.value)
-        .team(teamId)
-        .finished(true)
-        .live(false)
-        .getComputed()
-      : []
+    filterGames({
+      teamId: teamId,
+      isFinished: true,
+      isLive: false
+    })
   )
   return standings.find(
     (row: CompetitionStanding) => row.teamId === teamId
@@ -85,25 +82,20 @@ const phasesOptions = computed(() => {
 
 const competitionTeam = computed(() => teams.value?.find((team: CompetitionTeam) => team.id === teamId))
 
-const gamesList = computed(() => row.value && Array.isArray(games.value)
-  ? new GamesClass(row.value, games.value)
-    .team(teamId)
-    .finished(true)
-    .live(false)
-    .getComputed()
-    .reverse()
-  : []
+const gamesList = computed<GameComputedClass[]>(() => filterGames({
+    teamId: teamId,
+    isFinished: true,
+    isLive: false
+  })
+  .reverse()
 )
 
-const rankingGames = computed<GameComputedClass[]>(() => {
-  return row.value ? 
-    new GamesClass(row.value, row.value?.games)
-      .phase(selectedPhaseIdx.value)
-      .finished(true)
-      .live(false)
-      .getComputed()
-    : []
-})
+const rankingGames = computed<GameComputedClass[]>(() => filterGames({
+    phaseIdx: Number(selectedPhaseIdx.value),
+    isFinished: true,
+    isLive: false
+  })
+)
 
 </script>
 <template>

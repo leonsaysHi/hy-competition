@@ -10,7 +10,7 @@ import type { Option } from '@/types/comp-fields'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
-import type { TeamId } from '@/types/teams'
+import type { TeamId } from '@/types/team'
 import useStats from '@/composable/useStats'
 import type GameComputedClass from '@/models/GameComputed'
 
@@ -19,14 +19,13 @@ const { t } = useI18n()
 
 
 interface IProps {
-  games?: GameComputedClass[]
+  games: GameComputedClass[]
   limit?: number
   teamId?: TeamId
   showAvg?: boolean
   showAvgUi?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
-  games: () => [],
   limit: 0,
   showAvg: true,
   showAvgUi: true

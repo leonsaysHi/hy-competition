@@ -1,6 +1,6 @@
-import type { AwardItem, PlayerStatLine } from './stats'
-import type { CompetitionPlayer, PlayerDoc, PlayerId } from './players'
-import type { TeamId } from './teams'
+import type { AwardItem, PlayerStatLine } from './player-stats'
+import type { CompetitionPlayer, PlayerDoc, PlayerId } from './player'
+import type { TeamId } from './team'
 
 export type GameId = string
 

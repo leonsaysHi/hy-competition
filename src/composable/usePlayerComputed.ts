@@ -1,7 +1,7 @@
 import { playerCompetitionsComputedName, playersColl } from '@/firebase-firestore.js'
 import { useFirestore } from '@vueuse/firebase/useFirestore'
 import { collection } from 'firebase/firestore'
-import type { PlayerId } from '@/types/players'
+import type { PlayerId } from '@/types/player'
 import { computed, type Ref } from 'vue'
 import { computedRankingConverter } from '@/utils/firestore-converters'
 import type { CompetitionPlayerComputed } from '@/types/computed'

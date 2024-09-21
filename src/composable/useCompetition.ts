@@ -1,11 +1,11 @@
 import { collection } from 'firebase/firestore'
 import { competitionsColl, teamsName, gamesName, playersName } from '@/firebase-firestore.js'
-import type { Competition, CompetitionConfig, CompetitionId } from '@/types/competitions'
+import type { Competition, CompetitionConfig, CompetitionId, Phase } from '@/types/competitions'
 
 import { useFirestore } from '@vueuse/firebase/useFirestore'
-import type { CompetitionTeam, TeamId } from '@/types/teams'
+import type { CompetitionTeam, TeamId } from '@/types/team'
 import type { Game, GameDocBoxScore, GameId, GameDocScores } from '@/types/games'
-import type { CompetitionPlayer, PlayerId } from '@/types/players'
+import type { CompetitionPlayer, PlayerId } from '@/types/player'
 
 import useLibs from '@/composable/useLibs'
 import type { Ref } from 'vue'
@@ -15,16 +15,13 @@ import {
   competitionTeamConverter,
   competitionPlayerConverter
 } from '@/utils/firestore-converters'
-import CompetitionClass from '@/models/CompetitionComputed'
 import type { Option } from '@/types/comp-fields'
-import type {
-  CompetitionPhaseComputed,
-} from '@/types/computed'
 import useOptionsLib from './useOptionsLib'
-import type { PlayerStatLineKey, PlayerStatLine, StatsGroupDef } from '@/types/stats'
-import { compareAsc } from 'date-fns'
+import type { PlayerStatLineKey, PlayerStatLine, StatsGroupDef } from '@/types/player-stats'
+import { compareAsc, isAfter } from 'date-fns'
 import i18n from '@/i18n'
 import useStats from './useStats'
+import GameComputedClass from '@/models/GameComputed'
 const t = (path: string): string => i18n.global.t(path)
 
 export default function useCompetition(competitionId: CompetitionId | undefined) {
@@ -195,25 +192,71 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     return row?.value?.games?.find((game: Game) => game.id === gameId)
   }
 
-  // Competition Computed
-  const computedPhases = computed<CompetitionPhaseComputed[] | undefined>(() => {
-    const competitionClass =
-      isReady.value && row.value ? new CompetitionClass(row.value) : undefined
-    return competitionClass ? competitionClass.computedPhases : undefined
-  })
+  const filterGames = (
+    {
+      isFinished = undefined,
+      isLive = undefined,
+      phaseIdx = undefined,
+      groupIdx = undefined,
+      teamId = undefined,
+      playerId = undefined,
+    }: {
+    isFinished?: boolean
+    isLive?: boolean
+    phaseIdx?: number
+    groupIdx?: number
+    teamId?: TeamId
+    playerId?: PlayerId
+  }): GameComputedClass[] => {
+    const phase = Array.isArray(row.value?.phases) && phaseIdx !== undefined 
+      ? row.value?.phases[phaseIdx] 
+      : undefined
+    const group = phase !== undefined && groupIdx !== undefined
+      ? phase.groups?.[groupIdx]
+      : undefined
+    teamId = playerId && Array.isArray(row.value?.teams) 
+      ? row.value?.teams.find((team: CompetitionTeam) => {
+          return team.players.findIndex((player: CompetitionPlayer) => player.id === playerId) > -1
+        })?.id
+      : undefined
+    // filter
+    const result = Array.isArray(row.value?.games)
+      ? row.value.games
+        .filter((game: Game) => {
+          // isFinished | isLive
+          const matchIsFinished = isFinished === undefined || (!isFinished && !game.isFinished) || game.isFinished === isFinished
+          const matchIsLive = isLive === undefined || (!isLive && !game.isLive) || game.isLive === isLive
+          // Phase
+          const nextPhaseIdx = Number(phaseIdx) + 1 
+          const nextPhase = phaseIdx !== undefined && Array.isArray(row.value?.phases)
+            ? row.value?.phases?.[nextPhaseIdx] 
+            : undefined
+          const dateStart = phase?.datetime
+          const dateEnd = nextPhase?.datetime
+          const matchPhaseDates = !dateStart || isAfter(game.datetime, dateStart) && 
+            ( !dateEnd || isAfter(dateEnd, game.datetime))
+          const matchPhase = !phase || matchPhaseDates
+          // Group
+          const matchGroup = !phase || !group || game.teams.every((teamId: TeamId) => group.teams.includes(teamId))
+          // Team
+          const matchTeam = !teamId || game.teams.includes(teamId)
+          //
+          return matchIsFinished && 
+            matchIsLive && 
+            matchPhase && 
+            matchGroup && 
+            matchTeam
+        })
+        .sort((a: Game, b: Game) => compareAsc(b.datetime, a.datetime))
+      : []
+    return result
+      .map((game: Game) => new GameComputedClass(row.value?.id as CompetitionId, game))
+  }
 
-  /*
-  const competition_Rankings = computed<CompetitionRankingComputed[] | undefined>(() => {
-    const competitionClass =
-      isReady.value && row.value ? new CompetitionClass(row.value) : undefined
-    return competitionClass?.competition_Rankings
+  // Competition Computed
+  const computedPhases = computed<Phase[] | undefined>(() => {
+    return isReady.value && Array.isArray(row.value?.phases) ? row.value.phases : undefined
   })
-  const competition_Standings = computed<CompetitionStandingComputed[] | undefined>(() => {
-    const competitionClass =
-      isReady.value && row.value ? new CompetitionClass(row.value) : undefined
-    return competitionClass?.competition_Standings
-  })
-  */
 
   // stats sheet input:
   const trackedPlayerStatsKey = computed<Option[]>(() => {
@@ -299,6 +342,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     trackedPlayerRankingKeys,
 
     getGame,
+    filterGames,
     getCompetitionTeam,
     getCompetitionPlayer,
     getPlayerCompetitionTeam,
@@ -306,7 +350,5 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
 
     //computed
     computedPhases,
-    // competition_Rankings,
-    // competition_Standings
   }
 }

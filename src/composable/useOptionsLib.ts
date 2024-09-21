@@ -1,8 +1,9 @@
 import type { CompetitionCategorie, CompetitionSport, PhaseType } from '@/types/competitions'
-import type { GenderKey } from '@/types/players'
-import type { PlayerStatKey, TeamStatKey, AwardKey, StatsGroupDef } from '@/types/stats'
+import type { GenderKey } from '@/types/player'
+import type { AwardKey, PlayerStatLineKey, StatsGroupDef } from '@/types/player-stats'
 import type { Option } from '@/types/comp-fields'
 import i18n from '@/i18n'
+import type { TeamStatKey } from '@/types/team-stats'
 
 const t = (path: string): string => i18n.global.t(path)
 
@@ -48,7 +49,7 @@ export default function usePlayersLib() {
     { text: 'Game played', value: 'dnp', keys: ['dnp'] }
   ]
 
-  const playerStatsKeys: { value: PlayerStatKey; text: string; long: string }[] = [
+  const playerStatsKeys: { value: PlayerStatLineKey; text: string; long: string }[] = [
     'ftm',
     'fta',
     'fgm',
@@ -67,18 +68,18 @@ export default function usePlayersLib() {
   ].map((key: string) => ({
     text: t(`options.playerStats.text.${key}`),
     long: t(`options.playerStats.long.${key}`),
-    value: key as PlayerStatKey
+    value: key as PlayerStatLineKey
   }))
 
-  const playerStatsSheetKeys: { value: PlayerStatKey; text: string; long: string }[] = competitionStatsGroups
-    .reduce((acc: PlayerStatKey[], group: StatsGroupDef) => {
+  const playerStatsSheetKeys: { value: PlayerStatLineKey; text: string; long: string }[] = competitionStatsGroups
+    .reduce((acc: PlayerStatLineKey[], group: StatsGroupDef) => {
         acc.push(...group.keys)
         return acc
       }, [])
     .map((key: string) => ({
       text: t(`options.playerStats.text.${key}`),
       long: t(`options.playerStats.long.${key}`),
-      value: key as PlayerStatKey
+      value: key as PlayerStatLineKey
     }))
 
   const playerRankingKeys: Option[] = [

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { TableField, TableItem } from '@/types/comp-table'
-import type { Player } from '@/types/players'
+import type { Player } from '@/types/player'
 import TableComp from '@/components/TableComp.vue'
 import { computed, ref } from 'vue'
 

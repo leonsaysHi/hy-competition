@@ -1,8 +1,8 @@
-import type { CompetitionGroupComputed, CompetitionPhaseComputed } from '@/types/computed'
 import type { Option } from '@/types/comp-fields'
 import { computed, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import useCompetition from './useCompetition'
+import type { Phase, PhaseGroup } from '@/types/competitions'
 
 export default function useCompetitionPhasesGroups() {
   const router = useRouter()
@@ -49,12 +49,12 @@ export default function useCompetitionPhasesGroups() {
     }
   })
 
-  const selectedPhase = computed<CompetitionPhaseComputed | undefined>(() =>
-    Array.isArray(computedPhases?.value) && selectedPhaseIdx.value
-      ? (computedPhases.value[Number(selectedPhaseIdx.value)] as CompetitionPhaseComputed)
+  const selectedPhase = computed<Phase | undefined>(() =>
+    Array.isArray(computedPhases.value) && selectedPhaseIdx.value
+      ? (computedPhases.value[Number(selectedPhaseIdx.value)] as Phase)
       : undefined
   )
-  const selectedGroup = computed<CompetitionGroupComputed | undefined>(() =>
+  const selectedGroup = computed<PhaseGroup | undefined>(() =>
     Array.isArray(selectedPhase.value?.groups) && selectedGroupIdx.value
       ? selectedPhase.value?.groups[Number(selectedGroupIdx.value)]
       : undefined
@@ -63,7 +63,7 @@ export default function useCompetitionPhasesGroups() {
   const phasesOptions = computed<Option[]>(() => {
     const result = Array.isArray(computedPhases.value)
       ? computedPhases.value?.map(
-          (row: CompetitionPhaseComputed, idx: any): Option => ({
+          (row: Phase, idx: any): Option => ({
             value: idx.toString(),
             text: row.title
           })
@@ -74,7 +74,7 @@ export default function useCompetitionPhasesGroups() {
   const groupsOptions = computed<Option[]>(() => {
     const result = Array.isArray(selectedPhase.value?.groups)
       ? selectedPhase.value?.groups.map(
-          (row: CompetitionGroupComputed, idx: any): Option => ({
+          (row: PhaseGroup, idx: any): Option => ({
             value: idx.toString(),
             text: row.title
           })

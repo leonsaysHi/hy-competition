@@ -6,7 +6,7 @@ import SpinnerComp from '@/components/SpinnerComp.vue'
 import { computed, watch } from 'vue'
 import AlertComp from '@/components/AlertComp.vue'
 import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
-import type { CompetitionTeam } from '@/types/teams'
+import type { CompetitionTeam } from '@/types/team'
 
 const route = useRoute()
 const { competitionId } = route.params

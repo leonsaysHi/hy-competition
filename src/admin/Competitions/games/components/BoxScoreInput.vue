@@ -9,7 +9,7 @@ import CheckComp from '@/components/CheckComp.vue'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import type { Option } from '@/types/comp-fields'
-import type { PlayerId } from '@/types/players'
+import type { PlayerId } from '@/types/player'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()

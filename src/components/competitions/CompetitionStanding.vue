@@ -13,7 +13,7 @@ import type GameComputedClass from '@/models/GameComputed'
 import useStats from '@/composable/useStats'
 import useCompetition from '@/composable/useCompetition'
 import type { TableField } from '@/types/comp-table'
-import type { CompetitionTeam, TeamId } from '@/types/teams'
+import type { CompetitionTeam, TeamId } from '@/types/team'
 import type { CompetitionStanding } from '@/types/computed'
 
 

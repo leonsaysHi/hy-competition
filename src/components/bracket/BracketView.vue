@@ -38,7 +38,7 @@ import { computed } from 'vue'
 import Matchup from './BracketMatchup.vue'
 import type { Bracket, BracketMatchup, BracketRound } from '@/types/competitions'
 import type GameComputedClass from '@/models/GameComputed';
-import type { CompetitionTeam } from '@/types/teams';
+import type { CompetitionTeam } from '@/types/team';
 import useBracket from '@/composable/useBracket';
 
 interface IProps {

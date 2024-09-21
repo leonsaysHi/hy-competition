@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import CheckGroupComp from '@/components/CheckGroupComp.vue'
-import type { PlayerStatLineKey, StatsGroupDef, StatsGroupValue } from '@/types/stats';
+import type { PlayerStatLineKey, StatsGroupDef, StatsGroupValue } from '@/types/player-stats';
 import type { Option } from '@/types/comp-fields';
 import useOptionsLib from '@/composable/useOptionsLib';
 

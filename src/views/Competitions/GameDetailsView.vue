@@ -8,7 +8,7 @@ import GamePeriods from '@/components/games/GamePeriods.vue'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import GameComputed from '@/models/GameComputed'
-import type { CompetitionTeam, TeamId } from '@/types/teams'
+import type { CompetitionTeam, TeamId } from '@/types/team'
 import type { Game } from '@/types/games'
 import AwardsList from '@/components/competitions/AwardsList.vue'
 

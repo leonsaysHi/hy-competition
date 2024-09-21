@@ -2,12 +2,13 @@
 import type { ScoresComputed } from '@/models/GameComputed'
 import type GameComputedClass from '@/models/GameComputed'
 import type { Bracket, BracketMatchup, BracketRound } from '@/types/competitions'
-import type { CompetitionTeam } from '@/types/teams'
+import type { CompetitionTeam } from '@/types/team'
 import { compareAsc } from 'date-fns'
 
 export default function useBracket() {
 
-    const getBracketForGames  = (teams: CompetitionTeam[], games: GameComputedClass[]): Bracket => {
+    const getBracketForGames  = (teams: CompetitionTeam[], _games: GameComputedClass[]): Bracket => {
+        const games = _games.slice()
         let roundTeamsLength = teams.length
         let matchupId = 0
         const rounds: Bracket = []

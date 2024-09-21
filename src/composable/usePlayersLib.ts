@@ -3,7 +3,7 @@ import { playersColl } from '@/firebase-firestore.js'
 import { useFirestore } from '@vueuse/firebase/useFirestore'
 import { doc } from 'firebase/firestore'
 import { computed } from 'vue'
-import type { Player, PlayerId } from '@/types/players'
+import type { Player, PlayerId } from '@/types/player'
 import type { Ref } from 'vue'
 import { playerConverter } from '@/utils/firestore-converters'
 

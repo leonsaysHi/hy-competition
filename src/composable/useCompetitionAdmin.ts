@@ -21,11 +21,12 @@ import {
 } from '@/utils/firestore-converters'
 
 import type { Competition, CompetitionDoc, CompetitionId } from '@/types/competitions'
-import CompetitionClass from '@/models/CompetitionComputed'
-import type { CompetitionTeam, CompetitionTeamDoc, TeamId } from '@/types/teams'
+import type { CompetitionTeam, CompetitionTeamDoc, TeamId } from '@/types/team'
 import type { Game, GameId } from '@/types/games'
-import type { CompetitionPlayer, PlayerId } from '@/types/players'
-import type { CompetitionPlayerComputed, CompetitionStandingComputed } from '@/types/computed'
+import type { CompetitionPlayer, PlayerId } from '@/types/player'
+import type { CompetitionPlayerComputed, CompetitionPlayerStats, CompetitionStanding, CompetitionStandingComputed } from '@/types/computed'
+import useStats from './useStats'
+import useCompetition from './useCompetition'
 
 export default function useCompetitionAdmin(competitionId: CompetitionId | undefined) {
   const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`).withConverter(
@@ -250,12 +251,37 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
     return batch
   }
 
+ 
+
   const updateCompetitionComputeds = async (payload: Competition) => {
     const batch: WriteBatch = writeBatch(db)
     if (payload.isActive) {
-      const computedClass = new CompetitionClass(payload)
-      writePlayersCompetitionComputed(computedClass.competitionPlayerStatsToSave, batch)
-      writeTeamsCompetitionComputed(computedClass.competitionStandingsToSave, batch)
+      
+      const { getPlayersStatsForGames, getStandingsForGames } = useStats()
+      const { teams, filterGames } = useCompetition(payload.id)
+      const competitionGames = filterGames({
+        isFinished: true,
+        isLive: false,
+      })
+      const competitionPlayerStatsToSave: CompetitionPlayerComputed[] = getPlayersStatsForGames(
+        teams.value, 
+        competitionGames
+      )
+        .map((row: CompetitionPlayerStats) => ({
+          id: payload.id,
+          ...row
+        }))
+      const competitionStandingsToSave: CompetitionStandingComputed[] = getStandingsForGames(
+        teams.value, 
+        competitionGames
+      )
+        .map((row: CompetitionStanding) => ({
+          id: payload.id,
+          ...row
+        }))
+
+      writePlayersCompetitionComputed(competitionPlayerStatsToSave, batch)
+      writeTeamsCompetitionComputed(competitionStandingsToSave, batch)
     } else {
       const { id: competitionId } = payload
       payload.teams.forEach((team: CompetitionTeam) => {

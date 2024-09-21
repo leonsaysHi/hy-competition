@@ -3,8 +3,8 @@ import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import StatsTableComp from '@/components/StatsTableComp.vue'
-import type { CompetitionTeam } from '@/types/teams'
-import type { CompetitionPlayer } from '@/types/players'
+import type { CompetitionTeam } from '@/types/team'
+import type { CompetitionPlayer } from '@/types/player'
 import useLibs from '@/composable/useLibs'
 
 import TeamLogo from '@/components/teams/TeamLogo.vue'
@@ -19,7 +19,6 @@ import { useI18n } from 'vue-i18n'
 import CheckComp from '@/components/CheckComp.vue'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import type { Phase } from '@/types/competitions'
-import GamesClass from '@/models/Games'
 import useStats from '@/composable/useStats'
 const { t } = useI18n()
 const route = useRoute()
@@ -31,9 +30,9 @@ const {
   isReady: isCompetitionReady,
   getCompetitionPlayer,
   getPlayerCompetitionTeam,
+  filterGames,
   row,
   teams,
-  games,
   trackedPlayerRankingKeys
 } = useCompetition(competitionId)
 
@@ -62,14 +61,12 @@ const phasesOptions = computed(() => {
     : []
 })
 
-const gamesList = computed(() => row.value && Array.isArray(games.value)
-  ? new GamesClass(row.value, games.value)
-    .phase(selectedPhaseIdx.value)
-    .player(playerId)
-    .finished(true)
-    .live(false)
-    .getComputed()
-  : []
+const gamesList = computed(() => filterGames({
+    phaseIdx: Number(selectedPhaseIdx.value),
+    playerId: playerId,
+    isFinished: true,
+    isLive: false
+  })
 )
 
 
