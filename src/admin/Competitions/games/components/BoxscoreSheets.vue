@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed } from 'vue'
 import type { GameDocBoxScore } from '@/types/games'
 import TableComp from '@/components/TableComp.vue'
 import InputComp from '@/components/InputComp.vue'
@@ -40,8 +40,6 @@ const fields = computed(() => {
     ))
   ]
 })
-
-
 
 const emit = defineEmits(['update:modelValue'])
 const model = computed<GameDocBoxScore>(() => {
@@ -89,9 +87,13 @@ const byTeams = computed<LocalTeam[]>(() => {
 </script>
 
 <template>
-    <template v-for="team in byTeams">
+    <template v-for="team in byTeams" :key="team.id">
         <h3 class="mb-0">{{ getTeamName(team.id) }}</h3>
-        <TableComp :items="team.players" :fields="fields" small>
+        <TableComp 
+            :items="team.players" 
+            :fields="fields" 
+            small
+        >
             <template #number="{ value }">
                 <div class="lh-1 fw-bold text-end">#{{ value }}</div>
             </template>
