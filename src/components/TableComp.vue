@@ -47,7 +47,7 @@
         <tr>
           <template v-for="({ key, tdClass }, tdIdx) in fields" :key="tdIdx">
             <td :class="[tdClass, sortedKey === key && 'text-bg-sorted-td']">
-              <slot :name="key" v-bind="{ key, value: item[key], item, index: trIdx }">
+              <slot :name="key" v-bind="{ key, item, value: item[key], index: trIdx }">
                 <template v-if="item[key] !== undefined">
                   {{ item[key] }}
                 </template>

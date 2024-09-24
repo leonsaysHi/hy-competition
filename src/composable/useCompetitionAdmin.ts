@@ -189,7 +189,6 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
 
   const writeCompetitionDoc = async (payload: Competition) => {
     const batch = writeCompetitionDocBatch(payload)
-    console.log('update computed')
     updateCompetitionLastUpdate(batch)
     await batch.commit()
   }

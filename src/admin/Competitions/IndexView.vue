@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { RouterView } from 'vue-router'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import { computed, watch } from 'vue'
@@ -9,6 +9,7 @@ import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
 import type { CompetitionTeam } from '@/types/team'
 
 const route = useRoute()
+const router = useRouter()
 const { competitionId } = route.params
 const rName: String = route.params.name?.toString() || ''
 const { isReady, row } = useCompetition(competitionId)
@@ -22,6 +23,15 @@ const rostersValid = computed(
     teamsValid.value && row.value?.teams.every((team: CompetitionTeam) => team.players.length >= 5)
 )
 
+watch(
+  () => row.value,
+  (val) => {
+    if (val && (!teamsValid.value || !rostersValid.value)) {
+      router.push({ ...route, name: 'admin-competition-teams' })
+    }
+  }
+)
+
 // Updates computed on competition update
 watch(
   () => row.value?.lastUpdate,
@@ -30,8 +40,7 @@ watch(
       console.log('Update computed...')
       updateCompetitionComputeds(row.value)
     }
-  },
-  { deep: true }
+  }
 )
 </script>
 <template>

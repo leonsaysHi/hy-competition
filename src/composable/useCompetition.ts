@@ -170,13 +170,16 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   )
 
   const getCompetitionTeam = (teamId: TeamId): CompetitionTeam | undefined => {
-    return row.value?.teams?.find((team: CompetitionTeam) => team.id === teamId)
+    return Array.isArray(row.value?.teams) 
+      ? row.value.teams.find((team: CompetitionTeam) => team.id === teamId)
+      : undefined
   }
   const getCompetitionPlayer = (playerId: PlayerId): CompetitionPlayer | undefined => {
-    const team: CompetitionTeam | undefined = row.value?.teams?.find(
-      (team: CompetitionTeam) =>
+    const team: CompetitionTeam | undefined = Array.isArray(row.value?.teams) 
+      ? row.value.teams.find((team: CompetitionTeam) =>
         team.players.findIndex((player: CompetitionPlayer) => player.id === playerId) > -1
-    )
+      )
+      : undefined
     return team?.players.find((player: CompetitionPlayer) => player.id === playerId)
   }
   const getPlayerCompetitionTeam = (playerId: PlayerId): CompetitionTeam | undefined =>
@@ -189,7 +192,9 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     return player?.number
   }
   const getGame = (gameId: GameId): Game | undefined => {
-    return row?.value?.games?.find((game: Game) => game.id === gameId)
+    return Array.isArray(row.value?.games) 
+      ? row.value.games.find((game: Game) => game.id === gameId) as Game
+      : undefined
   }
 
   const filterGames = (

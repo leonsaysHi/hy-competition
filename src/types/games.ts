@@ -1,4 +1,4 @@
-import type { AwardItem, PlayerStatLine } from './player-stats'
+import type { PlayerStatLine } from './player-stats'
 import type { CompetitionPlayer, PlayerDoc, PlayerId } from './player'
 import type { TeamId } from './team'
 
@@ -22,7 +22,6 @@ export interface GameDoc {
   teams: TeamId[]
   scores: GameDocScores
   boxscore: GameDocBoxScore
-  awards: AwardItem[]
   isFinished: boolean
   isLive: boolean
 }

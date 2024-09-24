@@ -28,7 +28,7 @@ const props = withDefaults(defineProps<IProps>(), {
   disabled: false
 })
 
-const model = computed({
+const model = computed<StatsGroupValue[]>({
   get: (): [] => {
     return statsGroups
       .filter((group: StatsGroupDef) => group.value)

@@ -69,7 +69,11 @@ const fields = computed(() => [
 const items = computed<CompetitionPlayerStats[]>(() => {
   const result = getPlayersStatsForGames(teams.value, props.games)
     .filter(
-      (row: CompetitionPlayerStats) => row.gp > 0 && (!props.teamId || row.teamId === props.teamId)
+      (row: CompetitionPlayerStats) => {
+        const noRosterWithGames = !props.teamId && row.gp > 0
+        const isRoster = props.teamId && row.teamId === props.teamId
+        return noRosterWithGames || isRoster
+      }
     )
     .map((row: CompetitionPlayerStats): CompetitionPlayerStats => ({
       ...row,

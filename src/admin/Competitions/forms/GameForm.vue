@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { Option } from '@/types/comp-fields'
-import type { Game, GameDocBoxScore, GameDocScores, GameId } from '@/types/games'
+import type { Game, GameDoc, GameId } from '@/types/games'
 import type { CompetitionTeam, TeamId } from '@/types/team'
 import { ref, computed } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
@@ -8,24 +8,20 @@ import FieldComp from '@/components/FieldComp.vue'
 import InputComp from '@/components/InputComp.vue'
 import ScoresInput from '@/admin/Competitions/games/components/ScoresInput.vue'
 import StatsSheetInput from '@/admin/Competitions/games/components/StatsSheetInput.vue'
-import BoxScoreInput from '@/admin/Competitions/games/components/BoxScoreInput.vue'
-import AwardsInput from '@/admin/Competitions/components/AwardsInput.vue'
-import type { AwardItem, PlayerStatLine, PlayerStatLineKey } from '@/types/player-stats'
 import type { CompetitionPlayer, PlayerId } from '@/types/player'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import { useRoute } from 'vue-router'
 import type { CompetitionId } from '@/types/competitions'
 import CheckComp from '@/components/CheckComp.vue'
-import useStats from '@/composable/useStats'
+import BoxscoreSheets from '../games/components/BoxscoreSheets.vue'
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: CompetitionId; gameId: GameId }
 const { row, getCompetitionTeam: getCompetitionTeam } = useCompetition(competitionId)
 const { getTeamName, getPlayerName } = useLibs()
-const { getEmptyPlayerStatLine } = useStats()
 interface IProps {
-  value: FormData
+  value: Game
   competitionTeams?: CompetitionTeam[]
   isBusy?: boolean
 }
@@ -34,62 +30,19 @@ const props = withDefaults(defineProps<IProps>(), {
   competitionTeams: () => []
 })
 
-type FormData = {
-  id: string
-  teams: TeamId[]
-  datetime: string
-  scores: GameDocScores
-  boxscore: GameDocBoxScore
-  awards: AwardItem[]
-  isFinished: boolean
-  isLive: boolean
-}
 const getDefaultGame = (): Game => ({
   id: '',
   teams: [],
   datetime: '',
   scores: {},
   boxscore: {},
-  awards: [],
   isFinished: false,
   isLive: false
 })
 
-const data = ref<FormData>({
+const data = ref<GameDoc>({
   ...getDefaultGame(),
-  ...props.value,
-  awards: props.value.awards
-})
-
-const boxscoreByTeams = computed({
-  get: (): { [key: TeamId]: GameDocBoxScore } => {
-    return data.value.teams.reduce((acc, teamId) => {
-      const team: CompetitionTeam = props.competitionTeams.find((t) => t.id === teamId)
-      return {
-        ...acc,
-        [teamId]: team.players.reduce((boxscore: GameDocBoxScore, player) => {
-          const bs: PlayerStatLine = {
-            ...getEmptyPlayerStatLine(),
-            ...data.value.boxscore[player.id]
-          }
-          return {
-            ...boxscore,
-            [player.id]: bs
-          }
-        }, {})
-      }
-    }, {})
-  },
-  set: (val) => {
-    data.value.boxscore = val
-      .reduce(
-        (boxscore: GameDocBoxScore, bs: GameDocBoxScore) => ({
-          ...boxscore,
-          ...bs
-        }),
-        {}
-      )
-  }
+  ...props.value
 })
 
 const playersOptions = computed((): Option[] => {
@@ -167,17 +120,16 @@ const handleSubmit = (ev: Event) => {
         </ScoresInput>
       </FieldComp>
       <hr />
+      
       <FieldComp label="Boxscore sheet">
-        <template v-for="(boxscore, teamId) in boxscoreByTeams" :key="teamId">
-          <h3 class="mb-0">{{ getTeamName(teamId) }}</h3>
-          <BoxScoreInput v-model="boxscoreByTeams[teamId]" :disabled="data.isFinished || isBusy" />
-        </template>
+        <BoxscoreSheets
+          v-model="data.boxscore" 
+          :competition-teams="competitionTeams"
+          :disabled="data.isFinished || isBusy"
+        />
       </FieldComp>
     </template>
     <hr />
-    <FieldComp label="Awards">
-      <AwardsInput v-model="data.awards" :players-options="playersOptions" :disabled="isBusy" />
-    </FieldComp>
     <div class="d-flex justify-content-end gap-2">
       <ButtonComp variant="primary" type="submit" :is-busy="isBusy">Save</ButtonComp>
     </div>
