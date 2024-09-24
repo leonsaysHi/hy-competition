@@ -1,8 +1,9 @@
 import type GameComputedClass from '@/models/GameComputed'
 import type { Bracket, CompetitionId, PhaseType } from './competitions'
 import type { PlayerId } from './player'
-import type { PlayerCalculatedStats, PlayerGamesStats, TeamStandingStats } from './player-stats'
+import type { PlayerCalculatedStats, PlayerGamesStats } from './player-stats'
 import type { TeamId } from './team'
+import type { TeamStandingStats } from './team-stats'
 
 export interface CompetitionGroupComputed {
   title: string

@@ -3,7 +3,7 @@ import type { CompetitionPlayer, PlayerDoc } from '@/types/player'
 import { Timestamp } from 'firebase/firestore'
 import type { DocumentData, QueryDocumentSnapshot, SnapshotOptions } from 'firebase/firestore'
 import { dateToTimeStamp } from '@/utils/dates'
-import type { CompetitionTeamDoc, TeamDoc, TeamId } from '@/types/team'
+import type { CompetitionTeamDoc, TeamDoc } from '@/types/team'
 import type { GameDoc } from '@/types/games'
 import type { CompetitionPlayerComputed, CompetitionStandingComputed } from '@/types/computed'
 
