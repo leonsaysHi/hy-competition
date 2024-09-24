@@ -133,8 +133,9 @@ const playersItems = computed(() => {
 })
 
 // Add Player
-const handleAddPlayer = async (data) => {
-  await addPlayer(teamId, { ...data })
+const handleAddPlayer = (data) => {
+  addPlayer(teamId, { ...data })
+  console.log('PlayerSelect')
 }
 
 // Edit Player

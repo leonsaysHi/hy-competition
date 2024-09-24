@@ -62,6 +62,7 @@ const handleSubmit = (ev: Event) => {
     errors.value.number = 'This number is already taken.'
   } else {
     emit('submit', data.value)
+    console.log('AddTeamPlayer submit')
     data.value = {
       ...getDefaultData()
     }

@@ -29,7 +29,8 @@ watch(
     if (val && (!teamsValid.value || !rostersValid.value)) {
       router.push({ ...route, name: 'admin-competition-teams' })
     }
-  }
+  },
+  { once: true }
 )
 
 // Updates computed on competition update

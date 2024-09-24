@@ -1,25 +1,27 @@
 <script lang="ts" setup>
-import type { Option } from '@/types/comp-fields'
-import type { Game, GameDoc, GameId } from '@/types/games'
-import type { CompetitionTeam, TeamId } from '@/types/team'
-import { ref, computed } from 'vue'
+import type { Game, GameDocBoxScore, GameId } from '@/types/games'
+import type { CompetitionTeam } from '@/types/team'
+import { computed, ref } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import FieldComp from '@/components/FieldComp.vue'
 import InputComp from '@/components/InputComp.vue'
 import ScoresInput from '@/admin/Competitions/games/components/ScoresInput.vue'
 import StatsSheetInput from '@/admin/Competitions/games/components/StatsSheetInput.vue'
-import type { CompetitionPlayer, PlayerId } from '@/types/player'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import { useRoute } from 'vue-router'
 import type { CompetitionId } from '@/types/competitions'
 import CheckComp from '@/components/CheckComp.vue'
 import BoxscoreSheets from '../games/components/BoxscoreSheets.vue'
+import type { CompetitionPlayer, PlayerId } from '@/types/player'
+import useStats from '@/composable/useStats'
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: CompetitionId; gameId: GameId }
-const { row, getCompetitionTeam: getCompetitionTeam } = useCompetition(competitionId)
-const { getTeamName, getPlayerName } = useLibs()
+const { row } = useCompetition(competitionId)
+const { getTeamName } = useLibs()
+const { getEmptyPlayerStatLine } = useStats()
+
 interface IProps {
   value: Game
   competitionTeams?: CompetitionTeam[]
@@ -30,47 +32,49 @@ const props = withDefaults(defineProps<IProps>(), {
   competitionTeams: () => []
 })
 
+const getEmptyBoxscore = ():GameDocBoxScore => {
+  return Array.isArray(props.competitionTeams)
+    ? props.competitionTeams
+      .reduce((result: PlayerId[], team: CompetitionTeam) => {
+        const players: PlayerId[] = team.players.map((player: CompetitionPlayer) => player.id as PlayerId)
+        result.push(...players)
+        return result
+      }, [] as PlayerId[])
+      .reduce((result: GameDocBoxScore, playerId: PlayerId) => {
+          result[playerId] = getEmptyPlayerStatLine()
+          return result
+        }, 
+        {} as GameDocBoxScore
+      )
+    : {}
+}
+
 const getDefaultGame = (): Game => ({
-  id: '',
-  teams: [],
   datetime: '',
   scores: {},
-  boxscore: {},
+  boxscore: getEmptyBoxscore(),
   isFinished: false,
   isLive: false
-})
+} as Game)
 
-const data = ref<GameDoc>({
+const data = ref<Game>({
   ...getDefaultGame(),
   ...props.value
-})
+} as Game)
 
-const playersOptions = computed((): Option[] => {
-  return Array.isArray(props.value.teams)
-    ? props.value.teams
-        .reduce((list: PlayerId[], teamId: TeamId) => {
-          const team = getCompetitionTeam(teamId)
-          return [
-            ...list,
-            ...(Array.isArray(team?.players)
-              ? team.players.map((player: CompetitionPlayer) => player.id)
-              : [])
-          ]
-        }, [])
-        .map((playerId: PlayerId) => ({
-          text: getPlayerName(playerId),
-          value: playerId
-        }))
-    : []
+
+const boxscoreTeams = computed(() => {
+  return props.competitionTeams
+    .filter((team: CompetitionTeam) => props.value.teams.includes(team.id))
 })
 
 const emit = defineEmits(['submit'])
 
 const handleResetStatsSheet = () => {
-  const { boxscore, scores, isFinished, isLive } = getDefaultGame()
+  const { scores, isFinished, isLive } = getDefaultGame()
   data.value = {
     ...data.value,
-    boxscore,
+    boxscore: getEmptyBoxscore(),
     scores,
     isFinished,
     isLive
@@ -124,7 +128,7 @@ const handleSubmit = (ev: Event) => {
       <FieldComp label="Boxscore sheet">
         <BoxscoreSheets
           v-model="data.boxscore" 
-          :competition-teams="competitionTeams"
+          :competition-teams="boxscoreTeams"
           :disabled="data.isFinished || isBusy"
         />
       </FieldComp>

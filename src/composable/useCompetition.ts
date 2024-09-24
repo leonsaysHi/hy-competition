@@ -192,9 +192,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     return player?.number
   }
   const getGame = (gameId: GameId): Game | undefined => {
-    return Array.isArray(row.value?.games) 
-      ? row.value.games.find((game: Game) => game.id === gameId) as Game
-      : undefined
+    return  row.value?.games.find((game: Game) => game.id === gameId) as Game
   }
 
   const filterGames = (

@@ -17,12 +17,16 @@ const { competitionId, gameId } = route.params as { competitionId: CompetitionId
 const { isReady, row: competition, getGame } = useCompetition(competitionId)
 const { writeGame: updateCompetitionGameDoc } = useCompetitionAdmin(competitionId)
 
-const data = computed<Game>(() => ({
-  ...getGame(gameId) as Game
-}))
+
+
+const data = computed<Game>(() => {
+  return { 
+    ...getGame(gameId) 
+  } as Game
+})
 
 const isBusy = ref(false)
-const handleSubmit = async (payload) => {
+const handleSubmit = async (payload: Game) => {
   isBusy.value = true
   await updateCompetitionGameDoc(payload)
   router.push({ ...route, name: 'admin-competition-games' })
