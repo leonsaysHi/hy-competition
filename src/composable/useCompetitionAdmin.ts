@@ -250,8 +250,6 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
     return batch
   }
 
- 
-
   const updateCompetitionComputeds = async (payload: Competition) => {
     const batch: WriteBatch = writeBatch(db)
     if (payload.isActive) {
@@ -354,7 +352,6 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
     // writeCompetition,
     writeCompetitionDoc,
     deleteCompetitionDoc,
-    updateCompetitionLastUpdate,
     updateCompetitionComputeds,
 
     // Admin game

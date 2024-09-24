@@ -5,13 +5,14 @@ import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import { useRoute } from 'vue-router'
-import type { CompetitionTeam, CompetitionTeamDoc } from '@/types/team'
+import type { CompetitionTeam, CompetitionTeamDoc, TeamId } from '@/types/team'
 import { computed, ref } from 'vue'
 import { uploadTeamSponsor } from '@/firebase-storage'
 import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
+import type { CompetitionId } from '@/types/competitions'
 
 const route = useRoute()
-const { competitionId, teamId } = route.params
+const { competitionId, teamId } = route.params as { competitionId: CompetitionId, teamId: TeamId}
 const { isReady: isLibsReady, getTeam } = useLibs()
 const { isReady, row } = useCompetition(competitionId)
 const { writeTeamDoc: writeCompetitionTeam } = useCompetitionAdmin(competitionId)
@@ -37,7 +38,6 @@ const handleSubmit = async (payload: CompetitionTeam) => {
       new Date().getTime().toString()
     )
   }
-  console.log(competitionTeamDoc)
   await writeCompetitionTeam({
     id: teamId,
     ...competitionTeamDoc

@@ -33,23 +33,6 @@ export default function useStats() {
       }, {} as PlayerStatLine)
   })
 
-  // Cumulated games stats object: (n game stats)
-  const playerGamesStatsKeys: PlayerGamesStatsKey[] = [
-    ...ft,
-    ...fg,
-    ...fg3,
-    ...reb,
-    ..._morekeys,
-    'dnp'
-  ]
-  const getEmptyPlayerGamesStats = ():PlayerGamesStats => ({
-    ...playerGamesStatsKeys
-      .reduce((result: PlayerGamesStats, key: PlayerGamesStatsKey) => {
-        result[key] = 0
-        return result
-      }, {} as PlayerGamesStats)
-  })
-
   const mergeStatLines = (rows: PlayerStatLine[] = []): PlayerGamesStats => {
     if (!Array.isArray(rows)) {
       console.warn('not an array of stats')
@@ -85,9 +68,9 @@ export default function useStats() {
           })
           return acc
         }, 
-        getEmptyPlayerGamesStats()
+        getEmptyPlayerStatLine() as PlayerGamesStats
       )
-    // calculs
+    // gp
     const gp = rows
       .reduce((tot: number, row: PlayerGamesStats) => {
         return add(tot, Number(row.gp))
@@ -133,14 +116,6 @@ export default function useStats() {
     ..._morekeys,
     'dnp'
   ]
-
-  const getEmptyPlayerCalculatedStats = () => ({
-    ...playerCalculatedStatsKeys
-      .reduce((result: PlayerCalculatedStats, key: PlayerCalculatedStatsKey) => {
-        result[key] = 0
-        return result
-      }, {} as PlayerCalculatedStats)
-  })
 
   const teamStandingKeys: TeamStatKey[] = [
     'gp', 
@@ -243,18 +218,12 @@ export default function useStats() {
     mergeStatLines,
     getEmptyPlayerStatLine,
 
-    // player multiple games stats
-    playerGamesStatsKeys,
-    mergePlayerGamesStats,
-
     // player computed stats (pts, reb, perc)
     playerCalculatedStatsKeys,
-    getEmptyPlayerCalculatedStats,
     getPlayerCalculatedStatsFromPlayerGamesStats,
     
     // teams results
     teamStandingKeys,
-    getEmptyTeamStats,
 
     // methods
     getPlayersStatsForGames,
