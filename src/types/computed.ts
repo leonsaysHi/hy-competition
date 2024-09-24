@@ -32,6 +32,8 @@ export interface CompetitionStandingComputed extends CompetitionStanding {
 export type GameBoxScoreComputed = { [key: PlayerId]: PlayerCalculatedStats }
 
 export interface CompetitionPlayerStats extends PlayerGamesStats {
+  datetime?: string
+  isWin?: boolean
   playerId: PlayerId
   teamId: TeamId
   number: string

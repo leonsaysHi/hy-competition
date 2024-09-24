@@ -8,12 +8,13 @@ import type { Option } from '@/types/comp-fields'
 import useCompetition from '@/composable/useCompetition'
 import type { CompetitionTeam } from '@/types/team'
 import { useI18n } from 'vue-i18n'
-import type { CompetitionId } from '@/types/competitions'
 import useStats from '@/composable/useStats'
+import type { PlayerId } from '@/types/player'
+import type { CompetitionId } from '@/types/competitions'
 const { t } = useI18n()
 
 const route = useRoute()
-const { competitionId, playerId } = route.params as { competitionId: string; playerId: string }
+const { competitionId, playerId } = route.params as { competitionId: CompetitionId; playerId: PlayerId }
 
 interface IProps {
   items: GameComputedClass[]

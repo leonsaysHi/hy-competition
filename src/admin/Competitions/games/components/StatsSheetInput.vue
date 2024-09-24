@@ -60,13 +60,7 @@ const handleConfirmDelete = () => {
   })
 }
 
-const handleOpenRecord = () => {
-  const recordRoute = { name: 'box-score-record', params: { competitionId, gameId } }
-  const route = router.resolve(recordRoute)
-  const url = new URL(route.href, window.location.origin).href
-  window.open(url, '_blank')
-  router.push({ name: 'admin-competition-games', params: { competitionId } })
-}
+// TODO find a way to open extra page
 
 const handleDelete = async () => {
   if (await handleConfirmDelete()) {
