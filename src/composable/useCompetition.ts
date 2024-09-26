@@ -184,11 +184,6 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
       (team: CompetitionTeam) =>
         team.players.findIndex((player: CompetitionPlayer) => player.id === playerId) > -1
     )
-  const getPlayerNumber = (playerId: PlayerId): string | undefined => {
-    const player: CompetitionPlayer | undefined = getCompetitionPlayer(playerId)
-    return player?.number
-  }
-  
 
   const filterGames = (
     {
@@ -266,6 +261,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
         value: key
       }))
   })
+
   // stats sheet output:
   const competitionPlayerStatsTableKeys = computed<Option[]>(() => {
     const result = playerStatsTableKeys
@@ -291,7 +287,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
         long: t(`options.playerStats.long.${key}`),
         value: key
       }))
-})
+  })
 
     
   return {
@@ -311,7 +307,6 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     getCompetitionTeam,
     getCompetitionPlayer,
     getPlayerCompetitionTeam,
-    getPlayerNumber,
 
     //computed
     computedPhases,

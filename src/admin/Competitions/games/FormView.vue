@@ -14,7 +14,7 @@ const { isReady: isLibsReady, getTeamName } = useLibs()
 const route = useRoute()
 const router = useRouter()
 const { competitionId, gameId } = route.params as { competitionId: CompetitionId, gameId: GameId }
-const { isReady, row: competition, getGame } = useCompetition(competitionId)
+const { isReady, row: competition } = useCompetition(competitionId)
 const { writeGame: updateCompetitionGameDoc } = useCompetitionAdmin(competitionId)
 
 
