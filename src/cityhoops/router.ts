@@ -5,11 +5,6 @@ import CompetitionStatsView from '@/cityhoops/views/StatsView.vue'
 import CompetitionGamesView from '@/cityhoops/views/GamesView.vue'
 import CompetitionTeamView from '@/cityhoops/views/TeamView.vue'
 import CompetitionTeamsView from '@/cityhoops/views/TeamsView.vue'
-import BracketView from '@/cityhoops/views/BracketView.vue'
-import CreateBracket from '@/cityhoops/views/brackets/CreateView.vue'
-import ViewBracket from '@/cityhoops/views/brackets/ViewView.vue'
-import ListBrackets from '@/cityhoops/views/brackets/ListView.vue'
-import AdminBrackets from '@/cityhoops/views/brackets/AdminView.vue'
 
 import CompetitionGameDetailsView from '@/views/Competitions/GameDetailsView.vue'
 import CompetitionPlayerDetailsView from '@/views/Competitions/PlayerDetailsView.vue'
@@ -76,35 +71,5 @@ if (frontViewChildren) {
     ]
   }
 }
-
-cityhoopsRoutes.push({
-  path: '/brackets',
-  component: BracketView,
-  children: [
-    {
-      path: '',
-      name: 'bracket-new',
-      component: CreateBracket
-    },
-    {
-      path: 'list',
-      name: 'bracket-list',
-      component: ListBrackets
-    },
-    {
-      path: 'view/:bracketId',
-      name: 'bracket-view',
-      component: ViewBracket
-    },
-    {
-      path: 'admin-comp-brackets/:competitionId',
-      name: 'bracket-admin',
-      meta: {
-        authRequired: ['admin']
-      },
-      component: AdminBrackets
-    }
-  ]
-})
 
 export default cityhoopsRoutes
