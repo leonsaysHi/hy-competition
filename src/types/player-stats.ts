@@ -8,6 +8,11 @@ export interface StatsGroupDef {
   value?: StatsGroupValue
   text?: string
 }
+export interface StatKeyDef { 
+  key: PlayerStatLineKey | PlayerCalculatedStatsKey, 
+  group?: StatsGroupValue, 
+  calculated?: PlayerStatLineKey[] | PlayerCalculatedStatsKey[]
+}
 
 // Player
 export type AwardKey = 'mvp' | 'def'

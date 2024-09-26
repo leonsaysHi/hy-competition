@@ -16,11 +16,11 @@ import {
   competitionPlayerConverter
 } from '@/utils/firestore-converters'
 import type { Option } from '@/types/comp-fields'
-import type { PlayerStatLineKey, PlayerStatLine, StatsGroupDef, PlayerCalculatedStatsKey } from '@/types/player-stats'
+import type { PlayerStatLineKey, PlayerStatLine, PlayerCalculatedStatsKey, StatKeyDef } from '@/types/player-stats'
 import { compareAsc, isAfter } from 'date-fns'
 import i18n from '@/i18n'
 import GameComputedClass from '@/models/GameComputed'
-import { playerStatsTableKeys, playerStatsKeys, competitionStatsGroups } from '@/utils/stats/basketball'
+import { statKeysDefs, playerStatsTableKeys, playerStatsKeys } from '@/utils/stats/basketball'
 const t = (path: string): string => i18n.global.t(path)
 
 export default function useCompetition(competitionId: CompetitionId | undefined) {
@@ -259,7 +259,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   // stats sheet input:
   const trackedPlayerStatsKey = computed<Option[]>(() => {
     return playerStatsKeys
-      .filter((key: PlayerStatLineKey) => row.value?.trackedStats.includes(key as PlayerStatLineKey))
+      .filter((key: PlayerStatLineKey) => row.value?.trackedStats.includes(key))
       .map((key: PlayerStatLineKey) => ({
         text: t(`options.playerStats.text.${key}`),
         long: t(`options.playerStats.long.${key}`),
@@ -268,61 +268,29 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   })
   // stats sheet output:
   const competitionPlayerStatsTableKeys = computed<Option[]>(() => {
-    const optionalKeys: PlayerCalculatedStatsKey[] = competitionStatsGroups
-      .filter((group: StatsGroupDef) => group.value)
-      .reduce((acc: PlayerCalculatedStatsKey[], group: StatsGroupDef) => {
-        acc.push(...group.keys)
-        return acc
-      }, [])
-    return playerStatsTableKeys
+    const result = playerStatsTableKeys
       .filter((key: PlayerCalculatedStatsKey) => {
-        return !optionalKeys.includes(key) || row.value?.trackedStats.includes(key)
-      }) 
-      .reduce(
-        (result: Option[], key: PlayerCalculatedStatsKey) => {
-          result.push({
-            text: t(`options.playerStats.text.${key}`),
-              long: t(`options.playerStats.long.${key}`),
-              value: key
-          })
-          if (key === 'oreb') {
-            result.push({
-              text: t(`options.playerStats.text.reb`),
-              long: t(`options.playerStats.long.reb`),
-              value: 'reb'
-            })
-          } else if (key === 'dreb' && !row.value?.trackedStats.includes('oreb')) {
-            result.splice(result.length - 1, 1, {
-              text: t(`options.playerStats.text.reb`),
-              long: t(`options.playerStats.long.reb`),
-              value: 'reb'
-            })
+        const def = statKeysDefs.find((def: StatKeyDef) => def.key === key) as StatKeyDef
+        if (!def || (!def.group && !def.calculated) || !row.value?.trackedStats) {
+          return true
+        } else {
+          if (def.group) {
+            return row.value?.trackedStats.includes(key)
+          } else if (def.calculated) {
+            return def.calculated.every((_key) => row.value?.trackedStats.includes(_key))
           }
-          if (key === 'fta') {
-            result.push({
-              text: t(`options.playerStats.text.ftprc`),
-              long: t(`options.playerStats.long.ftprc`),
-              value: 'ftprc'
-            })
-          }
-          if (key === 'fga') {
-            result.push({
-              text: t(`options.playerStats.text.fgprc`),
-              long: t(`options.playerStats.long.fgprc`),
-              value: 'ftprc'
-            })
-          }
-          if (key === 'fg3a') {
-            result.push({
-              text: t(`options.playerStats.text.fg3prc`),
-              long: t(`options.playerStats.long.fg3prc`),
-              value: 'fg3prc'
-            })
-          }
-          return result
-        },
-        []
-      )
+        }
+      })
+    if (!result.includes('oreb')) {
+      const drebIdx = result.findIndex((key: PlayerCalculatedStatsKey) => key === 'dreb')
+      result.splice(drebIdx, 1)
+    }
+    return result
+      .map((key: PlayerCalculatedStatsKey) => ({
+        text: t(`options.playerStats.text.${key}`),
+        long: t(`options.playerStats.long.${key}`),
+        value: key
+      }))
 })
 
     

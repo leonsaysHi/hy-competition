@@ -1,4 +1,4 @@
-import type { PlayerCalculatedStats, PlayerCalculatedStatsKey, PlayerGamesStats, PlayerStatLine, PlayerStatLineKey, StatsGroupDef } from '@/types/player-stats'
+import type { PlayerCalculatedStats, PlayerCalculatedStatsKey, PlayerGamesStats, PlayerStatLine, PlayerStatLineKey, StatKeyDef, StatsGroupDef } from '@/types/player-stats'
 import { add, getPerc } from '../maths'
 import type { GamesHist, TeamStatKey, TeamStats } from '@/types/team-stats'
 import type { CompetitionTeam } from '@/types/team'
@@ -6,53 +6,80 @@ import type { CompetitionPlayerStats, CompetitionStanding } from '@/types/comput
 import type { CompetitionPlayer } from '@/types/player'
 import type GameComputedClass from '@/models/GameComputed'
 import type { ScoresComputed } from '@/models/GameComputed'
+import i18n from '@/i18n'
+const t = (path: string): string => i18n.global.t(path)
 
-
-// Stats object keys
-const ft: PlayerStatLineKey[] = ['ftm', 'fta']
-const fg: PlayerStatLineKey[] = ['fgm', 'fga']
-const fg3: PlayerStatLineKey[] = ['fg3m', 'fg3a']
-const reb: PlayerStatLineKey[] = ['dreb', 'oreb']
-const _morekeys: PlayerStatLineKey[] = ['ast', 'stl', 'blk', 'blka', 'tov', 'fcm', 'fdr']
-
-export const competitionStatsGroups: StatsGroupDef[] = [
-  { keys: ['ftm','fgm', 'fg3m', 'dreb', 'ast', 'stl', 'blk' ] },
-  { text: 'Field goals attempt', value: 'fga', keys: ['fta', 'fga', 'fg3a'] },
-  { text: 'Rebounds def/off', value: 'oreb', keys: ['oreb'] },
-  { text: 'Turn overs', value: 'tov', keys: ['tov'] },
-  { text: 'Blocks against', value: 'blka', keys: ['blka'] },
-  { text: 'Fouls commited/drawn', value: 'f', keys: ['fcm', 'fdr'] },
-  { text: 'Game played', value: 'dnp', keys: ['dnp'] }
+export const statKeysDefs: StatKeyDef[]  = [
+  { key: 'pts', calculated: ['ftm', 'fgm', 'fg3m'] },
+  { key: 'ftm' },
+  { key: 'fta', group: 'fga' },
+  { key: 'ftprc', calculated: ['ftm','fta'] },
+  { key: 'fgm'},
+  { key: 'fga', group: 'fga' },
+  { key: 'fgprc', calculated: ['fgm','fga'] },
+  { key: 'fg3m'},
+  { key: 'fg3a', group: 'fga' },
+  { key: 'fg3prc', calculated: ['fg3m','fg3a'] },
+  { key: 'dreb' },
+  { key: 'oreb', group: 'oreb' },
+  { key: 'reb', calculated: ['dreb'] },
+  { key: 'ast' },
+  { key: 'stl' },
+  { key: 'tov', group: 'tov' },
+  { key: 'blk' },
+  { key: 'blka', group: 'blka' },
+  { key: 'fcm', group: 'f' },
+  { key: 'fdr', group: 'f' },
+  { key: 'dnp', group: 'dnp' }
 ]
 
-export const playerStatsKeys: PlayerStatLineKey[] = [
-  ...ft,
-  ...fg,
-  ...fg3,
-  ...reb,
-  ..._morekeys,
-  'dnp'
-]
+// default stats
+export const defaultStatsKeys = statKeysDefs
+.filter((keyDef: StatKeyDef) => !keyDef.group && !keyDef.calculated)
+.reduce((acc, keyDef: StatKeyDef) => {
+  acc.push(keyDef.key) 
+  return acc
+}, [])
 
-export const playerCalculatedStatsKeys: PlayerCalculatedStatsKey[] = [
-  'pts',
-  ...ft,
-  'ftprc',
-  ...fg,
-  'fgprc',
-  ...fg3,
-  'fg3prc',
-  ...reb,
-  'reb',
-  ..._morekeys,
-  'dnp'
-]
+// extras stats by group
+export const extraStatsGroups: StatsGroupDef[] = statKeysDefs
+  .filter((keyDef: StatKeyDef) => keyDef.group && !keyDef.calculated)
+  .reduce((acc: StatsGroupDef[], keyDef: StatKeyDef) => {
+    let idx = acc.findIndex((def: StatsGroupDef) => def.value === keyDef.group)
+    if (idx === -1) {
+      acc.push({
+        text: t(`options.stats.groups.${keyDef.group}`),
+        value: keyDef.group,
+        keys: []
+      })
+      idx = acc.length - 1
+    }
+    acc[idx].keys.push(keyDef.key)
+    return acc
+  }, [])
 
+// player non calculated stats
+export const playerStatsKeys: PlayerStatLineKey[] = statKeysDefs
+  .filter((keyDef: StatKeyDef) => !keyDef.calculated)
+  .reduce((acc, keyDef: StatKeyDef) => {
+    acc.push(keyDef.key) 
+    return acc
+  }, [])
+
+// player calculated stats
+export const playerCalculatedStatsKeys: PlayerCalculatedStatsKey[] = statKeysDefs
+  .reduce((acc, keyDef: StatKeyDef) => {
+    acc.push(keyDef.key) 
+    return acc
+  }, [])
+
+// keys for player stats table
 export const playerStatsTableKeys: PlayerCalculatedStatsKey[] = [
   'gp',  
   ...playerCalculatedStatsKeys
 ]
 
+// key for teams results table
 export const teamStandingKeys: TeamStatKey[] = [
   'gp', 
   'wins', 
@@ -70,6 +97,8 @@ export function getEmptyPlayerStatLine ():PlayerStatLine {
       }, {} as PlayerStatLine)
   }
 }
+
+// usefull methods for stats: 
 
 export function mergeStatLines (rows: PlayerStatLine[] = []): PlayerGamesStats {
   if (!Array.isArray(rows)) {
