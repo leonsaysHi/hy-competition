@@ -50,7 +50,7 @@ import ButtonComp from '@/components/ButtonComp.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import useLibs from '@/composable/useLibs'
 import type { PlayKey, PlayOptions } from '@/types/box-score-recorder'
-import type { TeamId } from '@/types/teams'
+import type { TeamId } from '@/types/team'
 import { useI18n } from 'vue-i18n'
 import { computed } from 'vue'
 

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { GenderKey, Player, PlayerId } from '@/types/players'
+import type { GenderKey, Player, PlayerId } from '@/types/player'
 import { ref, watch } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import InputComp from '@/components/InputComp.vue'

@@ -1,31 +1,28 @@
 <script lang="ts" setup>
-import type { Option } from '@/types/comp-fields'
-import type { Game, GameDocBoxScore, GameDocScores, GameId } from '@/types/games'
-import type { CompetitionTeam, TeamId } from '@/types/teams'
-import { ref, computed } from 'vue'
+import type { Game, GameDocBoxScore, GameId } from '@/types/games'
+import type { CompetitionTeam } from '@/types/team'
+import { computed, ref } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import FieldComp from '@/components/FieldComp.vue'
 import InputComp from '@/components/InputComp.vue'
 import ScoresInput from '@/admin/Competitions/games/components/ScoresInput.vue'
 import StatsSheetInput from '@/admin/Competitions/games/components/StatsSheetInput.vue'
-import BoxScoreInput from '@/admin/Competitions/games/components/BoxScoreInput.vue'
-import AwardsInput from '@/admin/Competitions/components/AwardsInput.vue'
-import type { AwardItem, PlayerStatLine, PlayerStatLineKey } from '@/types/stats'
-import type { CompetitionPlayer, PlayerId } from '@/types/players'
 import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import { useRoute } from 'vue-router'
 import type { CompetitionId } from '@/types/competitions'
 import CheckComp from '@/components/CheckComp.vue'
-import useStats from '@/composable/useStats'
+import BoxscoreSheets from '../games/components/BoxscoreSheets.vue'
+import type { CompetitionPlayer, PlayerId } from '@/types/player'
+import { getEmptyPlayerStatLine } from '@/utils/stats/basketball'
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: CompetitionId; gameId: GameId }
-const { row, getCompetitionTeam: getCompetitionTeam } = useCompetition(competitionId)
-const { getTeamName, getPlayerName } = useLibs()
-const { getEmptyPlayerStatLine } = useStats()
+const { row } = useCompetition(competitionId)
+const { getTeamName } = useLibs()
+
 interface IProps {
-  value: FormData
+  value: Game
   competitionTeams?: CompetitionTeam[]
   isBusy?: boolean
 }
@@ -34,90 +31,49 @@ const props = withDefaults(defineProps<IProps>(), {
   competitionTeams: () => []
 })
 
-type FormData = {
-  id: string
-  teams: TeamId[]
-  datetime: string
-  scores: GameDocScores
-  boxscore: GameDocBoxScore
-  awards: AwardItem[]
-  isFinished: boolean
-  isLive: boolean
+const getEmptyBoxscore = ():GameDocBoxScore => {
+  return Array.isArray(props.competitionTeams)
+    ? props.competitionTeams
+      .reduce((result: PlayerId[], team: CompetitionTeam) => {
+        const players: PlayerId[] = team.players.map((player: CompetitionPlayer) => player.id as PlayerId)
+        result.push(...players)
+        return result
+      }, [] as PlayerId[])
+      .reduce((result: GameDocBoxScore, playerId: PlayerId) => {
+          result[playerId] = getEmptyPlayerStatLine()
+          return result
+        }, 
+        {} as GameDocBoxScore
+      )
+    : {}
 }
+
 const getDefaultGame = (): Game => ({
-  id: '',
-  teams: [],
   datetime: '',
   scores: {},
-  boxscore: {},
-  awards: [],
+  boxscore: getEmptyBoxscore(),
   isFinished: false,
   isLive: false
-})
+} as Game)
 
-const data = ref<FormData>({
+const data = ref<Game>({
   ...getDefaultGame(),
-  ...props.value,
-  awards: props.value.awards
-})
+  ...props.value
+} as Game)
 
-const boxscoreByTeams = computed({
-  get: (): { [key: TeamId]: GameDocBoxScore } => {
-    return data.value.teams.reduce((acc, teamId) => {
-      const team: CompetitionTeam = props.competitionTeams.find((t) => t.id === teamId)
-      return {
-        ...acc,
-        [teamId]: team.players.reduce((boxscore: GameDocBoxScore, player) => {
-          const bs: PlayerStatLine = {
-            ...getEmptyPlayerStatLine(),
-            ...data.value.boxscore[player.id]
-          }
-          return {
-            ...boxscore,
-            [player.id]: bs
-          }
-        }, {})
-      }
-    }, {})
-  },
-  set: (val) => {
-    data.value.boxscore = val
-      .reduce(
-        (boxscore: GameDocBoxScore, bs: GameDocBoxScore) => ({
-          ...boxscore,
-          ...bs
-        }),
-        {}
-      )
-  }
-})
 
-const playersOptions = computed((): Option[] => {
-  return Array.isArray(props.value.teams)
-    ? props.value.teams
-        .reduce((list: PlayerId[], teamId: TeamId) => {
-          const team = getCompetitionTeam(teamId)
-          return [
-            ...list,
-            ...(Array.isArray(team?.players)
-              ? team.players.map((player: CompetitionPlayer) => player.id)
-              : [])
-          ]
-        }, [])
-        .map((playerId: PlayerId) => ({
-          text: getPlayerName(playerId),
-          value: playerId
-        }))
-    : []
+const boxscoreTeams = computed(() => {
+  return props.competitionTeams
+    .filter((team: CompetitionTeam) => props.value.teams.includes(team.id))
 })
 
 const emit = defineEmits(['submit'])
 
 const handleResetStatsSheet = () => {
-  const { boxscore, scores, isFinished, isLive } = getDefaultGame()
+  const { scores, isFinished, isLive } = getDefaultGame()
   data.value = {
     ...data.value,
-    boxscore,
+    boxscore: getEmptyBoxscore(),
     scores,
     isFinished,
     isLive
@@ -167,17 +123,16 @@ const handleSubmit = (ev: Event) => {
         </ScoresInput>
       </FieldComp>
       <hr />
+      
       <FieldComp label="Boxscore sheet">
-        <template v-for="(boxscore, teamId) in boxscoreByTeams" :key="teamId">
-          <h3 class="mb-0">{{ getTeamName(teamId) }}</h3>
-          <BoxScoreInput v-model="boxscoreByTeams[teamId]" :disabled="data.isFinished || isBusy" />
-        </template>
+        <BoxscoreSheets
+          v-model="data.boxscore" 
+          :competition-teams="boxscoreTeams"
+          :disabled="data.isFinished || isBusy"
+        />
       </FieldComp>
     </template>
     <hr />
-    <FieldComp label="Awards">
-      <AwardsInput v-model="data.awards" :players-options="playersOptions" :disabled="isBusy" />
-    </FieldComp>
     <div class="d-flex justify-content-end gap-2">
       <ButtonComp variant="primary" type="submit" :is-busy="isBusy">Save</ButtonComp>
     </div>

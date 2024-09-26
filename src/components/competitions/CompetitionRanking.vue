@@ -10,23 +10,22 @@ import type { Option } from '@/types/comp-fields'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
-import type { TeamId } from '@/types/teams'
-import useStats from '@/composable/useStats'
+import type { TeamId } from '@/types/team'
 import type GameComputedClass from '@/models/GameComputed'
+import { getCompetitionPlayersStats } from '@/utils/stats/basketball'
 
 const { t } = useI18n()
 
 
 
 interface IProps {
-  games?: GameComputedClass[]
+  games: GameComputedClass[]
   limit?: number
   teamId?: TeamId
   showAvg?: boolean
   showAvgUi?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
-  games: () => [],
   limit: 0,
   showAvg: true,
   showAvgUi: true
@@ -34,8 +33,8 @@ const props = withDefaults(defineProps<IProps>(), {
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string; playerId: string }
-const { getPlayersStatsForGames } = useStats()
-const { teams, trackedPlayerRankingKeys } = useCompetition(competitionId)
+
+const { teams, competitionPlayerStatsTableKeys } = useCompetition(competitionId)
 
 const _showAvg = ref<boolean>(props.showAvg)
 
@@ -49,7 +48,7 @@ const fields = computed(() => [
     },
     { label: t('global.player', 2), key: 'id' },
     { label: t('global.team', 2), key: 'teamId' },
-    ...trackedPlayerRankingKeys.value.map(
+    ...competitionPlayerStatsTableKeys.value.map(
       (opt: Option): TableField => ({
         key: opt.value as string,
         label: opt.text,
@@ -68,9 +67,13 @@ const fields = computed(() => [
   })
 )
 const items = computed<CompetitionPlayerStats[]>(() => {
-  const result = getPlayersStatsForGames(teams.value, props.games)
+  const result = getCompetitionPlayersStats(teams.value, props.games)
     .filter(
-      (row: CompetitionPlayerStats) => row.gp > 0 && (!props.teamId || row.teamId === props.teamId)
+      (row: CompetitionPlayerStats) => {
+        const noRosterWithGames = !props.teamId && row.gp > 0
+        const isRoster = props.teamId && row.teamId === props.teamId
+        return noRosterWithGames || isRoster
+      }
     )
     .map((row: CompetitionPlayerStats): CompetitionPlayerStats => ({
       ...row,

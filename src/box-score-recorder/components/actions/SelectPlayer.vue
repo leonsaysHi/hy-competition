@@ -45,11 +45,11 @@
 <script setup lang="ts">
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import ButtonComp from '@/components/ButtonComp.vue'
-import type { PlayerId } from '@/types/players'
+import type { PlayerId } from '@/types/player'
 import type { PlayersOptions } from '../PlaysInput.vue'
 import { useI18n } from 'vue-i18n'
 import { computed } from 'vue'
-import type { TeamId } from '@/types/teams'
+import type { TeamId } from '@/types/team'
 
 const { t } = useI18n()
 interface IProps {

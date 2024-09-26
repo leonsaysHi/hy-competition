@@ -4,15 +4,15 @@ import useLibs from '@/composable/useLibs'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import TableComp from '@/components/TableComp.vue'
 import { computed } from 'vue'
-import type { TeamId } from '@/types/teams'
+import type { TeamId } from '@/types/team'
 import useOptionsLib from '@/composable/useOptionsLib'
 import useTeamComputed from '@/composable/useTeamComputed'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import LastGames from '@/components/games/LastGames.vue'
 import type { CompetitionStandingComputed } from '@/types/computed'
-import type { GamesHist, TeamStatKey } from '@/types/stats'
 import { getOrd } from '@/utils/maths'
 import { useI18n } from 'vue-i18n'
+import type { TeamStatKey } from '@/types/team-stats'
 const { t } = useI18n()
 const route = useRoute()
 const { teamId } = route.params as { teamId: TeamId }

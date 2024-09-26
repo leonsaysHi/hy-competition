@@ -3,42 +3,36 @@ import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import StatsTableComp from '@/components/StatsTableComp.vue'
-import type { CompetitionTeam } from '@/types/teams'
-import type { CompetitionPlayer } from '@/types/players'
+import type { CompetitionTeam } from '@/types/team'
+import type { CompetitionPlayer } from '@/types/player'
 import useLibs from '@/composable/useLibs'
 
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import ImageComp from '@/components/ImageComp.vue'
 import useCompetition from '@/composable/useCompetition'
 import PlayerGamesList from '@/components/games/PlayerGamesList.vue'
-import type { Game } from '@/types/games'
 import type { Option } from '@/types/comp-fields'
-import useOptionsLib from '@/composable/useOptionsLib'
-import type { TableField, TableItem } from '@/types/comp-table'
-import type { CompetitionPlayerStats, CompetitionRanking } from '@/types/computed'
-import type { PlayerStatLineKey } from '@/types/stats'
+import type { TableField } from '@/types/comp-table'
+import type { CompetitionPlayerStats } from '@/types/computed'
 
 import { useI18n } from 'vue-i18n'
-import GameComputedClass from '@/models/GameComputed'
 import CheckComp from '@/components/CheckComp.vue'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import type { Phase } from '@/types/competitions'
-import GamesClass from '@/models/Games'
-import useStats from '@/composable/useStats'
+import { getCompetitionPlayersStats } from '@/utils/stats/basketball'
 const { t } = useI18n()
 const route = useRoute()
 const { competitionId, playerId } = route.params as { competitionId: string; playerId: string }
 
 const { getPlayerName } = useLibs()
-const { getPlayersStatsForGames } = useStats()
 const {
   isReady: isCompetitionReady,
   getCompetitionPlayer,
   getPlayerCompetitionTeam,
+  filterGames,
   row,
   teams,
-  games,
-  trackedPlayerRankingKeys
+  competitionPlayerStatsTableKeys
 } = useCompetition(competitionId)
 
 const competitionTeam = computed<CompetitionTeam | undefined>(() =>
@@ -49,7 +43,7 @@ const competitionPlayer = computed<CompetitionPlayer | undefined>(() =>
 )
 
 const showAvg = ref<boolean>(true)
-const selectedPhase = ref<undefined | number>(undefined)
+const selectedPhaseIdx = ref<undefined | number>(undefined)
 const phasesOptions = computed(() => {
   return Array.isArray(row.value?.phases) 
     ? [
@@ -66,21 +60,19 @@ const phasesOptions = computed(() => {
     : []
 })
 
-const gamesList = computed(() => row.value && Array.isArray(games.value)
-  ? new GamesClass(row.value, games.value)
-    .phase(selectedPhase.value)
-    .player(playerId)
-    .finished(true)
-    .live(false)
-    .getComputed()
-  : []
+const gamesList = computed(() => filterGames({
+    phaseIdx: Number(selectedPhaseIdx.value),
+    playerId: playerId,
+    isFinished: true,
+    isLive: false
+  })
 )
 
 
 const statsFields = computed<TableField[]>(() => {
-  const fields = trackedPlayerRankingKeys.value.map(
+  const fields = competitionPlayerStatsTableKeys.value.map(
     (opt: Option): TableField => ({
-      key: opt.value,
+      key: opt.value as string,
       label: opt.text,
       sortable: true,
       thClass: 'text-end',
@@ -91,7 +83,7 @@ const statsFields = computed<TableField[]>(() => {
 })
 
 const statsItem = computed<CompetitionPlayerStats[]>(() => {
-  return getPlayersStatsForGames(teams.value, gamesList.value)
+  return getCompetitionPlayersStats(teams.value, gamesList.value)
     .filter((stats: CompetitionPlayerStats) => stats.playerId === playerId)
 })
 </script>
@@ -124,7 +116,7 @@ const statsItem = computed<CompetitionPlayerStats[]>(() => {
       >
         <template #filters>
           <RadioGroupComp 
-            v-model="selectedPhase" 
+            v-model="selectedPhaseIdx" 
             :options="phasesOptions" 
             button-variant="light"
             button-variant-active="primary"

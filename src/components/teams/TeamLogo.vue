@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import useLibs from '@/composable/useLibs'
-import type { TeamId } from '@/types/teams'
+import type { TeamId } from '@/types/team'
 import { computed } from 'vue'
 import ImageComp from '../ImageComp.vue'
 interface IProps {

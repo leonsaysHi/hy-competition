@@ -11,13 +11,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import CheckGroupComp from '@/components/CheckGroupComp.vue'
-import type { PlayerStatLineKey, StatsGroupDef, StatsGroupValue } from '@/types/stats';
+import type { PlayerStatLineKey, StatsGroupDef, StatsGroupValue } from '@/types/player-stats';
 import type { Option } from '@/types/comp-fields';
-import useOptionsLib from '@/composable/useOptionsLib';
+import { extraStatsGroups, defaultStatsKeys } from '@/utils/stats/basketball';
 
-const {
-  competitionStatsGroups: statsGroups
-} = useOptionsLib()
+
 
 interface IProps {
   modelValue: PlayerStatLineKey[]
@@ -28,10 +26,9 @@ const props = withDefaults(defineProps<IProps>(), {
   disabled: false
 })
 
-const model = computed({
+const model = computed<StatsGroupValue[]>({
   get: (): [] => {
-    return statsGroups
-      .filter((group: StatsGroupDef) => group.value)
+    return extraStatsGroups
       .reduce((acc: StatsGroupValue[], group: StatsGroupDef) => {
         const isSelected = group.keys.some((k:PlayerStatLineKey) => props.modelValue.includes(k))
         if (isSelected) {
@@ -44,13 +41,13 @@ const model = computed({
     const newVal: PlayerStatLineKey[] = val
         .reduce(
           (acc: PlayerStatLineKey[], key: StatsGroupValue) => {
-            const group = statsGroups.find((group: StatsGroupDef) => key === group.value)
+            const group = extraStatsGroups.find((group: StatsGroupDef) => key === group.value)
             return [
               ...acc,
               ...(group ? group.keys : [])
             ]
           }, 
-          statsGroups.find((group: StatsGroupDef) => !group.value)?.keys || []
+          defaultStatsKeys
         )
     emit('update:modelValue', newVal)
   }
@@ -58,10 +55,11 @@ const model = computed({
 
 const emit = defineEmits(['update:modelValue', 'input'])
 const statsOptions = computed(() => {
-  return statsGroups.reduce((options:Option[], group: StatsGroupDef) => {
-    if (group.value) {
-      options.push({ text: group.text as string, value: group.value })
-    }
+  return extraStatsGroups.reduce((options:Option[], group: StatsGroupDef) => {
+    options.push({ 
+      text: group.text as string, 
+      value: group.value 
+    })
     return options
   }, [])
 })

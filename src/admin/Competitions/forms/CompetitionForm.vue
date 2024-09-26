@@ -17,14 +17,15 @@ import SelectComp from '@/components/SelectComp.vue'
 import CheckComp from '@/components/CheckComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
-import type { AwardItem, PlayerStatLineKey } from '@/types/stats'
+import type { AwardItem, PlayerStatLineKey } from '@/types/player-stats'
 import AwardsInput from '../components/AwardsInput.vue'
 import TrackedStatsInput from '../components/TrackedStatsInput.vue'
 import useCompetition from '@/composable/useCompetition'
 import useLibs from '@/composable/useLibs'
-import type { PlayerId, GenderKey } from '@/types/players'
+import type { PlayerId, GenderKey } from '@/types/player'
 import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
 import { useRouter } from 'vue-router'
+import { extraStatsGroups } from '@/utils/stats/basketball'
 const router = useRouter()
 interface IProps {
   value: Competition
@@ -70,7 +71,6 @@ const data = ref<FormData>({
   mediasURL: '',
   rulesURL: '',
   ...props.value,
-
   awards: Array.isArray(props.value.awards) ? props.value.awards : []
 })
 
@@ -83,6 +83,12 @@ const playersOptions = computed(() =>
     }
   })
 )
+
+extraStatsGroups[0].keys.forEach((key:PlayerStatLineKey) => {
+  if (!data.value.trackedStats.includes(key)) {
+    data.value.trackedStats.push(key)
+  }
+})
 
 const emit = defineEmits(['submit'])
 

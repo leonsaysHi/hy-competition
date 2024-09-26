@@ -77,11 +77,10 @@ import TeamLogo from '@/components/teams/TeamLogo.vue'
 import useLibs from '@/composable/useLibs'
 import type { ScoresComputed } from '@/models/GameComputed'
 import type { BracketMatchup } from '@/types/competitions'
-import type { Team, TeamId } from '@/types/teams'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import ButtonComp from '../ButtonComp.vue'
 import type { BracketSelection } from '@/cityhoops/views/brackets/CreateView.vue'
+import type { Team } from '@/types/team'
 
 interface IProps {
   matchup: BracketMatchup
@@ -97,7 +96,6 @@ const props = withDefaults(defineProps<IProps>(), {
 
 const { t } = useI18n()
 const { getTeam } = useLibs()
-const emit = defineEmits(['select-winner', 'final-score'])
 
 interface MatchupTeam extends ScoresComputed, Team {
   winnerFrom: number
@@ -125,20 +123,4 @@ const matchupTeams = computed<(MatchupTeam | undefined)[]>(() => {
           id: 'tbd',
         }]
 })
-
-const hasTeams = computed(() => {
-  return matchupTeams.value?.every((team: MatchupTeam | undefined) => team?.id)
-})
-const hasScore = computed(() => {
-  return (
-    props.matchup?.game?.scores &&
-    Object.values(props.matchup.game.scores).some(
-      (score: ScoresComputed) => score && score.finalScore > 0
-    )
-  )
-})
-
-const handleSelect = (teamId: TeamId) => {
-  emit('select-winner', teamId)
-}
 </script>

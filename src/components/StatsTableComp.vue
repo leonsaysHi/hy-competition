@@ -179,14 +179,14 @@ import { durationFormat } from '@/utils/dates'
 import type { TableField } from '@/types/comp-table'
 import TableComp from '@/components/TableComp.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { getAvg, getPerc, formatAvg, formatPerc, getOrd } from '@/utils/maths'
 import useLibs from '@/composable/useLibs'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import useOptionsLib from '@/composable/useOptionsLib'
-import useStats from '@/composable/useStats'
-import type { CompetitionPlayerStats, CompetitionRanking } from '@/types/computed'
+import type { CompetitionPlayerCalculatedStats, CompetitionPlayerStats } from '@/types/computed'
+import { getPlayerCalculatedStatsFromPlayerGamesStats, playerStatsKeys } from '@/utils/stats/basketball'
 const { t } = useI18n()
 
 interface IProps {
@@ -214,7 +214,6 @@ const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
 const { getTeamName, getPlayerName, getCompetition } = useLibs()
 const { getCategory } = useOptionsLib()
-const { playerStatsKeys, getPlayerCalculatedStatsFromPlayerGamesStats } = useStats()
 
 
 const getCalculated = (item) => {
@@ -235,7 +234,7 @@ const getCalculated = (item) => {
 const computedItems = computed(() => {
   return props.items
     .map((item) => {
-      const row: CompetitionRanking = {
+      const row: CompetitionPlayerCalculatedStats = {
         ...item,
         ...getPlayerCalculatedStatsFromPlayerGamesStats([item])
       }

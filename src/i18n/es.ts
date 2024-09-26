@@ -25,6 +25,14 @@ const es = {
       sheet: 'Stats sheet',
       playbyplay: 'Play-by-Play',
       showavg: 'en promedios',
+      groups: {
+        fga: 'FG attempts',
+        oreb: 'Off/def rebounds',
+        tov: 'Turnovers',
+        blka: 'Block against',
+        f: 'Fouls',
+        dnp: 'DNP',
+      }
     },
     playerStats: {
       text: {

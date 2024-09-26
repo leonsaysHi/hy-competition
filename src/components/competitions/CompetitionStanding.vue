@@ -10,13 +10,10 @@ import { getOrd } from '@/utils/maths'
 
 import { useI18n } from 'vue-i18n'
 import type GameComputedClass from '@/models/GameComputed'
-import useStats from '@/composable/useStats'
-import useCompetition from '@/composable/useCompetition'
 import type { TableField } from '@/types/comp-table'
-import type { CompetitionTeam, TeamId } from '@/types/teams'
+import type { CompetitionTeam } from '@/types/team'
 import type { CompetitionStanding } from '@/types/computed'
-
-
+import { getCompetitionStanding } from '@/utils/stats/basketball'
 
 interface IProps {
   games?: GameComputedClass[]
@@ -31,7 +28,6 @@ const route = useRoute()
 const { competitionId } = route.params as { competitionId: string;  }
 const { t } = useI18n()
 const { teamStandingKeys } = useOptionsLibs()
-const { getStandingsForGames } = useStats()
 
 const { getTeamName } = useLibs()
 const fields = [
@@ -66,7 +62,7 @@ const fields = [
   }
 ]
 const items = computed<CompetitionStanding[]>(() => {
-  const items = getStandingsForGames(props.teams, props.games)
+  const items = getCompetitionStanding(props.teams, props.games)
     .map((row: CompetitionStanding, idx: number) => ({
       ...row,
       pos: idx + 1

@@ -7,20 +7,26 @@ import SpinnerComp from '@/components/SpinnerComp.vue'
 import GameForm from '@/admin/Competitions/forms/GameForm.vue'
 import { computed, ref } from 'vue'
 import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
+import type { CompetitionId } from '@/types/competitions'
+import type { Game, GameId } from '@/types/games'
 const { isReady: isLibsReady, getTeamName } = useLibs()
 
 const route = useRoute()
 const router = useRouter()
-const { competitionId, gameId } = route.params
-const { isReady, row: competition, getGame } = useCompetition(competitionId)
+const { competitionId, gameId } = route.params as { competitionId: CompetitionId, gameId: GameId }
+const { isReady, row: competition } = useCompetition(competitionId)
 const { writeGame: updateCompetitionGameDoc } = useCompetitionAdmin(competitionId)
 
-const data = computed(() => ({
-  ...getGame(gameId)
-}))
+
+
+const data = computed<Game>(() => {
+  return { 
+    ...competition.value?.games.find((game: Game) => game.id === gameId)
+  } as Game
+})
 
 const isBusy = ref(false)
-const handleSubmit = async (payload) => {
+const handleSubmit = async (payload: Game) => {
   isBusy.value = true
   await updateCompetitionGameDoc(payload)
   router.push({ ...route, name: 'admin-competition-games' })

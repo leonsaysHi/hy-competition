@@ -3,19 +3,20 @@ import { computed, ref, watchEffect } from 'vue'
 import StatsTableComp from '@/components/StatsTableComp.vue'
 
 import type { TableField } from '@/types/comp-table'
-import type { CompetitionTeam, TeamId } from '@/types/teams'
-import type { CompetitionPlayer, PlayerId } from '@/types/players'
+import type { CompetitionTeam, TeamId } from '@/types/team'
+import type { CompetitionPlayer, PlayerId } from '@/types/player'
 
 import TeamLogo from '../teams/TeamLogo.vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
 import type { CompetitionId } from '@/types/competitions'
-import type { PlayerCalculatedStatsKey } from '@/types/stats'
-import useStats from '@/composable/useStats'
+import type { PlayerCalculatedStatsKey } from '@/types/player-stats'
 import type { GameDocBoxScore } from '@/types/games'
+import { getPlayerCalculatedStatsFromPlayerGamesStats, mergeStatLines, playerCalculatedStatsKeys } from '@/utils/stats/basketball'
 
-const { getPlayerCalculatedStatsFromPlayerGamesStats, mergeStatLines, playerCalculatedStatsKeys } = useStats()
+
+
 const { t } = useI18n()
 
 interface IProps {

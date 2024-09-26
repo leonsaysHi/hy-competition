@@ -1,7 +1,7 @@
-import type { AwardItem, PlayerStatLineKey } from './stats'
-import type { CompetitionTeam, TeamId } from './teams'
+import type { AwardItem, PlayerStatLineKey } from './player-stats'
+import type { CompetitionTeam, TeamId } from './team'
 import type { Game } from './games'
-import type { GenderKey } from './players'
+import type { GenderKey } from './player'
 import type GameComputedClass from '@/models/GameComputed'
 export type CompetitionId = string
 export type CompetitionSport = 'basketball5x5' | 'basketball3x3'

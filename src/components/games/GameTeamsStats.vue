@@ -2,23 +2,22 @@
 import { computed } from 'vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import type { Option } from '@/types/comp-fields'
-import type { PlayerCalculatedStats, PlayerStatLine, PlayerStatLineKey } from '@/types/stats'
-import type { TeamId, CompetitionTeam } from '@/types/teams'
-import type { CompetitionPlayer, PlayerId } from '@/types/players'
+import type { PlayerCalculatedStats, PlayerStatLine, PlayerStatLineKey } from '@/types/player-stats'
+import type { TeamId, CompetitionTeam } from '@/types/team'
+import type { CompetitionPlayer } from '@/types/player'
 import useLibs from '@/composable/useLibs'
 import { useI18n } from 'vue-i18n'
-import useStats from '@/composable/useStats'
 import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
 import type { GameDocBoxScore } from '@/types/games'
+import { getPlayerCalculatedStatsFromPlayerGamesStats, mergeStatLines, playerCalculatedStatsKeys } from '@/utils/stats/basketball'
 
 const { t } = useI18n()
 const { getTeamName } = useLibs()
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string; gameId: string }
 
-const { trackedPlayerRankingKeys } = useCompetition(competitionId)
-const { playerCalculatedStatsKeys, getPlayerCalculatedStatsFromPlayerGamesStats, mergeStatLines } = useStats()
+const { competitionPlayerStatsTableKeys } = useCompetition(competitionId)
 interface IProps {
   boxscore: GameDocBoxScore
   teams: CompetitionTeam[]
@@ -27,10 +26,11 @@ interface IProps {
 const props = withDefaults(defineProps<IProps>(), {})
 
 const statKeys = computed<PlayerStatLineKey[]>(() => {
-  return trackedPlayerRankingKeys.value
+  return competitionPlayerStatsTableKeys.value
     .map((opt: Option)  => opt.value as PlayerStatLineKey)
     .filter((key: PlayerStatLineKey) => playerCalculatedStatsKeys.includes(key))
 })
+
 const teamsTotalsByStats = computed(() => {
   const bs:GameDocBoxScore = props.boxscore
   return props.teams.reduce((result, team: CompetitionTeam) => {
@@ -40,6 +40,7 @@ const teamsTotalsByStats = computed(() => {
     return result
   }, {} as { [key: TeamId]: PlayerCalculatedStats })
 })
+
 const teamsBarsByStats = computed(() => {
   const result:{ [key: TeamId]: { [key: PlayerStatLineKey]: number } } =  {}
   Object.keys(teamsTotalsByStats.value).forEach((teamId: TeamId) => {

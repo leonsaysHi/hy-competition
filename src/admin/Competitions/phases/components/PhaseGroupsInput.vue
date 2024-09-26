@@ -41,7 +41,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { TeamId } from '@/types/teams'
+import type { TeamId } from '@/types/team'
 import SelectComp from '@/components/SelectComp.vue'
 import type { Option } from '@/types/comp-fields'
 import useLibs from '@/composable/useLibs'

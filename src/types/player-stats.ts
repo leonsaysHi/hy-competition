@@ -1,12 +1,17 @@
 import type { CompetitionId } from './competitions'
 import type { GameId } from './games'
-import type { PlayerId } from './players'
+import type { PlayerId } from './player'
 
 export type StatsGroupValue = 'dnp' | 'fga' | 'oreb' | 'tov' | 'blka' | 'f'
 export interface StatsGroupDef {
   keys: PlayerStatLineKey[]
   value?: StatsGroupValue
   text?: string
+}
+export interface StatKeyDef { 
+  key: PlayerStatLineKey | PlayerCalculatedStatsKey, 
+  group?: StatsGroupValue, 
+  calculated?: PlayerStatLineKey[] | PlayerCalculatedStatsKey[]
 }
 
 // Player
@@ -18,7 +23,7 @@ export interface AwardItem {
   value: AwardKey
 }
 
-// Player Stats
+// Player single stat Line
 export interface PlayerStatLine {
   ftm: number
   fta: number
@@ -39,12 +44,13 @@ export interface PlayerStatLine {
 }
 export type PlayerStatLineKey = keyof PlayerStatLine
 
-// Player Stats Game Computed (calculated pts, reb, perc)
+// Player merged stat lines
 export interface PlayerGamesStats extends PlayerStatLine {
   gp: number
 }
 export type PlayerGamesStatsKey = keyof PlayerGamesStats
 
+// Player calculated stat line
 export interface PlayerCalculatedStats extends PlayerGamesStats {
   pts: number
   reb: number
@@ -53,24 +59,3 @@ export interface PlayerCalculatedStats extends PlayerGamesStats {
   fg3prc: number
 }
 export type PlayerCalculatedStatsKey = keyof PlayerCalculatedStats
-
-
-// Players Competition Ranking Table
-export interface PlayerRankingStats extends PlayerCalculatedStats {
-  awards?: AwardItem[]
-}
-export type PlayerRankingKey = keyof PlayerRankingStats
-
-// Team
-export interface TeamStats {
-  gp: number
-  wins: number
-  ptsfv: number
-  ptsag: number
-}
-export type TeamStatKey = keyof TeamStats
-
-export type GamesHist = (1 | -1 | 0)[]
-export interface TeamStandingStats extends TeamStats {
-  hist: GamesHist
-}

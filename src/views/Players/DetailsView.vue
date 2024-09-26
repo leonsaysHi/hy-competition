@@ -3,13 +3,14 @@ import { useRoute } from 'vue-router'
 import useLibs from '@/composable/useLibs'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import { computed } from 'vue'
-import type { PlayerId } from '@/types/players'
+import type { PlayerId } from '@/types/player'
 import usePlayerComputed from '@/composable/usePlayerComputed'
-import type { CompetitionRankingComputed } from '@/types/computed'
-import type { PlayerRankingKey } from '@/types/stats'
+import type { CompetitionPlayerComputed } from '@/types/computed'
 import { useI18n } from 'vue-i18n'
 import { getAvg, formatAvg } from '@/utils/maths'
 import StatsTableComp from '@/components/StatsTableComp.vue'
+import type { PlayerCalculatedStatsKey } from '@/types/player-stats'
+import { playerCalculatedStatsKeys } from '@/utils/stats/basketball'
 const { t } = useI18n()
 const route = useRoute()
 const { playerId } = route.params as { playerId: PlayerId }
@@ -18,21 +19,10 @@ const { isReady, getPlayer } = useLibs()
 const { isReady: isPlayerComputedReady, rows } = usePlayerComputed(playerId)
 const player = computed(() => getPlayer(playerId))
 
-const fieldsKeys: PlayerRankingKey[] = [
-  'gp',
-  'pts',
-  'fgprc',
-  'fg3prc',
-  'reb',
-  'ast',
-  'blk',
-  'stl'
-]
-
 const fields = computed(() => [
   { key: 'competitionId', label: t('global.competition', 2) },
   { key: 'teamId', label: t('global.team') },
-  ...fieldsKeys.map((key: PlayerRankingKey) => ({
+  ...playerCalculatedStatsKeys.map((key: PlayerCalculatedStatsKey) => ({
     key,
     label: t(`options.playerStats.text.${key}`),
     thClass: 'text-end',
@@ -42,11 +32,11 @@ const fields = computed(() => [
 
 const stats = computed(() => {
   const gp = Array.isArray(rows.value)
-    ? rows.value?.reduce((total: number, item: CompetitionRankingComputed) => (total += item.gp), 0)
+    ? rows.value?.reduce((total: number, item: CompetitionPlayerComputed) => (total += item.gp), 0)
     : 0
   const pts = Array.isArray(rows.value)
     ? rows.value?.reduce(
-        (total: number, item: CompetitionRankingComputed) => (total += item.pts),
+        (total: number, item: CompetitionPlayerComputed) => (total += item.pts),
         0
       )
     : 0
@@ -64,7 +54,7 @@ const stats = computed(() => {
   ]
 })
 const items = computed(() => {
-  return rows.value?.map((row: CompetitionRankingComputed) => {
+  return rows.value?.map((row: CompetitionPlayerComputed) => {
     return {
       ...row,
       competitionId: row.id,

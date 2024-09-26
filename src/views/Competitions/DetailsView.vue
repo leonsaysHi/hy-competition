@@ -12,22 +12,18 @@ import { useI18n } from 'vue-i18n'
 import type GameComputedClass from '@/models/GameComputed'
 import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
 import BracketView from '@/components/bracket/BracketView.vue'
-
-import GamesClass from '@/models/Games'
-import type { CompetitionTeam } from '@/types/teams'
+import type { CompetitionTeam, TeamId } from '@/types/team'
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
 
-const { isReady, row, getCompetitionTeam } = useCompetition(competitionId)
+const { isReady, row, getCompetitionTeam, filterGames } = useCompetition(competitionId)
 
 const {
   selectedPhaseIdx,
   selectedPhase,
-  phasesOptions,
   selectedGroupIdx,
   selectedGroup,
-  groupsOptions,
   
 } = useCompetitionPhasesGroups()
 
@@ -43,60 +39,53 @@ interface GamesListOption {
 const currentGamesView = ref<GamesListValue>('prev')
 
 const selectedGames = computed<GameComputedClass[]>(() => {
-  return row.value ? 
-    new GamesClass(row.value, row.value?.games)
-      .phase(Number(selectedPhaseIdx.value))
-      .group(Number(selectedGroupIdx.value))
-      .finished(true)
-      .live(false)
-      .getComputed()
-    : []
-})
-
-const standingTeams = computed<CompetitionTeam[]>(() => {
-  // :/
-  return selectedGroup.value?.standing
-    .map((row) => getCompetitionTeam(row.teamId))
-})
-
-const prevGamesList = computed<GameComputedClass[]>(() => {
-  const result = row.value ? 
-    new GamesClass(row.value, row.value?.games)
-      .phase(Number(selectedPhaseIdx.value))
-      .group(Number(selectedGroupIdx.value))
-      .finished(true)
-      .live(false)
-      .getComputed()
-    : []
-  result.reverse()
+  const result = filterGames({
+    phaseIdx: Number(selectedPhaseIdx.value),
+    groupIdx: Number(selectedGroupIdx.value),
+    isFinished: true,
+    isLive: false
+  })
   return result
 })
 
-const liveGamesList = computed<GameComputedClass[]>(() => {
-  const result = row.value 
-    ? new GamesClass(row.value, row.value?.games)
-      .phase(Number(selectedPhaseIdx.value))
-      .group(Number(selectedGroupIdx.value))
-      .finished(false)
-      .live(true)
-      .getComputed()
+const standingTeams = computed<CompetitionTeam[]>(() => {
+  return Array.isArray(selectedGroup.value?.teams)
+    ? selectedGroup.value.teams
+      .map((teamId: TeamId) => getCompetitionTeam(teamId) as CompetitionTeam)
     : []
+})
+
+const prevGamesList = computed<GameComputedClass[]>(() => {
+  const result = filterGames({
+    phaseIdx: Number(selectedPhaseIdx.value),
+    groupIdx: Number(selectedGroupIdx.value),
+    isFinished: true,
+    isLive: false
+  })
+  result.reverse()
+  const teamsLength = standingTeams.value.length ? Math.round(standingTeams.value.length * .5) : 4
+  return result.slice(0, teamsLength) 
+})
+
+const liveGamesList = computed<GameComputedClass[]>(() => {
+  const result = filterGames({
+    phaseIdx: Number(selectedPhaseIdx.value),
+    groupIdx: Number(selectedGroupIdx.value),
+    isFinished: false,
+    isLive: true
+  })
   return result
 })
 
 const nextGamesList = computed<GameComputedClass[]>(() => {
-  const result = row.value 
-    ? new GamesClass(row.value, row.value.games)
-      .phase(Number(selectedPhaseIdx.value))
-      .group(Number(selectedGroupIdx.value))
-      .finished(false)
-      .live(false)
-      .getComputed()
-    : []
-  const teamsLength = Array.isArray(selectedGroup.value?.standing) ? Math.round(selectedGroup.value.standing.length * .5) : 4
-  return Array.isArray(selectedGroup.value?.standing)
-    ? result.slice(0, teamsLength) 
-    : result
+  const result = filterGames({
+    phaseIdx: Number(selectedPhaseIdx.value),
+    groupIdx: Number(selectedGroupIdx.value),
+    isFinished: false,
+    isLive: false
+  })
+  const teamsLength = standingTeams.value.length ? Math.round(standingTeams.value.length * .5) : 4
+  return result.slice(0, teamsLength) 
 })
 
 const gamesListOptions = computed<GamesListOption[]>(() => {
@@ -120,14 +109,6 @@ const gamesListOptions = computed<GamesListOption[]>(() => {
 })
 
 const gamesList = computed<GameComputedClass[]>(() => {
-  const games = row.value ? 
-    new GamesClass(row.value, row.value?.games)
-      .phase(Number(selectedPhaseIdx.value))
-      .group(Number(selectedGroupIdx.value))
-    : undefined
-  if (!games) { 
-    return []
-  }
   const result = currentGamesView.value === 'prev'
       ? prevGamesList.value
       : currentGamesView.value === 'live'
@@ -163,10 +144,10 @@ watch(
     <template v-else>
       <PhaseGroupSelect class="mb-3" />
       <hr />
-      <template v-if="selectedPhase && selectedGroup">
+      <template v-if="selectedPhase">
         <template v-if="selectedPhase.type === 'playoffs'">
           <h3>{{ t('global.playoffs') }}</h3>
-          <BracketView :bracket="selectedGroup.bracket" />
+          <BracketView :games="selectedGames" :teams="standingTeams" />
         </template>
         <template v-else>
           <h3>{{ t('global.standing') }}</h3>

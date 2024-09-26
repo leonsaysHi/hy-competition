@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import ButtonComp from '@/components/ButtonComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
 import type { GameId } from '@/types/games'
@@ -43,7 +43,6 @@ withDefaults(defineProps<IProps>(), {
 
 const emit = defineEmits(['reset-stats-sheet'])
 const route = useRoute()
-const router = useRouter()
 const { competitionId, gameId } = route.params as { competitionId: CompetitionId; gameId: GameId }
 
 const confirmDatas = ref()
@@ -60,16 +59,7 @@ const handleConfirmDelete = () => {
   })
 }
 
-const handleOpenRecord = () => {
-  const recordRoute = { name: 'box-score-record', params: { competitionId, gameId } }
-  /*
-  const route = router.resolve(recordRoute)
-  const isProd = window.location.pathname.includes('/app/')
-  const url = new URL(route.href, window.location.origin + (isProd ? '/app' : '')).href
-  window.open(url, '_blank')
-  */
-  router.push(recordRoute)
-}
+// TODO find a way to open extra page
 
 const handleDelete = async () => {
   if (await handleConfirmDelete()) {
