@@ -10,7 +10,7 @@ import { useI18n } from 'vue-i18n'
 import { getAvg, formatAvg } from '@/utils/maths'
 import StatsTableComp from '@/components/StatsTableComp.vue'
 import type { PlayerCalculatedStatsKey } from '@/types/player-stats'
-import useStats from '@/composable/useStats'
+import { playerCalculatedStatsKeys } from '@/utils/stats/basketball'
 const { t } = useI18n()
 const route = useRoute()
 const { playerId } = route.params as { playerId: PlayerId }
@@ -18,7 +18,6 @@ const { playerId } = route.params as { playerId: PlayerId }
 const { isReady, getPlayer } = useLibs()
 const { isReady: isPlayerComputedReady, rows } = usePlayerComputed(playerId)
 const player = computed(() => getPlayer(playerId))
-const { playerCalculatedStatsKeys } = useStats()
 
 const fields = computed(() => [
   { key: 'competitionId', label: t('global.competition', 2) },

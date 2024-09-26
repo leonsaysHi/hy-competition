@@ -20,11 +20,10 @@ import { useI18n } from 'vue-i18n'
 import GameComputedClass from '@/models/GameComputed'
 import type { Phase } from '@/types/competitions'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
-import useStats from '@/composable/useStats'
+import { getStandingsForGames } from '@/utils/stats/basketball'
 const { t } = useI18n()
 const route = useRoute()
 const { competitionId, teamId } = route.params as { competitionId: string; teamId: string }
-const { getStandingsForGames } = useStats()
 const { getTeamName } = useLibs()
 const { teamStandingKeys } = useOptionsLib()
 const { isReady, row, teams, filterGames } = useCompetition(competitionId)

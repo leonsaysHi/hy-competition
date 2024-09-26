@@ -7,10 +7,10 @@ import type { TeamId, CompetitionTeam } from '@/types/team'
 import type { CompetitionPlayer } from '@/types/player'
 import useLibs from '@/composable/useLibs'
 import { useI18n } from 'vue-i18n'
-import useStats from '@/composable/useStats'
 import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
 import type { GameDocBoxScore } from '@/types/games'
+import { getPlayerCalculatedStatsFromPlayerGamesStats, mergeStatLines, playerCalculatedStatsKeys } from '@/utils/stats/basketball'
 
 const { t } = useI18n()
 const { getTeamName } = useLibs()
@@ -18,7 +18,6 @@ const route = useRoute()
 const { competitionId } = route.params as { competitionId: string; gameId: string }
 
 const { trackedPlayerRankingKeys } = useCompetition(competitionId)
-const { playerCalculatedStatsKeys, getPlayerCalculatedStatsFromPlayerGamesStats, mergeStatLines } = useStats()
 interface IProps {
   boxscore: GameDocBoxScore
   teams: CompetitionTeam[]

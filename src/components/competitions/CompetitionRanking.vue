@@ -11,8 +11,8 @@ import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
 import type { TeamId } from '@/types/team'
-import useStats from '@/composable/useStats'
 import type GameComputedClass from '@/models/GameComputed'
+import { getCompetitionPlayersStats } from '@/utils/stats/basketball'
 
 const { t } = useI18n()
 
@@ -33,7 +33,7 @@ const props = withDefaults(defineProps<IProps>(), {
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string; playerId: string }
-const { getPlayersStatsForGames } = useStats()
+
 const { teams, trackedPlayerRankingKeys } = useCompetition(competitionId)
 
 const _showAvg = ref<boolean>(props.showAvg)
@@ -67,7 +67,7 @@ const fields = computed(() => [
   })
 )
 const items = computed<CompetitionPlayerStats[]>(() => {
-  const result = getPlayersStatsForGames(teams.value, props.games)
+  const result = getCompetitionPlayersStats(teams.value, props.games)
     .filter(
       (row: CompetitionPlayerStats) => {
         const noRosterWithGames = !props.teamId && row.gp > 0

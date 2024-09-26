@@ -20,15 +20,13 @@ import useOptionsLib from './useOptionsLib'
 import type { PlayerStatLineKey, PlayerStatLine, StatsGroupDef } from '@/types/player-stats'
 import { compareAsc, isAfter } from 'date-fns'
 import i18n from '@/i18n'
-import useStats from './useStats'
 import GameComputedClass from '@/models/GameComputed'
+import { playerStatsKeys } from '@/utils/stats/basketball'
 const t = (path: string): string => i18n.global.t(path)
 
 export default function useCompetition(competitionId: CompetitionId | undefined) {
   const { isReady: isLibsReady, getCompetition } = useLibs()
   const { competitionStatsGroups, playerRankingKeys } = useOptionsLib()
-  const { playerStatsKeys } = useStats()
-  
 
   const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`).withConverter(
     gameConverter

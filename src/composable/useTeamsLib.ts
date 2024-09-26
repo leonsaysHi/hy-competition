@@ -1,4 +1,3 @@
-import useFirestoreAdmin from '@/composable/useFirestoreAdmin'
 import { doc } from 'firebase/firestore'
 import { teamsColl } from '@/firebase-firestore.js'
 import type { Team, TeamId } from '@/types/team'
@@ -6,6 +5,7 @@ import { useFirestore } from '@vueuse/firebase/useFirestore'
 import { computed } from 'vue'
 import type { Ref } from 'vue'
 import { teamConverter } from '@/utils/firestore-converters'
+import { deleteDocs, writeDocs } from '@/utils/firestore-actions'
 
 const coll = teamsColl.withConverter(teamConverter)
 
@@ -17,7 +17,6 @@ export default function useTeams() {
     const team: Team = get(teamId)
     return team.title
   }
-  const { writeDocs, deleteDocs } = useFirestoreAdmin()
   const writeRows = async (rows: any[]) => {
     writeDocs(rows, coll)
   }

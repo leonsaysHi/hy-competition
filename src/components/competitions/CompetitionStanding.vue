@@ -10,12 +10,10 @@ import { getOrd } from '@/utils/maths'
 
 import { useI18n } from 'vue-i18n'
 import type GameComputedClass from '@/models/GameComputed'
-import useStats from '@/composable/useStats'
 import type { TableField } from '@/types/comp-table'
 import type { CompetitionTeam } from '@/types/team'
 import type { CompetitionStanding } from '@/types/computed'
-
-
+import { getStandingsForGames } from '@/utils/stats/basketball'
 
 interface IProps {
   games?: GameComputedClass[]
@@ -30,7 +28,6 @@ const route = useRoute()
 const { competitionId } = route.params as { competitionId: string;  }
 const { t } = useI18n()
 const { teamStandingKeys } = useOptionsLibs()
-const { getStandingsForGames } = useStats()
 
 const { getTeamName } = useLibs()
 const fields = [

@@ -12,10 +12,11 @@ import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
 import type { CompetitionId } from '@/types/competitions'
 import type { PlayerCalculatedStatsKey } from '@/types/player-stats'
-import useStats from '@/composable/useStats'
 import type { GameDocBoxScore } from '@/types/games'
+import { getPlayerCalculatedStatsFromPlayerGamesStats, mergeStatLines, playerCalculatedStatsKeys } from '@/utils/stats/basketball'
 
-const { getPlayerCalculatedStatsFromPlayerGamesStats, mergeStatLines, playerCalculatedStatsKeys } = useStats()
+
+
 const { t } = useI18n()
 
 interface IProps {

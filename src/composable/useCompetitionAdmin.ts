@@ -25,8 +25,8 @@ import type { CompetitionTeam, CompetitionTeamDoc, TeamId } from '@/types/team'
 import type { Game, GameId } from '@/types/games'
 import type { CompetitionPlayer, PlayerId } from '@/types/player'
 import type { CompetitionPlayerComputed, CompetitionPlayerStats, CompetitionStanding, CompetitionStandingComputed } from '@/types/computed'
-import useStats from './useStats'
 import useCompetition from './useCompetition'
+import { getCompetitionPlayersStats, getStandingsForGames } from '@/utils/stats/basketball'
 
 export default function useCompetitionAdmin(competitionId: CompetitionId | undefined) {
   const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`).withConverter(
@@ -254,13 +254,12 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
     const batch: WriteBatch = writeBatch(db)
     if (payload.isActive) {
       
-      const { getPlayersStatsForGames, getStandingsForGames } = useStats()
       const { teams, filterGames } = useCompetition(payload.id)
       const competitionGames = filterGames({
         isFinished: true,
         isLive: false,
       })
-      const competitionPlayerStatsToSave: CompetitionPlayerComputed[] = getPlayersStatsForGames(
+      const competitionPlayerStatsToSave: CompetitionPlayerComputed[] = getCompetitionPlayersStats(
         teams.value, 
         competitionGames
       )

@@ -185,8 +185,8 @@ import useLibs from '@/composable/useLibs'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import useOptionsLib from '@/composable/useOptionsLib'
-import useStats from '@/composable/useStats'
 import type { CompetitionPlayerCalculatedStats, CompetitionPlayerStats } from '@/types/computed'
+import { getPlayerCalculatedStatsFromPlayerGamesStats, playerStatsKeys } from '@/utils/stats/basketball'
 const { t } = useI18n()
 
 interface IProps {
@@ -214,7 +214,6 @@ const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
 const { getTeamName, getPlayerName, getCompetition } = useLibs()
 const { getCategory } = useOptionsLib()
-const { playerStatsKeys, getPlayerCalculatedStatsFromPlayerGamesStats } = useStats()
 
 
 const getCalculated = (item) => {

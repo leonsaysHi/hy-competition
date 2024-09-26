@@ -12,15 +12,14 @@ import type { CompetitionPlayer, PlayerId } from '@/types/player'
 import { useRoute } from 'vue-router'
 import type { CompetitionTeam } from '@/types/team'
 import type { CompetitionId } from '@/types/competitions'
-import useStats from '@/composable/useStats'
 import type { PlayerStatLine } from '@/types/player-stats'
+import { getEmptyPlayerStatLine } from '@/utils/stats/basketball'
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: CompetitionId }
 
 const { getTeamName, getPlayerName} = useLibs()
 const { trackedPlayerStatsKey } = useCompetition(competitionId)
-const { getEmptyPlayerStatLine } = useStats()
 
 interface IProps {
     modelValue: GameDocBoxScore

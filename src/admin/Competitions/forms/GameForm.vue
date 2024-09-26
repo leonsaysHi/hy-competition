@@ -14,13 +14,12 @@ import type { CompetitionId } from '@/types/competitions'
 import CheckComp from '@/components/CheckComp.vue'
 import BoxscoreSheets from '../games/components/BoxscoreSheets.vue'
 import type { CompetitionPlayer, PlayerId } from '@/types/player'
-import useStats from '@/composable/useStats'
+import { getEmptyPlayerStatLine } from '@/utils/stats/basketball'
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: CompetitionId; gameId: GameId }
 const { row } = useCompetition(competitionId)
 const { getTeamName } = useLibs()
-const { getEmptyPlayerStatLine } = useStats()
 
 interface IProps {
   value: Game

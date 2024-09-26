@@ -39,7 +39,7 @@ import Matchup from './BracketMatchup.vue'
 import type { Bracket, BracketMatchup, BracketRound } from '@/types/competitions'
 import type GameComputedClass from '@/models/GameComputed';
 import type { CompetitionTeam } from '@/types/team';
-import useBracket from '@/composable/useBracket';
+import { getBracketForGames } from '@/utils/bracket';
 
 interface IProps {
   games?: GameComputedClass[]
@@ -52,11 +52,9 @@ const props = withDefaults(defineProps<IProps>(), {
   disabled: false
 })
 
-const { getBracketForGames } = useBracket()
 const bracket = computed(() => {
   return getBracketForGames(props.teams, props.games)
 })
-
 
 const gridTotalRows = computed(() => {
   return Array.isArray(rounds.value) && Array.isArray(rounds.value[0]) ? rounds.value[0].length : 0

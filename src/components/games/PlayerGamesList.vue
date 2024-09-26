@@ -8,9 +8,9 @@ import type { Option } from '@/types/comp-fields'
 import useCompetition from '@/composable/useCompetition'
 import type { CompetitionTeam } from '@/types/team'
 import { useI18n } from 'vue-i18n'
-import useStats from '@/composable/useStats'
 import type { PlayerId } from '@/types/player'
 import type { CompetitionId } from '@/types/competitions'
+import { getPlayerCalculatedStatsFromPlayerGamesStats, mergeStatLines } from '@/utils/stats/basketball'
 const { t } = useI18n()
 
 const route = useRoute()
@@ -21,7 +21,7 @@ interface IProps {
 }
 const props = withDefaults(defineProps<IProps>(), {})
 
-const { getPlayerCalculatedStatsFromPlayerGamesStats, mergeStatLines } = useStats()
+
 const { getPlayerCompetitionTeam, trackedPlayerRankingKeys } = useCompetition(competitionId)
 
 const fields = computed(() => {

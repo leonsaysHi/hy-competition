@@ -19,13 +19,12 @@ import { useI18n } from 'vue-i18n'
 import CheckComp from '@/components/CheckComp.vue'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import type { Phase } from '@/types/competitions'
-import useStats from '@/composable/useStats'
+import { getCompetitionPlayersStats } from '@/utils/stats/basketball'
 const { t } = useI18n()
 const route = useRoute()
 const { competitionId, playerId } = route.params as { competitionId: string; playerId: string }
 
 const { getPlayerName } = useLibs()
-const { getPlayersStatsForGames } = useStats()
 const {
   isReady: isCompetitionReady,
   getCompetitionPlayer,
@@ -84,7 +83,7 @@ const statsFields = computed<TableField[]>(() => {
 })
 
 const statsItem = computed<CompetitionPlayerStats[]>(() => {
-  return getPlayersStatsForGames(teams.value, gamesList.value)
+  return getCompetitionPlayersStats(teams.value, gamesList.value)
     .filter((stats: CompetitionPlayerStats) => stats.playerId === playerId)
 })
 </script>
