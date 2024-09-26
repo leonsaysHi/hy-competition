@@ -32,7 +32,7 @@ const {
   filterGames,
   row,
   teams,
-  trackedPlayerRankingKeys
+  competitionPlayerStatsTableKeys
 } = useCompetition(competitionId)
 
 const competitionTeam = computed<CompetitionTeam | undefined>(() =>
@@ -70,7 +70,7 @@ const gamesList = computed(() => filterGames({
 
 
 const statsFields = computed<TableField[]>(() => {
-  const fields = trackedPlayerRankingKeys.value.map(
+  const fields = competitionPlayerStatsTableKeys.value.map(
     (opt: Option): TableField => ({
       key: opt.value as string,
       label: opt.text,

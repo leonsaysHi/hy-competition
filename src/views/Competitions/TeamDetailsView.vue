@@ -20,7 +20,7 @@ import { useI18n } from 'vue-i18n'
 import GameComputedClass from '@/models/GameComputed'
 import type { Phase } from '@/types/competitions'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
-import { getStandingsForGames } from '@/utils/stats/basketball'
+import { getCompetitionStanding } from '@/utils/stats/basketball'
 const { t } = useI18n()
 const route = useRoute()
 const { competitionId, teamId } = route.params as { competitionId: string; teamId: string }
@@ -46,7 +46,7 @@ const statsFields: TableField[] = [
 ]
 
 const competitionComputed = computed<CompetitionStanding | undefined>(() => {
-  const standings = getStandingsForGames(
+  const standings = getCompetitionStanding(
     teams.value, 
     filterGames({
       teamId: teamId,

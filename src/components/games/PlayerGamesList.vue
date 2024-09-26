@@ -22,14 +22,14 @@ interface IProps {
 const props = withDefaults(defineProps<IProps>(), {})
 
 
-const { getPlayerCompetitionTeam, trackedPlayerRankingKeys } = useCompetition(competitionId)
+const { getPlayerCompetitionTeam, competitionPlayerStatsTableKeys } = useCompetition(competitionId)
 
 const fields = computed(() => {
   const fields = [
     { key: 'datetime', label: t('global.date'), tdClass: 'pt-1 lh-1' },
     { key: 'teamId', label: t('global.gameDetails.opponent.text') },
     { key: 'isWin', label: '', tdClass: 'text-center' },
-    ...trackedPlayerRankingKeys.value.map(
+    ...competitionPlayerStatsTableKeys.value.map(
       (opt: Option): TableField => ({
           key: opt.value,
           label: opt.text,

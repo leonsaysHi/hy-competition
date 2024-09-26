@@ -4,7 +4,7 @@ import type { Competition, CompetitionConfig, CompetitionId, Phase } from '@/typ
 
 import { useFirestore } from '@vueuse/firebase/useFirestore'
 import type { CompetitionTeam, TeamId } from '@/types/team'
-import type { Game, GameDocBoxScore, GameId, GameDocScores } from '@/types/games'
+import type { Game, GameDocBoxScore, GameDocScores } from '@/types/games'
 import type { CompetitionPlayer, PlayerId } from '@/types/player'
 
 import useLibs from '@/composable/useLibs'
@@ -16,17 +16,16 @@ import {
   competitionPlayerConverter
 } from '@/utils/firestore-converters'
 import type { Option } from '@/types/comp-fields'
-import useOptionsLib from './useOptionsLib'
-import type { PlayerStatLineKey, PlayerStatLine, StatsGroupDef } from '@/types/player-stats'
+import type { PlayerStatLineKey, PlayerStatLine, StatsGroupDef, PlayerCalculatedStatsKey } from '@/types/player-stats'
 import { compareAsc, isAfter } from 'date-fns'
 import i18n from '@/i18n'
 import GameComputedClass from '@/models/GameComputed'
-import { playerStatsKeys } from '@/utils/stats/basketball'
+import { playerStatsTableKeys, playerStatsKeys, competitionStatsGroups } from '@/utils/stats/basketball'
 const t = (path: string): string => i18n.global.t(path)
 
 export default function useCompetition(competitionId: CompetitionId | undefined) {
   const { isReady: isLibsReady, getCompetition } = useLibs()
-  const { competitionStatsGroups, playerRankingKeys } = useOptionsLib()
+  
 
   const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`).withConverter(
     gameConverter
@@ -189,9 +188,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     const player: CompetitionPlayer | undefined = getCompetitionPlayer(playerId)
     return player?.number
   }
-  const getGame = (gameId: GameId): Game | undefined => {
-    return  row.value?.games.find((game: Game) => game.id === gameId) as Game
-  }
+  
 
   const filterGames = (
     {
@@ -270,22 +267,24 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
       }))
   })
   // stats sheet output:
-  const trackedPlayerRankingKeys = computed<Option[]>(() => {
-    const optionalKeys: PlayerStatLineKey[] = competitionStatsGroups
+  const competitionPlayerStatsTableKeys = computed<Option[]>(() => {
+    const optionalKeys: PlayerCalculatedStatsKey[] = competitionStatsGroups
       .filter((group: StatsGroupDef) => group.value)
-      .reduce((acc: PlayerStatLineKey[], group: StatsGroupDef) => {
+      .reduce((acc: PlayerCalculatedStatsKey[], group: StatsGroupDef) => {
         acc.push(...group.keys)
         return acc
       }, [])
-    return playerRankingKeys
-      .filter((opt: Option) => {
-        const key = opt.value as PlayerStatLineKey
+    return playerStatsTableKeys
+      .filter((key: PlayerCalculatedStatsKey) => {
         return !optionalKeys.includes(key) || row.value?.trackedStats.includes(key)
       }) 
       .reduce(
-        (result: Option[], opt: Option) => {
-          const key = opt.value as PlayerStatLineKey
-          result.push(opt)
+        (result: Option[], key: PlayerCalculatedStatsKey) => {
+          result.push({
+            text: t(`options.playerStats.text.${key}`),
+              long: t(`options.playerStats.long.${key}`),
+              value: key
+          })
           if (key === 'oreb') {
             result.push({
               text: t(`options.playerStats.text.reb`),
@@ -327,8 +326,6 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
 })
 
     
-
-
   return {
     isReady,
     row,
@@ -340,9 +337,8 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
 
     // stats
     trackedPlayerStatsKey,
-    trackedPlayerRankingKeys,
+    competitionPlayerStatsTableKeys,
 
-    getGame,
     filterGames,
     getCompetitionTeam,
     getCompetitionPlayer,

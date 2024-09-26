@@ -26,7 +26,7 @@ import type { Game, GameId } from '@/types/games'
 import type { CompetitionPlayer, PlayerId } from '@/types/player'
 import type { CompetitionPlayerComputed, CompetitionPlayerStats, CompetitionStanding, CompetitionStandingComputed } from '@/types/computed'
 import useCompetition from './useCompetition'
-import { getCompetitionPlayersStats, getStandingsForGames } from '@/utils/stats/basketball'
+import { getCompetitionPlayersStats, getCompetitionStanding } from '@/utils/stats/basketball'
 
 export default function useCompetitionAdmin(competitionId: CompetitionId | undefined) {
   const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`).withConverter(
@@ -267,7 +267,7 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
           id: payload.id,
           ...row
         }))
-      const competitionStandingsToSave: CompetitionStandingComputed[] = getStandingsForGames(
+      const competitionStandingsToSave: CompetitionStandingComputed[] = getCompetitionStanding(
         teams.value, 
         competitionGames
       )

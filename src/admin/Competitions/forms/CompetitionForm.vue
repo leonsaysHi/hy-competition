@@ -25,6 +25,7 @@ import useLibs from '@/composable/useLibs'
 import type { PlayerId, GenderKey } from '@/types/player'
 import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
 import { useRouter } from 'vue-router'
+import { competitionStatsGroups } from '@/utils/stats/basketball'
 const router = useRouter()
 interface IProps {
   value: Competition
@@ -50,8 +51,7 @@ const {
   competitionSports: sportsOptions,
   competitionCategories: categoriesOptions,
   genders: gendersOptions,
-  competitionStatsInput: statsInputOptions,
-  competitionStatsGroups: statsGroups
+  competitionStatsInput: statsInputOptions
 } = useOptionsLib()
 const { getPlayerName } = useLibs()
 const { allPlayers } = useCompetition(props.value.id)
@@ -80,7 +80,7 @@ const playersOptions = computed(() =>
   })
 )
 
-statsGroups[0].keys.forEach((key:PlayerStatLineKey) => {
+competitionStatsGroups[0].keys.forEach((key:PlayerStatLineKey) => {
   if (!data.value.trackedStats.includes(key)) {
     data.value.trackedStats.push(key)
   }

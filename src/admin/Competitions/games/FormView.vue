@@ -21,7 +21,7 @@ const { writeGame: updateCompetitionGameDoc } = useCompetitionAdmin(competitionI
 
 const data = computed<Game>(() => {
   return { 
-    ...getGame(gameId) 
+    ...competition.value?.games.find((game: Game) => game.id === gameId)
   } as Game
 })
 

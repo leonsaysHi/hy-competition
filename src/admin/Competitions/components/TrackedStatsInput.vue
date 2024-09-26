@@ -13,11 +13,9 @@ import { computed } from 'vue'
 import CheckGroupComp from '@/components/CheckGroupComp.vue'
 import type { PlayerStatLineKey, StatsGroupDef, StatsGroupValue } from '@/types/player-stats';
 import type { Option } from '@/types/comp-fields';
-import useOptionsLib from '@/composable/useOptionsLib';
+import { competitionStatsGroups } from '@/utils/stats/basketball';
 
-const {
-  competitionStatsGroups: statsGroups
-} = useOptionsLib()
+
 
 interface IProps {
   modelValue: PlayerStatLineKey[]
@@ -30,7 +28,7 @@ const props = withDefaults(defineProps<IProps>(), {
 
 const model = computed<StatsGroupValue[]>({
   get: (): [] => {
-    return statsGroups
+    return competitionStatsGroups
       .filter((group: StatsGroupDef) => group.value)
       .reduce((acc: StatsGroupValue[], group: StatsGroupDef) => {
         const isSelected = group.keys.some((k:PlayerStatLineKey) => props.modelValue.includes(k))
@@ -44,13 +42,13 @@ const model = computed<StatsGroupValue[]>({
     const newVal: PlayerStatLineKey[] = val
         .reduce(
           (acc: PlayerStatLineKey[], key: StatsGroupValue) => {
-            const group = statsGroups.find((group: StatsGroupDef) => key === group.value)
+            const group = competitionStatsGroups.find((group: StatsGroupDef) => key === group.value)
             return [
               ...acc,
               ...(group ? group.keys : [])
             ]
           }, 
-          statsGroups.find((group: StatsGroupDef) => !group.value)?.keys || []
+          competitionStatsGroups.find((group: StatsGroupDef) => !group.value)?.keys || []
         )
     emit('update:modelValue', newVal)
   }

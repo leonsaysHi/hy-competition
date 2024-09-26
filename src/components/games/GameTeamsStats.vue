@@ -17,7 +17,7 @@ const { getTeamName } = useLibs()
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string; gameId: string }
 
-const { trackedPlayerRankingKeys } = useCompetition(competitionId)
+const { competitionPlayerStatsTableKeys } = useCompetition(competitionId)
 interface IProps {
   boxscore: GameDocBoxScore
   teams: CompetitionTeam[]
@@ -26,10 +26,11 @@ interface IProps {
 const props = withDefaults(defineProps<IProps>(), {})
 
 const statKeys = computed<PlayerStatLineKey[]>(() => {
-  return trackedPlayerRankingKeys.value
+  return competitionPlayerStatsTableKeys.value
     .map((opt: Option)  => opt.value as PlayerStatLineKey)
     .filter((key: PlayerStatLineKey) => playerCalculatedStatsKeys.includes(key))
 })
+
 const teamsTotalsByStats = computed(() => {
   const bs:GameDocBoxScore = props.boxscore
   return props.teams.reduce((result, team: CompetitionTeam) => {
@@ -39,6 +40,7 @@ const teamsTotalsByStats = computed(() => {
     return result
   }, {} as { [key: TeamId]: PlayerCalculatedStats })
 })
+
 const teamsBarsByStats = computed(() => {
   const result:{ [key: TeamId]: { [key: PlayerStatLineKey]: number } } =  {}
   Object.keys(teamsTotalsByStats.value).forEach((teamId: TeamId) => {

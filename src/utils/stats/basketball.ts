@@ -1,4 +1,4 @@
-import type { PlayerCalculatedStats, PlayerCalculatedStatsKey, PlayerGamesStats, PlayerStatLine, PlayerStatLineKey } from '@/types/player-stats'
+import type { PlayerCalculatedStats, PlayerCalculatedStatsKey, PlayerGamesStats, PlayerStatLine, PlayerStatLineKey, StatsGroupDef } from '@/types/player-stats'
 import { add, getPerc } from '../maths'
 import type { GamesHist, TeamStatKey, TeamStats } from '@/types/team-stats'
 import type { CompetitionTeam } from '@/types/team'
@@ -7,12 +7,23 @@ import type { CompetitionPlayer } from '@/types/player'
 import type GameComputedClass from '@/models/GameComputed'
 import type { ScoresComputed } from '@/models/GameComputed'
 
-// Stats object keys: (1 game stats)
+
+// Stats object keys
 const ft: PlayerStatLineKey[] = ['ftm', 'fta']
 const fg: PlayerStatLineKey[] = ['fgm', 'fga']
 const fg3: PlayerStatLineKey[] = ['fg3m', 'fg3a']
 const reb: PlayerStatLineKey[] = ['dreb', 'oreb']
 const _morekeys: PlayerStatLineKey[] = ['ast', 'stl', 'blk', 'blka', 'tov', 'fcm', 'fdr']
+
+export const competitionStatsGroups: StatsGroupDef[] = [
+  { keys: ['ftm','fgm', 'fg3m', 'dreb', 'ast', 'stl', 'blk' ] },
+  { text: 'Field goals attempt', value: 'fga', keys: ['fta', 'fga', 'fg3a'] },
+  { text: 'Rebounds def/off', value: 'oreb', keys: ['oreb'] },
+  { text: 'Turn overs', value: 'tov', keys: ['tov'] },
+  { text: 'Blocks against', value: 'blka', keys: ['blka'] },
+  { text: 'Fouls commited/drawn', value: 'f', keys: ['fcm', 'fdr'] },
+  { text: 'Game played', value: 'dnp', keys: ['dnp'] }
+]
 
 export const playerStatsKeys: PlayerStatLineKey[] = [
   ...ft,
@@ -35,6 +46,11 @@ export const playerCalculatedStatsKeys: PlayerCalculatedStatsKey[] = [
   'reb',
   ..._morekeys,
   'dnp'
+]
+
+export const playerStatsTableKeys: PlayerCalculatedStatsKey[] = [
+  'gp',  
+  ...playerCalculatedStatsKeys
 ]
 
 export const teamStandingKeys: TeamStatKey[] = [
@@ -153,7 +169,7 @@ export function getCompetitionPlayersStats (teams: CompetitionTeam[], games: Gam
   return playersStats               
 }
 
-export function getStandingsForGames (teams: CompetitionTeam[], games: GameComputedClass[]):CompetitionStanding[] {
+export function getCompetitionStanding (teams: CompetitionTeam[], games: GameComputedClass[]):CompetitionStanding[] {
   const getEmptyTeamStats = () => {
     return {
       ...teamStandingKeys

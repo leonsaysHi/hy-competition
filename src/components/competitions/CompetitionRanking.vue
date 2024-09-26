@@ -34,7 +34,7 @@ const props = withDefaults(defineProps<IProps>(), {
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string; playerId: string }
 
-const { teams, trackedPlayerRankingKeys } = useCompetition(competitionId)
+const { teams, competitionPlayerStatsTableKeys } = useCompetition(competitionId)
 
 const _showAvg = ref<boolean>(props.showAvg)
 
@@ -48,7 +48,7 @@ const fields = computed(() => [
     },
     { label: t('global.player', 2), key: 'id' },
     { label: t('global.team', 2), key: 'teamId' },
-    ...trackedPlayerRankingKeys.value.map(
+    ...competitionPlayerStatsTableKeys.value.map(
       (opt: Option): TableField => ({
         key: opt.value as string,
         label: opt.text,
