@@ -10,35 +10,46 @@ import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import GamesList from '@/components/games/GamesList.vue'
 import CompetitionRanking from '@/components/competitions/CompetitionRanking.vue'
-import type { CompetitionStandingComputed } from '@/types/computed'
+import type { CompetitionStanding, CompetitionStandingComputed } from '@/types/computed'
 import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
 import type { Option } from '@/types/comp-fields'
 import LastGames from '@/components/games/LastGames.vue'
-import type { CompetitionTeam } from '@/types/teams'
+
 
 import { useI18n } from 'vue-i18n'
 import GameComputedClass from '@/models/GameComputed'
-import GamesClass from '@/models/Games'
+
 import type { Phase } from '@/types/competitions'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
+import type { CompetitionTeam } from '@/types/team'
+import { getCompetitionStanding } from '@/utils/stats/basketball'
 const { t } = useI18n()
 const route = useRoute()
 const { competitionId, teamId } = route.params as { competitionId: string; teamId: string }
 
 const { getTeamName } = useLibs()
 const { teamStandingKeys } = useOptionsLib()
-const { isReady, row, games, teams, competitionStandings, competitionRankings } =
+const { isReady, row, games, teams, filterGames } =
   useCompetition(competitionId)
 
-const competitionComputed = computed<CompetitionStandingComputed | undefined>(() => {
-  return competitionStandings.value?.find(
-    (stand: CompetitionStandingComputed) => stand.teamId === teamId
+  const competitionComputed = computed<CompetitionStanding | undefined>(() => {
+  const standings = getCompetitionStanding(
+    teams.value, 
+    filterGames({
+      teamId: teamId,
+      isFinished: true,
+      isLive: false
+    })
+  )
+  return standings.find(
+    (row: CompetitionStanding) => row.teamId === teamId
   )
 })
 const statsItem = computed<TableItem[]>(() => {
   return competitionComputed.value ? [competitionComputed.value as unknown as TableItem] : []
 })
+
 
 const competitionTeam = computed(() => {
   return teams.value?.find((team: CompetitionTeam) => team.id === teamId)
@@ -68,12 +79,11 @@ const phasesOptions = computed(() => {
     : []
 })
 const rankingGames = computed<GameComputedClass[]>(() => {
-  return row.value ? 
-    new GamesClass(row.value, row.value?.games)
-      .phase(selectedPhase.value)
-      .finished(true)
-      .live(false)
-      .getComputed()
+  return row.value 
+    ? filterGames({
+      isFinished: true,
+      isLive: false
+    })
     : []
 })
 

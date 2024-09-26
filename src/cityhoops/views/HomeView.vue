@@ -13,12 +13,12 @@ import type GameComputedClass from '@/models/GameComputed'
 import ViewHero from '../components/layout/ViewHero.vue'
 import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
 import BracketView from '@/components/bracket/BracketView.vue'
-import GamesClass from '@/models/Games'
 import type { CompetitionTeam } from '@/types/teams'
+import type { TeamId } from '@/types/team'
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
-const { isReady, row, getCompetitionTeam } = useCompetition(competitionId)
+const { isReady, row, getCompetitionTeam, filterGames } = useCompetition(competitionId)
 const {
   selectedPhaseIdx,
   selectedPhase,
@@ -31,35 +31,32 @@ const { t } = useI18n()
 const { getGender, getCategory } = useOptionsLib()
 
 const selectedGames = computed<GameComputedClass[]>(() => {
-  return row.value ? 
-    new GamesClass(row.value, row.value?.games)
-      .phase(Number(selectedPhaseIdx.value))
-      .group(Number(selectedGroupIdx.value))
-      .finished(true)
-      .live(false)
-      .getComputed()
+  return row.value 
+    ? filterGames({ 
+      phaseIdx: Number(selectedPhaseIdx.value),
+      groupIdx: Number(selectedGroupIdx.value),
+      isFinished: true,
+      isLive: false
+    })
     : []
 })
 
 const standingTeams = computed<CompetitionTeam[]>(() => {
-  // :/
-  return selectedGroup.value?.standing
-    .map((row) => getCompetitionTeam(row.teamId))
+  return Array.isArray(selectedGroup.value?.teams)
+    ? selectedGroup.value.teams
+      .map((teamId: TeamId) => getCompetitionTeam(teamId) as CompetitionTeam)
+    : []
 })
 
 const nextGamesList = computed<GameComputedClass[]>(() => {
-  const result = row.value 
-    ? new GamesClass(row.value, row.value?.games)
-      .phase(Number(selectedPhaseIdx.value))
-      .group(Number(selectedGroupIdx.value))
-      .finished(false)
-      .live(false)
-      .getComputed()
-    : []
-  const teamsLength = Array.isArray(selectedGroup.value?.standing) ? Math.round(selectedGroup.value.standing.length * .5) : 4
-  return Array.isArray(selectedGroup.value?.standing)
-    ? result.slice(0, teamsLength) 
-    : result
+  const result = filterGames({
+    phaseIdx: Number(selectedPhaseIdx.value),
+    groupIdx: Number(selectedGroupIdx.value),
+    isFinished: false,
+    isLive: false
+  })
+  const teamsLength = standingTeams.value.length ? Math.round(standingTeams.value.length * .5) : 4
+  return result.slice(0, teamsLength) 
 })
 </script>
 <template>
@@ -109,11 +106,11 @@ const nextGamesList = computed<GameComputedClass[]>(() => {
         <hr />
         <template v-if="selectedPhase.type === 'playoffs'">
           <h3>{{ t('global.playoffs') }}</h3>
-          <BracketView :bracket="selectedGroup.bracket" />
+          <BracketView :games="selectedGames" :teams="standingTeams" />
         </template>
         <template v-else>
           <h3>{{ t('global.standing') }}</h3>
-          <CompetitionStanding :teams="standingTeams" :games="selectedGames" />
+          <CompetitionStanding :games="selectedGames" :teams="standingTeams" />
         </template>
         <div class="mb-3 d-flex justify-content-center">
           <RouterLink

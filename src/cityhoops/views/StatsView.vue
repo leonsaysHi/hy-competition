@@ -8,43 +8,44 @@ import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
 import { computed } from 'vue'
 import type GameComputedClass from '@/models/GameComputed'
-import GamesClass from '@/models/Games'
 import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
-import type { CompetitionTeam } from '@/types/teams'
+import type { CompetitionTeam, TeamId } from '@/types/team'
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
-const { row, getCompetitionTeam } = useCompetition(competitionId)
+const { row, getCompetitionTeam, filterGames } = useCompetition(competitionId)
 const { selectedPhaseIdx, phasesOptions, groupsOptions, selectedGroupIdx, selectedGroup } =
   useCompetitionPhasesGroups()
 
 const standingTeams = computed<CompetitionTeam[]>(() => {
-  // :/
-  return selectedGroup.value?.standing
-    .map((row) => getCompetitionTeam(row.teamId))
-})
-const standingGames = computed<GameComputedClass[]>(() => {
-  const result = row.value ? 
-    new GamesClass(row.value, row.value?.games)
-      .phase(Number(selectedPhaseIdx.value))
-      .group(Number(selectedGroupIdx.value))
-      .finished(true)
-      .live(false)
-      .getComputed()
+  return Array.isArray(selectedGroup.value?.teams)
+    ? selectedGroup.value.teams
+      .map((teamId: TeamId) => getCompetitionTeam(teamId) as CompetitionTeam)
     : []
-  result.reverse()
+})
+
+const standingGames = computed<GameComputedClass[]>(() => {
+  const result = row.value 
+    ? filterGames({
+        phaseIdx: Number(selectedPhaseIdx.value),
+        groupIdx: Number(selectedGroupIdx.value),
+        isFinished: true,
+        isLive: false
+      })
+      .reverse()
+    : []
   return result
 })
 
 const rankingGames = computed<GameComputedClass[]>(() => {
-  return row.value ? 
-    new GamesClass(row.value, row.value?.games)
-      .phase(Number(selectedPhaseIdx.value))
-      .group(Number(selectedGroupIdx.value))
-      .finished(true)
-      .live(false)
-      .getComputed()
+  return row.value 
+    ? filterGames({
+      phaseIdx: Number(selectedPhaseIdx.value),
+      groupIdx: Number(selectedGroupIdx.value),
+      isFinished: true,
+      isLive: false
+    })
     : []
 })
 
