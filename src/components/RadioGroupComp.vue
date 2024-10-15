@@ -19,7 +19,7 @@ import RadioComp from '@/components/RadioComp.vue'
 import type { Option, Size, Variant } from '@/types/comp-fields'
 import { computed } from 'vue'
 interface IProps {
-  modelValue: string | number | undefined
+  modelValue: string | number | undefined | boolean
   options: Option[]
   placeholder?: string
   readonly?: boolean

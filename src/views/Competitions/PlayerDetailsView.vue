@@ -16,7 +16,6 @@ import type { TableField } from '@/types/comp-table'
 import type { CompetitionPlayerStats } from '@/types/computed'
 
 import { useI18n } from 'vue-i18n'
-import CheckComp from '@/components/CheckComp.vue'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import type { Phase } from '@/types/competitions'
 import { getCompetitionPlayersStats } from '@/utils/stats/basketball'
@@ -43,6 +42,16 @@ const competitionPlayer = computed<CompetitionPlayer | undefined>(() =>
 )
 
 const showAvg = ref<boolean>(true)
+const statsModeOptions = ref<Option[]>([
+  {
+    value: true, 
+    text: t('options.stats.statsavg')
+  },
+  {
+    value: false, 
+    text: t('options.stats.statscumul')
+  },
+])
 const selectedPhaseIdx = ref<undefined | number>(undefined)
 const phasesOptions = computed(() => {
   return Array.isArray(row.value?.phases) 
@@ -126,7 +135,7 @@ const statsItem = computed<CompetitionPlayerStats[]>(() => {
         </template>
         <template #actions>
           <div class="py-2">
-            <CheckComp v-model="showAvg" switch button-size="sm">{{ $t('options.stats.showavg') }}</CheckComp>
+            <RadioGroupComp v-model="showAvg" :options="statsModeOptions" size="sm" buttons />
           </div>
         </template>
       </StatsTableComp>
