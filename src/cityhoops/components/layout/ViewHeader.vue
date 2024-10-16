@@ -4,8 +4,12 @@ import CityHoopsLogo from '@/cityhoops/assets/cityhoops.png'
 import CompetitionNavigation from '../CompetitionNavigation.vue'
 import SocialsNav from '../SocialsNav.vue'
 import { useRoute } from 'vue-router';
+import { computed } from 'vue';
 const route = useRoute()
-const { competitionId } = route.params as { competitionId: string | undefined }
+const competitionId = computed(() => {
+  const { competitionId } = route.params as { competitionId: string | undefined }
+  return competitionId
+})
 </script>
 
 <template>

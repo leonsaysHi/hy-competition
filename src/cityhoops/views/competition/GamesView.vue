@@ -29,7 +29,6 @@ const prevGamesList = computed(() => row.value
       isFinished: true,
       isLive: false
     })
-    .reverse()
   : []
 )
 const nextGamesList = computed(() => row.value 

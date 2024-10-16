@@ -59,6 +59,7 @@ const teamGames = computed<GameComputedClass[]>(() =>
     ? games.value
         .filter((game: Game) => game.teams.includes(teamId) && game.isFinished)
         .map((game: Game) => new GameComputedClass(competitionId, game))
+        .reverse()
     : []
 )
 
