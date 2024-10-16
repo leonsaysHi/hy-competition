@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
-import CheckComp from '@/components/CheckComp.vue'
 import StatsTableComp from '@/components/StatsTableComp.vue'
 
 import type { CompetitionPlayerStats } from '@/types/computed'
@@ -13,6 +12,7 @@ import useCompetition from '@/composable/useCompetition'
 import type { TeamId } from '@/types/team'
 import type GameComputedClass from '@/models/GameComputed'
 import { getCompetitionPlayersStats } from '@/utils/stats/basketball'
+import RadioGroupComp from '../RadioGroupComp.vue'
 
 const { t } = useI18n()
 
@@ -37,7 +37,16 @@ const { competitionId } = route.params as { competitionId: string; playerId: str
 const { teams, competitionPlayerStatsTableKeys } = useCompetition(competitionId)
 
 const _showAvg = ref<boolean>(props.showAvg)
-
+  const statsModeOptions = ref<Option[]>([
+  {
+    value: true, 
+    text: t('options.stats.statsavg')
+  },
+  {
+    value: false, 
+    text: t('options.stats.statscumul')
+  },
+])
 
 const fields = computed(() => [
     {
@@ -95,8 +104,8 @@ const items = computed<CompetitionPlayerStats[]>(() => {
     <template #actions>
       <template v-if="showAvgUi">
         <div class="py-2">
-          <CheckComp v-model="_showAvg" switch button-size="sm">{{ $t('options.stats.showavg') }}</CheckComp>
-        </div>
+          <RadioGroupComp v-model="_showAvg" :options="statsModeOptions" size="sm" buttons />
+          </div>
       </template>
     </template>
   </StatsTableComp>
