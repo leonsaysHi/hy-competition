@@ -152,7 +152,7 @@ const es = {
   cta: {
     cancel: 'Cancelar',
     submit: 'Guardar',
-    view: 'ver'
+    view: 'Ver'
   },
   home: {
     showPasts: 'Monstrar ligas pasadas',
