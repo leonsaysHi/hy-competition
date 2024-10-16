@@ -66,7 +66,7 @@ const selectedPhaseIdx = ref<undefined | number>(undefined)
 const phasesOptions = computed(() => {
   const result = []
   if (Array.isArray(row.value?.phases))  {
-    if (row.value.phases.length > 2) {
+    if (row.value.phases.length > 1) {
       result.push({
         text: t('options.phases.overall'),
         value: undefined
