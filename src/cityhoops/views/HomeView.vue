@@ -47,19 +47,17 @@ const pastItems = computed(() => {
         <div class="row row-cols-1 row-cols-lg-2 g-2">
           <template v-for="row in currentItems" :key="row.id">
             <div class="col">
-              <div class="card h-100 text-bg-primary border-dark">
+              <div class="card h-100  border-dark">
                 <div class="card-body">
                   <h3 class="card-title">{{ row.title }}</h3>
                   <RouterLink
                     :to="{ name: 'competition', params: { competitionId: row.id } }"
-                    class="stretched-link btn btn-light stretched-link"
+                    class="stretched-link btn btn-primary border-dark stretched-link"
                     >{{ $t('cta.view') }}</RouterLink
                   >
                 </div>
-                <div class="card-footer">
-                  <small class="text-body-secondary"
-                    >{{ $t('home.lastUpdate') }} {{ formatDistanceToNow(row.lastUpdate) }}</small
-                  >
+                <div class="card-footer text-bg-primary border-dark">
+                  <small>{{ $t('home.lastUpdate') }} {{ formatDistanceToNow(row.lastUpdate) }}</small>
                 </div>
               </div>
             </div>
@@ -82,8 +80,8 @@ const pastItems = computed(() => {
             <template v-for="row in pastItems" :key="row.id">
               <div class="col">
                 <div class="card h-100">
-                  <div class="card-body">
-                    <h6 class="card-title">{{ row.title }}</h6>
+                  <div class="card-body d-flex flex-column align-items-start">
+                    <h6 class="card-title flex-grow-1">{{ row.title }}</h6>
                     <template v-if="row.subtitle"><p class="card-text">{{ row.subtitle }}</p></template>
                     <template v-if="row.id">
                       <RouterLink
