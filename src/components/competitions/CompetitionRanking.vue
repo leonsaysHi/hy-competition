@@ -99,9 +99,7 @@ const items = computed<CompetitionPlayerStats[]>(() => {
     <template #filters><slot name="filters"></slot></template>
     <template #actions>
       <template v-if="showAvgUi">
-        <div class="py-2">
-          <RadioGroupComp v-model="_showAvg" :options="statsModeOptions" size="sm" buttons />
-          </div>
+        <RadioGroupComp v-model="_showAvg" :options="statsModeOptions" size="sm" buttons />
       </template>
     </template>
   </StatsTableComp>

@@ -137,9 +137,7 @@ const statsItem = computed<CompetitionPlayerStats[]>(() => {
           />
         </template>
         <template #actions>
-          <div class="py-2">
-            <RadioGroupComp v-model="showAvg" :options="statsModeOptions" size="sm" buttons />
-          </div>
+          <RadioGroupComp v-model="showAvg" :options="statsModeOptions" size="sm" buttons />
         </template>
       </StatsTableComp>
       <hr />
