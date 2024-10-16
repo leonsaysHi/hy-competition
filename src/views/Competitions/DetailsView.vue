@@ -62,9 +62,8 @@ const prevGamesList = computed<GameComputedClass[]>(() => {
     isFinished: true,
     isLive: false
   })
-  result.reverse()
   const teamsLength = standingTeams.value.length ? Math.round(standingTeams.value.length * .5) : 4
-  return result.slice(0, teamsLength) 
+  return result.slice(0, teamsLength)
 })
 
 const liveGamesList = computed<GameComputedClass[]>(() => {
@@ -84,6 +83,7 @@ const nextGamesList = computed<GameComputedClass[]>(() => {
     isFinished: false,
     isLive: false
   })
+  result.reverse()
   const teamsLength = standingTeams.value.length ? Math.round(standingTeams.value.length * .5) : 4
   return result.slice(0, teamsLength) 
 })
