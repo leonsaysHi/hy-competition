@@ -87,7 +87,6 @@ const rankingGames = computed<GameComputedClass[]>(() => {
       <CompetitionRanking 
         :games="rankingGames" 
         :limit="25" 
-        :show-avg="false"
       />
     </template>
   </div>

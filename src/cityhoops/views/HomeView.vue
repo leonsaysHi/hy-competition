@@ -2,10 +2,12 @@
 import ButtonComp from '@/components/ButtonComp.vue'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import useCompetitionsLib from '@/composable/useCompetitionsLib'
+import useOptionsLib from '@/composable/useOptionsLib'
 import type { Competition } from '@/types/competitions'
 import { formatDistanceToNow } from 'date-fns'
 import { computed, ref } from 'vue'
 const { isReady, rows } = useCompetitionsLib()
+const { getGender, getCategory } = useOptionsLib()
 
 const showPasts = ref(false)
 const activeItems = computed(() => rows.value?.filter((row: Competition) => row.isActive) || [])
@@ -29,7 +31,7 @@ const previousSeasons = [
 
 const pastItems = computed(() => {
   const result = []
-  result.push(...activeItems.value.slice(activeItems.value.length))
+  result.push(...activeItems.value.slice(activeItems.value.length - 1))
   result.push(...previousSeasons)
   return result
 }) 
@@ -53,7 +55,7 @@ const pastItems = computed(() => {
               <div class="card h-100  border-dark">
                 <div class="card-body">
                   <h3 class="card-title">{{ row.title }}</h3>
-                  <h6 class="card-subtitle mb-2 text-body-secondary text-uppercase">{{ row.category }}</h6>
+                  <h6 class="card-subtitle mb-3">{{ getGender(row?.gender)?.long }} - {{ getCategory(row?.category)?.text }}</h6>
                   <RouterLink
                     :to="{ name: 'competition', params: { competitionId: row.id } }"
                     class="stretched-link btn btn-primary border-dark stretched-link"
@@ -85,15 +87,21 @@ const pastItems = computed(() => {
               <div class="col">
                 <div class="card h-100">
                   <div class="card-body d-flex flex-column align-items-start">
-                    <h6 class="card-title flex-grow-1">{{ row.title }}</h6>
-                    <template v-if="row.subtitle"><p class="card-text">{{ row.subtitle }}</p></template>
                     <template v-if="row.id">
+                      <div class="flex-grow-1">
+                        <h6 class="card-title">{{ row.title }}</h6>
+                        <p class="card-subtitle mb-2">{{ getGender(row?.gender)?.long }} - {{ getCategory(row?.category)?.text }}</p>
+                      </div>
                       <RouterLink
                         :to="{ name: 'competition', params: { competitionId: row.id } }"
                         class="stretched-link btn btn-primary stretched-link"
                         >{{ $t('cta.view') }}</RouterLink>
                     </template>
                     <template v-else>
+                      <div class="flex-grow-1">
+                        <h6 class="card-title">{{ row.title }}</h6>
+                        <p class="card-subtitle mb-2">{{ row.subtitle }}</p>
+                      </div>
                       <a class="btn btn-primary stretched-link" :href="row.url" target="_blank"
                       >{{ $t('cta.view') }}</a>
                     </template>

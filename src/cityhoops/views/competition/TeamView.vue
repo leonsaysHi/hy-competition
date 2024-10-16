@@ -10,7 +10,7 @@ import useLibs from '@/composable/useLibs'
 import useCompetition from '@/composable/useCompetition'
 import GamesList from '@/components/games/GamesList.vue'
 import CompetitionRanking from '@/components/competitions/CompetitionRanking.vue'
-import type { CompetitionStanding, CompetitionStandingComputed } from '@/types/computed'
+import type { CompetitionStanding } from '@/types/computed'
 import useOptionsLib from '@/composable/useOptionsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
 import type { Option } from '@/types/comp-fields'
@@ -125,9 +125,8 @@ const statsFields: TableField[] = [
       </TableComp>
       <h3 class="mt-3">{{ t('global.ranking') }}</h3>
       <CompetitionRanking 
-      :games="rankingGames" 
-      :team-id="teamId" 
-      :show-avg="false"
+        :games="rankingGames" 
+        :team-id="teamId" 
       >
         <template #filters>
           <RadioGroupComp 
