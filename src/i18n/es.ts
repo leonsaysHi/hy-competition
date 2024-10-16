@@ -155,7 +155,8 @@ const es = {
     view: 'ver'
   },
   home: {
-    title: 'Lista de las ligas:',
+    titleCurrents: 'Ligas actuales:',
+    titlePasts: 'Ligas pasadas:',
     lastUpdate: 'Última actualización'
   },
   bracket: {
