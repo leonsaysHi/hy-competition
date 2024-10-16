@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import StatsTableComp from '@/components/StatsTableComp.vue'
@@ -30,6 +30,7 @@ const {
   getPlayerCompetitionTeam,
   filterGames,
   row,
+  showAvgUi,
   teams,
   competitionPlayerStatsTableKeys
 } = useCompetition(competitionId)
@@ -41,7 +42,9 @@ const competitionPlayer = computed<CompetitionPlayer | undefined>(() =>
   getCompetitionPlayer(playerId)
 )
 
-const showAvg = ref<boolean>(true)
+const showAvg = ref<boolean>(false)
+watch(showAvgUi, (v) => showAvg.value = v)
+
 const statsModeOptions = ref<Option[]>([
   {
     value: true, 
@@ -134,9 +137,7 @@ const statsItem = computed<CompetitionPlayerStats[]>(() => {
           />
         </template>
         <template #actions>
-          <div class="py-2">
-            <RadioGroupComp v-model="showAvg" :options="statsModeOptions" size="sm" buttons />
-          </div>
+          <RadioGroupComp v-model="showAvg" :options="statsModeOptions" size="sm" buttons />
         </template>
       </StatsTableComp>
       <hr />

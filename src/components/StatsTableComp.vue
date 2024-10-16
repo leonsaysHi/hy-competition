@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="d-flex gap-3 justify-content-between align-items-center border-top">
-      <div class="d-flex align-items-end gap-2"><slot name="filters"></slot></div>
-      <div class="d-flex align-items-end gap-2 justify-content-end"><slot name="actions"></slot></div>
+      <div class="d-flex align-items-end gap-2 py-2"><slot name="filters"></slot></div>
+      <div class="d-flex align-items-end gap-2 justify-content-end py-2"><slot name="actions"></slot></div>
     </div>
     <div class="w-100 overflow-x-auto">
       <TableComp

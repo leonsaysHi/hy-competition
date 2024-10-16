@@ -133,7 +133,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
   })
 
   const isReady = computed<Boolean>(() => Boolean(row.value))
-
+  const showAvgUi = computed<boolean>(() => Boolean(row.value?.trackedStats.includes('dnp')))
   const games = computed<Game[]>(() => (Array.isArray(row.value?.games) ? row.value?.games : []))
   const teams = computed<CompetitionTeam[]>(() =>
     Array.isArray(row.value?.teams) ? row.value?.teams : []
@@ -298,6 +298,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
     config,
     allTeams,
     allPlayers,
+    showAvgUi,
 
     // stats
     trackedPlayerStatsKey,
