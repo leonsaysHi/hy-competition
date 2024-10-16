@@ -12,7 +12,7 @@ export default function usePlayersLib() {
     { text: 'Basketball 5x5', value: 'basketball5x5' }
   ]
   const competitionCategories: { value: CompetitionCategorie; text: string }[] = [
-    { text: 'U17', value: 'u17' },
+    { text: 'U16', value: 'u16' },
     { text: 'U20', value: 'u21' },
     { text: 'Senior', value: 'senior' },
     { text: '+35', value: '+35' }
