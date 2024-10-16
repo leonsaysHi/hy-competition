@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import ButtonComp from '@/components/ButtonComp.vue'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import useCompetitionsLib from '@/composable/useCompetitionsLib'
 import type { Competition } from '@/types/competitions'
@@ -17,7 +18,7 @@ const currentItems = computed(() => {
 
 
 const pastItems = computed(() => {
-  return activeItems.value.slice(activeItems.value.length)
+  return activeItems.value.slice(currentItems.value.length)
 }) 
 
 </script>
