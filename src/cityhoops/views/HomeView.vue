@@ -17,18 +17,17 @@ const pastItems = computed(() => {
 </script>
 <template>
   <div>
-    <h1>{{ $t('home.title') }}</h1>
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-2">
-      <template v-if="!isReady">
-        <SpinnerComp />
+    <template v-if="!isReady">
+      <SpinnerComp />
+    </template>
+    <template v-else>
+      
+      <h2>{{ $t('home.titleCurrents') }}</h2>
+      <template v-if="!currentItems?.length">
+        <p>Ningun liga ahora.</p>
       </template>
       <template v-else>
-        
-        <h5>Current competitions</h5>
-        <template v-if="!currentItems?.length">
-          <p>Ningun liga ahora.</p>
-        </template>
-        <template v-else>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-2">
           <template v-for="row in currentItems" :key="row.id">
             <div class="col">
               <div class="card h-100">
@@ -48,13 +47,15 @@ const pastItems = computed(() => {
               </div>
             </div>
           </template>
-        </template>
+        </div>
+      </template>
 
-        <h5>Past competitions</h5>
-        <template v-if="!currentItems?.length">
-          <p>Ningun liga pasada.</p>
-        </template>
-        <template v-else>
+      <h5 class="mt-4">{{ $t('home.titlePasts') }}</h5>
+      <template v-if="!pastItems?.length">
+        <p>Ningun liga pasada.</p>
+      </template>
+      <template v-else>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-2">
           <template v-for="row in pastItems" :key="row.id">
             <div class="col">
               <div class="card h-100">
@@ -74,9 +75,9 @@ const pastItems = computed(() => {
               </div>
             </div>
           </template>
-        </template>
-
+        </div>
       </template>
-    </div>
+
+    </template>
   </div>
 </template>
