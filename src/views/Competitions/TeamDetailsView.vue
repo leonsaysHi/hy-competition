@@ -64,19 +64,23 @@ const statsItem = computed<TableItem[]>(() => {
 
 const selectedPhaseIdx = ref<undefined | number>(undefined)
 const phasesOptions = computed(() => {
-  return Array.isArray(row.value?.phases) 
-    ? [
-        {
-          text: t('options.phases.overall'),
-          value: undefined
-        },
-        ...row.value.phases
-          .map((phase: Phase, idx: number) => ({
-            text: phase.title,
-            value: idx
-          }))
-    ]
-    : []
+  const result = []
+  if (Array.isArray(row.value?.phases))  {
+    if (row.value.phases.length > 1) {
+      result.push({
+        text: t('options.phases.overall'),
+        value: undefined
+      })
+    }
+    result.push(...row.value.phases
+      .map((phase: Phase, idx: number) => ({
+        text: phase.title,
+        value: idx,
+        disabled: row.value?.phases.length === 1
+      }))
+    )
+  }
+  return result
 })
 
 const competitionTeam = computed(() => teams.value?.find((team: CompetitionTeam) => team.id === teamId))
