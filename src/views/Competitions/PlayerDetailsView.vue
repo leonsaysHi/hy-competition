@@ -137,7 +137,9 @@ const statsItem = computed<CompetitionPlayerStats[]>(() => {
           />
         </template>
         <template #actions>
-          <RadioGroupComp v-model="showAvg" :options="statsModeOptions" size="sm" buttons />
+          <template v-if="showAvgUi">
+            <RadioGroupComp v-model="showAvg" :options="statsModeOptions" size="sm" buttons />
+          </template>
         </template>
       </StatsTableComp>
       <hr />
