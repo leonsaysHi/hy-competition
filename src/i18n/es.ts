@@ -155,9 +155,9 @@ const es = {
     view: 'Ver'
   },
   home: {
-    showPasts: 'Monstrar ligas pasadas',
-    titleCurrents: 'Ligas actuales:',
-    titlePasts: 'Ligas pasadas:',
+    noItem: 'Ningun liga ahora',
+    currentItems: 'Ultima liga | Ultimas ligas',
+    pastItems: 'Ligas pasadas',
     lastUpdate: 'Última actualización'
   },
   bracket: {
