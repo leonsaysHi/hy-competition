@@ -8,10 +8,13 @@ import { computed, ref } from 'vue'
 const { isReady, rows } = useCompetitionsLib()
 
 const showPasts = ref(false)
+const activeItems = computed(() => rows.value?.filter((row: Competition) => row.isActive) || [])
 const currentItems = computed(() => {
-  return rows.value?.filter((row: Competition) => row.isActive && !row.isOver)
+  const currentItems = activeItems.value.filter((row: Competition) => !row.isOver)
+  return currentItems.length 
+    ? currentItems
+    : activeItems.value.slice(0, 1)
 }) 
-
 
 const previousSeasons = [
     { url: 'https://www.cityhoopspty.com/season1/', title: 'SEASON 1'  },
@@ -26,7 +29,7 @@ const previousSeasons = [
 
 const pastItems = computed(() => {
   const result = []
-  result.push(...(rows.value?.filter((row: Competition) => row.isActive && row.isOver) || []))
+  result.push(...activeItems.value.slice(activeItems.value.length))
   result.push(...previousSeasons)
   return result
 }) 
@@ -39,9 +42,9 @@ const pastItems = computed(() => {
     </template>
     <template v-else>
       
-      <h2>{{ $t('home.titleCurrents') }}</h2>
+      <h2>{{ $t('home.currentItems', currentItems?.length || 0) }}:</h2>
       <template v-if="!currentItems?.length">
-        <p>Ningun liga ahora.</p>
+        <p>{{ $t('home.noItem') }}.</p>
       </template>
       <template v-else>
         <div class="row row-cols-1 row-cols-lg-2 g-2">
@@ -50,6 +53,7 @@ const pastItems = computed(() => {
               <div class="card h-100  border-dark">
                 <div class="card-body">
                   <h3 class="card-title">{{ row.title }}</h3>
+                  <h6 class="card-subtitle mb-2 text-body-secondary text-uppercase">{{ row.category }}</h6>
                   <RouterLink
                     :to="{ name: 'competition', params: { competitionId: row.id } }"
                     class="stretched-link btn btn-primary border-dark stretched-link"
@@ -67,13 +71,13 @@ const pastItems = computed(() => {
 
       <template v-if="!showPasts && pastItems?.length">
         <div class="d-flex flex-column flex-md-row">
-          <ButtonComp class="mt-4 border d-flex gap-3 justify-content-between" variant="light" block @click="showPasts = true"><span>{{ $t('home.showPasts') }}</span><i class="bi bi-chevron-down"></i></ButtonComp>
+          <ButtonComp class="mt-4 border d-flex gap-3 justify-content-between" variant="light" block @click="showPasts = true"><span>{{ $t('home.pastItems') }}</span><i class="bi bi-chevron-down"></i></ButtonComp>
         </div>
       </template>
       <template v-if="showPasts">
-        <h5 class="mt-4">{{ $t('home.titlePasts') }}</h5>
+        <h5 class="mt-4">{{ $t('home.pastItems') }}:</h5>
         <template v-if="!pastItems?.length">
-          <p>Ningun liga pasada.</p>
+          <p>{{ $t('home.noItem') }}.</p>
         </template>
         <template v-else>
           <div class="row row-cols-1 row-cols-md-2 row-cols-md-3 g-2">
