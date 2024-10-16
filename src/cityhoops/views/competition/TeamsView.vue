@@ -2,7 +2,7 @@
 import { useRoute, useRouter } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import useCompetition from '@/composable/useCompetition'
-import ViewHero from '../components/layout/ViewHero.vue'
+import ViewHero from '../../components/layout/ViewHero.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import useLibs from '@/composable/useLibs'
 import { computed } from 'vue'

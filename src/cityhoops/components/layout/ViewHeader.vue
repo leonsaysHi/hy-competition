@@ -3,6 +3,9 @@ import ImageComp from '@/components/ImageComp.vue'
 import CityHoopsLogo from '@/cityhoops/assets/cityhoops.png'
 import CompetitionNavigation from '../CompetitionNavigation.vue'
 import SocialsNav from '../SocialsNav.vue'
+import { useRoute } from 'vue-router';
+const route = useRoute()
+const { competitionId } = route.params as { competitionId: string | undefined }
 </script>
 
 <template>
@@ -24,9 +27,13 @@ import SocialsNav from '../SocialsNav.vue'
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          <CompetitionNavigation />
+          <template v-if="competitionId">
+            <CompetitionNavigation />
+          </template>
         </div>
-        <SocialsNav class="ms-auto d-none d-lg-flex" />
+        <template v-if="competitionId">
+          <SocialsNav class="ms-auto d-none d-lg-flex" />
+        </template>
       </nav>
     </div>
   </header>

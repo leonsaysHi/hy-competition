@@ -1,10 +1,11 @@
 import routes from '@/routes/index'
 import FrontView from '@/cityhoops/views/IndexView.vue'
-import CompetitionHomeView from '@/cityhoops/views/HomeView.vue'
-import CompetitionStatsView from '@/cityhoops/views/StatsView.vue'
-import CompetitionGamesView from '@/cityhoops/views/GamesView.vue'
-import CompetitionTeamView from '@/cityhoops/views/TeamView.vue'
-import CompetitionTeamsView from '@/cityhoops/views/TeamsView.vue'
+import HomeView from '@/cityhoops/views/HomeView.vue'
+import CompetitionHomeView from '@/cityhoops/views/competition/HomeView.vue'
+import CompetitionStatsView from '@/cityhoops/views/competition/StatsView.vue'
+import CompetitionGamesView from '@/cityhoops/views/competition/GamesView.vue'
+import CompetitionTeamView from '@/cityhoops/views/competition/TeamView.vue'
+import CompetitionTeamsView from '@/cityhoops/views/competition/TeamsView.vue'
 
 import CompetitionGameDetailsView from '@/views/Competitions/GameDetailsView.vue'
 import CompetitionPlayerDetailsView from '@/views/Competitions/PlayerDetailsView.vue'
@@ -17,10 +18,10 @@ cityhoopsRoutes[frontViewIdx].component = FrontView
 const frontViewChildren = frontViewIdx > -1 ? cityhoopsRoutes[frontViewIdx].children : undefined
 
 if (frontViewChildren) {
-  // remove competitions list
+  // replace competitions list
   const competitionsListIdx = frontViewChildren.findIndex((r: any) => r.name === 'home')
   if (competitionsListIdx > -1) {
-    frontViewChildren[competitionsListIdx].redirect = { name: 'not-found' }
+    frontViewChildren[competitionsListIdx].component = HomeView
   }
 
   // replace competitions pages
