@@ -105,11 +105,11 @@ const nextGamesList = computed<GameComputedClass[]>(() => {
         </div>
         <hr />
         <template v-if="selectedPhase.type === 'playoffs'">
-          <h3>{{ t('global.playoffs') }}</h3>
+          <h2>{{ t('global.playoffs') }}</h2>
           <BracketView :games="selectedGames" :teams="standingTeams" />
         </template>
         <template v-else>
-          <h3>{{ t('global.standing') }}</h3>
+          <h2>{{ t('global.standing') }}</h2>
           <CompetitionStanding :games="selectedGames" :teams="standingTeams" />
         </template>
         <div class="mb-3 d-flex justify-content-center">

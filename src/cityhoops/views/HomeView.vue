@@ -30,10 +30,10 @@ const previousSeasons = [
   ].reverse()
 
 const pastItems = computed(() => {
-  const result = []
-  result.push(...activeItems.value.slice(activeItems.value.length - 1))
-  result.push(...previousSeasons)
-  return result
+  return [
+    ...activeItems.value.slice(currentItems.value.length - 1),
+    ...previousSeasons
+  ]
 }) 
 
 </script>
@@ -63,7 +63,7 @@ const pastItems = computed(() => {
                   >
                 </div>
                 <div class="card-footer text-bg-primary border-dark">
-                  <small>{{ $t('home.lastUpdate') }} {{ formatDistanceToNow(row.lastUpdate) }}</small>
+                  <small>{{ $t('home.lastUpdate') }}: {{ formatDistanceToNow(row.lastUpdate) }}</small>
                 </div>
               </div>
             </div>
@@ -109,7 +109,7 @@ const pastItems = computed(() => {
                   <div class="card-footer">
                     <template v-if="row.id">
                       <small class="text-body-secondary"
-                        >{{ $t('home.lastUpdate') }} {{ formatDistanceToNow(row.lastUpdate) }}</small
+                        >{{ $t('home.lastUpdate') }}: {{ formatDistanceToNow(row.lastUpdate) }}</small
                       >
                     </template>
                     <template v-else>
