@@ -46,6 +46,7 @@ type FormData = {
   trackedStats: PlayerStatLineKey[]
   awards: AwardItem[]
   isActive?: Boolean
+  isOver?: Boolean
   mediasURL?: string
   rulesURL?: string
 }
@@ -66,6 +67,7 @@ const data = ref<FormData>({
   gender: undefined,
   category: undefined,
   isActive: false,
+  isOver: false,
   statsInput: statsInputOptions[0].value,
   trackedStats: [],
   mediasURL: '',
@@ -120,8 +122,9 @@ const handleDelete = async () => {
     <FieldComp label="Title" required>
       <InputComp v-model="data.title" :disabled="isBusy" required />
     </FieldComp>
-    <FieldComp label="is active" class="d-flex gap-3 justify-content-end">
-      <CheckComp v-model="data.isActive" :disabled="isBusy" switch></CheckComp>
+    <FieldComp class="d-flex gap-2 justify-content-end">
+      <CheckComp v-model="data.isActive" :disabled="isBusy" button>Active</CheckComp>
+      <CheckComp v-model="data.isOver" :disabled="isBusy" button>Finished</CheckComp>
     </FieldComp>
     <FieldComp label="Date">
       <InputComp v-model="data.date" type="date" :disabled="isBusy" required />
