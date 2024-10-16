@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import StatsTableComp from '@/components/StatsTableComp.vue'
 
 import type { CompetitionPlayerStats } from '@/types/computed'
@@ -16,28 +16,24 @@ import RadioGroupComp from '../RadioGroupComp.vue'
 
 const { t } = useI18n()
 
-
-
 interface IProps {
   games: GameComputedClass[]
   limit?: number
   teamId?: TeamId
-  showAvg?: boolean
-  showAvgUi?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
   limit: 0,
-  showAvg: true,
-  showAvgUi: true
 })
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string; playerId: string }
 
-const { teams, competitionPlayerStatsTableKeys } = useCompetition(competitionId)
+const { teams, competitionPlayerStatsTableKeys, showAvgUi } = useCompetition(competitionId)
 
-const _showAvg = ref<boolean>(props.showAvg)
-  const statsModeOptions = ref<Option[]>([
+const _showAvg = ref<boolean>(false)
+watch(showAvgUi, (v) => _showAvg.value = v)
+
+const statsModeOptions = ref<Option[]>([
   {
     value: true, 
     text: t('options.stats.statsavg')

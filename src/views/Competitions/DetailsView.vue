@@ -173,7 +173,7 @@ watch(
         <div class="d-flex gap-3 justify-content-between">
           <h3>{{ t('global.ranking') }}</h3>
         </div>
-        <CompetitionRanking :games="selectedGames" :limit="15" show-avg-ui />
+        <CompetitionRanking :games="selectedGames" :limit="15" />
       </template>
     </template>
   </div>
