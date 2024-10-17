@@ -2,12 +2,8 @@
 import { useRoute } from 'vue-router'
 import SocialsNav from './SocialsNav.vue'
 import useCompetition from '@/composable/useCompetition'
-import { computed } from 'vue';
 const route = useRoute()
-const competitionId = computed(() => {
-  const { competitionId } = route.params as { competitionId: string | undefined }
-  return competitionId
-})
+const { competitionId } = route.params as { competitionId: string | undefined }
 const { row } = useCompetition(competitionId)
 </script>
 <template>
