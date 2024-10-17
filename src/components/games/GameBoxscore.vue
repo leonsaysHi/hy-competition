@@ -34,29 +34,31 @@ const boxScoreKeys = computed<PlayerCalculatedStatsKey[]>(() => {
   if (!row.value?.statsInput) {
     return []
   }
-  return playerCalculatedStatsKeys.filter((key: PlayerCalculatedStatsKey) =>
-    row.value?.trackedStats.includes(key)
-  )
+  return playerCalculatedStatsKeys
+    .filter((key: PlayerCalculatedStatsKey) =>
+      row.value?.trackedStats.includes(key)
+    )
 })
 
 const fields = computed(() => {
   const fields = [
     { label: '#', key: 'number' },
     { label: t('global.player'), key: 'id', tdClass: 'fw-bold' },
-    ...boxScoreKeys.value.reduce(
-      (fields: TableField[], key: PlayerCalculatedStatsKey): TableField[] => [
-        ...fields,
-        {
-          key,
-          label: t(`options.playerStats.text.${key}`),
-          sortable: true,
-          thClass: 'text-end',
-          tdClass: 'text-end',
-          tfClass: 'text-end fw-bold'
-        }
-      ],
-      []
-    )
+    ...boxScoreKeys.value
+      .reduce(
+        (fields: TableField[], key: PlayerCalculatedStatsKey): TableField[] => [
+          ...fields,
+          {
+            key,
+            label: t(`options.playerStats.text.${key}`),
+            sortable: true,
+            thClass: 'text-end',
+            tdClass: 'text-end',
+            tfClass: 'text-end fw-bold'
+          }
+        ],
+        []
+      )
   ]
   const ptsField = {
     key: 'pts',
