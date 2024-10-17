@@ -42,7 +42,7 @@ const rankingGames = computed<GameComputedClass[]>(() => {
   return row.value 
     ? filterGames({
       phaseIdx: Number(selectedPhaseIdx.value),
-      groupIdx: Number(selectedGroupIdx.value),
+      // groupIdx: Number(selectedGroupIdx.value),
       isFinished: true,
       isLive: false
     })
