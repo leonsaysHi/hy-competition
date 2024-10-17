@@ -12,6 +12,7 @@ export interface StatKeyDef {
   key: PlayerStatLineKey | PlayerCalculatedStatsKey, 
   group?: StatsGroupValue, 
   calculated?: PlayerStatLineKey[] | PlayerCalculatedStatsKey[]
+  hiddenFromCalculated?: boolean
 }
 
 // Player

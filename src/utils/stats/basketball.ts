@@ -30,7 +30,7 @@ export const statKeysDefs: StatKeyDef[]  = [
   { key: 'blka', group: 'blka' },
   { key: 'fcm', group: 'f' },
   { key: 'fdr', group: 'f' },
-  { key: 'dnp', group: 'dnp' }
+  { key: 'dnp', group: 'dnp', hiddenFromCalculated: true }
 ]
 
 // default stats
@@ -68,6 +68,7 @@ export const playerStatsKeys: PlayerStatLineKey[] = statKeysDefs
 
 // player calculated stats
 export const playerCalculatedStatsKeys: PlayerCalculatedStatsKey[] = statKeysDefs
+  .filter((keyDef: StatKeyDef) => !keyDef.hiddenFromCalculated)
   .reduce((acc, keyDef: StatKeyDef) => {
     acc.push(keyDef.key) 
     return acc
