@@ -16,7 +16,10 @@ const competitionId = computed(() => {
   <header class="py-4 shadow">
     <div class="container-xl">
       <nav class="navbar navbar-expand-lg">
-        <a class="navbar-brand d-flex align-items-center gap-3" href="/"
+        <a 
+          class="navbar-brand d-flex align-items-center gap-3"
+          :class="{ 'mx-auto': !competitionId }" 
+          href="/"
           ><ImageComp :src="CityHoopsLogo" :width="60" fluid />
         </a>
         <template v-if="competitionId">
