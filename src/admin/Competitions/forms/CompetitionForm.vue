@@ -17,8 +17,7 @@ import SelectComp from '@/components/SelectComp.vue'
 import CheckComp from '@/components/CheckComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
-import type { AwardItem, PlayerStatLineKey } from '@/types/player-stats'
-import AwardsInput from '../components/AwardsInput.vue'
+import type { PlayerStatLineKey } from '@/types/player-stats'
 import TrackedStatsInput from '../components/TrackedStatsInput.vue'
 import useCompetition from '@/composable/useCompetition'
 import useLibs from '@/composable/useLibs'
@@ -44,7 +43,6 @@ type FormData = {
   phases: Phase[]
   statsInput: StatsInputType
   trackedStats: PlayerStatLineKey[]
-  awards: AwardItem[]
   isActive?: Boolean
   isOver?: Boolean
   mediasURL?: string
@@ -72,8 +70,7 @@ const data = ref<FormData>({
   trackedStats: [],
   mediasURL: '',
   rulesURL: '',
-  ...props.value,
-  awards: Array.isArray(props.value.awards) ? props.value.awards : []
+  ...props.value
 })
 
 const playersOptions = computed(() =>
@@ -97,11 +94,14 @@ const emit = defineEmits(['submit'])
 // Save
 const handleSubmit = (ev: Event) => {
   ev.preventDefault()
-  emit('submit', {
-    ...data.value,
-    mediasURL: data.value.mediasURL?.trim() || undefined,
-    rulesURL: data.value.rulesURL?.trim() || undefined
-  } as CompetitionDoc)
+  emit(
+    'submit', 
+    {
+      ...data.value,
+      mediasURL: data.value.mediasURL?.trim() || undefined,
+      rulesURL: data.value.rulesURL?.trim() || undefined
+    } as CompetitionDoc
+  )
 }
 // Delete
 const deleteModal = ref<typeof ModalComp>()
@@ -159,9 +159,6 @@ const handleDelete = async () => {
         />
       </FieldComp>
     </template>
-    <FieldComp label="Awards">
-      <AwardsInput v-model="data.awards" :players-options="playersOptions" />
-    </FieldComp>
     <div class="row row-cols-1 row-cols-md-2">
       <div class="col">
         <FieldComp label="Medias URL">
