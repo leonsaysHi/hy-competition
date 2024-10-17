@@ -44,9 +44,10 @@ type FormData = {
   phases: Phase[]
   statsInput: StatsInputType
   trackedStats: PlayerStatLineKey[]
-  awards: AwardItem[]
   isActive?: Boolean
   isOver?: Boolean
+  mediasURL?: string
+  rulesURL?: string
 }
 const {
   competitionSports: sportsOptions,
@@ -68,8 +69,9 @@ const data = ref<FormData>({
   isOver: false,
   statsInput: statsInputOptions[0].value,
   trackedStats: [],
-  ...props.value,
-  awards: Array.isArray(props.value.awards) ? props.value.awards : []
+  mediasURL: '',
+  rulesURL: '',
+  ...props.value
 })
 
 const playersOptions = computed(() =>
@@ -93,7 +95,14 @@ const emit = defineEmits(['submit'])
 // Save
 const handleSubmit = (ev: Event) => {
   ev.preventDefault()
-  emit('submit', data.value as CompetitionDoc)
+  emit(
+    'submit', 
+    {
+      ...data.value,
+      mediasURL: data.value.mediasURL?.trim() || undefined,
+      rulesURL: data.value.rulesURL?.trim() || undefined
+    } as CompetitionDoc
+  )
 }
 // Delete
 const deleteModal = ref<typeof ModalComp>()
@@ -151,9 +160,18 @@ const handleDelete = async () => {
         />
       </FieldComp>
     </template>
-    <FieldComp label="Awards">
-      <AwardsInput v-model="data.awards" :players-options="playersOptions" />
-    </FieldComp>
+    <div class="row row-cols-1 row-cols-md-2">
+      <div class="col">
+        <FieldComp label="Medias URL">
+          <InputComp v-model="data.mediasURL" :disabled="isBusy" />
+        </FieldComp>
+      </div>
+      <div class="col">
+        <FieldComp label="Rule URL">
+          <InputComp v-model="data.rulesURL" :disabled="isBusy" />
+        </FieldComp>
+      </div>
+    </div>
     <hr>
     <div class="d-flex justify-content-end gap-2">
       <ButtonComp variant="danger" :is-busy="isBusy" size="lg" @click="() => handleConfirmDelete()">Delete</ButtonComp>
