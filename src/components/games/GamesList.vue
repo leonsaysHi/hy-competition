@@ -82,9 +82,7 @@ interface IProps {
 }
 const props = withDefaults(defineProps<IProps>(), {})
 const sortedItems = computed(() => {
-  const result = props.items.slice()
-  result.reverse()
-  return result
+  return props.items
 })
 </script>
 <style lang="scss" scoped>

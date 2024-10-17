@@ -1,4 +1,4 @@
-import type { CompetitionPlayer, PlayerId } from './players'
+import type { CompetitionPlayer, PlayerId } from './player'
 
 export type TeamId = string
 export type TeamRoster = PlayerId[]

@@ -31,7 +31,7 @@ import InputComp from '@/components/InputComp.vue'
 import FieldComp from '@/components/FieldComp.vue'
 import ButtonComp from '@/components/ButtonComp.vue'
 import type { Option } from '@/types/comp-fields'
-import type { CompetitionPlayer } from '@/types/players'
+import type { CompetitionPlayer } from '@/types/player'
 
 interface IProps {
   playersOptions: Option[]
@@ -62,6 +62,7 @@ const handleSubmit = (ev: Event) => {
     errors.value.number = 'This number is already taken.'
   } else {
     emit('submit', data.value)
+    console.log('AddTeamPlayer submit')
     data.value = {
       ...getDefaultData()
     }

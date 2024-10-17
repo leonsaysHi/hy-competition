@@ -18,7 +18,7 @@ import { ref, watch } from 'vue'
 import InputComp from '@/components/InputComp.vue'
 import FieldComp from '@/components/FieldComp.vue'
 import ButtonComp from '@/components/ButtonComp.vue'
-import type { CompetitionPlayer, PlayerId } from '@/types/players'
+import type { CompetitionPlayer, PlayerId } from '@/types/player'
 import useLibs from '@/composable/useLibs'
 
 interface IProps {

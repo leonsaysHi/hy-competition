@@ -2,9 +2,9 @@
 import SelectAction from './actions/SelectAction.vue'
 import SelectPlayer from './actions/SelectPlayer.vue'
 import { computed, ref, onMounted } from 'vue'
-import type { PlayerId } from '@/types/players'
-import type { TeamId } from '@/types/teams'
-import type { PlayerStatKey } from '@/types/stats'
+import type { PlayerId } from '@/types/player'
+import type { TeamId } from '@/types/team'
+import type { PlayerStatKey } from '@/types/player-stats'
 import type { Rosters } from '@/types/games'
 import type {
   Play,

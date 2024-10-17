@@ -31,7 +31,7 @@
 import { useRoute, useRouter } from 'vue-router'
 import { computed, ref } from 'vue'
 import type { Option } from '@/types/comp-fields'
-import type { CompetitionTeam } from '@/types/teams'
+import type { CompetitionTeam } from '@/types/team'
 import useCompetition from '@/composable/useCompetition'
 import PhaseForm from '@/admin/Competitions/forms/PhaseForm.vue'
 import useLibs from '@/composable/useLibs'

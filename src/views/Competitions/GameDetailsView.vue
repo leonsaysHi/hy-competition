@@ -2,13 +2,13 @@
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import useCompetition from '@/composable/useCompetition'
-import GameBoxcore from '@/components/games/GameBoxcore.vue'
+import GameBoxscore from '@/components/games/GameBoxscore.vue'
 import GameTeamsStats from '@/components/games/GameTeamsStats.vue'
 import GamePeriods from '@/components/games/GamePeriods.vue'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import GameComputed from '@/models/GameComputed'
-import type { CompetitionTeam, TeamId } from '@/types/teams'
+import type { CompetitionTeam, TeamId } from '@/types/team'
 import type { Game } from '@/types/games'
 import AwardsList from '@/components/competitions/AwardsList.vue'
 
@@ -30,7 +30,7 @@ const gameComputed = computed<GameComputed | undefined>(() =>
 const statView = ref<number>(0)
 const competitionTeams = computed<CompetitionTeam[]>(() => {
   return row.value?.teams.map((teamId: TeamId): CompetitionTeam => {
-    return getCompetitionTeam(teamId)
+    return getCompetitionTeam(teamId) as CompetitionTeam
   }) as CompetitionTeam[]
 })
 </script>
@@ -107,10 +107,10 @@ const competitionTeams = computed<CompetitionTeam[]>(() => {
           </li>
         </ul>
         <template v-if="statView === 0">
-          <GameTeamsStats :boxscore="gameComputed.boxScore" :teams="competitionTeams" />
+          <GameTeamsStats :boxscore="gameComputed.row.boxscore" :teams="competitionTeams" />
         </template>
         <template v-if="statView === 1">
-          <GameBoxcore :boxscore="gameComputed.boxScore" :teams="competitionTeams" />
+          <GameBoxscore :boxscore="gameComputed.row.boxscore" :teams="competitionTeams" />
         </template>
       </template>
     </template>

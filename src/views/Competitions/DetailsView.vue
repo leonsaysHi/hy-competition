@@ -1,105 +1,133 @@
 <script lang="ts" setup>
 import { useRoute } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
-import DropdownComp from '@/components/DropdownComp.vue'
 import useCompetition from '@/composable/useCompetition'
 import { computed, ref, watch } from 'vue'
-import type { Option } from '@/types/comp-fields'
-import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
+import PhaseGroupSelect from '@/components/competitions/PhaseGroupSelect.vue'
 import CompetitionStanding from '@/components/competitions/CompetitionStanding.vue'
 import CompetitionRanking from '@/components/competitions/CompetitionRanking.vue'
 import GamesList from '@/components/games/GamesList.vue'
-import { compareAsc } from 'date-fns'
 import { useI18n } from 'vue-i18n'
 import type GameComputedClass from '@/models/GameComputed'
 import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
 import BracketView from '@/components/bracket/BracketView.vue'
+import type { CompetitionTeam, TeamId } from '@/types/team'
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
 
-const { isReady, row } = useCompetition(competitionId)
+const { isReady, row, getCompetitionTeam, filterGames } = useCompetition(competitionId)
 
 const {
   selectedPhaseIdx,
   selectedPhase,
-  phasesOptions,
   selectedGroupIdx,
   selectedGroup,
-  groupsOptions
+  
 } = useCompetitionPhasesGroups()
 
 const { t } = useI18n()
 const { getGender, getCategory } = useOptionsLib()
 
-const gamesViewOptions = computed<Option[]>(() => {
+type GamesListValue = 'prev' | 'next' | 'live'
+interface GamesListOption {
+  text: String
+  value: GamesListValue
+  disabled: Boolean
+}
+const currentGamesView = ref<GamesListValue>('prev')
+
+const selectedGames = computed<GameComputedClass[]>(() => {
+  const result = filterGames({
+    phaseIdx: Number(selectedPhaseIdx.value),
+    groupIdx: Number(selectedGroupIdx.value),
+    isFinished: true,
+    isLive: false
+  })
+  return result
+})
+
+const standingTeams = computed<CompetitionTeam[]>(() => {
+  return Array.isArray(selectedGroup.value?.teams)
+    ? selectedGroup.value.teams
+      .map((teamId: TeamId) => getCompetitionTeam(teamId) as CompetitionTeam)
+    : []
+})
+
+const prevGamesList = computed<GameComputedClass[]>(() => {
+  const result = filterGames({
+    phaseIdx: Number(selectedPhaseIdx.value),
+    groupIdx: Number(selectedGroupIdx.value),
+    isFinished: true,
+    isLive: false
+  })
+  const teamsLength = standingTeams.value.length ? Math.round(standingTeams.value.length * .5) : 4
+  return result.slice(0, teamsLength)
+})
+
+const liveGamesList = computed<GameComputedClass[]>(() => {
+  const result = filterGames({
+    phaseIdx: Number(selectedPhaseIdx.value),
+    groupIdx: Number(selectedGroupIdx.value),
+    isFinished: false,
+    isLive: true
+  })
+  return result
+})
+
+const nextGamesList = computed<GameComputedClass[]>(() => {
+  const result = filterGames({
+    phaseIdx: Number(selectedPhaseIdx.value),
+    groupIdx: Number(selectedGroupIdx.value),
+    isFinished: false,
+    isLive: false
+  })
+  result.reverse()
+  const teamsLength = standingTeams.value.length ? Math.round(standingTeams.value.length * .5) : 4
+  return result.slice(0, teamsLength) 
+})
+
+const gamesListOptions = computed<GamesListOption[]>(() => {
   return [
     {
       text: t('global.gameDetails.live'),
-      value: 'live',
-      disabled:
-        !selectedGroup.value ||
-        !selectedGroup.value?.games.some((game: GameComputedClass) => game.isLive)
+      value: 'live' as GamesListValue,
+      disabled: !liveGamesList.value.length
     },
     {
       text: t('global.previous', 2),
-      value: 'prev',
-      disabled:
-        !selectedGroup.value ||
-        !selectedGroup.value?.games.some(
-          (game: GameComputedClass) => game.isFinished && !game.isLive
-        )
+      value: 'prev' as GamesListValue,
+      disabled: !prevGamesList.value.length
     },
     {
       text: t('global.upcoming', 2),
-      value: 'next',
-      disabled:
-        !selectedGroup.value ||
-        !selectedGroup.value?.games.some(
-          (game: GameComputedClass) => !game.isFinished && !game.isLive
-        )
+      value: 'next' as GamesListValue,
+      disabled: !nextGamesList.value.length
     }
   ]
 })
 
-const currentGamesView = ref<'prev' | 'next' | 'live'>('prev')
+const gamesList = computed<GameComputedClass[]>(() => {
+  const result = currentGamesView.value === 'prev'
+      ? prevGamesList.value
+      : currentGamesView.value === 'live'
+        ? liveGamesList.value
+        : nextGamesList.value
+
+  return result
+})
+
 
 watch(
-  () => gamesViewOptions.value,
-  (val: Option[]) => {
-    const optIdx = val.findIndex((opt: Option) => !opt.disabled)
+  () => gamesListOptions.value,
+  (val: GamesListOption[]) => {
+    const optIdx = val.findIndex((opt: GamesListOption) => !opt.disabled)
     if (optIdx > -1) {
       currentGamesView.value = val[optIdx].value as 'prev' | 'next' | 'live'
     }
   }
 )
-
-const groupGames = computed<GameComputedClass[]>(() => {
-  const games = Array.isArray(selectedGroup.value?.games) ? selectedGroup.value.games.slice() : []
-  const result = games
-    .filter((game: GameComputedClass) => {
-      return currentGamesView.value === 'prev'
-        ? game.isFinished && !game.isLive
-        : currentGamesView.value === 'next'
-          ? !game.isFinished && !game.isLive
-          : !game.isFinished && game.isLive
-    })
-  result.sort((a: GameComputedClass, b: GameComputedClass) =>
-    currentGamesView.value === 'prev'
-      ? compareAsc(b.row.datetime, a.row.datetime)
-      : compareAsc(a.row.datetime, b.row.datetime)
-  )
-  return Array.isArray(selectedGroup.value?.standing)
-    ? result.slice(
-      0,
-      Math.max(
-        Math.round(selectedGroup.value.standing.length * 0.5),
-        Math.min(4, selectedGroup.value.standing.length)
-      )
-    ) 
-    : result
-})
 </script>
 <template>
   <div>
@@ -113,37 +141,22 @@ const groupGames = computed<GameComputedClass[]>(() => {
     <template v-if="!isReady">
       <SpinnerComp />
     </template>
-    <template v-else-if="!phasesOptions?.length || !groupsOptions?.length">
-      <p>Error: No phase.</p>
-    </template>
     <template v-else>
-      <div class="mb-3 hstack gap-3">
-        <DropdownComp
-          v-model="selectedPhaseIdx"
-          :options="phasesOptions"
-          variant="light"
-          size="lg"
-          class="fw-bold fz-5"
-          :disabled="phasesOptions.length === 1"
-        />
-        <template v-if="groupsOptions.length > 1">
-          <RadioGroupComp v-model="selectedGroupIdx" :options="groupsOptions" buttons />
-        </template>
-      </div>
+      <PhaseGroupSelect class="mb-3" />
       <hr />
-      <template v-if="selectedPhase && selectedGroup">
+      <template v-if="selectedPhase">
         <template v-if="selectedPhase.type === 'playoffs'">
           <h3>{{ t('global.playoffs') }}</h3>
-          <BracketView :bracket="selectedGroup.bracket" />
+          <BracketView :games="selectedGames" :teams="standingTeams" />
         </template>
         <template v-else>
           <h3>{{ t('global.standing') }}</h3>
-          <CompetitionStanding :value="selectedGroup.standing" />
+          <CompetitionStanding :games="selectedGames" :teams="standingTeams" />
         </template>
         <div class="d-flex align-items-end justify-content-between">
           <h3>{{ t('global.game', 2) }}</h3>
           <ul class="nav nav-underline justify-content-end">
-            <template v-for="opt in gamesViewOptions" :key="opt.value">
+            <template v-for="opt in gamesListOptions" :key="opt.value">
               <li class="nav-item">
                 <a
                   class="nav-link"
@@ -156,12 +169,11 @@ const groupGames = computed<GameComputedClass[]>(() => {
             </template>
           </ul>
         </div>
-        <GamesList class="mb-3" :items="groupGames" />
-        <CompetitionRanking :value="selectedGroup.ranking" :limit="15">
-          <template #title>
-            <h3>{{ t('global.ranking') }}</h3>
-          </template>
-        </CompetitionRanking>
+        <GamesList class="mb-3" :items="gamesList" />
+        <div class="d-flex gap-3 justify-content-between">
+          <h3>{{ t('global.ranking') }}</h3>
+        </div>
+        <CompetitionRanking :games="selectedGames" :limit="15" />
       </template>
     </template>
   </div>

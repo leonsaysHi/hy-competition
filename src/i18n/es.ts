@@ -17,13 +17,23 @@ const es = {
       }
     },
     phases: {
+      overall: 'Total',
       groups: 'Phase regulares',
       playoffs: 'Playoffs'
     },
     stats: {
       sheet: 'Stats sheet',
       playbyplay: 'Play-by-Play',
-      showavg: 'Monstrar promedios',
+      statsavg: 'Promedios',
+      statscumul: 'Cumulados',
+      groups: {
+        fga: 'FG attempts',
+        oreb: 'Off/def rebounds',
+        tov: 'Turnovers',
+        blka: 'Block against',
+        f: 'Fouls',
+        dnp: 'DNP',
+      }
     },
     playerStats: {
       text: {
@@ -125,6 +135,7 @@ const es = {
         wins: 'W',
         ptsfv: 'Pts+',
         ptsag: 'Pts-',
+        ptsdiff: '+/-',
         hist: 'Últimos'
       },
       long: {
@@ -133,6 +144,7 @@ const es = {
         wins: 'Ganados',
         ptsfv: 'Puntos anotados',
         ptsag: 'Puntos encajados',
+        ptsdiff: 'Diferencia de pts',
         hist: 'Últimos juegos'
       }
     }
@@ -140,10 +152,12 @@ const es = {
   cta: {
     cancel: 'Cancelar',
     submit: 'Guardar',
-    view: 'ver'
+    view: 'Ver'
   },
   home: {
-    title: 'Lista de las ligas:',
+    noItem: 'Ningun liga ahora',
+    currentItems: 'Ultima liga | Ultimas ligas',
+    pastItems: 'Ligas pasadas',
     lastUpdate: 'Última actualización'
   },
   bracket: {

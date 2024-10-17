@@ -6,27 +6,30 @@ import StatsTableComp from '@/components/StatsTableComp.vue'
 import type { TableField, TableItem } from '@/types/comp-table'
 import type { Option } from '@/types/comp-fields'
 import useCompetition from '@/composable/useCompetition'
-import type { CompetitionTeam } from '@/types/teams'
+import type { CompetitionTeam } from '@/types/team'
 import { useI18n } from 'vue-i18n'
+import type { PlayerId } from '@/types/player'
 import type { CompetitionId } from '@/types/competitions'
+import { getPlayerCalculatedStatsFromPlayerGamesStats, mergeStatLines } from '@/utils/stats/basketball'
 const { t } = useI18n()
 
 const route = useRoute()
-const { competitionId, playerId } = route.params as { competitionId: string; playerId: string }
+const { competitionId, playerId } = route.params as { competitionId: CompetitionId; playerId: PlayerId }
 
 interface IProps {
   items: GameComputedClass[]
 }
 const props = withDefaults(defineProps<IProps>(), {})
 
-const { getPlayerCompetitionTeam, trackedPlayerRankingKeys } = useCompetition(competitionId)
+
+const { getPlayerCompetitionTeam, competitionPlayerStatsTableKeys } = useCompetition(competitionId)
 
 const fields = computed(() => {
   const fields = [
     { key: 'datetime', label: t('global.date'), tdClass: 'pt-1 lh-1' },
     { key: 'teamId', label: t('global.gameDetails.opponent.text') },
     { key: 'isWin', label: '', tdClass: 'text-center' },
-    ...trackedPlayerRankingKeys.value.map(
+    ...competitionPlayerStatsTableKeys.value.map(
       (opt: Option): TableField => ({
           key: opt.value,
           label: opt.text,
@@ -48,17 +51,22 @@ const fields = computed(() => {
   return fields
 })
 const computedGames = computed<TableItem[]>(() => {
-  return props.items.map((game: GameComputedClass) => {
-    const team = getPlayerCompetitionTeam(playerId) as CompetitionTeam
-    const opp = game.getOppScore(team?.id)
-    return {
-      datetime: game.date.short,
-      isFinished: game.isFinished,
-      isWin: !opp?.winner,
-      teamId: opp?.id,
-      ...game.boxScore[playerId]
-    }
-  })
+  return props.items
+    .map((game: GameComputedClass) => {
+      const team = getPlayerCompetitionTeam(playerId) as CompetitionTeam
+      const opp = game.getOppScore(team?.id)
+      //console.log(game.row.boxscore[playerId])
+      return {
+        datetime: game.date.short,
+        isFinished: game.isFinished,
+        isWin: !opp?.winner,
+        teamId: opp?.id,
+        ...getPlayerCalculatedStatsFromPlayerGamesStats(
+          [mergeStatLines(
+            [ game.row.boxscore[playerId] ]
+          )])
+      }
+    })
 })
 </script>
 

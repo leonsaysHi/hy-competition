@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import ButtonComp from '@/components/ButtonComp.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
-import type { PlayerId } from '@/types/players'
-import type { TeamId } from '@/types/teams'
+import type { PlayerId } from '@/types/player'
+import type { TeamId } from '@/types/team'
 import type { Rosters } from '@/types/games'
 import type { Play } from '@/types/box-score-recoder'
 import { useI18n } from 'vue-i18n'

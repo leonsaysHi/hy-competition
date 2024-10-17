@@ -5,7 +5,7 @@ import TableComp from '@/components/TableComp.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import useTeamsLib from '@/composable/useTeamsLib'
 import type { TableField, TableItem } from '@/types/comp-table'
-import type { Team } from '@/types/teams'
+import type { Team } from '@/types/team'
 import { stringIncludes } from '@/utils/strings'
 import { computed, ref } from 'vue'
 

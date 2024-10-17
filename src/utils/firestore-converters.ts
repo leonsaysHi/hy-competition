@@ -1,11 +1,11 @@
 import type { Competition, CompetitionId, Phase, PhaseGroup } from '@/types/competitions'
-import type { CompetitionPlayer, PlayerDoc } from '@/types/players'
+import type { CompetitionPlayer, CompetitionPlayerDoc, Player, PlayerDoc } from '@/types/player'
 import { Timestamp } from 'firebase/firestore'
 import type { DocumentData, QueryDocumentSnapshot, SnapshotOptions } from 'firebase/firestore'
 import { dateToTimeStamp } from '@/utils/dates'
-import type { CompetitionTeamDoc, TeamDoc, TeamId } from '@/types/teams'
-import type { GameDoc } from '@/types/games'
-import type { CompetitionRankingComputed, CompetitionStandingComputed } from '@/types/computed'
+import type { CompetitionTeamDoc, Team, TeamDoc } from '@/types/team'
+import type { Game, GameDoc } from '@/types/games'
+import type { CompetitionPlayerComputed, CompetitionPlayerStats, CompetitionStanding, CompetitionStandingComputed } from '@/types/computed'
 
 const dateFromFirestore = (ts: Timestamp): Date => {
   return ts.toDate()
@@ -64,7 +64,7 @@ export const competitionPlayerConverter = {
     const data = snapshot.data(options)!
     return {
       id: snapshot.id,
-      ...data
+      ...(data as CompetitionPlayerDoc)
     }
   }
 }
@@ -82,7 +82,7 @@ export const competitionTeamConverter = {
     const data = snapshot.data(options)!
     return {
       id: snapshot.id,
-      ...data
+      ...(data as CompetitionTeamDoc)
     }
   }
 }
@@ -94,11 +94,11 @@ export const gameConverter = {
     }
     return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null))
   },
-  fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions) => {
+  fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions): Game => {
     const data = snapshot.data(options)!
     return {
       id: snapshot.id,
-      ...data
+      ...(data as GameDoc)
     }
   }
 }
@@ -110,11 +110,11 @@ export const teamConverter = {
     }
     return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null))
   },
-  fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions) => {
+  fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions): Team => {
     const data = snapshot.data(options)!
     return {
       id: snapshot.id,
-      ...data
+      ...(data as TeamDoc)
     }
   }
 }
@@ -126,27 +126,27 @@ export const playerConverter = {
     }
     return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null))
   },
-  fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions) => {
+  fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions): Player => {
     const data = snapshot.data(options)!
     return {
       id: snapshot.id,
-      ...data
+      ...(data as PlayerDoc)
     }
   }
 }
 
 export const computedRankingConverter = {
-  toFirestore: (row: CompetitionRankingComputed): DocumentData => {
+  toFirestore: (row: CompetitionPlayerComputed): DocumentData => {
     const payload = {
       ...row
     }
     return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null))
   },
-  fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions) => {
+  fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions): CompetitionPlayerComputed => {
     const data = snapshot.data(options)!
     return {
       id: snapshot.id,
-      ...data
+      ...(data as CompetitionPlayerStats)
     }
   }
 }
@@ -157,11 +157,11 @@ export const computedStandingConverter = {
     }
     return Object.fromEntries(Object.entries(payload).filter(([_, v]) => v != null))
   },
-  fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions) => {
+  fromFirestore: (snapshot: QueryDocumentSnapshot, options: SnapshotOptions): CompetitionStandingComputed => {
     const data = snapshot.data(options)!
     return {
       id: snapshot.id,
-      ...data
+      ...(data as CompetitionStanding)
     }
   }
 }

@@ -76,7 +76,7 @@ import TeamLogo from '@/components/teams/TeamLogo.vue'
 import useLibs from '@/composable/useLibs'
 import type { ScoresComputed } from '@/models/GameComputed'
 import type { BracketMatchup } from '@/types/competitions'
-import type { Team } from '@/types/teams'
+import type { Team } from '@/types/team'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 

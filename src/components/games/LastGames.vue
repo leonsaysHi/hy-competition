@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { GamesHist } from '@/types/stats'
+import type { GamesHist } from '@/types/player-stats'
 import { computed } from 'vue'
 
 interface IProps {

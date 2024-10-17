@@ -5,21 +5,30 @@ import LastGames from '@/components/games/LastGames.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
 import useLibs from '@/composable/useLibs'
 import useOptionsLibs from '@/composable/useOptionsLib'
-import type { CompetitionStanding } from '@/types/computed'
 import { useRoute } from 'vue-router'
 import { getOrd } from '@/utils/maths'
 
 import { useI18n } from 'vue-i18n'
-const { t } = useI18n()
-const { teamStandingKeys } = useOptionsLibs()
-const route = useRoute()
-const { competitionId } = route.params
+import type GameComputedClass from '@/models/GameComputed'
+import type { TableField } from '@/types/comp-table'
+import type { CompetitionTeam } from '@/types/team'
+import type { CompetitionStanding } from '@/types/computed'
+import { getCompetitionStanding } from '@/utils/stats/basketball'
 
 interface IProps {
-  value: CompetitionStanding[]
+  games?: GameComputedClass[]
+  teams?: CompetitionTeam[]
 }
+const props = withDefaults(defineProps<IProps>(), {
+  games: () => [],
+  teams: () => []
+})
 
-const props = withDefaults(defineProps<IProps>(), {})
+const route = useRoute()
+const { competitionId } = route.params as { competitionId: string;  }
+const { t } = useI18n()
+const { teamStandingKeys } = useOptionsLibs()
+
 const { getTeamName } = useLibs()
 const fields = [
   {
@@ -46,8 +55,12 @@ const fields = [
     tdClass: 'text-center'
   }
 ]
-const items = computed(() => {
-  const items = props.value.slice()
+const items = computed<CompetitionStanding[]>(() => {
+  const items = getCompetitionStanding(props.teams, props.games)
+    .map((row: CompetitionStanding, idx: number) => ({
+      ...row,
+      pos: idx + 1
+    }))
   return items
 })
 </script>
