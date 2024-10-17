@@ -40,8 +40,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { PlayerId } from '@/types/players'
-import type { AwardKey, AwardItem } from '@/types/stats'
+import type { PlayerId } from '@/types/player'
+import type { AwardKey, AwardItem } from '@/types/player-stats'
 import type { Option } from '@/types/comp-fields'
 import ButtonComp from '@/components/ButtonComp.vue'
 

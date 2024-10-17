@@ -17,14 +17,14 @@ import SelectComp from '@/components/SelectComp.vue'
 import CheckComp from '@/components/CheckComp.vue'
 import useOptionsLib from '@/composable/useOptionsLib'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
-import type { AwardItem, PlayerTrackedStatKey } from '@/types/stats'
-import AwardsInput from '../components/AwardsInput.vue'
+import type { PlayerStatLineKey } from '@/types/player-stats'
 import TrackedStatsInput from '../components/TrackedStatsInput.vue'
 import useCompetition from '@/composable/useCompetition'
 import useLibs from '@/composable/useLibs'
-import type { PlayerId, GenderKey } from '@/types/players'
+import type { PlayerId, GenderKey } from '@/types/player'
 import useCompetitionAdmin from '@/composable/useCompetitionAdmin'
 import { useRouter } from 'vue-router'
+import { extraStatsGroups } from '@/utils/stats/basketball'
 const router = useRouter()
 interface IProps {
   value: Competition
@@ -42,9 +42,9 @@ type FormData = {
   gender?: GenderKey
   phases: Phase[]
   statsInput: StatsInputType
-  trackedStats: PlayerTrackedStatKey[]
-  awards: AwardItem[]
+  trackedStats: PlayerStatLineKey[]
   isActive?: Boolean
+  isOver?: Boolean
   mediasURL?: string
   rulesURL?: string
 }
@@ -65,13 +65,12 @@ const data = ref<FormData>({
   gender: undefined,
   category: undefined,
   isActive: false,
+  isOver: false,
   statsInput: statsInputOptions[0].value,
   trackedStats: [],
   mediasURL: '',
   rulesURL: '',
-  ...props.value,
-
-  awards: Array.isArray(props.value.awards) ? props.value.awards : []
+  ...props.value
 })
 
 const playersOptions = computed(() =>
@@ -84,16 +83,25 @@ const playersOptions = computed(() =>
   })
 )
 
+extraStatsGroups[0].keys.forEach((key:PlayerStatLineKey) => {
+  if (!data.value.trackedStats.includes(key)) {
+    data.value.trackedStats.push(key)
+  }
+})
+
 const emit = defineEmits(['submit'])
 
 // Save
 const handleSubmit = (ev: Event) => {
   ev.preventDefault()
-  emit('submit', {
-    ...data.value,
-    mediasURL: data.value.mediasURL?.trim() || undefined,
-    rulesURL: data.value.rulesURL?.trim() || undefined
-  } as CompetitionDoc)
+  emit(
+    'submit', 
+    {
+      ...data.value,
+      mediasURL: data.value.mediasURL?.trim() || undefined,
+      rulesURL: data.value.rulesURL?.trim() || undefined
+    } as CompetitionDoc
+  )
 }
 // Delete
 const deleteModal = ref<typeof ModalComp>()
@@ -114,8 +122,9 @@ const handleDelete = async () => {
     <FieldComp label="Title" required>
       <InputComp v-model="data.title" :disabled="isBusy" required />
     </FieldComp>
-    <FieldComp label="is active" class="d-flex gap-3 justify-content-end">
-      <CheckComp v-model="data.isActive" :disabled="isBusy" switch></CheckComp>
+    <FieldComp class="d-flex gap-2 justify-content-end">
+      <CheckComp v-model="data.isActive" :disabled="isBusy" button>Active</CheckComp>
+      <CheckComp v-model="data.isOver" :disabled="isBusy" button>Finished</CheckComp>
     </FieldComp>
     <FieldComp label="Date">
       <InputComp v-model="data.date" type="date" :disabled="isBusy" required />
@@ -150,9 +159,6 @@ const handleDelete = async () => {
         />
       </FieldComp>
     </template>
-    <FieldComp label="Awards">
-      <AwardsInput v-model="data.awards" :players-options="playersOptions" />
-    </FieldComp>
     <div class="row row-cols-1 row-cols-md-2">
       <div class="col">
         <FieldComp label="Medias URL">

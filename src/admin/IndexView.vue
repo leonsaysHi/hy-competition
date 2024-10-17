@@ -2,14 +2,7 @@
 import { RouterLink, RouterView } from 'vue-router'
 import useLibs from '@/composable/useLibs'
 import SpinnerComp from '@/components/SpinnerComp.vue'
-import useAuthentification from '@/composable/useAuthentification'
-import ButtonComp from '@/components/ButtonComp.vue'
-const { logOut } = useAuthentification()
 const { isReady: isLibsReady } = useLibs()
-const handleLogOut = () => {
-  console.log('log out')
-  logOut()
-}
 </script>
 <template>
   <header class="bd-header bg-primary py-3 d-flex align-items-stretch text-bg-dark">

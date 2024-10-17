@@ -1,6 +1,6 @@
-import type { PlayerId } from './players'
-import type { PlayerStatKey } from './stats'
-import type { TeamId } from './teams'
+import type { PlayerId } from './player'
+import type { PlayerStatKey } from './player-stats'
+import type { TeamId } from './team'
 
 export type GetPlayerKey =
   | 'team' // roster

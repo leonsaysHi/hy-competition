@@ -1,17 +1,25 @@
 <script setup lang="ts">
 import ViewHeader from '@/cityhoops/components/layout/ViewHeader.vue'
 import ViewFooter from '@/cityhoops/components/layout/ViewFooter.vue'
+
+import { useRoute } from 'vue-router';
+import { computed } from 'vue';
+const route = useRoute()
+const competitionId = computed(() => {
+  const { competitionId } = route.params as { competitionId: string | undefined }
+  return competitionId
+})
 </script>
 
 <template>
   <div class="wrapper">
-    <ViewHeader />
+    <ViewHeader :key="competitionId" />
     <main>
       <section class="py-4 container-xl">
         <RouterView />
       </section>
     </main>
-    <ViewFooter />
+    <ViewFooter :key="competitionId" />
   </div>
 </template>
 <style lang="scss" scoped>

@@ -5,11 +5,16 @@ import type { Option } from '@/types/comp-fields'
 import GamesList from '@/components/games/GamesList.vue'
 import { useI18n } from 'vue-i18n'
 import type GameComputedClass from '@/models/GameComputed'
-import ViewHero from '../components/layout/ViewHero.vue'
+import ViewHero from '../../components/layout/ViewHero.vue'
 import DropdownComp from '@/components/DropdownComp.vue'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
+import useCompetition from '@/composable/useCompetition'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
+const { competitionId } = route.params as { competitionId: string }
+const { row, filterGames } = useCompetition(competitionId)
 const { t } = useI18n()
 const { selectedPhaseIdx, phasesOptions, selectedGroupIdx, selectedGroup, groupsOptions } =
   useCompetitionPhasesGroups()
@@ -17,21 +22,44 @@ const { selectedPhaseIdx, phasesOptions, selectedGroupIdx, selectedGroup, groups
 type GameView = 'prev' | 'next'
 const currentGamesView = ref<GameView>('prev')
 
-const prevNextGamesList = computed<GameComputedClass[]>(() => {
-  const games = Array.isArray(selectedGroup.value?.games) ? selectedGroup.value.games.slice() : []
-  games.reverse()
-  return games
-    .filter((game: GameComputedClass) => {
-      return currentGamesView.value === 'prev'
-        ? game.isFinished && !game.isLive
-        : !game.isFinished && !game.isLive
+const prevGamesList = computed(() => row.value 
+  ? filterGames({
+      phaseIdx: Number(selectedPhaseIdx.value),
+      groupIdx: Number(selectedGroupIdx.value),
+      isFinished: true,
+      isLive: false
     })
+  : []
+)
+const nextGamesList = computed(() => row.value 
+  ? filterGames({
+      phaseIdx: Number(selectedPhaseIdx.value),
+      groupIdx: Number(selectedGroupIdx.value),
+      isFinished: false,
+      isLive: false
+    })
+    .reverse()
+  : []
+)
+const gamesList = computed<GameComputedClass[]>(() => {
+  const result = row.value 
+    ? currentGamesView.value === 'prev'
+      ? prevGamesList.value
+      : nextGamesList.value
+    : []
+  return result
 })
+
 const liveGamesList = computed<GameComputedClass[]>(() => {
-  const games = Array.isArray(selectedGroup.value?.games) ? selectedGroup.value.games.slice() : []
-  games.reverse()
-  return games
-    .filter((game: GameComputedClass) => !game.isFinished && game.isLive)
+  return row.value
+    ? filterGames({
+      phaseIdx: Number(selectedPhaseIdx.value),
+      groupIdx: Number(selectedGroupIdx.value),
+      isFinished: true,
+      isLive: true
+    })
+    .reverse()
+    : []
 })
 
 const gamesViewOptions = computed<Option[]>(() => {
@@ -39,16 +67,12 @@ const gamesViewOptions = computed<Option[]>(() => {
     {
       text: t('global.previous', 2),
       value: 'prev',
-      disabled: !selectedGroup.value?.games.some(
-        (game: GameComputedClass) => game.isFinished && !game.isLive
-      )
+      disabled: !prevGamesList.value.length
     },
     {
       text: t('global.upcoming', 2),
       value: 'next',
-      disabled: !selectedGroup.value?.games.some(
-        (game: GameComputedClass) => !game.isFinished && !game.isLive
-      )
+      disabled: !nextGamesList.value.length
     }
   ]
 })
@@ -111,7 +135,7 @@ watch(
           </template>
         </ul>
       </div>
-      <GamesList class="mb-3" :items="prevNextGamesList" />
+      <GamesList class="mb-3" :items="gamesList" />
     </template>
   </div>
 </template>

@@ -21,11 +21,12 @@ import {
 } from '@/utils/firestore-converters'
 
 import type { Competition, CompetitionDoc, CompetitionId } from '@/types/competitions'
-import CompetitionClass from '@/models/CompetitionComputed'
-import type { CompetitionTeam, CompetitionTeamDoc, TeamId } from '@/types/teams'
+import type { CompetitionTeam, CompetitionTeamDoc, TeamId } from '@/types/team'
 import type { Game, GameId } from '@/types/games'
-import type { CompetitionPlayer, PlayerId } from '@/types/players'
-import type { CompetitionRankingComputed, CompetitionStandingComputed } from '@/types/computed'
+import type { CompetitionPlayer, PlayerId } from '@/types/player'
+import type { CompetitionPlayerComputed, CompetitionPlayerStats, CompetitionStanding, CompetitionStandingComputed } from '@/types/computed'
+import useCompetition from './useCompetition'
+import { getCompetitionPlayersStats, getCompetitionStanding } from '@/utils/stats/basketball'
 
 export default function useCompetitionAdmin(competitionId: CompetitionId | undefined) {
   const gamesCollRef = collection(competitionsColl, `/${competitionId}/${gamesName}`).withConverter(
@@ -188,7 +189,6 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
 
   const writeCompetitionDoc = async (payload: Competition) => {
     const batch = writeCompetitionDocBatch(payload)
-    console.log('update computed')
     updateCompetitionLastUpdate(batch)
     await batch.commit()
   }
@@ -253,9 +253,31 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
   const updateCompetitionComputeds = async (payload: Competition) => {
     const batch: WriteBatch = writeBatch(db)
     if (payload.isActive) {
-      const computedClass = new CompetitionClass(payload)
-      writePlayersCompetitionComputed(computedClass.competitionRankings, batch)
-      writeTeamsCompetitionComputed(computedClass.competitionStandings, batch)
+      
+      const { teams, filterGames } = useCompetition(payload.id)
+      const competitionGames = filterGames({
+        isFinished: true,
+        isLive: false,
+      })
+      const competitionPlayerStatsToSave: CompetitionPlayerComputed[] = getCompetitionPlayersStats(
+        teams.value, 
+        competitionGames
+      )
+        .map((row: CompetitionPlayerStats) => ({
+          id: payload.id,
+          ...row
+        }))
+      const competitionStandingsToSave: CompetitionStandingComputed[] = getCompetitionStanding(
+        teams.value, 
+        competitionGames
+      )
+        .map((row: CompetitionStanding) => ({
+          id: payload.id,
+          ...row
+        }))
+
+      writePlayersCompetitionComputed(competitionPlayerStatsToSave, batch)
+      writeTeamsCompetitionComputed(competitionStandingsToSave, batch)
     } else {
       const { id: competitionId } = payload
       payload.teams.forEach((team: CompetitionTeam) => {
@@ -270,10 +292,10 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
   }
 
   const writePlayersCompetitionComputed = (
-    rows: CompetitionRankingComputed[],
+    rows: CompetitionPlayerComputed[],
     batch: WriteBatch = writeBatch(db)
   ): WriteBatch => {
-    rows.forEach((row: CompetitionRankingComputed) => {
+    rows.forEach((row: CompetitionPlayerComputed) => {
       const { playerId, id } = row
       const computedCollection = collection(
         doc(playersColl, playerId),
@@ -329,7 +351,6 @@ export default function useCompetitionAdmin(competitionId: CompetitionId | undef
     // writeCompetition,
     writeCompetitionDoc,
     deleteCompetitionDoc,
-    updateCompetitionLastUpdate,
     updateCompetitionComputeds,
 
     // Admin game

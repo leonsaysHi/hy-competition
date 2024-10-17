@@ -1,11 +1,11 @@
-import type { AwardItem, PlayerTrackedStatKey } from './stats'
-import type { CompetitionTeam, TeamId } from './teams'
+import type { AwardItem, PlayerStatLineKey } from './player-stats'
+import type { CompetitionTeam, TeamId } from './team'
 import type { Game } from './games'
-import type { GenderKey } from './players'
+import type { GenderKey } from './player'
 import type GameComputedClass from '@/models/GameComputed'
 export type CompetitionId = string
 export type CompetitionSport = 'basketball5x5' | 'basketball3x3'
-export type CompetitionCategorie = 'u17' | 'u21' | 'senior' | '+35'
+export type CompetitionCategorie = 'u16' | 'u21' | 'senior' | '+35'
 
 export type PhaseType = 'groups' | 'playins' | 'playoffs' | undefined
 export type StatsInputType = 'sheet' | undefined
@@ -51,9 +51,9 @@ export interface CompetitionDoc {
   isOver: boolean
   phases: Phase[]
   statsInput: StatsInputType
-  trackedStats: PlayerTrackedStatKey[]
-  mediasURL: string
-  rulesURL: string
+  trackedStats: PlayerStatLineKey[]
+  mediasURL?: string
+  rulesURL?: string
   lastUpdate: Date
 }
 

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Team } from '@/types/teams'
+import type { Team } from '@/types/team'
 import { computed, ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'

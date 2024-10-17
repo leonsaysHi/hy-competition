@@ -2,12 +2,12 @@
 import { useRoute, useRouter } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import useCompetition from '@/composable/useCompetition'
-import ViewHero from '../components/layout/ViewHero.vue'
+import ViewHero from '../../components/layout/ViewHero.vue'
 import TeamLogo from '@/components/teams/TeamLogo.vue'
-import type { CompetitionTeam } from '@/types/teams'
 import useLibs from '@/composable/useLibs'
 import { computed } from 'vue'
 import ButtonComp from '@/components/ButtonComp.vue'
+import type { CompetitionTeam } from '@/types/team'
 
 const route = useRoute()
 const router = useRouter()

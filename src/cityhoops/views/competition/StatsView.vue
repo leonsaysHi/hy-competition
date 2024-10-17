@@ -2,21 +2,53 @@
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import CompetitionStanding from '@/components/competitions/CompetitionStanding.vue'
 import CompetitionRanking from '@/components/competitions/CompetitionRanking.vue'
-import ViewHero from '../components/layout/ViewHero.vue'
+import ViewHero from '../../components/layout/ViewHero.vue'
 import DropdownComp from '@/components/DropdownComp.vue'
 import RadioGroupComp from '@/components/RadioGroupComp.vue'
 import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
 import { computed } from 'vue'
+import type GameComputedClass from '@/models/GameComputed'
+import { useRoute } from 'vue-router'
+import useCompetition from '@/composable/useCompetition'
+import type { CompetitionTeam, TeamId } from '@/types/team'
 
-const { selectedPhaseIdx, selectedPhase, phasesOptions, groupsOptions, selectedGroupIdx, selectedGroup } =
+const route = useRoute()
+const { competitionId } = route.params as { competitionId: string }
+const { row, getCompetitionTeam, filterGames } = useCompetition(competitionId)
+const { selectedPhaseIdx, phasesOptions, groupsOptions, selectedGroupIdx, selectedGroup } =
   useCompetitionPhasesGroups()
 
-const overallRanking = computed<typeof CompetitionRanking[]>((): typeof CompetitionRanking[] => {
-  return groupsOptions.value?.reduce((acc: typeof CompetitionRanking[], opt) => {
-      const ranking = selectedPhase.value?.groups[Number(opt.value)]?.ranking || []
-      return acc.concat(ranking)
-    }, [])
+const standingTeams = computed<CompetitionTeam[]>(() => {
+  return Array.isArray(selectedGroup.value?.teams)
+    ? selectedGroup.value.teams
+      .map((teamId: TeamId) => getCompetitionTeam(teamId) as CompetitionTeam)
+    : []
 })
+
+const standingGames = computed<GameComputedClass[]>(() => {
+  const result = row.value 
+    ? filterGames({
+        phaseIdx: Number(selectedPhaseIdx.value),
+        groupIdx: Number(selectedGroupIdx.value),
+        isFinished: true,
+        isLive: false
+      })
+      .reverse()
+    : []
+  return result
+})
+
+const rankingGames = computed<GameComputedClass[]>(() => {
+  return row.value 
+    ? filterGames({
+      phaseIdx: Number(selectedPhaseIdx.value),
+      // groupIdx: Number(selectedGroupIdx.value),
+      isFinished: true,
+      isLive: false
+    })
+    : []
+})
+
 </script>
 <template>
   <div>
@@ -49,13 +81,12 @@ const overallRanking = computed<typeof CompetitionRanking[]>((): typeof Competit
           </template>
         </div>
       </div>
-      <CompetitionStanding :value="selectedGroup.standing" />
+      <CompetitionStanding :teams="standingTeams" :games="standingGames" />
       <hr />
       <h2>Líderes por categorías</h2>
       <CompetitionRanking 
-        :value="overallRanking" 
+        :games="rankingGames" 
         :limit="25" 
-        :show-avg="false"
       />
     </template>
   </div>

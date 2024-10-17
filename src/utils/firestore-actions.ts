@@ -2,11 +2,10 @@ import { db } from '@/firebase-firestore.js'
 import { doc, getDoc, writeBatch } from 'firebase/firestore'
 import type { DocumentReference, CollectionReference } from 'firebase/firestore'
 
-export default function useFireBase() {
-  const writeDocs = async (
+export async function writeDocs (
     rows: any[],
     coll: CollectionReference
-  ): Promise<DocumentReference[]> => {
+  ): Promise<DocumentReference[]> {
     const docRefs: DocumentReference[] = []
     const batch = writeBatch(db)
     rows.forEach((row) => {
@@ -20,8 +19,8 @@ export default function useFireBase() {
     await batch.commit()
     console.timeEnd('write.commit')
     return docRefs
-  }
-  const deleteDocs = async (docRefs: DocumentReference[]) => {
+}
+export async function deleteDocs (docRefs: DocumentReference[]) {
     const batch = writeBatch(db)
     docRefs.forEach((doc) => {
       batch.delete(doc)
@@ -29,24 +28,17 @@ export default function useFireBase() {
     console.time('delete.commit')
     await batch.commit()
     console.timeEnd('delete.commit')
-  }
+}
 
-  const readDoc = async (docRef: DocumentReference) => {
+export async function readDoc (docRef: DocumentReference) {
     const doc = await getDoc(docRef)
     if (doc.exists()) {
-      const row = doc.exists()
+        const row = doc.exists()
         ? {
             id: doc.id,
             ...doc.data()
-          }
+            }
         : null
-      return row
+        return row
     }
-  }
-
-  return {
-    readDoc,
-    writeDocs,
-    deleteDocs
-  }
 }

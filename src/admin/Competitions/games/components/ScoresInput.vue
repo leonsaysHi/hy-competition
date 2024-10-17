@@ -57,7 +57,7 @@ import { computed } from 'vue'
 import type { GameDocScores } from '@/types/games'
 import InputComp from '@/components/InputComp.vue'
 import ButtonComp from '@/components/ButtonComp.vue'
-import type { TeamId } from '@/types/teams'
+import type { TeamId } from '@/types/team'
 
 interface IProps {
   modelValue: GameDocScores

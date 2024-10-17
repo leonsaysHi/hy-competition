@@ -5,7 +5,7 @@ import ButtonComp from '@/components/ButtonComp.vue'
 import TableComp from '@/components/TableComp.vue'
 import ModalComp from '@/components/ModalComp.vue'
 import AlertComp from '@/components/AlertComp.vue'
-import type { CompetitionTeam, Team, TeamId } from '@/types/teams'
+import type { CompetitionTeam, Team, TeamId } from '@/types/team'
 import type { Option } from '@/types/comp-fields'
 
 import useCompetition from '@/composable/useCompetition'
