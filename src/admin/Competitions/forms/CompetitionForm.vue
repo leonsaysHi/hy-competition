@@ -73,22 +73,6 @@ const data = ref<FormData>({
   ...props.value
 })
 
-const playersOptions = computed(() =>
-  allPlayers.value.map((playerId: PlayerId) => {
-    const text = getPlayerName(playerId)
-    return {
-      text,
-      value: playerId
-    }
-  })
-)
-
-extraStatsGroups[0].keys.forEach((key:PlayerStatLineKey) => {
-  if (!data.value.trackedStats.includes(key)) {
-    data.value.trackedStats.push(key)
-  }
-})
-
 const emit = defineEmits(['submit'])
 
 // Save
