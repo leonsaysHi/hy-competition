@@ -48,6 +48,17 @@ const standingTeams = computed<CompetitionTeam[]>(() => {
     : []
 })
 
+const liveGamesList = computed<GameComputedClass[]>(() => {
+  const result = filterGames({
+    phaseIdx: Number(selectedPhaseIdx.value),
+    groupIdx: Number(selectedGroupIdx.value),
+    isFinished: false,
+    isLive: true
+  })
+  const teamsLength = standingTeams.value.length ? Math.round(standingTeams.value.length * .5) : 4
+  return result.slice(0, teamsLength) 
+})
+
 const nextGamesList = computed<GameComputedClass[]>(() => {
   const result = filterGames({
     phaseIdx: Number(selectedPhaseIdx.value),
@@ -94,7 +105,11 @@ const nextGamesList = computed<GameComputedClass[]>(() => {
       </ViewHero>
 
       <template v-if="selectedPhase && selectedGroup">
-        <h2>{{ t('global.game', 2) }}</h2>
+        <template v-if="liveGamesList.length">
+        <h2>{{ t('global.liveGame', liveGamesList.length) }}</h2>
+        <GamesList class="mb-3" :items="liveGamesList" />
+        </template>
+        <h2>{{ t('global.upcomingGame', nextGamesList.length) }}</h2>
         <GamesList class="mb-3" :items="nextGamesList" />
         <div class="mb-3 d-flex justify-content-center">
           <RouterLink

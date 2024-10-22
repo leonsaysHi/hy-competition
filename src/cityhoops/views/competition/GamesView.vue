@@ -55,7 +55,7 @@ const liveGamesList = computed<GameComputedClass[]>(() => {
     ? filterGames({
       phaseIdx: Number(selectedPhaseIdx.value),
       groupIdx: Number(selectedGroupIdx.value),
-      isFinished: true,
+      isFinished: false,
       isLive: true
     })
     .reverse()
@@ -116,7 +116,7 @@ watch(
         </template>
       </ViewHero>
       <template v-if="liveGamesList.length">
-        <h2>Ahora en vivo</h2>
+        <h2>{{ t('global.liveGame', liveGamesList.length) }}</h2>
         <GamesList class="mb-3" :items="liveGamesList" />
       </template>
       <div class="d-flex align-items-end justify-content-between">
