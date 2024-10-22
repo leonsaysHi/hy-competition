@@ -171,6 +171,8 @@ const es = {
     ranking: 'Líderes',
     playoffs: 'Playoffs',
     game: 'Juego | Juegos',
+    upcomingGame: 'Proximo juego | Proximos juegos',
+    liveGame: 'Juego en vivo | Juegos en vivos',
     gameDetails: {
       live: 'Vivo',
       period: {
