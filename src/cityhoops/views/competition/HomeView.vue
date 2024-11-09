@@ -15,6 +15,7 @@ import useCompetitionPhasesGroups from '@/composable/useCompetitionPhasesGroups'
 import BracketView from '@/components/bracket/BracketView.vue'
 import type { CompetitionTeam } from '@/types/teams'
 import type { TeamId } from '@/types/team'
+import { isAfter, startOfDay } from 'date-fns'
 
 const route = useRoute()
 const { competitionId } = route.params as { competitionId: string }
@@ -67,7 +68,10 @@ const nextGamesList = computed<GameComputedClass[]>(() => {
     isLive: false
   })
   const teamsLength = standingTeams.value.length ? Math.round(standingTeams.value.length * .5) : 4
-  return result.slice(0, teamsLength) 
+  result.reverse()
+  return result
+    .filter(game => isAfter(game.row.datetime, startOfDay(new Date())))
+    .slice(0, teamsLength) 
 })
 </script>
 <template>
