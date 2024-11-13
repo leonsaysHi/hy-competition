@@ -242,6 +242,7 @@ const computedItems = computed(() => {
       
       if (props.showAvg) {
         row.pts = getAvg(row.pts, length)
+        row.reb = getAvg(row.reb, length)
         playerStatsKeys
           .forEach((key) => {
             const total = (item[key] || 0) as number
