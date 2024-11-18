@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import TableComp from '@/components/TableComp.vue'
@@ -37,7 +37,7 @@ const { isReady, row, games, teams, filterGames } =
   const standings = getCompetitionStanding(
     teams.value, 
     filterGames({
-      teamId: teamId,
+      teamId,
       isFinished: true,
       isLive: false
     })
@@ -104,6 +104,83 @@ const statsFields: TableField[] = [
     tdClass: 'text-center'
   }
 ]
+
+// games list
+type GamesListValue = 'prev' | 'next' | 'live'
+interface GamesListOption {
+  text: String
+  value: GamesListValue
+  disabled: Boolean
+}
+const currentGamesView = ref<GamesListValue>('prev')
+
+const prevGamesList = computed<GameComputedClass[]>(() => {
+  const result = filterGames({
+    teamId,
+    isFinished: true,
+    isLive: false
+  })
+  return result
+})
+
+const liveGamesList = computed<GameComputedClass[]>(() => {
+  const result = filterGames({
+    teamId,
+    isFinished: false,
+    isLive: true
+  })
+  return result
+})
+
+const nextGamesList = computed<GameComputedClass[]>(() => {
+  const result = filterGames({
+    teamId,
+    isFinished: false,
+    isLive: false
+  })
+  result.reverse()
+  return result
+})
+
+const gamesListOptions = computed<GamesListOption[]>(() => {
+  return [
+    {
+      text: t('global.gameDetails.live'),
+      value: 'live' as GamesListValue,
+      disabled: !liveGamesList.value.length
+    },
+    {
+      text: t('global.previous', 2),
+      value: 'prev' as GamesListValue,
+      disabled: !prevGamesList.value.length
+    },
+    {
+      text: t('global.upcoming', 2),
+      value: 'next' as GamesListValue,
+      disabled: !nextGamesList.value.length
+    }
+  ]
+})
+
+const gamesList = computed<GameComputedClass[]>(() => {
+  const result = currentGamesView.value === 'prev'
+      ? prevGamesList.value
+      : currentGamesView.value === 'live'
+        ? liveGamesList.value
+        : nextGamesList.value
+
+  return result
+})
+
+watch(
+  () => gamesListOptions.value,
+  (val: GamesListOption[]) => {
+    const optIdx = val.findIndex((opt: GamesListOption) => !opt.disabled)
+    if (optIdx > -1) {
+      currentGamesView.value = val[optIdx].value as 'prev' | 'next' | 'live'
+    }
+  }
+)
 </script>
 <template>
   <div>
@@ -140,7 +217,20 @@ const statsFields: TableField[] = [
         </template>
       </CompetitionRanking>
       <h3 class="mt-3">{{ t('global.game', 2) }}</h3>
-      <GamesList :items="teamGames" />
+      <ul class="nav nav-underline justify-content-end">
+        <template v-for="opt in gamesListOptions" :key="opt.value">
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              :class="[currentGamesView === opt.value && 'active', opt.disabled && 'disabled']"
+              :aria-current="currentGamesView === opt.value ? 'page' : false"
+              @click="currentGamesView = opt.value"
+              >{{ opt.text }}</a
+            >
+          </li>
+        </template>
+      </ul>
+      <GamesList :items="gamesList" />
     </template>
   </div>
 </template>
