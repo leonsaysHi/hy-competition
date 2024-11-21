@@ -55,12 +55,19 @@ const pastItems = computed(() => {
               <div class="card h-100  border-dark">
                 <div class="card-body">
                   <h3 class="card-title">{{ row.title }}</h3>
-                  <h6 class="card-subtitle mb-3">{{ getGender(row?.gender)?.long }} - {{ getCategory(row?.category)?.text }}</h6>
-                  <RouterLink
-                    :to="{ name: 'competition', params: { competitionId: row.id } }"
-                    class="stretched-link btn btn-primary border-dark stretched-link"
-                    >{{ $t('cta.view') }}</RouterLink
-                  >
+                  <h5 class="card-subtitle mb-3 d-flex gap-2">
+                    <span class="badge rounded-pill border border-primary text-reset">{{ getGender(row?.gender)?.long }}</span>
+                    <span class="badge rounded-pill border border-primary text-reset">{{ getCategory(row?.category)?.text }}</span>
+                  </h5>
+                  <div class="d-flex justify-content-end">
+                    <RouterLink
+                      :to="{ name: 'competition', params: { competitionId: row.id } }"
+                      class="stretched-link btn btn-primary border-dark stretched-link d-inline-flex gap-2"
+                    >
+                      {{ $t('cta.view') }}
+                      <i class="bi bi-arrow-right-circle-fill"></i>
+                    </RouterLink>
+                  </div>
                 </div>
                 <div class="card-footer text-bg-primary border-dark">
                   <small>{{ $t('home.lastUpdate') }}: {{ formatDistanceToNow(row.lastUpdate) }}</small>
@@ -90,7 +97,10 @@ const pastItems = computed(() => {
                     <template v-if="row.id">
                       <div class="flex-grow-1">
                         <h6 class="card-title">{{ row.title }}</h6>
-                        <p class="card-subtitle mb-2">{{ getGender(row?.gender)?.long }} - {{ getCategory(row?.category)?.text }}</p>
+                        <h6 class="card-subtitle mb-3 d-flex gap-2">
+                          <span class="badge rounded-pill border border-primary text-reset">{{ getGender(row?.gender)?.long }}</span>
+                          <span class="badge rounded-pill border border-primary text-reset">{{ getCategory(row?.category)?.text }}</span>
+                        </h6>
                       </div>
                       <RouterLink
                         :to="{ name: 'competition', params: { competitionId: row.id } }"
