@@ -21,7 +21,7 @@ watchEffect(() => {
     <p class="mb-5">
       <ButtonComp @click="handleSignIn"> Sign In with Google</ButtonComp>
     </p>
-    <p class="small text-body-secondary">1.1.1</p>
+    <p class="small text-body-secondary">1.1.2</p>
 
   </div>
 </template>
