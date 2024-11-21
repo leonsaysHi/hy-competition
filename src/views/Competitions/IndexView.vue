@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import SpinnerComp from '@/components/SpinnerComp.vue'
 import useCompetition from '@/composable/useCompetition'
-import { computed } from 'vue'
+import { logEv } from '@/firebase';
+import { computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -11,6 +12,17 @@ const deepPage = computed(() => {
   const { teamId, gameId, playerId } = route.params
   return !!(teamId || gameId || playerId)
 })
+
+watch(
+  () => row.value?.title,
+  (val, oldVal) => {
+    if (val && val !== oldVal) {
+      logEv(val, { competitionId })
+    }
+  },
+  { immediate: true }
+)
+
 </script>
 <template>
   <template v-if="!isReady">
