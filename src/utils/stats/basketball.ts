@@ -247,7 +247,7 @@ export function getCompetitionStanding (teams: CompetitionTeam[], games: GameCom
       },
       []
     )
-    result.sort((a: CompetitionStanding, b: CompetitionStanding) => {
+    const sortLogic = (a: CompetitionStanding, b: CompetitionStanding) => {
       const getPct = (st: CompetitionStanding) => st.gp / st.wins
       const getDiff = (st: CompetitionStanding) => st.ptsfv - st.ptsag
       const aPct = getPct(a)
@@ -256,6 +256,43 @@ export function getCompetitionStanding (teams: CompetitionTeam[], games: GameCom
       const mostPlayedGames = b.gp - a.gp
       const bestDiff = getDiff(b) - getDiff(a)
       return bestWinningPerc || mostPlayedGames || bestDiff
-    })
+    }
+    result.sort(sortLogic)
+    // cityhoops sort:
+    interface GroupByPct {
+      pct: number
+      teams: CompetitionStanding[]
+    }
+    const groupsByPct: GroupByPct[] = result.reduce((res, team:CompetitionStanding) => {
+      const getPct = (st: CompetitionStanding) => st.gp / st.wins
+      const pct = getPct(team)
+      const group = res.find(item => item.pct === pct)
+      if (!group) {
+        res.push({ pct, teams: [team] })
+      } else {
+        group.teams.push(team)
+      }
+      return res
+    }, [] as GroupByPct[])
+    const newResults: CompetitionStanding[] = groupsByPct.reduce((res, group: GroupByPct) => {
+      const teamsIds = group.teams.map((team:CompetitionStanding) => team.teamId)
+      const sortByGame = group.teams.length === 2 
+        ? games
+        .find((game: GameComputedClass) => {
+          return game.row.teams.every((teamId) => teamsIds.includes(teamId))
+        })
+        : undefined
+      // if 1 or more than 2 teams:
+      console.log(sortByGame)
+      if (sortByGame) {
+        const { id: winnerId } = sortByGame.scores.find((score:ScoresComputed) => score.winner)
+        res.push(...group.teams.sort(a => a.teamId === winnerId ? -1 : 1))
+      } else {
+        res.push(...group.teams.sort(sortLogic))
+      } 
+      return res
+    }, [] as CompetitionStanding[])
+    result.splice(0, result.length, ...newResults)
+    //
   return result
 }
