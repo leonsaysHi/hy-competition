@@ -283,7 +283,6 @@ export function getCompetitionStanding (teams: CompetitionTeam[], games: GameCom
         })
         : undefined
       // if 1 or more than 2 teams:
-      console.log(sortByGame)
       if (sortByGame) {
         const { id: winnerId } = sortByGame.scores.find((score:ScoresComputed) => score.winner)
         res.push(...group.teams.sort(a => a.teamId === winnerId ? -1 : 1))
