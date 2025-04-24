@@ -25,7 +25,7 @@ const es = {
       sheet: 'Stats sheet',
       playbyplay: 'Play-by-Play',
       statsavg: 'Promedios',
-      statscumul: 'Acumulados',
+      statscumul: 'Acumuladas',
       groups: {
         fga: 'FG attempts',
         oreb: 'Off/def rebounds',
