@@ -211,7 +211,7 @@ export default function useCompetition(competitionId: CompetitionId | undefined)
       ? row.value?.teams.find((team: CompetitionTeam) => {
           return team.players.findIndex((player: CompetitionPlayer) => player.id === playerId) > -1
         })?.id
-      : undefined
+      : teamId
     // filter
     const result = Array.isArray(row.value?.games)
       ? row.value.games
