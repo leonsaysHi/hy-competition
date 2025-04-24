@@ -64,10 +64,9 @@ gcloud config set project hy-competitions
 gcloud firestore import gs://cityhoops-export/2024-03-19T23:22:29_59009 --database='(default)'
 
 
-## Publish City Hoops
+## Publish City Hoops (www.cityhoopspty.com)
 
 ### App 
-Uncomment line 12 in `vite.config.ts`: ` base: "/app/",`
 Run `npm run build-only` 
 Zip content of `dist` folder
 
